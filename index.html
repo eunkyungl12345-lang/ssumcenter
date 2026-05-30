@@ -49,9 +49,14 @@
 <!-- Hero (두 갈래 CTA) -->
 <header class="relative overflow-hidden pt-14 pb-16 px-5 border-b border-[#242422] glow">
   <div class="max-w-3xl mx-auto text-center fade">
-    <span class="inline-flex items-center gap-2 bg-[#FFD400]/10 border border-[#FFD400]/30 y px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider uppercase mb-6">
-      <span class="w-2 h-2 rounded-full bg-y animate-ping"></span> 누적 매칭 3,000건 이상
-    </span>
+    <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
+      <span class="inline-flex items-center gap-2 bg-[#FFD400]/10 border border-[#FFD400]/30 y px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-y animate-ping"></span> 누적 매칭 3,000건 이상
+      </span>
+      <span class="inline-flex items-center gap-1.5 bg-white/5 border border-white/20 text-white px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider uppercase">
+        <i class="fa-solid fa-shield-check y"></i> 승인제 운영
+      </span>
+    </div>
     <h1 class="text-3xl md:text-5xl font-black leading-tight tracking-tight">
       <span class="y">매칭 경험 있는 주선자들</span>이 만든<br>로테이션 소셜링 파티
     </h1>
@@ -95,6 +100,71 @@
     <div class="bg-[#161615] border border-[#242422] rounded-2xl py-5 text-center"><div class="text-2xl font-black y">3,000+</div><div class="text-[11px] text-[#9E9E97] mt-1">누적 매칭 건수</div></div>
     <div class="bg-[#161615] border border-[#242422] rounded-2xl py-5 text-center"><div class="text-2xl font-black y">7커플+</div><div class="text-[11px] text-[#9E9E97] mt-1">매 회차 매칭</div></div>
     <div class="bg-[#161615] border border-[#242422] rounded-2xl py-5 text-center"><div class="text-2xl font-black y">2030</div><div class="text-[11px] text-[#9E9E97] mt-1">검증된 싱글들</div></div>
+  </div>
+</section>
+
+<!-- 승인제 강조 섹션 -->
+<section class="px-5 py-14 border-b border-[#242422] glow">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10" data-reveal>
+      <span class="inline-flex items-center gap-2 bg-[#FFD400]/10 border border-[#FFD400]/30 y px-4 py-1.5 rounded-full text-[11px] font-bold tracking-widest uppercase mb-4">
+        <i class="fa-solid fa-shield-check"></i> 썸류센터만의 운영 방식
+      </span>
+      <h2 class="text-2xl md:text-4xl font-black mt-3 leading-tight">
+        아무나 참가할 수 없어요.<br><span class="y">승인받은 분만 만나세요.</span>
+      </h2>
+      <p class="text-sm text-[#9E9E97] mt-4 leading-relaxed max-w-md mx-auto">신청서를 제출해도 자동으로 확정되지 않아요.<br>센터장이 직접 검토하고 승인한 분들만 참가할 수 있어요.</p>
+    </div>
+
+    <!-- 승인 프로세스 4단계 -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8" data-reveal>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 text-center relative">
+        <div class="w-10 h-10 mx-auto mb-3 rounded-xl bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+          <i class="fa-solid fa-file-lines y"></i>
+        </div>
+        <div class="text-[10px] y font-black tracking-widest uppercase mb-1">STEP 1</div>
+        <div class="font-bold text-sm">신청서 제출</div>
+        <div class="text-[11px] text-[#9E9E97] mt-1">네이버폼으로<br>간단히 제출</div>
+        <div class="hidden md:block absolute -right-2 top-1/2 -translate-y-1/2 z-10 text-[#FFD400] text-lg">›</div>
+      </div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 text-center relative">
+        <div class="w-10 h-10 mx-auto mb-3 rounded-xl bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+          <i class="fa-solid fa-magnifying-glass y"></i>
+        </div>
+        <div class="text-[10px] y font-black tracking-widest uppercase mb-1">STEP 2</div>
+        <div class="font-bold text-sm">심사 & 검토</div>
+        <div class="text-[11px] text-[#9E9E97] mt-1">센터장이<br>직접 검토</div>
+        <div class="hidden md:block absolute -right-2 top-1/2 -translate-y-1/2 z-10 text-[#FFD400] text-lg">›</div>
+      </div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 text-center relative">
+        <div class="w-10 h-10 mx-auto mb-3 rounded-xl bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+          <i class="fa-solid fa-circle-check y"></i>
+        </div>
+        <div class="text-[10px] y font-black tracking-widest uppercase mb-1">STEP 3</div>
+        <div class="font-bold text-sm">승인 확정</div>
+        <div class="text-[11px] text-[#9E9E97] mt-1">확정 문자로<br>승인 안내</div>
+        <div class="hidden md:block absolute -right-2 top-1/2 -translate-y-1/2 z-10 text-[#FFD400] text-lg">›</div>
+      </div>
+      <div class="bg-[#FFD400]/5 border border-[#FFD400]/40 rounded-2xl p-5 text-center">
+        <div class="w-10 h-10 mx-auto mb-3 rounded-xl bg-y flex items-center justify-center">
+          <i class="fa-solid fa-heart text-black"></i>
+        </div>
+        <div class="text-[10px] y font-black tracking-widest uppercase mb-1">STEP 4</div>
+        <div class="font-bold text-sm y">참가 확정!</div>
+        <div class="text-[11px] text-[#9E9E97] mt-1">검증된 싱글들과<br>설레는 만남</div>
+      </div>
+    </div>
+
+    <!-- 강조 문구 -->
+    <div class="bg-[#161615] border border-[#FFD400]/20 rounded-2xl p-5 flex gap-4 items-center" data-reveal>
+      <div class="shrink-0 w-12 h-12 rounded-xl bg-y flex items-center justify-center text-black text-xl">
+        <i class="fa-solid fa-shield-check"></i>
+      </div>
+      <div>
+        <p class="font-bold text-sm">신청 = 참가 확정이 아니에요</p>
+        <p class="text-xs text-[#9E9E97] mt-1 leading-relaxed">구매·신청 후 센터장 검토를 거쳐 <span class="y font-bold">별도 확정 문자</span>를 받으셔야 참가가 가능합니다. 그만큼 함께하는 분들의 퀄리티를 책임져요.</p>
+      </div>
+    </div>
   </div>
 </section>
 
