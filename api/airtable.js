@@ -20,9 +20,12 @@ module.exports = async function handler(req, res) {
 
   const params = new URLSearchParams();
   if (filter) params.set("filterByFormula", filter);
-  if (sort) params.set("sort[0][field]", sort);
-  params.set("sort[0][direction]", "desc");
-  if (!recordId && req.method === "GET") url += `?${params.toString()}`;
+  if (sort) {
+    params.set("sort[0][field]", sort);
+    params.set("sort[0][direction]", "desc");
+  }
+  const qs = params.toString();
+  if (!recordId && req.method === "GET" && qs) url += `?${qs}`;
 
   try {
     const options = {
