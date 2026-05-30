@@ -184,7 +184,7 @@
   </div>
 </section>
 
-<!-- 매칭 성사! 연락처 공개 -->
+<!-- 매칭 성사 → 결제 안내 -->
 <section id="matched-screen" class="hidden px-5 py-20">
   <div class="max-w-lg mx-auto text-center fade">
     <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-y flex items-center justify-center">
@@ -192,8 +192,39 @@
     </div>
     <h2 class="text-2xl font-black">매칭 성사!</h2>
     <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">
-      양쪽 모두 수락했어요. 연락처를 확인하세요!
+      양쪽 모두 수락했어요!<br>결제 완료 후 연락처를 전달해 드려요.
     </p>
+    <div class="bg-[#161615] border border-[#FFD400]/30 rounded-2xl p-6 mt-6 space-y-4">
+      <div class="text-center">
+        <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider mb-1">매칭 비용</div>
+        <div class="text-3xl font-black y">19,900원</div>
+      </div>
+      <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-4 space-y-2 text-left">
+        <div class="flex gap-3 items-center text-sm">
+          <div class="w-6 h-6 rounded-lg bg-y text-black flex items-center justify-center text-xs font-bold">1</div>
+          <span class="text-[#9E9E97]">아래 계좌로 <b class="text-white">19,900원</b> 입금</span>
+        </div>
+        <div class="flex gap-3 items-center text-sm">
+          <div class="w-6 h-6 rounded-lg bg-[#242422] text-[#9E9E97] flex items-center justify-center text-xs font-bold">2</div>
+          <span class="text-[#9E9E97]">입금 확인 후 <b class="text-white">연락처 자동 전달</b></span>
+        </div>
+      </div>
+      <div class="bg-[#FFD400]/5 border border-[#FFD400]/20 rounded-xl p-4 text-center">
+        <div class="text-[11px] text-[#9E9E97] mb-1">입금 계좌</div>
+        <div class="text-base font-black text-white" id="payment-account">확정 문자로 안내드려요</div>
+      </div>
+    </div>
+    <p class="text-xs text-[#9E9E97] mt-5 leading-relaxed">입금 확인 후 카카오톡으로 상대방 연락처를 보내드려요.</p>
+  </div>
+</section>
+
+<!-- 연락처 공개 (입금 확인 후) -->
+<section id="contact-screen" class="hidden px-5 py-20">
+  <div class="max-w-lg mx-auto text-center fade">
+    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-y flex items-center justify-center">
+      <i class="fa-solid fa-phone text-black text-2xl"></i>
+    </div>
+    <h2 class="text-2xl font-black">연락처가 도착했어요!</h2>
     <div class="bg-[#161615] border border-[#FFD400]/30 rounded-2xl p-6 mt-6">
       <div class="w-14 h-14 mx-auto mb-3 rounded-xl bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
         <i class="fa-solid fa-phone y text-xl"></i>
@@ -429,33 +460,23 @@ async function checkOtherResponse(){
   }
 }
 
-// 매칭 성사 → 연락처 표시
+// 매칭 성사 → 결제 안내 표시 (연락처는 입금 확인 후 센터장이 전달)
 async function showContact(){
   const AIRTABLE_TOKEN = "patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
   const BASE_ID = "appwejZxBm9oRt0AM";
 
   try {
-    // matchId = 상대방의 record ID → 상대방 연락처 가져오기
-    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}/${matchId}`, {
-      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}` }
-    });
-    const data = await res.json();
-    const phone = data.fields["연락처"] || "연락처 없음";
-    const name = data.fields["이름"] || "";
-
-    document.getElementById("matched-phone").textContent = phone;
-    document.getElementById("matched-name").textContent = name + "님";
-
     // 매칭 상태 업데이트
     await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}`, {
       method: "PATCH",
       headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}`, "Content-Type": "application/json" },
       body: JSON.stringify({ records: [
-        { id: matchId, fields: { "매칭상태": "연락처전달" } },
-        { id: params.get("myId"), fields: { "매칭상태": "연락처전달" } }
+        { id: matchId, fields: { "매칭상태": "수락" } },
+        { id: params.get("myId"), fields: { "매칭상태": "수락" } }
       ]})
     });
 
+    // 결제 안내 화면 표시 (연락처는 아직 안 보여줌)
     showScreen("matched");
   } catch(err){
     console.error(err);
@@ -487,6 +508,7 @@ function showScreen(screen){
   document.getElementById("reject-screen").classList.add("hidden");
   document.getElementById("expired-screen").classList.add("hidden");
   document.getElementById("matched-screen").classList.add("hidden");
+  document.getElementById("contact-screen").classList.add("hidden");
   document.getElementById("unmatched-screen").classList.add("hidden");
   document.getElementById(screen + "-screen").classList.remove("hidden");
   window.scrollTo({top: 0, behavior: "smooth"});
