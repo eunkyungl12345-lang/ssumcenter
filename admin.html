@@ -45,7 +45,7 @@
       <span class="text-xl font-black tracking-tight">썸류<span class="y">센터</span></span>
       <span class="text-[10px] bg-[#FFD400]/15 text-[#FFD400] border border-[#FFD400]/30 font-bold px-2 py-0.5 rounded-full">ADMIN</span>
     </div>
-    <button onclick="loadApplicants()" class="text-sm text-[#9E9E97] hover:text-white transition">
+    <button onclick="loadApplicants();loadCoffeeApplicants()" class="text-sm text-[#9E9E97] hover:text-white transition">
       <i class="fa-solid fa-arrows-rotate mr-1"></i>새로고침
     </button>
   </div>
@@ -53,6 +53,19 @@
 
 <!-- 메인 -->
 <div class="max-w-4xl mx-auto px-5 py-8">
+
+  <!-- 탭 전환 -->
+  <div class="flex gap-2 mb-6">
+    <button onclick="switchTab('matching')" id="tab-matching" class="tab-btn bg-y text-black text-sm font-bold px-4 py-2 rounded-xl transition">
+      <i class="fa-solid fa-video mr-1.5"></i>1:1 매칭
+    </button>
+    <button onclick="switchTab('coffee')" id="tab-coffee" class="tab-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-sm font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]">
+      <i class="fa-solid fa-mug-hot mr-1.5"></i>커피팅
+    </button>
+  </div>
+
+  <!-- 1:1 매칭 섹션 -->
+  <div id="section-matching">
 
   <!-- 통계 -->
   <div class="grid grid-cols-3 gap-3 mb-8">
@@ -127,6 +140,46 @@
       <p class="text-sm">신청자 목록 불러오는 중...</p>
     </div>
   </div>
+
+  </div><!-- /section-matching -->
+
+  <!-- 커피팅 섹션 -->
+  <div id="section-coffee" class="hidden">
+
+    <!-- 커피팅 통계 -->
+    <div class="grid grid-cols-3 gap-3 mb-8">
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
+        <div class="text-2xl font-black y" id="coffee-stat-total">-</div>
+        <div class="text-[11px] text-[#9E9E97] mt-1">전체 신청</div>
+      </div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
+        <div class="text-2xl font-black y" id="coffee-stat-waiting">-</div>
+        <div class="text-[11px] text-[#9E9E97] mt-1">대기 중</div>
+      </div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
+        <div class="text-2xl font-black y" id="coffee-stat-approved">-</div>
+        <div class="text-[11px] text-[#9E9E97] mt-1">승인 완료</div>
+      </div>
+    </div>
+
+    <!-- 커피팅 필터 -->
+    <div class="flex gap-2 mb-4">
+      <button onclick="coffeeFilterBy('all')" class="coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
+      <button onclick="coffeeFilterBy('대기')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
+      <button onclick="coffeeFilterBy('승인')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
+      <button onclick="coffeeFilterBy('남성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
+      <button onclick="coffeeFilterBy('여성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
+    </div>
+
+    <!-- 커피팅 신청자 목록 -->
+    <div id="coffee-list" class="space-y-3">
+      <div class="text-center py-10 text-[#555]">
+        <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
+        <p class="text-sm">커피팅 신청자 불러오는 중...</p>
+      </div>
+    </div>
+
+  </div><!-- /section-coffee -->
 
 </div>
 
@@ -299,6 +352,117 @@ function toast(msg){
   t.textContent = msg;
   t.classList.remove("translate-y-32","opacity-0");
   setTimeout(() => t.classList.add("translate-y-32","opacity-0"), 3000);
+}
+
+// 탭 전환
+let currentTab = "matching";
+function switchTab(tab){
+  currentTab = tab;
+  document.getElementById("section-matching").classList.toggle("hidden", tab !== "matching");
+  document.getElementById("section-coffee").classList.toggle("hidden", tab !== "coffee");
+  document.getElementById("tab-matching").className = tab === "matching"
+    ? "tab-btn bg-y text-black text-sm font-bold px-4 py-2 rounded-xl transition"
+    : "tab-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-sm font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]";
+  document.getElementById("tab-coffee").className = tab === "coffee"
+    ? "tab-btn bg-y text-black text-sm font-bold px-4 py-2 rounded-xl transition"
+    : "tab-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-sm font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]";
+  if(tab === "coffee" && coffeeApplicants.length === 0) loadCoffeeApplicants();
+}
+
+// 커피팅 신청자
+let coffeeApplicants = [];
+let coffeeFilter = "all";
+
+async function loadCoffeeApplicants(){
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("커피팅 신청")}?sort[0][field]=신청일시&sort[0][direction]=desc`, {
+      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}` }
+    });
+    const data = await res.json();
+    coffeeApplicants = data.records || [];
+    updateCoffeeStats();
+    renderCoffeeList();
+  } catch(err){
+    console.error(err);
+    document.getElementById("coffee-list").innerHTML = '<p class="text-center text-red-400 py-10">데이터를 불러올 수 없습니다</p>';
+  }
+}
+
+function updateCoffeeStats(){
+  const total = coffeeApplicants.length;
+  const waiting = coffeeApplicants.filter(r => (r.fields["승인상태"] || "대기") === "대기").length;
+  const approved = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인").length;
+  document.getElementById("coffee-stat-total").textContent = total;
+  document.getElementById("coffee-stat-waiting").textContent = waiting;
+  document.getElementById("coffee-stat-approved").textContent = approved;
+}
+
+function renderCoffeeList(){
+  const list = document.getElementById("coffee-list");
+  let filtered = coffeeApplicants;
+  if(coffeeFilter === "대기" || coffeeFilter === "승인"){
+    filtered = coffeeApplicants.filter(r => (r.fields["승인상태"] || "대기") === coffeeFilter);
+  } else if(coffeeFilter === "남성" || coffeeFilter === "여성"){
+    filtered = coffeeApplicants.filter(r => r.fields["성별"] === coffeeFilter);
+  }
+
+  if(filtered.length === 0){
+    list.innerHTML = '<p class="text-center text-[#555] py-10">신청자가 없습니다</p>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(r => {
+    const f = r.fields;
+    const status = f["승인상태"] || "대기";
+    const statusColor = status === "대기" ? "text-[#FFD400]" : status === "승인" ? "text-emerald-400" : "text-red-400";
+    const photoUrl = f["프로필사진"] && f["프로필사진"][0] ? f["프로필사진"][0].url : null;
+
+    return `<div class="bg-[#161615] border border-[#242422] rounded-2xl p-4">
+      <div class="flex gap-3">
+        <div class="w-14 h-14 shrink-0 rounded-xl bg-[#242422] overflow-hidden flex items-center justify-center">
+          ${photoUrl ? `<img src="${photoUrl}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user text-[#555]"></i>`}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-sm">${f["이름"] || "이름없음"}</span>
+            <span class="text-[10px] ${statusColor} font-bold">${status}</span>
+            <span class="text-[10px] text-[#555]">${f["성별"] || ""}</span>
+          </div>
+          <div class="text-xs text-[#9E9E97] mt-0.5">${f["출생연도"] || ""}년생 · ${f["직업"] || ""}</div>
+          <div class="text-xs text-[#555] mt-0.5"><i class="fa-solid fa-calendar-day mr-1"></i>${f["희망날짜"] || ""}</div>
+          ${f["테스트결과"] ? `<div class="text-[10px] text-[#FFD400] mt-1"><i class="fa-solid fa-flask mr-1"></i>${f["테스트결과"]}</div>` : ""}
+        </div>
+        <div class="flex flex-col gap-1.5 shrink-0">
+          ${status === "대기" ? `
+            <button onclick="updateCoffeeStatus('${r.id}','승인')" class="bg-y text-black text-[11px] font-bold px-3 py-1.5 rounded-lg hover:bg-[#E6BE00] transition">승인</button>
+            <button onclick="updateCoffeeStatus('${r.id}','거절')" class="bg-[#242422] text-[#9E9E97] text-[11px] font-bold px-3 py-1.5 rounded-lg hover:text-white transition">거절</button>
+          ` : ""}
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function updateCoffeeStatus(recordId, status){
+  try {
+    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("커피팅 신청")}`, {
+      method: "PATCH",
+      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "승인상태": status } }] })
+    });
+    toast(status === "승인" ? "승인 완료!" : "거절 처리되었습니다");
+    loadCoffeeApplicants();
+  } catch(err){ console.error(err); }
+}
+
+function coffeeFilterBy(f){
+  coffeeFilter = f;
+  document.querySelectorAll(".coffee-filter-btn").forEach(btn => {
+    btn.className = btn.dataset.filter === f
+      ? "coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition"
+      : "coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]";
+  });
+  renderCoffeeList();
 }
 
 // 비밀번호 잠금
