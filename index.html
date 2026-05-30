@@ -91,6 +91,12 @@
       <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
       <i class="fa-solid fa-calendar-day y mr-0.5"></i> 6월 11일 · 6월 25일 <b class="text-white ml-1">(목)</b> 신청 중
     </div>
+    <!-- 테마 배지: 테마 세션 있을 때 hidden 제거하고 내용 수정 -->
+    <div class="hidden items-center justify-center mt-3">
+      <span class="inline-flex items-center gap-1.5 bg-[#161615] border border-[#FFD400]/40 y px-3 py-1.5 rounded-full text-[11px] font-bold">
+        <i class="fa-solid fa-chart-line"></i> 이번 테마: 재테크
+      </span>
+    </div>
   </div>
 </header>
 
@@ -419,14 +425,22 @@
       <p class="text-xs text-[#9E9E97] mt-1">네이버폼으로 이동해요</p>
     </div>
     <div class="space-y-3">
-      <a href="https://form.naver.com/response/PSC7FbnQkxGvPxDxUxz0lQ" target="_blank" rel="noopener" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl flex flex-col items-center gap-0.5 hover:bg-[#E6BE00] transition-colors block text-center">
-        <span class="text-base"><i class="fa-solid fa-calendar-day mr-1.5"></i>6월 11일 (목)</span>
-        <span class="text-[11px] font-medium opacity-70">신청하기 →</span>
-      </a>
-      <a href="https://form.naver.com/response/hZCZ4iRavCm3vmsqEJaIfw" target="_blank" rel="noopener" class="bg-[#0D0D0C] border border-[#FFD400]/40 text-white font-extrabold w-full py-4 rounded-2xl flex flex-col items-center gap-0.5 hover:bg-[#FFD400]/10 transition-colors block text-center">
-        <span class="text-base"><i class="fa-solid fa-calendar-day mr-1.5 y"></i>6월 25일 (목)</span>
-        <span class="text-[11px] font-medium text-[#9E9E97]">신청하기 →</span>
-      </a>
+      <div class="relative">
+        <a href="https://form.naver.com/response/PSC7FbnQkxGvPxDxUxz0lQ" target="_blank" rel="noopener" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl flex flex-col items-center gap-0.5 hover:bg-[#E6BE00] transition-colors block text-center">
+          <span class="text-base"><i class="fa-solid fa-calendar-day mr-1.5"></i>6월 11일 (목)</span>
+          <span class="text-[11px] font-medium opacity-70">신청하기 →</span>
+        </a>
+        <!-- 테마 뱃지: 이 날짜가 테마 세션이면 hidden 제거 -->
+        <span class="hidden absolute -top-2 right-3 text-[9px] bg-[#0D0D0C] text-[#FFD400] border border-[#FFD400]/50 font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-chart-line mr-0.5"></i>재테크 테마</span>
+      </div>
+      <div class="relative">
+        <a href="https://form.naver.com/response/hZCZ4iRavCm3vmsqEJaIfw" target="_blank" rel="noopener" class="bg-[#0D0D0C] border border-[#FFD400]/40 text-white font-extrabold w-full py-4 rounded-2xl flex flex-col items-center gap-0.5 hover:bg-[#FFD400]/10 transition-colors block text-center">
+          <span class="text-base"><i class="fa-solid fa-calendar-day mr-1.5 y"></i>6월 25일 (목)</span>
+          <span class="text-[11px] font-medium text-[#9E9E97]">신청하기 →</span>
+        </a>
+        <!-- 테마 뱃지: 이 날짜가 테마 세션이면 hidden 제거 -->
+        <span class="hidden absolute -top-2 right-3 text-[9px] bg-[#0D0D0C] text-[#FFD400] border border-[#FFD400]/50 font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-chart-line mr-0.5"></i>재테크 테마</span>
+      </div>
     </div>
     <p class="text-[11px] text-[#555] text-center mt-5">신청 후 확정 문자를 별도로 보내드려요 💛</p>
   </div>
