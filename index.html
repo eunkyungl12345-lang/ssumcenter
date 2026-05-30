@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>썸류센터 (SSUM-RYU) | 강남 로테이션 소개팅 · 1:1 온라인 매칭</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0D0D0C;color:#F5F5F3;overflow-x:hidden}
+  .y{color:#FFD400}.bg-y{background:#FFD400}.bd-y{border-color:#FFD400}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#161615}::-webkit-scrollbar-thumb{background:#FFD400;border-radius:3px}
+  @keyframes pulseY{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,212,0,.4)}50%{transform:scale(1.03);box-shadow:0 0 18px 6px rgba(255,212,0,.18)}}
+  .pulse{animation:pulseY 2s infinite ease-in-out}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .fade{animation:fadeUp .5s ease both}
+  .glow{background:radial-gradient(circle at 50% 0%,rgba(255,212,0,.12),transparent 60%)}
+  [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+  [data-reveal].in{opacity:1;transform:none}
+</style>
+</head>
+<body class="min-h-screen selection:bg-[#FFD400] selection:text-black">
+
+<!-- 네비 -->
+<nav class="sticky top-0 z-50 bg-[#0D0D0C]/95 backdrop-blur-md border-b border-[#242422] px-4 py-3">
+  <div class="max-w-6xl mx-auto flex justify-between items-center">
+    <a href="#top" class="flex items-center gap-2">
+      <svg class="w-8 h-8 y" viewBox="0 0 100 100" fill="currentColor">
+        <circle cx="50" cy="50" r="45" fill="#181816" stroke="#FFD400" stroke-width="4"/>
+        <path d="M50 25 C62 25,68 35,65 45 C60 52,40 52,35 45 C32 35,38 25,50 25 Z" fill="#FFD400"/>
+        <path d="M60 40 L72 43 C70 47,58 48,58 40 Z" fill="#FF4A00"/>
+        <circle cx="53" cy="33" r="3.5" fill="#0D0D0C"/><circle cx="54.5" cy="31.5" r="1.2" fill="white"/>
+        <ellipse cx="46" cy="40" rx="4" ry="3" fill="#FF8A8A"/>
+      </svg>
+      <span class="text-xl font-black tracking-tight">썸류<span class="y">센터</span></span>
+    </a>
+    <div class="hidden md:flex gap-7 text-sm font-semibold text-[#9E9E97]">
+      <a href="#about" class="hover:text-white transition">진행 방식</a>
+      <a href="#faq" class="hover:text-white transition">자주 묻는 질문</a>
+      <a href="test-ideal.html" class="hover:text-white transition">연애 커피 유형</a>
+    </div>
+    <a href="#apply" class="bg-y text-black font-bold px-4 py-2 rounded-full text-xs transition hover:bg-[#E6BE00]">바로 신청 →</a>
+  </div>
+</nav>
+
+<div id="top"></div>
+
+<!-- Hero (두 갈래 CTA) -->
+<header class="relative overflow-hidden pt-14 pb-16 px-5 border-b border-[#242422] glow">
+  <div class="max-w-3xl mx-auto text-center fade">
+    <span class="inline-flex items-center gap-2 bg-[#FFD400]/10 border border-[#FFD400]/30 y px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider uppercase mb-6">
+      <span class="w-2 h-2 rounded-full bg-y animate-ping"></span> 누적 매칭 3,000건 이상
+    </span>
+    <h1 class="text-3xl md:text-5xl font-black leading-tight tracking-tight">
+      <span class="y">매칭 경험 있는 주선자들</span>이 만든<br>로테이션 소셜링 파티
+    </h1>
+    <p class="text-sm md:text-base text-[#9E9E97] mt-5 leading-relaxed">
+      지금 당신에게 설렘이 배달됩니다.<br>검증된 2030 싱글들과 케미 가득한 인연을 만나보세요.
+    </p>
+    <!-- 메인 CTA: 바로 신청 -->
+    <div class="max-w-md mx-auto mt-8">
+      <a href="#apply" class="bg-y text-black font-extrabold w-full px-6 py-5 rounded-2xl pulse inline-flex flex-col items-center justify-center gap-1">
+        <span class="text-base"><i class="fa-solid fa-paper-plane mr-1"></i> 바로 신청하기</span>
+        <span class="text-[11px] font-medium opacity-80">이미 마음을 정했다면</span>
+      </a>
+    </div>
+    <!-- 테스트 2종 -->
+    <div class="max-w-xl mx-auto mt-5">
+      <p class="text-xs text-[#9E9E97] mb-3"><i class="fa-solid fa-bolt y mr-1"></i> 망설여진다면? 무료 테스트로 나를 알아보세요</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <a href="test-ideal.html" class="bg-[#161615] border border-[#FFD400]/40 hover:border-y rounded-2xl p-4 text-left transition group relative">
+          <span class="absolute top-2 right-2 text-[9px] bg-y text-black font-bold px-2 py-0.5 rounded-full">HOT</span>
+          <div class="text-2xl mb-1">☕</div>
+          <div class="text-sm font-bold">나의 연애 커피 유형</div>
+          <div class="text-[11px] text-[#9E9E97] mt-0.5">직진드리퍼? 아아고수?</div>
+        </a>
+        <a href="test.html" class="bg-[#161615] border border-[#242422] hover:border-y rounded-2xl p-4 text-left transition group">
+          <div class="text-2xl mb-1">🍺</div>
+          <div class="text-sm font-bold">연애 향과 맛</div>
+          <div class="text-[11px] text-[#9E9E97] mt-0.5">나의 연애 맛 분석</div>
+        </a>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 justify-center mt-7 text-xs text-[#9E9E97]">
+      <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+      이번 주 금요일 세션 <b class="text-white ml-1">여성 2자리</b> 남음!
+    </div>
+  </div>
+</header>
+
+<!-- 실적 -->
+<section id="stats" class="px-5 py-12 border-b border-[#242422]">
+  <div class="max-w-3xl mx-auto grid grid-cols-3 gap-3" data-reveal>
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl py-5 text-center"><div class="text-2xl font-black y">3,000+</div><div class="text-[11px] text-[#9E9E97] mt-1">누적 매칭 건수</div></div>
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl py-5 text-center"><div class="text-2xl font-black y">7커플+</div><div class="text-[11px] text-[#9E9E97] mt-1">매 회차 매칭</div></div>
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl py-5 text-center"><div class="text-2xl font-black y">2030</div><div class="text-[11px] text-[#9E9E97] mt-1">검증된 싱글들</div></div>
+  </div>
+</section>
+
+<!-- 센터장의 고민 → 장점 -->
+<section class="px-5 py-14 border-b border-[#242422]">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-8" data-reveal>
+      <p class="text-sm text-[#9E9E97]">센터장들은 이런 걸 고민했어요</p>
+      <h2 class="text-xl md:text-2xl font-black mt-3 leading-snug">
+        "설렘을 원하는 사람들에게<br><span class="y">가장 필요한 건 뭘까?</span>"
+      </h2>
+      <div class="inline-block bg-[#161615] border border-[#FFD400]/30 rounded-2xl px-5 py-3 mt-6">
+        <p class="text-sm font-bold">💬 내 취향에 맞는, <span class="y">검증된 사람</span>만 만나고 싶어요!</p>
+      </div>
+    </div>
+
+    <div class="text-center mb-7" data-reveal>
+      <span class="text-[11px] y font-bold tracking-widest uppercase">WHY SSUM-RYU</span>
+      <h2 class="text-2xl md:text-3xl font-black mt-2">그래서 고민한 <span class="y">썸류센터만의 장점</span></h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-3">
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 text-center">
+        <div class="text-3xl mb-3">✅</div>
+        <h3 class="font-bold text-sm">검증된 신청자</h3>
+        <p class="text-xs text-[#9E9E97] mt-2 leading-relaxed">3,000건 이상 매칭 노하우로 신청자분들을 검증합니다.</p>
+      </div>
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 text-center">
+        <div class="text-3xl mb-3">🪪</div>
+        <h3 class="font-bold text-sm">사전 신분 확인</h3>
+        <p class="text-xs text-[#9E9E97] mt-2 leading-relaxed">사전 신분 확인을 통해 검증된 분만 모십니다.</p>
+      </div>
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 text-center">
+        <div class="text-3xl mb-3">💛</div>
+        <h3 class="font-bold text-sm">편안한 대화</h3>
+        <p class="text-xs text-[#9E9E97] mt-2 leading-relaxed">참가자의 시선으로, 편안하게 대화하고 만남을 이어갈 수 있게 만들어 드립니다.</p>
+      </div>
+    </div>
+    <p class="text-center text-xs text-[#9E9E97] mt-5" data-reveal><i class="fa-solid fa-shield-heart y mr-1"></i> 과한 개인정보 요구 없습니다. 믿을 만한 매력 있습니다!</p>
+  </div>
+</section>
+
+<!-- 이런 분들께 적합해요 -->
+<section class="px-5 py-14 border-b border-[#242422]">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-8" data-reveal>
+      <div class="text-3xl mb-2">🏠</div>
+      <h2 class="text-2xl md:text-3xl font-black">이런 분들께 <span class="y">적합해요</span></h2>
+    </div>
+    <div class="space-y-3">
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 flex gap-3 items-start">
+        <i class="fa-solid fa-heart y mt-1"></i>
+        <p class="text-sm leading-relaxed">내가 원하는 이성을 소개받을 곳이 마땅히 없는 분</p>
+      </div>
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 flex gap-3 items-start">
+        <i class="fa-solid fa-heart y mt-1"></i>
+        <p class="text-sm leading-relaxed">친구들은 많아도 내가 원하는 이성을 소개해주긴 어려운 분</p>
+      </div>
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 flex gap-3 items-start">
+        <i class="fa-solid fa-heart y mt-1"></i>
+        <p class="text-sm leading-relaxed">신분과 신원이 확실한 이성을 만나고 싶은 분 — 소개 사진, 헌팅포차보다 확실한 신분의 사람을 만나보세요.</p>
+      </div>
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 flex gap-3 items-start">
+        <i class="fa-solid fa-heart y mt-1"></i>
+        <p class="text-sm leading-relaxed">만남을 위해 어디까지 가야 하나 고민하는 분 — '이런 곳'이 아니에요! 검증된 곳에 검증된 사람들이 모입니다.</p>
+      </div>
+    </div>
+    <p class="text-center text-sm font-bold mt-6" data-reveal>썸류센터에서 당신의 소중한 시간, <span class="y">설렘을 일에서 써보세요.</span></p>
+  </div>
+</section>
+
+<!-- 로테이션 소개 -->
+<section id="about" class="px-5 py-14 border-b border-[#242422]">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-9" data-reveal>
+      <span class="text-[11px] y font-bold tracking-widest uppercase">HOW IT WORKS</span>
+      <h2 class="text-2xl md:text-3xl font-black mt-2">로테이션 소개팅, <span class="y">이렇게 진행돼요</span></h2>
+    </div>
+    <div class="space-y-3">
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 shrink-0 rounded-xl bg-y text-black font-black flex items-center justify-center">1</div>
+        <div><h3 class="font-bold">참석권 구매 & 참여 확정</h3><p class="text-sm text-[#9E9E97] mt-1">참석권 구매를 하시면 다음 날짜와 함께 참여 확정을 안내해 드려요. 호스트분께 사진과 함께 참여 신청을 제출하여 참여를 확정합니다.</p></div>
+      </div>
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 shrink-0 rounded-xl bg-y text-black font-black flex items-center justify-center">2</div>
+        <div><h3 class="font-bold">썸류센터 참석</h3><p class="text-sm text-[#9E9E97] mt-1">모임 장소에 도착하시면 대화 자리를 안내해 드려요. 정해진 시간 동안 여러 분과 1:1 로테이션 대화를 나눕니다.</p></div>
+      </div>
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 shrink-0 rounded-xl bg-y text-black font-black flex items-center justify-center">3</div>
+        <div><h3 class="font-bold">설렘을 줄 이성 선택</h3><p class="text-sm text-[#9E9E97] mt-1">모든 대화가 끝나면, 설렘을 줬던 이성 2명을 비공개로 선택해요. 누구를 선택했는지는 비밀로 지켜드립니다.</p></div>
+      </div>
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 shrink-0 rounded-xl bg-y text-black font-black flex items-center justify-center">4</div>
+        <div><h3 class="font-bold">매칭 결과 확인</h3><p class="text-sm text-[#9E9E97] mt-1">다음 날 매칭 결과가 배달됩니다. 서로 선택했다면 연락처를 전달해 드리고, 두근거리는 인연으로 이어집니다.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 후기 -->
+<section id="reviews" class="px-5 py-14 border-b border-[#242422]">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-9" data-reveal>
+      <span class="text-[11px] y font-bold tracking-widest uppercase">REAL REVIEWS</span>
+      <h2 class="text-2xl md:text-3xl font-black mt-2">참가자 <span class="y">리얼 후기</span></h2>
+    </div>
+    <div class="grid md:grid-cols-2 gap-3">
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5">
+        <div class="y text-xs mb-2">★★★★★</div>
+        <p class="text-sm leading-relaxed">"편안하고 싱그러운 기운을 나눠주는 분을 만났어요. 끊김 없이 즐거웠고 배려가 인상적이었습니다."</p>
+        <p class="text-[11px] text-[#9E9E97] mt-3">— 30대 여성 참가자</p>
+      </div>
+      <div data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5">
+        <div class="y text-xs mb-2">★★★★★</div>
+        <p class="text-sm leading-relaxed">"어색할 줄 알았는데 로테이션이라 자연스럽게 여러 분과 대화했어요. 진짜 케미 맞는 분을 만났습니다."</p>
+        <p class="text-[11px] text-[#9E9E97] mt-3">— 20대 남성 참가자</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 매칭 실적 강조 -->
+<section class="px-5 py-14 border-b border-[#242422] glow">
+  <div class="max-w-3xl mx-auto text-center" data-reveal>
+    <p class="text-sm text-[#9E9E97]">이미 많은 분들이 방문해서 인증해 주셨습니다</p>
+    <h2 class="text-3xl md:text-4xl font-black mt-3">매 회차 <span class="y">7커플 이상</span> 매칭!</h2>
+    <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">실제 후기와 인증이 증명하는 썸류센터의 매칭력.<br>당신의 차례를 기다리고 있어요.</p>
+    <div class="grid grid-cols-3 gap-3 mt-8">
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-5"><div class="text-2xl font-black y">3,000+</div><div class="text-[11px] text-[#9E9E97] mt-1">누적 매칭</div></div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-5"><div class="text-2xl font-black y">7커플+</div><div class="text-[11px] text-[#9E9E97] mt-1">회차당 매칭</div></div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-5"><div class="text-2xl font-black y">★★★★★</div><div class="text-[11px] text-[#9E9E97] mt-1">참가자 후기</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 테스트 유도 배너 -->
+<section class="px-5 py-12 border-b border-[#242422]">
+  <div class="max-w-3xl mx-auto bg-gradient-to-br from-[#FFD400]/10 to-transparent border border-[#FFD400]/20 rounded-3xl p-7 text-center" data-reveal>
+    <h3 class="text-xl md:text-2xl font-black">아직 망설여진다면?</h3>
+    <p class="text-sm text-[#9E9E97] mt-2">1분 무료 테스트로 <b class="y">내 연애 유형</b>부터 알아보세요</p>
+    <div class="grid grid-cols-2 gap-2 mt-5 max-w-sm mx-auto">
+      <a href="test-ideal.html" class="bg-[#0D0D0C] border border-[#FFD400]/40 hover:border-y rounded-xl p-3 transition">
+        <div class="text-2xl">☕</div>
+        <div class="text-[11px] font-bold mt-1">연애 커피 유형</div>
+      </a>
+      <a href="test.html" class="bg-[#0D0D0C] border border-[#242422] hover:border-y rounded-xl p-3 transition">
+        <div class="text-2xl">🍺</div>
+        <div class="text-[11px] font-bold mt-1">연애 향과 맛</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="px-5 py-14 border-b border-[#242422]">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-8" data-reveal>
+      <div class="text-3xl mb-2">📦</div>
+      <h2 class="text-2xl md:text-3xl font-black">자주 묻는 <span class="y">질문</span></h2>
+    </div>
+    <div class="space-y-3">
+      <details data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 group">
+        <summary class="font-bold text-sm cursor-pointer flex justify-between items-center list-none"><span><span class="y mr-1">Q.</span> 혼자서도 참여 가능한가요?</span><i class="fa-solid fa-chevron-down text-xs text-[#9E9E97] group-open:rotate-180 transition"></i></summary>
+        <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">물론이죠! 센터장들이 혼자서도 무안하지 않도록 도와드리겠습니다.</p>
+      </details>
+      <details data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 group">
+        <summary class="font-bold text-sm cursor-pointer flex justify-between items-center list-none"><span><span class="y mr-1">Q.</span> 대화하기 어려울 것 같아요.</span><i class="fa-solid fa-chevron-down text-xs text-[#9E9E97] group-open:rotate-180 transition"></i></summary>
+        <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">편하게 대화하실 수 있도록, 서로에 대해 이야기할 수 있는 대화 시트를 나눠드리고 있습니다. 전혀 힘들지 않으실 거예요!</p>
+      </details>
+      <details data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 group">
+        <summary class="font-bold text-sm cursor-pointer flex justify-between items-center list-none"><span><span class="y mr-1">Q.</span> 만나던 사람을 또 만나게 되진 않을까요?</span><i class="fa-solid fa-chevron-down text-xs text-[#9E9E97] group-open:rotate-180 transition"></i></summary>
+        <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">같은 분을 만나시지 않도록 중복 체크하고 있으며, 같은 회사·부서도 역시 만나지 않도록 안내해 드리고 있습니다.</p>
+      </details>
+      <details data-reveal class="bg-[#161615] border border-[#242422] rounded-2xl p-5 group">
+        <summary class="font-bold text-sm cursor-pointer flex justify-between items-center list-none"><span><span class="y mr-1">Q.</span> 신청 후 연락은 언제 오나요?</span><i class="fa-solid fa-chevron-down text-xs text-[#9E9E97] group-open:rotate-180 transition"></i></summary>
+        <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">참여하실 분들의 이상형에 부합하는지 부합하기 위해 간단한 검토를 통하여 부족하더라도 빠른 신청자분께 확정 문자가 가실 수 있습니다. 양해 부탁드립니다.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- 예약 유의사항 -->
+<section class="px-5 py-14 border-b border-[#242422]">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-8" data-reveal>
+      <h2 class="text-2xl md:text-3xl font-black">💛 예약 <span class="y">유의사항</span></h2>
+    </div>
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-6 space-y-4" data-reveal>
+      <div class="flex gap-3 items-start"><i class="fa-solid fa-circle-check y mt-1"></i><p class="text-sm text-[#9E9E97] leading-relaxed">구매 완료가 예약 확정은 아니며, 구매 후 따로 확정 문자를 받으셔야 참여가 가능합니다. (확정 문자가 일주일 내로 발송될 경우, 환불 처리됩니다.)</p></div>
+      <div class="flex gap-3 items-start"><i class="fa-solid fa-circle-check y mt-1"></i><p class="text-sm text-[#9E9E97] leading-relaxed">환불은 썸류센터 시작 일정 기준, 7일 이전까지 가능합니다. (당일 노쇼, 지각의 경우 환불 불가)</p></div>
+      <div class="flex gap-3 items-start"><i class="fa-solid fa-circle-check y mt-1"></i><p class="text-sm text-[#9E9E97] leading-relaxed">모임 장소는 예약 상황에 따라 조금씩 변동될 수 있습니다. 자세한 장소는 확정 후 별도 공지해 드립니다.</p></div>
+      <div class="flex gap-3 items-start"><i class="fa-solid fa-circle-check y mt-1"></i><p class="text-sm text-[#9E9E97] leading-relaxed">불성실 무성의 및 법적으로 의문 사유에 해당하는 어떠한 분도 참여 불가하며, 적발 시 손해 배상의 어떠한 수 없습니다.</p></div>
+      <div class="flex gap-3 items-start"><i class="fa-solid fa-circle-check y mt-1"></i><p class="text-sm text-[#9E9E97] leading-relaxed">사진 촬영이 진행될 수 있으며, 참여 시 내용에 동의함으로 간주합니다. (얼굴은 가려지니 걱정 마세요!)</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 신청 폼 -->
+<section id="apply" class="px-5 py-16">
+  <div class="max-w-xl mx-auto">
+    <div class="text-center mb-9" data-reveal>
+      <span class="text-[11px] y font-bold tracking-widest uppercase">APPLY NOW</span>
+      <h2 class="text-2xl md:text-3xl font-black mt-2">매칭 <span class="y">신청하기</span></h2>
+      <p class="text-sm text-[#9E9E97] mt-2">정보를 남겨주시면 썸덕이가 매칭 안내를 드려요 🦆💛</p>
+    </div>
+
+    <!-- 테스트에서 온 경우 결과 배지 표시 -->
+    <div id="from-test" class="hidden bg-[#161615] border border-[#FFD400]/40 rounded-xl p-4 mb-5 text-sm">
+      <div class="flex items-center gap-2"><i class="fa-solid fa-flask y"></i> <span class="text-[#9E9E97]">테스트 결과:</span> <b id="from-test-result" class="text-white"></b></div>
+    </div>
+
+    <div class="space-y-4" data-reveal>
+      <div><label class="text-xs font-bold text-[#9E9E97]">이름</label>
+        <input id="f-name" type="text" placeholder="이름을 입력하세요" class="w-full bg-[#161615] border border-[#242422] rounded-xl py-3.5 px-4 mt-1.5 text-sm focus:outline-none focus:border-y transition"></div>
+      <div><label class="text-xs font-bold text-[#9E9E97]">성별</label>
+        <div class="grid grid-cols-2 gap-3 mt-1.5">
+          <button onclick="setGender('남성')" id="g-m" class="border border-[#242422] bg-[#0D0D0C] rounded-xl py-3.5 text-sm font-bold transition">남성</button>
+          <button onclick="setGender('여성')" id="g-f" class="border border-[#242422] bg-[#0D0D0C] rounded-xl py-3.5 text-sm font-bold transition">여성</button>
+        </div></div>
+      <div><label class="text-xs font-bold text-[#9E9E97]">출생연도</label>
+        <input id="f-year" type="number" inputmode="numeric" placeholder="예: 1996" class="w-full bg-[#161615] border border-[#242422] rounded-xl py-3.5 px-4 mt-1.5 text-sm focus:outline-none focus:border-y transition"></div>
+      <div><label class="text-xs font-bold text-[#9E9E97]">휴대폰 번호</label>
+        <input id="f-phone" type="tel" inputmode="numeric" placeholder="01012345678" class="w-full bg-[#161615] border border-[#242422] rounded-xl py-3.5 px-4 mt-1.5 text-sm focus:outline-none focus:border-y transition"></div>
+      <div><label class="text-xs font-bold text-[#9E9E97]">희망 매칭 방식</label>
+        <div class="grid grid-cols-1 gap-2.5 mt-1.5">
+          <button onclick="setMatch('로테이션 소개팅')" id="m-rot" class="border border-[#242422] bg-[#0D0D0C] rounded-xl py-3.5 px-4 text-sm font-bold text-left transition flex items-center gap-2"><i class="fa-solid fa-arrows-spin y"></i>강남 로테이션 소개팅 (오프라인)</button>
+          <button onclick="setMatch('1:1 온라인 매칭')" id="m-on" class="border border-[#242422] bg-[#0D0D0C] rounded-xl py-3.5 px-4 text-sm font-bold text-left transition flex items-center gap-2"><i class="fa-solid fa-video y"></i>1:1 온라인 매칭</button>
+          <button onclick="setMatch('둘 다 좋아요')" id="m-both" class="border border-[#242422] bg-[#0D0D0C] rounded-xl py-3.5 px-4 text-sm font-bold text-left transition flex items-center gap-2"><i class="fa-solid fa-star y"></i>둘 다 추천해주세요</button>
+        </div></div>
+      <div class="bg-[#161615] border border-[#242422] rounded-xl p-4 mt-2">
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input id="f-agree" type="checkbox" class="mt-0.5 w-5 h-5 accent-[#FFD400]">
+          <span class="text-xs text-[#9E9E97] leading-relaxed">
+            <b class="text-white">[필수]</b> 개인정보 수집·이용에 동의합니다.<br>
+            <span class="text-[11px]">수집항목: 이름, 성별, 출생연도, 연락처 / 목적: 소개팅·매칭 안내 / 보유: 목적 달성 후 파기</span>
+            <button onclick="togglePolicy(event)" class="y underline ml-1 text-[11px]">자세히</button>
+          </span>
+        </label>
+        <p id="policy" class="hidden text-[11px] text-[#777] mt-3 pt-3 border-t border-[#242422] leading-relaxed">
+          수집한 개인정보는 매칭 서비스 제공 및 관련 안내(세션 확정, 결제 안내, 매칭 결과 전달) 목적으로만 이용되며, 동의 철회 시 즉시 파기됩니다. 마케팅 수신 동의는 별도로 받지 않습니다.
+        </p>
+      </div>
+      <button onclick="submitForm()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl mt-2"><i class="fa-solid fa-check mr-2"></i>신청 완료하기</button>
+    </div>
+
+    <!-- 완료 화면 -->
+    <div id="done" class="hidden fade text-center pt-10">
+      <div class="text-7xl mb-5">🎉</div>
+      <h3 class="text-2xl font-black">신청이 접수됐어요!</h3>
+      <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">썸덕이가 입력하신 연락처로<br>매칭 안내를 곧 보내드릴게요 🦆💛</p>
+      <div id="done-summary" class="bg-[#161615] border border-[#242422] rounded-2xl p-5 mt-7 text-left text-sm space-y-2"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 푸터 -->
+<footer class="border-t border-[#242422] px-5 py-8 text-center text-xs text-[#666]">
+  <p class="font-black text-white text-base mb-2">썸류<span class="y">센터</span></p>
+  <p>강남역 인근 · 로테이션 소개팅 & 1:1 온라인 매칭</p>
+  <p class="mt-2">문의: 카카오톡 채널 @썸류센터</p>
+</footer>
+
+<div id="toast" class="fixed bottom-6 inset-x-5 max-w-md mx-auto bg-[#242422] border border-[#FFD400]/30 rounded-xl p-4 text-sm text-center translate-y-32 opacity-0 transition-all duration-300 z-50"></div>
+
+<script>
+const ENDPOINT_URL = ""; // Apps Script 웹앱 URL 넣으면 시트 자동 적재
+
+let gender="",matchType="";
+let testResult=null; // 테스트 페이지에서 넘어온 결과
+const $=id=>document.getElementById(id);
+
+// URL 파라미터에서 테스트 결과 읽기
+(function loadTestResult(){
+  const p=new URLSearchParams(location.search);
+  if(p.get("result")){
+    testResult={
+      type:p.get("result"),
+      pct:p.get("pct")||"",
+      scores:p.get("scores")||""
+    };
+    $("from-test").classList.remove("hidden");
+    $("from-test-result").textContent=`${testResult.type}형 (상위 ${testResult.pct}%)`;
+    // 신청 폼으로 스크롤
+    setTimeout(()=>$("apply").scrollIntoView({behavior:"smooth"}),300);
+  }
+})();
+
+function setGender(g){gender=g;
+  $("g-m").className="border rounded-xl py-3.5 text-sm font-bold transition "+(g==="남성"?"bd-y bg-[#FFD400]/10 y":"border-[#242422] bg-[#0D0D0C] text-white");
+  $("g-f").className="border rounded-xl py-3.5 text-sm font-bold transition "+(g==="여성"?"bd-y bg-[#FFD400]/10 y":"border-[#242422] bg-[#0D0D0C] text-white");}
+function setMatch(m){matchType=m;[["로테이션 소개팅","m-rot"],["1:1 온라인 매칭","m-on"],["둘 다 좋아요","m-both"]].forEach(([v,id])=>{
+  $(id).className="border rounded-xl py-3.5 px-4 text-sm font-bold text-left transition flex items-center gap-2 "+(m===v?"bd-y bg-[#FFD400]/10":"border-[#242422] bg-[#0D0D0C]");});}
+function togglePolicy(e){e.preventDefault();$("policy").classList.toggle("hidden");}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.remove("translate-y-32","opacity-0");setTimeout(()=>t.classList.add("translate-y-32","opacity-0"),3000);}
+
+async function submitForm(){
+  const name=$("f-name").value.trim(),year=$("f-year").value.trim();
+  const phone=$("f-phone").value.trim().replace(/[^0-9]/g,""),agree=$("f-agree").checked;
+  if(!name)return toast("이름을 입력해주세요.");
+  if(!gender)return toast("성별을 선택해주세요.");
+  if(!year||year.length!==4)return toast("출생연도 4자리를 입력해주세요.");
+  if(phone.length<10)return toast("휴대폰 번호를 정확히 입력해주세요.");
+  if(!matchType)return toast("희망 매칭 방식을 선택해주세요.");
+  if(!agree)return toast("개인정보 수집·이용에 동의해주세요.");
+
+  const data={
+    name,gender,birthYear:year,phone:"'"+phone,matchType,
+    source: testResult?"테스트경유":"직접신청",
+    resultType: testResult?testResult.type:"",
+    resultPct: testResult?testResult.pct:"",
+    submittedAt:new Date().toISOString()
+  };
+  if(ENDPOINT_URL){try{await fetch(ENDPOINT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});}catch(e){console.error(e);}}
+  console.log("신청 데이터:",data);
+
+  document.querySelectorAll("#apply > div > div").forEach(el=>{if(el.id!=="done")el.classList.add("hidden");});
+  $("done-summary").innerHTML=`
+    <div class="flex justify-between"><span class="text-[#9E9E97]">이름</span><span class="font-bold">${name}</span></div>
+    ${testResult?`<div class="flex justify-between"><span class="text-[#9E9E97]">테스트 결과</span><span class="font-bold y">${testResult.type}형 (상위 ${testResult.pct}%)</span></div>`:""}
+    <div class="flex justify-between"><span class="text-[#9E9E97]">희망 매칭</span><span class="font-bold">${matchType}</span></div>`;
+  $("done").classList.remove("hidden");
+  window.scrollTo({top:$("apply").offsetTop-40,behavior:"smooth"});
+}
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.15});
+document.querySelectorAll("[data-reveal]").forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
