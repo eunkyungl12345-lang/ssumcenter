@@ -682,38 +682,72 @@ async function handleSubmit(e){
   // 제출 버튼 비활성화
   const submitBtn = document.getElementById("submit-btn");
   submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>제출 중...';
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>사진 업로드 중...';
 
-  // Airtable API로 전송
+  const CLOUDINARY_NAME = "ddvmmvcei";
+  const CLOUDINARY_PRESET = "ml_default";
   const AIRTABLE_TOKEN = "patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
   const BASE_ID = "appwejZxBm9oRt0AM";
   const TABLE_NAME = "1:1 매칭 신청";
 
   try {
+    // Cloudinary에 파일 업로드하는 함수
+    async function uploadToCloudinary(file, folder){
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("upload_preset", CLOUDINARY_PRESET);
+      fd.append("folder", folder);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/auto/upload`, {
+        method: "POST", body: fd
+      });
+      if(!res.ok) throw new Error("파일 업로드 실패");
+      const data = await res.json();
+      return data.secure_url;
+    }
+
+    // 프로필 사진 업로드
+    const photoUrls = [];
+    for(const file of photoFiles){
+      if(file){
+        const url = await uploadToCloudinary(file, "ssumcenter/photos");
+        photoUrls.push({url});
+      }
+    }
+
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>서류 업로드 중...';
+
+    // 서류 업로드
+    const docJobUrl = docFiles.job ? await uploadToCloudinary(docFiles.job, "ssumcenter/docs") : null;
+    const docIdUrl = docFiles.id ? await uploadToCloudinary(docFiles.id, "ssumcenter/docs") : null;
+
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>신청서 제출 중...';
+
+    // Airtable에 저장
+    const fields = {
+      "이름": payload.name || "",
+      "연락처": payload.phone || "",
+      "성별": payload.gender || "",
+      "출생연도": payload.birthYear || "",
+      "직업": payload.job || "",
+      "선호나이대": [...selectedAges].join(", "),
+      "선호직업군": [...selectedJobs].join(", "),
+      "성격키워드": [...selectedKeywords].join(", "),
+      "자기소개": payload.intro || "",
+      "테스트결과": payload.testResult || "",
+      "매칭상태": "대기",
+      "신청일시": new Date().toLocaleString("ko-KR")
+    };
+    if(photoUrls.length > 0) fields["프로필사진"] = photoUrls;
+    if(docJobUrl) fields["재직증명서"] = [{url: docJobUrl}];
+    if(docIdUrl) fields["신분증"] = [{url: docIdUrl}];
+
     const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${AIRTABLE_TOKEN}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        records: [{
-          fields: {
-            "이름": payload.name || "",
-            "연락처": payload.phone || "",
-            "성별": payload.gender || "",
-            "출생연도": payload.birthYear || "",
-            "직업": payload.job || "",
-            "선호나이대": [...selectedAges].join(", "),
-            "선호직업군": [...selectedJobs].join(", "),
-            "성격키워드": [...selectedKeywords].join(", "),
-            "자기소개": payload.intro || "",
-            "테스트결과": payload.testResult || "",
-            "매칭상태": "대기",
-            "신청일시": new Date().toLocaleString("ko-KR")
-          }
-        }]
-      })
+      body: JSON.stringify({ records: [{ fields }] })
     });
 
     if(!res.ok) throw new Error("전송 실패");
