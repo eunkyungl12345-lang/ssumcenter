@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>강남 목요일 커피팅 신청 | 썸류센터</title>
+<title>재테크 커피팅 신청 | 썸류센터</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -19,6 +19,7 @@
   .chip{cursor:pointer;transition:all .2s}
   .chip:hover{border-color:#FFD400;color:#FFD400}
   .chip.selected{background:#FFD400;color:#0D0D0C;border-color:#FFD400;font-weight:700}
+  .counter{transition:color .2s}.counter.over{color:#FF4A4A}
   input[type="radio"],input[type="checkbox"]{display:none}
   .radio-card{cursor:pointer;transition:all .2s}
   .radio-card:hover{border-color:#FFD400}
@@ -51,21 +52,16 @@
 <header class="pt-10 pb-8 px-5 glow">
   <div class="max-w-lg mx-auto text-center fade">
     <span class="inline-flex items-center gap-2 bg-[#FFD400]/10 border border-[#FFD400]/30 y px-4 py-1.5 rounded-full text-[11px] font-bold tracking-widest uppercase mb-4">
-      <i class="fa-solid fa-mug-hot"></i> 강남 목요일 커피팅
+      <i class="fa-solid fa-chart-line"></i> 재테크 커피팅
     </span>
     <h1 class="text-2xl md:text-3xl font-black leading-tight">
-      퇴근 후 강남에서<br><span class="y">설레는 만남</span>
+      재테크에 관심 있는 싱글들의<br><span class="y">특별한 만남</span>
     </h1>
     <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">
       승인된 분만 참가할 수 있어요. 신청서 제출 후 센터장 검토를 거칩니다.
     </p>
-    <!-- 테스트 결과 배지 -->
-    <div id="test-result-badge" class="hidden bg-[#161615] border border-[#FFD400]/40 rounded-xl p-3 mt-5 text-sm">
-      <div class="flex items-center justify-center gap-2">
-        <i class="fa-solid fa-flask y"></i>
-        <span class="text-[#9E9E97]">테스트 결과:</span>
-        <b id="test-result-text" class="text-white"></b>
-      </div>
+    <div class="inline-flex items-center gap-2 bg-[#161615] border border-[#242422] rounded-full px-4 py-1.5 mt-4 text-xs text-[#9E9E97]">
+      <i class="fa-solid fa-calendar-day y"></i> 날짜: 추후 공지
     </div>
   </div>
 </header>
@@ -74,32 +70,6 @@
 <section class="px-5 pb-16">
   <div class="max-w-lg mx-auto">
     <form id="apply-form" class="space-y-6" onsubmit="return handleSubmit(event)">
-
-      <!-- 희망 날짜 선택 -->
-      <div class="bg-[#161615] border border-[#FFD400]/20 rounded-2xl p-5" data-reveal>
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
-            <i class="fa-solid fa-calendar-day y text-xs"></i>
-          </div>
-          <h2 class="font-bold text-sm">희망 날짜 <span class="y">*</span></h2>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <label>
-            <input type="radio" name="date" value="6월 11일 (목)" required>
-            <div class="radio-card bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-center flex items-center justify-center gap-2">
-              <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>
-              6월 11일 (목)
-            </div>
-          </label>
-          <label>
-            <input type="radio" name="date" value="6월 25일 (목)">
-            <div class="radio-card bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-center flex items-center justify-center gap-2">
-              <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>
-              6월 25일 (목)
-            </div>
-          </label>
-        </div>
-      </div>
 
       <!-- 기본 정보 -->
       <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-5" data-reveal>
@@ -110,54 +80,9 @@
           <h2 class="font-bold text-sm">기본 정보</h2>
         </div>
 
-        <!-- 프로필 사진 -->
-        <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">프로필 사진 <span class="y">*</span> <span class="text-[#555] font-normal ml-1">최소 1장, 최대 3장</span></label>
-          <div class="grid grid-cols-3 gap-2" id="photo-slots">
-            <div class="photo-slot" data-index="0" onclick="triggerPhoto(0)">
-              <div class="aspect-square bg-[#0D0D0C] border-2 border-dashed border-[#FFD400]/40 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFD400] transition group relative overflow-hidden">
-                <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
-                <div class="photo-placeholder flex flex-col items-center">
-                  <i class="fa-solid fa-camera text-[#FFD400] text-lg mb-1"></i>
-                  <span class="text-[10px] text-[#FFD400] font-bold">대표 사진</span>
-                </div>
-                <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(0)"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </div>
-            <div class="photo-slot" data-index="1" onclick="triggerPhoto(1)">
-              <div class="aspect-square bg-[#0D0D0C] border-2 border-dashed border-[#242422] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFD400] transition group relative overflow-hidden">
-                <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
-                <div class="photo-placeholder flex flex-col items-center">
-                  <i class="fa-solid fa-plus text-[#555] text-lg mb-1 group-hover:text-[#FFD400] transition"></i>
-                  <span class="text-[10px] text-[#555]">추가</span>
-                </div>
-                <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(1)"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </div>
-            <div class="photo-slot" data-index="2" onclick="triggerPhoto(2)">
-              <div class="aspect-square bg-[#0D0D0C] border-2 border-dashed border-[#242422] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFD400] transition group relative overflow-hidden">
-                <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
-                <div class="photo-placeholder flex flex-col items-center">
-                  <i class="fa-solid fa-plus text-[#555] text-lg mb-1 group-hover:text-[#FFD400] transition"></i>
-                  <span class="text-[10px] text-[#555]">추가</span>
-                </div>
-                <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(2)"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </div>
-          </div>
-          <input type="file" id="photo-input" accept="image/*" class="hidden">
-          <p class="text-[10px] text-[#444] mt-2">얼굴이 잘 보이는 사진을 올려주세요 (장당 최대 5MB)</p>
-        </div>
-
         <div>
           <label class="block text-xs font-bold text-[#9E9E97] mb-2">이름 <span class="y">*</span></label>
           <input type="text" name="name" required placeholder="실명을 입력해주세요"
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">연락처 <span class="y">*</span></label>
-          <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="[0-9\-]+"
             class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
         </div>
 
@@ -167,15 +92,13 @@
             <label>
               <input type="radio" name="gender" value="남성" required>
               <div class="radio-card bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-center flex items-center justify-center gap-2">
-                <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>
-                남성
+                <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>남성
               </div>
             </label>
             <label>
               <input type="radio" name="gender" value="여성">
               <div class="radio-card bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-center flex items-center justify-center gap-2">
-                <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>
-                여성
+                <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>여성
               </div>
             </label>
           </div>
@@ -183,9 +106,8 @@
 
         <div>
           <label class="block text-xs font-bold text-[#9E9E97] mb-2">출생 연도 <span class="y">*</span></label>
-          <select name="birthYear" required
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white focus:border-[#FFD400] focus:outline-none transition appearance-none">
-            <option value="" disabled selected class="text-[#555]">출생 연도를 선택해주세요</option>
+          <select name="birthYear" required class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white focus:border-[#FFD400] focus:outline-none transition appearance-none">
+            <option value="" disabled selected>출생 연도를 선택해주세요</option>
             <option value="2006">2006년생</option><option value="2005">2005년생</option>
             <option value="2004">2004년생</option><option value="2003">2003년생</option>
             <option value="2002">2002년생</option><option value="2001">2001년생</option>
@@ -200,98 +122,195 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">직업 <span class="y">*</span></label>
-          <input type="text" name="job" required placeholder="예: 마케터, 개발자, 간호사"
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">연락처 <span class="y">*</span></label>
+          <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="[0-9\-]+"
             class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
         </div>
-      </div>
 
-      <!-- 신분 인증 서류 -->
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-5" data-reveal>
-        <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
-            <i class="fa-solid fa-shield-check y text-xs"></i>
-          </div>
-          <h2 class="font-bold text-sm">신분 인증</h2>
-          <span class="text-[10px] text-[#555] ml-auto">센터장만 확인합니다</span>
+        <div>
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">키 <span class="y">*</span></label>
+          <input type="text" name="height" required placeholder="예: 175"
+            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">재직증명서 또는 사업자등록증 <span class="y">*</span></label>
-          <div id="doc-job-upload" onclick="document.getElementById('doc-job-input').click()"
-            class="w-full bg-[#0D0D0C] border-2 border-dashed border-[#242422] rounded-xl p-4 text-center cursor-pointer hover:border-[#FFD400] transition group">
-            <div id="doc-job-done" class="hidden flex items-center justify-center gap-2">
-              <i class="fa-solid fa-file-circle-check y"></i>
-              <span id="doc-job-name" class="text-xs text-white truncate max-w-[200px]"></span>
-              <button type="button" class="text-[#555] hover:text-red-400 text-xs ml-1" onclick="event.stopPropagation();removeDoc('job')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="doc-job-placeholder" class="flex flex-col items-center">
-              <i class="fa-solid fa-cloud-arrow-up text-[#555] text-lg mb-1 group-hover:text-[#FFD400] transition"></i>
-              <span class="text-[10px] text-[#555]">파일 선택 (PDF, JPG, PNG / 최대 10MB)</span>
-            </div>
-          </div>
-          <input type="file" id="doc-job-input" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">직업 / 직장명 <span class="y">*</span></label>
+          <input type="text" name="job" required placeholder="예: 삼성전자 마케터"
+            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">신분증 사본 <span class="y">*</span> <span class="text-[#555] font-normal ml-1">주민번호 뒷자리는 가려주세요</span></label>
-          <div id="doc-id-upload" onclick="document.getElementById('doc-id-input').click()"
-            class="w-full bg-[#0D0D0C] border-2 border-dashed border-[#242422] rounded-xl p-4 text-center cursor-pointer hover:border-[#FFD400] transition group">
-            <div id="doc-id-done" class="hidden flex items-center justify-center gap-2">
-              <i class="fa-solid fa-file-circle-check y"></i>
-              <span id="doc-id-name" class="text-xs text-white truncate max-w-[200px]"></span>
-              <button type="button" class="text-[#555] hover:text-red-400 text-xs ml-1" onclick="event.stopPropagation();removeDoc('id')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="doc-id-placeholder" class="flex flex-col items-center">
-              <i class="fa-solid fa-cloud-arrow-up text-[#555] text-lg mb-1 group-hover:text-[#FFD400] transition"></i>
-              <span class="text-[10px] text-[#555]">파일 선택 (PDF, JPG, PNG / 최대 10MB)</span>
-            </div>
-          </div>
-          <input type="file" id="doc-id-input" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
-        </div>
-
-        <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-3 flex gap-2 items-start">
-          <i class="fa-solid fa-lock y text-xs mt-0.5 shrink-0"></i>
-          <p class="text-[11px] text-[#555] leading-relaxed">제출하신 서류는 본인 인증 목적으로만 사용되며, 인증 완료 후 즉시 폐기됩니다.</p>
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">어필포인트 <span class="y">*</span></label>
+          <textarea name="appeal" required maxlength="200" rows="3" id="appeal"
+            placeholder="나를 소개할 어필포인트를 자유롭게 적어주세요"
+            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition resize-none"></textarea>
+          <p class="text-right text-[11px] mt-1"><span id="appeal-count" class="counter text-[#555]">0</span><span class="text-[#555]"> / 200자</span></p>
         </div>
       </div>
 
-      <!-- 테스트 결과 (선택) -->
+      <!-- 프로필 사진 (최소 2장) -->
       <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5" data-reveal>
         <div class="flex items-center gap-2 mb-3">
           <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
-            <i class="fa-solid fa-flask y text-xs"></i>
+            <i class="fa-solid fa-camera y text-xs"></i>
           </div>
-          <h2 class="font-bold text-sm">연애 테스트 결과</h2>
-          <span class="text-[10px] bg-[#242422] text-[#9E9E97] px-2 py-0.5 rounded-full font-bold ml-auto">선택</span>
+          <h2 class="font-bold text-sm">본인 사진 <span class="y">*</span></h2>
+          <span class="text-[10px] text-[#555] ml-auto">최소 2장, 최대 3장</span>
         </div>
-        <div id="test-result-filled" class="hidden bg-[#FFD400]/5 border border-[#FFD400]/30 rounded-xl p-3 mb-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-circle-check y text-sm"></i>
-              <span class="text-sm font-bold" id="test-result-display"></span>
+        <div class="grid grid-cols-3 gap-2" id="photo-slots">
+          <div class="photo-slot" data-index="0" onclick="triggerPhoto(0)">
+            <div class="aspect-square bg-[#0D0D0C] border-2 border-dashed border-[#FFD400]/40 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFD400] transition group relative overflow-hidden">
+              <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
+              <div class="photo-placeholder flex flex-col items-center"><i class="fa-solid fa-camera text-[#FFD400] text-lg mb-1"></i><span class="text-[10px] text-[#FFD400] font-bold">필수</span></div>
+              <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(0)"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <button type="button" onclick="clearTestResult()" class="text-xs text-[#555] hover:text-white">변경</button>
+          </div>
+          <div class="photo-slot" data-index="1" onclick="triggerPhoto(1)">
+            <div class="aspect-square bg-[#0D0D0C] border-2 border-dashed border-[#FFD400]/40 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFD400] transition group relative overflow-hidden">
+              <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
+              <div class="photo-placeholder flex flex-col items-center"><i class="fa-solid fa-camera text-[#FFD400] text-lg mb-1"></i><span class="text-[10px] text-[#FFD400] font-bold">필수</span></div>
+              <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(1)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+          <div class="photo-slot" data-index="2" onclick="triggerPhoto(2)">
+            <div class="aspect-square bg-[#0D0D0C] border-2 border-dashed border-[#242422] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFD400] transition group relative overflow-hidden">
+              <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
+              <div class="photo-placeholder flex flex-col items-center"><i class="fa-solid fa-plus text-[#555] text-lg mb-1 group-hover:text-[#FFD400] transition"></i><span class="text-[10px] text-[#555]">추가</span></div>
+              <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(2)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
           </div>
         </div>
-        <div id="test-result-empty">
-          <p class="text-xs text-[#9E9E97] mb-3 leading-relaxed">테스트를 하셨다면 결과를 입력해주세요.</p>
-          <input type="text" name="testResult" id="test-result-input" placeholder="테스트 결과를 입력해주세요 (예: 직진드리퍼형)"
+        <input type="file" id="photo-input" accept="image/*" class="hidden">
+        <p class="text-[10px] text-[#444] mt-2">얼굴이 잘 보이는 사진을 올려주세요 (장당 최대 5MB)</p>
+      </div>
+
+      <!-- 신분 인증 -->
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5" data-reveal>
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-shield-check y text-xs"></i>
+          </div>
+          <h2 class="font-bold text-sm">재직증명서 / 사업자등록증 <span class="y">*</span></h2>
+        </div>
+        <div id="doc-job-upload" onclick="document.getElementById('doc-job-input').click()"
+          class="w-full bg-[#0D0D0C] border-2 border-dashed border-[#242422] rounded-xl p-4 text-center cursor-pointer hover:border-[#FFD400] transition group">
+          <div id="doc-job-done" class="hidden flex items-center justify-center gap-2">
+            <i class="fa-solid fa-file-circle-check y"></i>
+            <span id="doc-job-name" class="text-xs text-white truncate max-w-[200px]"></span>
+            <button type="button" class="text-[#555] hover:text-red-400 text-xs ml-1" onclick="event.stopPropagation();removeDoc()"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div id="doc-job-placeholder" class="flex flex-col items-center">
+            <i class="fa-solid fa-cloud-arrow-up text-[#555] text-lg mb-1 group-hover:text-[#FFD400] transition"></i>
+            <span class="text-[10px] text-[#555]">파일 선택 (PDF, JPG, PNG / 최대 10MB)</span>
+          </div>
+        </div>
+        <input type="file" id="doc-job-input" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+        <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-3 flex gap-2 items-start mt-3">
+          <i class="fa-solid fa-lock y text-xs mt-0.5 shrink-0"></i>
+          <p class="text-[11px] text-[#555] leading-relaxed">센터장만 확인하며, 인증 완료 후 즉시 폐기됩니다.</p>
+        </div>
+      </div>
+
+      <!-- 커피팅 정보 -->
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-5" data-reveal>
+        <div class="flex items-center gap-2 mb-1">
+          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-mug-hot y text-xs"></i>
+          </div>
+          <h2 class="font-bold text-sm">커피팅 정보</h2>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">음료 선택 <span class="y">*</span></label>
+          <select name="drink" required class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white focus:border-[#FFD400] focus:outline-none transition appearance-none">
+            <option value="" disabled selected>음료를 선택해주세요</option>
+            <option value="아메리카노(ICE)">아메리카노 (ICE)</option>
+            <option value="아메리카노(HOT)">아메리카노 (HOT)</option>
+            <option value="카페라떼(ICE)">카페라떼 (ICE)</option>
+            <option value="카페라떼(HOT)">카페라떼 (HOT)</option>
+            <option value="녹차라떼">녹차라떼</option>
+            <option value="바닐라라떼">바닐라라떼</option>
+            <option value="기타">기타 (현장에서 선택)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">썸류센터에서 쓸 닉네임 <span class="y">*</span></label>
+          <input type="text" name="nickname" required placeholder="커피팅에서 사용할 닉네임"
             class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+      </div>
+
+      <!-- 유입 경로 & 할인 -->
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-5" data-reveal>
+        <div class="flex items-center gap-2 mb-1">
+          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-route y text-xs"></i>
+          </div>
+          <h2 class="font-bold text-sm">유입 경로 & 할인</h2>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">썸류센터를 어떻게 알게 되셨나요? <span class="y">*</span></label>
+          <div id="channel-chips" class="flex flex-wrap gap-2">
+            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="인스타그램">인스타그램</button>
+            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="카카오톡">카카오톡</button>
+            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="블로그/카페">블로그/카페</button>
+            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="지인추천">지인추천</button>
+            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="기타">기타</button>
+          </div>
+          <input type="hidden" name="channel" id="channel-input">
+        </div>
+
+        <div id="referral-section" class="hidden">
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">추천인 이름</label>
+          <input type="text" name="referralName" placeholder="추천해준 분의 이름"
+            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">할인 혜택 적용 <span class="y">*</span></label>
+          <div class="space-y-2">
+            <label>
+              <input type="radio" name="discount" value="해당없음" required>
+              <div class="radio-card bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm flex items-center gap-2">
+                <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>해당 없음
+              </div>
+            </label>
+            <label>
+              <input type="radio" name="discount" value="재방문 할인">
+              <div class="radio-card bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm flex items-center gap-2">
+                <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>재방문 할인
+              </div>
+            </label>
+            <label>
+              <input type="radio" name="discount" value="동반 할인">
+              <div class="radio-card bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm flex items-center gap-2">
+                <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>동반 할인
+              </div>
+            </label>
+          </div>
         </div>
       </div>
 
       <!-- 동의 -->
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5" data-reveal>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-4" data-reveal>
         <label class="flex items-start gap-3 cursor-pointer">
-          <input type="checkbox" id="agree" required class="mt-0.5">
+          <input type="checkbox" id="agree1" required>
           <div class="flex items-start gap-3">
-            <div class="w-5 h-5 shrink-0 mt-0.5 rounded border-2 border-[#555] flex items-center justify-center transition" id="agree-box">
-              <i class="fa-solid fa-check text-[10px] text-black hidden" id="agree-check"></i>
+            <div class="w-5 h-5 shrink-0 mt-0.5 rounded border-2 border-[#555] flex items-center justify-center transition agree-box">
+              <i class="fa-solid fa-check text-[10px] text-black hidden agree-check"></i>
             </div>
-            <span class="text-xs text-[#9E9E97] leading-relaxed">
-              개인정보 수집 및 이용에 동의합니다. 허위 기재 시 이용이 제한될 수 있습니다. 신청 = 참가 확정이 아닙니다. <span class="y">*</span>
-            </span>
+            <span class="text-xs text-[#9E9E97] leading-relaxed">개인정보 수집 및 이용에 동의합니다. 허위 기재 시 이용이 제한될 수 있습니다. 신청 = 참가 확정이 아닙니다. <span class="y">*</span></span>
+          </div>
+        </label>
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" id="agree2" required>
+          <div class="flex items-start gap-3">
+            <div class="w-5 h-5 shrink-0 mt-0.5 rounded border-2 border-[#555] flex items-center justify-center transition agree-box">
+              <i class="fa-solid fa-check text-[10px] text-black hidden agree-check"></i>
+            </div>
+            <span class="text-xs text-[#9E9E97] leading-relaxed">사진 촬영이 진행될 수 있으며, 참여 시 촬영에 동의한 것으로 간주합니다. (얼굴은 가려집니다) <span class="y">*</span></span>
           </div>
         </label>
       </div>
@@ -329,167 +348,114 @@
   </div>
 </section>
 
-<!-- 푸터 -->
 <footer class="border-t border-[#242422] px-5 py-8 text-center text-xs text-[#666]">
   <p class="font-black text-white text-base mb-2">썸류<span class="y">센터</span></p>
-  <p>강남역 인근 · 목요일 퇴근 후 커피팅</p>
+  <p>강남역 인근 · 재테크 커피팅</p>
   <p class="mt-2">문의: 카카오톡 채널 @썸류센터</p>
 </footer>
 
 <script>
-// URL 파라미터에서 테스트 결과 읽기
-(function(){
-  const p = new URLSearchParams(location.search);
-  const result = p.get("result"), pct = p.get("pct");
-  if(result){
-    const text = pct ? `${result}형 (상위 ${pct}%)` : `${result}형`;
-    document.getElementById("test-result-badge").classList.remove("hidden");
-    document.getElementById("test-result-text").textContent = text;
-    document.getElementById("test-result-input").value = text;
-    document.getElementById("test-result-display").textContent = text;
-    document.getElementById("test-result-filled").classList.remove("hidden");
-    document.getElementById("test-result-empty").classList.add("hidden");
-  }
-})();
-
-function clearTestResult(){
-  document.getElementById("test-result-input").value = "";
-  document.getElementById("test-result-filled").classList.add("hidden");
-  document.getElementById("test-result-empty").classList.remove("hidden");
-}
-
-// 프로필 사진
-const photoFiles = [null, null, null];
-let activeSlot = 0;
-function triggerPhoto(i){ activeSlot = i; document.getElementById("photo-input").click(); }
+// 사진
+const photoFiles = [null,null,null]; let activeSlot=0;
+function triggerPhoto(i){activeSlot=i;document.getElementById("photo-input").click();}
 function removePhoto(i){
-  photoFiles[i] = null;
-  const slot = document.querySelectorAll(".photo-slot")[i];
-  slot.querySelector(".photo-preview").classList.add("hidden");
-  slot.querySelector(".photo-placeholder").classList.remove("hidden");
-  slot.querySelector(".photo-remove").classList.add("hidden");
+  photoFiles[i]=null;const s=document.querySelectorAll(".photo-slot")[i];
+  s.querySelector(".photo-preview").classList.add("hidden");s.querySelector(".photo-placeholder").classList.remove("hidden");s.querySelector(".photo-remove").classList.add("hidden");
 }
-document.getElementById("photo-input").addEventListener("change", function(){
-  const file = this.files[0]; if(!file) return;
-  if(file.size > 5*1024*1024){ alert("사진 크기는 5MB 이하만 가능합니다."); this.value=""; return; }
-  photoFiles[activeSlot] = file;
-  const reader = new FileReader();
-  reader.onload = function(e){
-    const slot = document.querySelectorAll(".photo-slot")[activeSlot];
-    slot.querySelector(".photo-preview").src = e.target.result;
-    slot.querySelector(".photo-preview").classList.remove("hidden");
-    slot.querySelector(".photo-placeholder").classList.add("hidden");
-    slot.querySelector(".photo-remove").classList.remove("hidden");
-  };
-  reader.readAsDataURL(file); this.value="";
+document.getElementById("photo-input").addEventListener("change",function(){
+  const f=this.files[0];if(!f)return;
+  if(f.size>5*1024*1024){alert("사진 크기는 5MB 이하만 가능합니다.");this.value="";return;}
+  photoFiles[activeSlot]=f;const r=new FileReader();
+  r.onload=function(e){const s=document.querySelectorAll(".photo-slot")[activeSlot];s.querySelector(".photo-preview").src=e.target.result;s.querySelector(".photo-preview").classList.remove("hidden");s.querySelector(".photo-placeholder").classList.add("hidden");s.querySelector(".photo-remove").classList.remove("hidden");};
+  r.readAsDataURL(f);this.value="";
 });
 
-// 서류 업로드
-const docFiles = { job: null, id: null };
-["job","id"].forEach(type => {
-  document.getElementById(`doc-${type}-input`).addEventListener("change", function(){
-    const file = this.files[0]; if(!file) return;
-    if(file.size > 10*1024*1024){ alert("파일 크기는 10MB 이하만 가능합니다."); this.value=""; return; }
-    docFiles[type] = file;
-    document.getElementById(`doc-${type}-name`).textContent = file.name;
-    document.getElementById(`doc-${type}-done`).classList.remove("hidden");
-    document.getElementById(`doc-${type}-placeholder`).classList.add("hidden");
+// 서류
+let docFile=null;
+document.getElementById("doc-job-input").addEventListener("change",function(){
+  const f=this.files[0];if(!f)return;
+  if(f.size>10*1024*1024){alert("파일 크기는 10MB 이하만 가능합니다.");this.value="";return;}
+  docFile=f;document.getElementById("doc-job-name").textContent=f.name;
+  document.getElementById("doc-job-done").classList.remove("hidden");document.getElementById("doc-job-placeholder").classList.add("hidden");
+});
+function removeDoc(){docFile=null;document.getElementById("doc-job-input").value="";document.getElementById("doc-job-done").classList.add("hidden");document.getElementById("doc-job-placeholder").classList.remove("hidden");}
+
+// 어필포인트 카운터
+document.getElementById("appeal").addEventListener("input",function(){
+  const c=document.getElementById("appeal-count");c.textContent=this.value.length;c.classList.toggle("over",this.value.length>200);
+});
+
+// 유입 경로 칩
+let selectedChannel="";
+document.querySelectorAll("#channel-chips .chip").forEach(chip=>{
+  chip.addEventListener("click",()=>{
+    document.querySelectorAll("#channel-chips .chip").forEach(c=>c.classList.remove("selected"));
+    chip.classList.add("selected");selectedChannel=chip.dataset.val;
+    document.getElementById("channel-input").value=selectedChannel;
+    document.getElementById("referral-section").classList.toggle("hidden",selectedChannel!=="지인추천");
   });
 });
-function removeDoc(type){
-  docFiles[type] = null;
-  document.getElementById(`doc-${type}-input`).value = "";
-  document.getElementById(`doc-${type}-done`).classList.add("hidden");
-  document.getElementById(`doc-${type}-placeholder`).classList.remove("hidden");
-}
 
 // 동의 체크박스
-document.getElementById("agree").addEventListener("change", function(){
-  const box = document.getElementById("agree-box"), check = document.getElementById("agree-check");
-  if(this.checked){ box.style.background="#FFD400"; box.style.borderColor="#FFD400"; check.classList.remove("hidden"); }
-  else { box.style.background="transparent"; box.style.borderColor="#555"; check.classList.add("hidden"); }
+document.querySelectorAll("#agree1,#agree2").forEach(cb=>{
+  cb.addEventListener("change",function(){
+    const box=this.parentElement.querySelector(".agree-box"),check=this.parentElement.querySelector(".agree-check");
+    if(this.checked){box.style.background="#FFD400";box.style.borderColor="#FFD400";check.classList.remove("hidden");}
+    else{box.style.background="transparent";box.style.borderColor="#555";check.classList.add("hidden");}
+  });
 });
 
-// 폼 제출
+// 제출
 async function handleSubmit(e){
   e.preventDefault();
-  if(!photoFiles[0] && !photoFiles[1] && !photoFiles[2]){ alert("프로필 사진을 최소 1장 올려주세요."); return false; }
-  if(!docFiles.job){ alert("재직증명서 또는 사업자등록증을 제출해주세요."); return false; }
-  if(!docFiles.id){ alert("신분증 사본을 제출해주세요."); return false; }
+  const photoCount=photoFiles.filter(f=>f).length;
+  if(photoCount<2){alert("본인 사진을 최소 2장 올려주세요.");return false;}
+  if(!docFile){alert("재직증명서 또는 사업자등록증을 제출해주세요.");return false;}
+  if(!selectedChannel){alert("유입 경로를 선택해주세요.");return false;}
 
-  const submitBtn = document.getElementById("submit-btn");
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>사진 업로드 중...';
+  const btn=document.getElementById("submit-btn");btn.disabled=true;
+  btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>사진 업로드 중...';
 
-  const CLOUDINARY_NAME = "ddvmmvcei";
-  const CLOUDINARY_PRESET = "ml_default";
-  const AIRTABLE_TOKEN = "patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
-  const BASE_ID = "appwejZxBm9oRt0AM";
-  const TABLE_NAME = "커피팅 신청";
+  const CN="ddvmmvcei",CP="ml_default";
+  const AT="patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
+  const BI="appwejZxBm9oRt0AM",TN="재테크 커피팅";
 
-  try {
-    async function uploadToCloudinary(file, folder){
-      const fd = new FormData();
-      fd.append("file", file); fd.append("upload_preset", CLOUDINARY_PRESET); fd.append("folder", folder);
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/auto/upload`, { method:"POST", body:fd });
-      if(!res.ok) throw new Error("파일 업로드 실패");
-      return (await res.json()).secure_url;
-    }
+  try{
+    async function up(file,folder){const fd=new FormData();fd.append("file",file);fd.append("upload_preset",CP);fd.append("folder",folder);const r=await fetch(`https://api.cloudinary.com/v1_1/${CN}/auto/upload`,{method:"POST",body:fd});if(!r.ok)throw new Error();return(await r.json()).secure_url;}
 
-    const photoUrls = [];
-    for(const file of photoFiles){ if(file){ photoUrls.push({url: await uploadToCloudinary(file, "ssumcenter/coffee-photos")}); } }
+    const photoUrls=[];for(const f of photoFiles){if(f)photoUrls.push({url:await up(f,"ssumcenter/fintech-photos")});}
+    btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>서류 업로드 중...';
+    const docUrl=await up(docFile,"ssumcenter/fintech-docs");
+    btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>신청서 제출 중...';
 
-    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>서류 업로드 중...';
-    const docJobUrl = docFiles.job ? await uploadToCloudinary(docFiles.job, "ssumcenter/coffee-docs") : null;
-    const docIdUrl = docFiles.id ? await uploadToCloudinary(docFiles.id, "ssumcenter/coffee-docs") : null;
-
-    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>신청서 제출 중...';
-
-    const form = document.getElementById("apply-form");
-    const data = new FormData(form);
-    const payload = Object.fromEntries(data.entries());
-
-    const fields = {
-      "이름": payload.name || "",
-      "연락처": payload.phone || "",
-      "성별": payload.gender || "",
-      "출생연도": payload.birthYear || "",
-      "직업": payload.job || "",
-      "희망날짜": payload.date || "",
-      "테스트결과": payload.testResult || "",
-      "승인상태": "대기",
-      "신청일시": new Date().toLocaleString("ko-KR")
+    const fm=document.getElementById("apply-form");const d=new FormData(fm);const p=Object.fromEntries(d.entries());
+    const fields={
+      "이름":p.name||"","성별":p.gender||"","출생연도":p.birthYear||"","연락처":p.phone||"",
+      "키":p.height||"","직업_직장명":p.job||"","어필포인트":p.appeal||"",
+      "음료선택":p.drink||"","닉네임":p.nickname||"",
+      "유입경로":selectedChannel,"추천인이름":p.referralName||"","할인혜택":p.discount||"",
+      "승인상태":"대기","신청일시":new Date().toLocaleString("ko-KR")
     };
-    if(photoUrls.length > 0) fields["프로필사진"] = photoUrls;
-    if(docJobUrl) fields["재직증명서"] = [{url: docJobUrl}];
-    if(docIdUrl) fields["신분증"] = [{url: docIdUrl}];
+    if(photoUrls.length>0)fields["프로필사진"]=photoUrls;
+    if(docUrl)fields["재직증명서"]=[{url:docUrl}];
 
-    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`, {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ records: [{ fields }] })
+    const res=await fetch(`https://api.airtable.com/v0/${BI}/${encodeURIComponent(TN)}`,{
+      method:"POST",headers:{"Authorization":`Bearer ${AT}`,"Content-Type":"application/json"},
+      body:JSON.stringify({records:[{fields}]})
     });
-    if(!res.ok) throw new Error("전송 실패");
+    if(!res.ok)throw new Error();
 
-    form.closest("section").classList.add("hidden");
-    document.querySelector("header").classList.add("hidden");
-    document.getElementById("success-screen").classList.remove("hidden");
-    window.scrollTo({top: 0, behavior: "smooth"});
-
-  } catch(err){
-    console.error(err);
-    alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-1.5"></i>신청서 제출하기';
+    fm.closest("section").classList.add("hidden");document.querySelector("header").classList.add("hidden");
+    document.getElementById("success-screen").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});
+  }catch(err){
+    console.error(err);alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
+    btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-paper-plane mr-1.5"></i>신청서 제출하기';
   }
   return false;
 }
 
-// Intersection Observer
-const io = new IntersectionObserver(es => es.forEach(e => {
-  if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
-}), {threshold: .15});
-document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.15});
+document.querySelectorAll("[data-reveal]").forEach(el=>io.observe(el));
 </script>
 </body>
 </html>
