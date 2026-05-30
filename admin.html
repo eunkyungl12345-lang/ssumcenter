@@ -18,6 +18,26 @@
 </head>
 <body class="min-h-screen selection:bg-[#FFD400] selection:text-black">
 
+<!-- 비밀번호 잠금 화면 -->
+<div id="lock-screen" class="fixed inset-0 z-[100] bg-[#0D0D0C] flex items-center justify-center px-5">
+  <div class="max-w-sm w-full text-center">
+    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#161615] border border-[#FFD400]/30 flex items-center justify-center">
+      <i class="fa-solid fa-lock y text-2xl"></i>
+    </div>
+    <h2 class="text-xl font-black">관리자 인증</h2>
+    <p class="text-sm text-[#9E9E97] mt-2">센터장 비밀번호를 입력해주세요</p>
+    <div class="mt-6">
+      <input type="password" id="pw-input" placeholder="비밀번호 입력"
+        onkeydown="if(event.key==='Enter')checkPw()"
+        class="w-full bg-[#161615] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white text-center placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+      <p id="pw-error" class="hidden text-xs text-red-400 mt-2">비밀번호가 틀렸습니다</p>
+      <button onclick="checkPw()" class="bg-y text-black font-extrabold w-full px-6 py-3 rounded-xl text-sm mt-3 transition hover:bg-[#E6BE00]">
+        <i class="fa-solid fa-right-to-bracket mr-1.5"></i>로그인
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- 네비 -->
 <nav class="sticky top-0 z-50 bg-[#0D0D0C]/95 backdrop-blur-md border-b border-[#242422] px-4 py-3">
   <div class="max-w-4xl mx-auto flex justify-between items-center">
@@ -281,8 +301,27 @@ function toast(msg){
   setTimeout(() => t.classList.add("translate-y-32","opacity-0"), 3000);
 }
 
-// 초기 로드
-loadApplicants();
+// 비밀번호 잠금
+const ADMIN_PW = "cjfgns0613()!";
+
+function checkPw(){
+  const input = document.getElementById("pw-input").value;
+  if(input === ADMIN_PW){
+    document.getElementById("lock-screen").classList.add("hidden");
+    sessionStorage.setItem("admin_auth", "true");
+    loadApplicants();
+  } else {
+    document.getElementById("pw-error").classList.remove("hidden");
+    document.getElementById("pw-input").value = "";
+    document.getElementById("pw-input").focus();
+  }
+}
+
+// 세션 유지 (탭 닫기 전까지)
+if(sessionStorage.getItem("admin_auth") === "true"){
+  document.getElementById("lock-screen").classList.add("hidden");
+  loadApplicants();
+}
 </script>
 </body>
 </html>
