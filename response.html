@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>매칭 수락/거절 | 썸류센터</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0D0D0C;color:#F5F5F3;overflow-x:hidden}
+  .y{color:#FFD400}.bg-y{background:#FFD400}.bd-y{border-color:#FFD400}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#161615}::-webkit-scrollbar-thumb{background:#FFD400;border-radius:3px}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .fade{animation:fadeUp .5s ease both}
+  .glow{background:radial-gradient(circle at 50% 0%,rgba(255,212,0,.12),transparent 60%)}
+  /* 화면 전환 시 블러 */
+  .blurred .blur-target{filter:blur(20px);pointer-events:none;transition:filter .15s ease}
+  .blur-overlay{display:none;position:fixed;inset:0;z-50;background:rgba(13,13,12,.85);justify-content:center;align-items:center;flex-direction:column;gap:8px}
+  .blurred .blur-overlay{display:flex}
+  [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+  [data-reveal].in{opacity:1;transform:none}
+</style>
+</head>
+<body class="min-h-screen selection:bg-[#FFD400] selection:text-black">
+
+<!-- 네비 -->
+<nav class="sticky top-0 z-50 bg-[#0D0D0C]/95 backdrop-blur-md border-b border-[#242422] px-4 py-3">
+  <div class="max-w-6xl mx-auto flex justify-between items-center">
+    <a href="index.html" class="flex items-center gap-2">
+      <svg class="w-8 h-8 y" viewBox="0 0 100 100" fill="currentColor">
+        <circle cx="50" cy="50" r="45" fill="#181816" stroke="#FFD400" stroke-width="4"/>
+        <path d="M50 25 C62 25,68 35,65 45 C60 52,40 52,35 45 C32 35,38 25,50 25 Z" fill="#FFD400"/>
+        <path d="M60 40 L72 43 C70 47,58 48,58 40 Z" fill="#FF4A00"/>
+        <circle cx="53" cy="33" r="3.5" fill="#0D0D0C"/><circle cx="54.5" cy="31.5" r="1.2" fill="white"/>
+        <ellipse cx="46" cy="40" rx="4" ry="3" fill="#FF8A8A"/>
+      </svg>
+      <span class="text-xl font-black tracking-tight">썸류<span class="y">센터</span></span>
+    </a>
+  </div>
+</nav>
+
+<!-- 메인: 프로필 + 수락/거절 -->
+<section id="match-screen" class="px-5 pt-10 pb-16 glow">
+  <div class="max-w-lg mx-auto fade">
+
+    <!-- 안내 -->
+    <div class="text-center mb-8">
+      <span class="inline-flex items-center gap-2 bg-[#FFD400]/10 border border-[#FFD400]/30 y px-4 py-1.5 rounded-full text-[11px] font-bold tracking-widest uppercase mb-4">
+        <i class="fa-solid fa-heart-pulse"></i> 1:1 매칭 결과
+      </span>
+      <h1 class="text-2xl md:text-3xl font-black leading-tight">
+        센터장이 찾은<br><span class="y">당신의 매칭 상대</span>
+      </h1>
+      <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">
+        프로필을 확인하고, 수락 또는 거절을 선택해주세요.
+      </p>
+    </div>
+
+    <!-- 타이머 -->
+    <div class="bg-[#161615] border border-[#FFD400]/20 rounded-xl p-3 flex items-center justify-center gap-2 mb-6 text-sm" data-reveal>
+      <i class="fa-solid fa-clock y"></i>
+      <span class="text-[#9E9E97]">응답 기한:</span>
+      <b id="deadline-text" class="text-white"></b>
+    </div>
+
+    <!-- 상대방 프로필 카드 -->
+    <div class="blur-target bg-[#161615] border border-[#242422] rounded-2xl overflow-hidden" data-reveal>
+
+      <!-- 프로필 사진 + 헤더 -->
+      <div class="bg-[#FFD400]/5 border-b border-[#242422] p-5 flex flex-col items-center gap-3">
+        <!-- 사진 슬라이더 -->
+        <div class="relative w-full max-w-[280px]">
+          <div id="photo-slider" class="aspect-[3/4] rounded-2xl bg-[#242422] border-2 border-[#FFD400]/30 overflow-hidden flex items-center justify-center">
+            <i id="photo-fallback-icon" class="fa-solid fa-user text-[#555] text-4xl"></i>
+            <img id="slider-img" class="hidden w-full h-full object-cover" alt="프로필 사진">
+          </div>
+          <!-- 좌우 버튼 (사진 2장 이상일 때 표시) -->
+          <button id="slider-prev" onclick="slidePhoto(-1)" class="hidden absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition">
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+          </button>
+          <button id="slider-next" onclick="slidePhoto(1)" class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+          <!-- 인디케이터 -->
+          <div id="slider-dots" class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5"></div>
+        </div>
+        <div class="text-center">
+          <div class="font-black text-base" id="profile-age-job">— 정보 로딩 중</div>
+          <div class="text-xs text-[#9E9E97]">썸류센터 1:1 매칭 상대</div>
+        </div>
+      </div>
+
+      <!-- 프로필 상세 -->
+      <div class="p-5 space-y-4">
+
+        <!-- 나이대 -->
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 shrink-0 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-cake-candles y text-xs"></i>
+          </div>
+          <div>
+            <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider">나이대</div>
+            <div class="text-sm font-bold mt-0.5" id="profile-age">—</div>
+          </div>
+        </div>
+
+        <!-- 직업군 -->
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 shrink-0 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-briefcase y text-xs"></i>
+          </div>
+          <div>
+            <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider">직업군</div>
+            <div class="text-sm font-bold mt-0.5" id="profile-job">—</div>
+          </div>
+        </div>
+
+        <!-- 성격 키워드 -->
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 shrink-0 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-sparkles y text-xs"></i>
+          </div>
+          <div>
+            <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider">성격 키워드</div>
+            <div class="flex flex-wrap gap-1.5 mt-1.5" id="profile-keywords">—</div>
+          </div>
+        </div>
+
+        <!-- 자기소개 -->
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 shrink-0 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-comment y text-xs"></i>
+          </div>
+          <div>
+            <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider">자기소개</div>
+            <div class="text-sm mt-1 leading-relaxed bg-[#0D0D0C] border border-[#242422] rounded-xl p-3" id="profile-intro">—</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 수락 / 거절 버튼 -->
+    <div class="mt-6 space-y-3" data-reveal>
+      <button onclick="respond('accept')" id="btn-accept"
+        class="bg-y text-black font-extrabold w-full px-6 py-4 rounded-2xl text-base transition hover:bg-[#E6BE00] flex items-center justify-center gap-2">
+        <i class="fa-solid fa-heart"></i> 수락할게요
+      </button>
+      <button onclick="respond('reject')" id="btn-reject"
+        class="bg-[#161615] border border-[#242422] text-[#9E9E97] font-bold w-full px-6 py-3.5 rounded-2xl text-sm transition hover:border-[#555] hover:text-white flex items-center justify-center gap-2">
+        <i class="fa-solid fa-xmark"></i> 이번엔 괜찮아요
+      </button>
+      <p class="text-center text-[11px] text-[#555]">48시간 내 미응답 시 자동으로 거절 처리됩니다</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- 수락 완료 화면 -->
+<section id="accept-screen" class="hidden px-5 py-20">
+  <div class="max-w-lg mx-auto text-center fade">
+    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-y flex items-center justify-center">
+      <i class="fa-solid fa-heart text-black text-2xl"></i>
+    </div>
+    <h2 class="text-2xl font-black">수락 완료!</h2>
+    <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">
+      상대방도 수락하면<br>서로의 연락처를 전달해 드릴게요.
+    </p>
+    <div class="bg-[#161615] border border-[#FFD400]/20 rounded-2xl p-5 mt-6 text-left space-y-3">
+      <div class="flex gap-3 items-center text-sm">
+        <div class="w-6 h-6 rounded-lg bg-y text-black flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-check text-[10px]"></i></div>
+        <span class="text-[#9E9E97]">나의 응답: <b class="text-white">수락</b></span>
+      </div>
+      <div class="flex gap-3 items-center text-sm">
+        <div class="w-6 h-6 rounded-lg bg-[#242422] text-[#9E9E97] flex items-center justify-center"><i class="fa-solid fa-hourglass-half text-[10px]"></i></div>
+        <span class="text-[#9E9E97]">상대방 응답 대기 중...</span>
+      </div>
+      <div class="flex gap-3 items-center text-sm">
+        <div class="w-6 h-6 rounded-lg bg-[#242422] text-[#9E9E97] flex items-center justify-center text-xs font-bold">3</div>
+        <span class="text-[#9E9E97]">양쪽 수락 시 연락처 자동 전달</span>
+      </div>
+    </div>
+    <p class="text-xs text-[#9E9E97] mt-5 leading-relaxed">결과는 메시지로 안내해 드릴게요.</p>
+  </div>
+</section>
+
+<!-- 거절 완료 화면 -->
+<section id="reject-screen" class="hidden px-5 py-20">
+  <div class="max-w-lg mx-auto text-center fade">
+    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#242422] flex items-center justify-center">
+      <i class="fa-solid fa-hand text-[#9E9E97] text-2xl"></i>
+    </div>
+    <h2 class="text-2xl font-black">응답이 전달되었어요</h2>
+    <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">
+      괜찮아요, 다음에 더 좋은 인연을 찾아드릴게요.
+    </p>
+    <a href="index.html" class="inline-block mt-8 bg-[#161615] border border-[#242422] text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#FFD400] transition">
+      <i class="fa-solid fa-arrow-left mr-1.5"></i>홈으로 돌아가기
+    </a>
+  </div>
+</section>
+
+<!-- 만료/오류 화면 -->
+<section id="expired-screen" class="hidden px-5 py-20">
+  <div class="max-w-lg mx-auto text-center fade">
+    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#242422] flex items-center justify-center">
+      <i class="fa-solid fa-clock text-[#9E9E97] text-2xl"></i>
+    </div>
+    <h2 class="text-2xl font-black">응답 기한이 만료되었어요</h2>
+    <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">
+      48시간 내에 응답하지 않아 자동 거절 처리되었습니다.<br>다음 매칭을 기다려주세요.
+    </p>
+    <a href="index.html" class="inline-block mt-8 bg-[#161615] border border-[#242422] text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#FFD400] transition">
+      <i class="fa-solid fa-arrow-left mr-1.5"></i>홈으로 돌아가기
+    </a>
+  </div>
+</section>
+
+<!-- 블러 오버레이 -->
+<div class="blur-overlay">
+  <i class="fa-solid fa-eye-slash text-[#FFD400] text-2xl"></i>
+  <p class="text-sm font-bold text-white">개인정보 보호</p>
+  <p class="text-xs text-[#9E9E97]">화면으로 돌아오면 다시 보여요</p>
+</div>
+
+<!-- 푸터 -->
+<footer class="border-t border-[#242422] px-5 py-8 text-center text-xs text-[#666]">
+  <p class="font-black text-white text-base mb-2">썸류<span class="y">센터</span></p>
+  <p>1:1 온라인 매칭 서비스</p>
+  <p class="mt-2">문의: 카카오톡 채널 @썸류센터</p>
+</footer>
+
+<script>
+// URL 파라미터에서 매칭 정보 읽기
+// 예시: response.html?id=abc123&age=20대 후반&job=마케터&keywords=유머러스,다정한,활발한&intro=안녕하세요!&deadline=2026-06-02T18:00:00
+const params = new URLSearchParams(location.search);
+const matchId = params.get("id");
+
+function loadProfile(){
+  const age = params.get("age");
+  const job = params.get("job");
+  const keywords = params.get("keywords");
+  const intro = params.get("intro");
+  const deadline = params.get("deadline");
+
+  // 파라미터가 없으면 데모 데이터
+  const profileAge = age || "20대 후반";
+  const profileJob = job || "IT/개발";
+  const profileKeywords = keywords ? keywords.split(",") : ["유머러스", "다정한", "지적인"];
+  const profileIntro = intro || "커피 좋아하고 주말엔 러닝해요. 편하게 대화 나눌 수 있는 사람을 만나고 싶어요.";
+
+  // 사진 슬라이더
+  const photos = [];
+  if(params.get("photo1")) photos.push(params.get("photo1"));
+  if(params.get("photo2")) photos.push(params.get("photo2"));
+  if(params.get("photo3")) photos.push(params.get("photo3"));
+  // 하위호환: photo 파라미터도 지원
+  if(photos.length === 0 && params.get("photo")) photos.push(params.get("photo"));
+
+  if(photos.length > 0){
+    document.getElementById("slider-img").src = photos[0];
+    document.getElementById("slider-img").classList.remove("hidden");
+    document.getElementById("photo-fallback-icon").classList.add("hidden");
+    if(photos.length > 1){
+      document.getElementById("slider-prev").classList.remove("hidden");
+      document.getElementById("slider-next").classList.remove("hidden");
+      const dots = document.getElementById("slider-dots");
+      dots.classList.remove("hidden");
+      photos.forEach((_, i) => {
+        const dot = document.createElement("div");
+        dot.className = "w-2 h-2 rounded-full " + (i === 0 ? "bg-[#FFD400]" : "bg-white/40");
+        dot.dataset.i = i;
+        dots.appendChild(dot);
+      });
+    }
+  }
+  window._photos = photos;
+  window._photoIdx = 0;
+
+  // 프로필 표시
+  document.getElementById("profile-age-job").textContent = `${profileAge} · ${profileJob}`;
+  document.getElementById("profile-age").textContent = profileAge;
+  document.getElementById("profile-job").textContent = profileJob;
+
+  // 키워드 칩
+  const kwContainer = document.getElementById("profile-keywords");
+  kwContainer.innerHTML = profileKeywords.map(kw =>
+    `<span class="inline-block bg-[#FFD400]/10 border border-[#FFD400]/30 text-[#FFD400] text-xs font-bold px-2.5 py-1 rounded-full">${kw}</span>`
+  ).join("");
+
+  document.getElementById("profile-intro").textContent = profileIntro;
+
+  // 마감 시간
+  if(deadline){
+    const d = new Date(deadline);
+    const now = new Date();
+    if(now > d){
+      showScreen("expired");
+      return;
+    }
+    const month = d.getMonth()+1;
+    const day = d.getDate();
+    const hour = d.getHours();
+    document.getElementById("deadline-text").textContent = `${month}월 ${day}일 ${hour}시까지`;
+  } else {
+    // 기본 48시간
+    const d = new Date();
+    d.setHours(d.getHours() + 48);
+    const month = d.getMonth()+1;
+    const day = d.getDate();
+    const hour = d.getHours();
+    document.getElementById("deadline-text").textContent = `${month}월 ${day}일 ${hour}시까지 (48시간)`;
+  }
+}
+
+async function respond(action){
+  // 버튼 비활성화
+  document.getElementById("btn-accept").disabled = true;
+  document.getElementById("btn-reject").disabled = true;
+  document.getElementById("btn-" + (action === "accept" ? "accept" : "reject")).innerHTML =
+    '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>처리 중...';
+
+  // Airtable API로 응답 저장
+  const AIRTABLE_TOKEN = "patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
+  const BASE_ID = "appwejZxBm9oRt0AM";
+  const TABLE_NAME = "매칭 응답";
+
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${AIRTABLE_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        records: [{
+          fields: {
+            "매칭ID": matchId || "demo",
+            "응답": action === "accept" ? "수락" : "거절",
+            "응답일시": new Date().toLocaleString("ko-KR")
+          }
+        }]
+      })
+    });
+
+    if(!res.ok) throw new Error("전송 실패");
+  } catch(err) {
+    console.error(err);
+  }
+
+  if(action === "accept"){
+    showScreen("accept");
+  } else {
+    showScreen("reject");
+  }
+}
+
+function showScreen(screen){
+  document.getElementById("match-screen").classList.add("hidden");
+  document.getElementById("accept-screen").classList.add("hidden");
+  document.getElementById("reject-screen").classList.add("hidden");
+  document.getElementById("expired-screen").classList.add("hidden");
+  document.getElementById(screen + "-screen").classList.remove("hidden");
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+function slidePhoto(dir){
+  if(!window._photos || window._photos.length <= 1) return;
+  window._photoIdx = (window._photoIdx + dir + window._photos.length) % window._photos.length;
+  document.getElementById("slider-img").src = window._photos[window._photoIdx];
+  document.querySelectorAll("#slider-dots > div").forEach((dot, i) => {
+    dot.className = "w-2 h-2 rounded-full " + (i === window._photoIdx ? "bg-[#FFD400]" : "bg-white/40");
+  });
+}
+
+loadProfile();
+
+// 캡쳐 방지: 화면 전환 시 블러
+document.addEventListener("visibilitychange", function(){
+  if(document.hidden){
+    document.body.classList.add("blurred");
+  } else {
+    document.body.classList.remove("blurred");
+  }
+});
+window.addEventListener("blur", function(){
+  document.body.classList.add("blurred");
+});
+window.addEventListener("focus", function(){
+  document.body.classList.remove("blurred");
+});
+
+// 캡쳐 방지: 스크린샷 단축키 차단
+document.addEventListener("keydown", function(e){
+  // PrintScreen (Windows)
+  if(e.key === "PrintScreen"){
+    e.preventDefault();
+    document.body.classList.add("blurred");
+    setTimeout(()=> document.body.classList.remove("blurred"), 1000);
+  }
+  // Cmd+Shift+3, Cmd+Shift+4, Cmd+Shift+5 (Mac 스크린샷)
+  if(e.metaKey && e.shiftKey && ["3","4","5"].includes(e.key)){
+    e.preventDefault();
+    document.body.classList.add("blurred");
+    setTimeout(()=> document.body.classList.remove("blurred"), 1000);
+  }
+  // Ctrl+Shift+S (일부 브라우저 캡쳐)
+  if(e.ctrlKey && e.shiftKey && e.key === "S"){
+    e.preventDefault();
+  }
+  // Cmd+S / Ctrl+S (페이지 저장 차단)
+  if((e.metaKey || e.ctrlKey) && e.key === "s"){
+    e.preventDefault();
+  }
+});
+
+// Intersection Observer
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+}), {threshold: .15});
+document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
+</script>
+</body>
+</html>

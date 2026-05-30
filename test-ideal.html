@@ -197,7 +197,8 @@
     <div class="mt-6 text-center bg-gradient-to-b from-[#FFD400]/15 to-transparent border border-[#FFD400]/30 rounded-2xl p-6">
       <h3 class="text-lg font-black">내 유형과 <span class="y">찰떡인 상대</span>,<br>지금 만나러 갈까요?</h3>
       <p class="text-xs text-[#9E9E97] mt-2">강남 로테이션 소개팅 / 1:1 온라인 매칭으로 연결해드려요.</p>
-      <button onclick="goApply()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl mt-5 pulse"><i class="fa-solid fa-paper-plane mr-2"></i>매칭 신청하기</button>
+      <button onclick="goApply()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl mt-5 pulse"><i class="fa-solid fa-mug-hot mr-2"></i>오프라인 커피팅 신청</button>
+      <button onclick="goMatching()" class="w-full bg-[#0D0D0C] border border-[#FFD400]/40 text-white font-extrabold py-4 rounded-2xl mt-2 hover:bg-[#FFD400]/10 transition"><i class="fa-solid fa-video y mr-2"></i>1:1 온라인 매칭 신청</button>
       <button onclick="restart()" class="text-xs text-[#9E9E97] hover:text-white mt-4">다시 테스트하기</button>
     </div>
   </section>
@@ -433,7 +434,11 @@ function showResult(){
   show("result");
 }
 function goApply(){
-  const url=`index.html?result=${encodeURIComponent(TYPES[result].name)}&type=커피유형&name=${encodeURIComponent(userInfo.name||"")}#apply`;
+  const url=`index.html?result=${encodeURIComponent(TYPES[result].name)}&pct=${TYPES[result].rare}&type=커피유형&name=${encodeURIComponent(userInfo.name||"")}#apply`;
+  window.location.href=url;
+}
+function goMatching(){
+  const url=`matching.html?result=${encodeURIComponent(TYPES[result].name)}&pct=${TYPES[result].rare}`;
   window.location.href=url;
 }
 function copyShare(){
