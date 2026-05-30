@@ -16,7 +16,7 @@
   .glow{background:radial-gradient(circle at 50% 0%,rgba(255,212,0,.12),transparent 60%)}
   /* 화면 전환 시 블러 */
   .blurred .blur-target{filter:blur(20px);pointer-events:none;transition:filter .15s ease}
-  .blur-overlay{display:none;position:fixed;inset:0;z-50;background:rgba(13,13,12,.85);justify-content:center;align-items:center;flex-direction:column;gap:8px}
+  .blur-overlay{display:none;position:fixed;inset:0;z-index:50;background:rgba(13,13,12,.85);justify-content:center;align-items:center;flex-direction:column;gap:8px}
   .blurred .blur-overlay{display:flex}
   [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
   [data-reveal].in{opacity:1;transform:none}
@@ -389,18 +389,10 @@ async function respond(action){
   document.getElementById("btn-" + (action === "accept" ? "accept" : "reject")).innerHTML =
     '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>처리 중...';
 
-  // Airtable API로 응답 저장
-  const AIRTABLE_TOKEN = "patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
-  const BASE_ID = "appwejZxBm9oRt0AM";
-  const TABLE_NAME = "매칭 응답";
-
   try {
-    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`, {
+    const res = await fetch("/api/airtable?table=매칭 응답", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${AIRTABLE_TOKEN}`,
-        "Content-Type": "application/json"
-      },
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
         records: [{
           fields: {
@@ -411,7 +403,6 @@ async function respond(action){
         }]
       })
     });
-
     if(!res.ok) throw new Error("전송 실패");
   } catch(err) {
     console.error(err);
@@ -434,8 +425,6 @@ async function respond(action){
 
 // 상대방 응답 확인
 async function checkOtherResponse(){
-  const AIRTABLE_TOKEN = "patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
-  const BASE_ID = "appwejZxBm9oRt0AM";
 
   // matchId는 상대방의 record ID
   // 나의 record ID는 myId 파라미터로 전달
@@ -444,9 +433,7 @@ async function checkOtherResponse(){
 
   try {
     // 상대방이 나(myId)에 대해 응답했는지 확인
-    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("매칭 응답")}?filterByFormula={매칭ID}="${myId}"`, {
-      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}` }
-    });
+    const res = await fetch(`/api/airtable?table=매칭 응답&filter={매칭ID}="${myId}"`);
     const data = await res.json();
     if(data.records && data.records.length > 0){
       const response = data.records[0].fields["응답"];
@@ -462,14 +449,12 @@ async function checkOtherResponse(){
 
 // 매칭 성사 → 결제 안내 표시 (연락처는 입금 확인 후 센터장이 전달)
 async function showContact(){
-  const AIRTABLE_TOKEN = "patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
-  const BASE_ID = "appwejZxBm9oRt0AM";
 
   try {
     // 매칭 상태 업데이트
-    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}`, {
+    await fetch("/api/airtable?table=1:1 매칭 신청", {
       method: "PATCH",
-      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}`, "Content-Type": "application/json" },
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ records: [
         { id: matchId, fields: { "매칭상태": "수락" } },
         { id: params.get("myId"), fields: { "매칭상태": "수락" } }

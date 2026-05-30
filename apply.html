@@ -128,7 +128,7 @@
 
         <div>
           <label class="block text-xs font-bold text-[#9E9E97] mb-2">연락처 <span class="y">*</span></label>
-          <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="[0-9\-]+"
+          <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="01[0-9]{1}[0-9\-]{7,9}"
             class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
         </div>
 
@@ -450,8 +450,6 @@ async function handleSubmit(e){
   btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>사진 업로드 중...';
 
   const CN="ddvmmvcei",CP="ml_default";
-  const AT="patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
-  const BI="appwejZxBm9oRt0AM",TN="재테크 커피팅";
 
   try{
     async function up(file,folder){const fd=new FormData();fd.append("file",file);fd.append("upload_preset",CP);fd.append("folder",folder);const r=await fetch(`https://api.cloudinary.com/v1_1/${CN}/auto/upload`,{method:"POST",body:fd});if(!r.ok)throw new Error();return(await r.json()).secure_url;}
@@ -473,8 +471,8 @@ async function handleSubmit(e){
     if(photoUrls.length>0)fields["프로필사진"]=photoUrls;
     if(docUrl)fields["재직증명서"]=[{url:docUrl}];
 
-    const res=await fetch(`https://api.airtable.com/v0/${BI}/${encodeURIComponent(TN)}`,{
-      method:"POST",headers:{"Authorization":`Bearer ${AT}`,"Content-Type":"application/json"},
+    const res=await fetch("/api/airtable?table=재테크 커피팅",{
+      method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({records:[{fields}]})
     });
     if(!res.ok)throw new Error();

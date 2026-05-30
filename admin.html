@@ -125,7 +125,7 @@
   </div>
 
   <!-- 필터 -->
-  <div class="flex gap-2 mb-4">
+  <div class="flex flex-wrap gap-2 mb-4">
     <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
     <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
     <button onclick="filterBy('매칭완료')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="매칭완료">매칭완료</button>
@@ -163,7 +163,7 @@
     </div>
 
     <!-- 커피팅 필터 -->
-    <div class="flex gap-2 mb-4">
+    <div class="flex flex-wrap gap-2 mb-4">
       <button onclick="coffeeFilterBy('all')" class="coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
       <button onclick="coffeeFilterBy('대기')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
       <button onclick="coffeeFilterBy('승인')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
@@ -187,9 +187,6 @@
 <div id="toast" class="fixed bottom-6 inset-x-5 max-w-md mx-auto bg-[#242422] border border-[#FFD400]/30 rounded-xl p-4 text-sm text-center translate-y-32 opacity-0 transition-all duration-300 z-50"></div>
 
 <script>
-const AIRTABLE_TOKEN = "patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
-const BASE_ID = "appwejZxBm9oRt0AM";
-const TABLE_NAME = "1:1 매칭 신청";
 const SITE_URL = "https://ssumcenter.vercel.app";
 
 let applicants = [];
@@ -198,9 +195,7 @@ let currentFilter = "all";
 
 async function loadApplicants(){
   try {
-    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}?sort[0][field]=신청일시&sort[0][direction]=desc`, {
-      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}` }
-    });
+    const res = await fetch("/api/airtable?table=1:1 매칭 신청&sort=신청일시");
     const data = await res.json();
     applicants = data.records || [];
     updateStats();
@@ -315,15 +310,10 @@ function generateMatch(){
 
 async function updateMatchStatus(recordId){
   try {
-    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`, {
+    await fetch("/api/airtable?table=1:1 매칭 신청", {
       method: "PATCH",
-      headers: {
-        "Authorization": `Bearer ${AIRTABLE_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        records: [{ id: recordId, fields: { "매칭상태": "매칭완료" } }]
-      })
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "매칭완료" } }] })
     });
   } catch(err){ console.error(err); }
 }
@@ -375,9 +365,7 @@ let coffeeFilter = "all";
 
 async function loadCoffeeApplicants(){
   try {
-    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("커피팅 신청")}?sort[0][field]=신청일시&sort[0][direction]=desc`, {
-      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}` }
-    });
+    const res = await fetch("/api/airtable?table=재테크 커피팅&sort=신청일시");
     const data = await res.json();
     coffeeApplicants = data.records || [];
     updateCoffeeStats();
@@ -428,9 +416,9 @@ function renderCoffeeList(){
             <span class="text-[10px] ${statusColor} font-bold">${status}</span>
             <span class="text-[10px] text-[#555]">${f["성별"] || ""}</span>
           </div>
-          <div class="text-xs text-[#9E9E97] mt-0.5">${f["출생연도"] || ""}년생 · ${f["직업"] || ""}</div>
-          <div class="text-xs text-[#555] mt-0.5"><i class="fa-solid fa-calendar-day mr-1"></i>${f["희망날짜"] || ""}</div>
-          ${f["테스트결과"] ? `<div class="text-[10px] text-[#FFD400] mt-1"><i class="fa-solid fa-flask mr-1"></i>${f["테스트결과"]}</div>` : ""}
+          <div class="text-xs text-[#9E9E97] mt-0.5">${f["출생연도"] || ""}년생 · ${f["직업_직장명"] || ""}</div>
+          <div class="text-xs text-[#555] mt-0.5"><i class="fa-solid fa-chart-line mr-1"></i>${f["관심재테크"] || ""}</div>
+          ${f["닉네임"] ? `<div class="text-[10px] text-[#FFD400] mt-1"><i class="fa-solid fa-user mr-1"></i>닉네임: ${f["닉네임"]}</div>` : ""}
         </div>
         <div class="flex flex-col gap-1.5 shrink-0">
           ${status === "대기" ? `
@@ -445,9 +433,9 @@ function renderCoffeeList(){
 
 async function updateCoffeeStatus(recordId, status){
   try {
-    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("커피팅 신청")}`, {
+    await fetch("/api/airtable?table=재테크 커피팅", {
       method: "PATCH",
-      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}`, "Content-Type": "application/json" },
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ records: [{ id: recordId, fields: { "승인상태": status } }] })
     });
     toast(status === "승인" ? "승인 완료!" : "거절 처리되었습니다");
@@ -466,18 +454,26 @@ function coffeeFilterBy(f){
 }
 
 // 비밀번호 잠금
-const ADMIN_PW = "cjfgns0613()!";
-
-function checkPw(){
+async function checkPw(){
   const input = document.getElementById("pw-input").value;
-  if(input === ADMIN_PW){
-    document.getElementById("lock-screen").classList.add("hidden");
-    sessionStorage.setItem("admin_auth", "true");
-    loadApplicants();
-  } else {
+  try {
+    const res = await fetch("/api/admin-auth", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ password: input })
+    });
+    const data = await res.json();
+    if(data.ok){
+      document.getElementById("lock-screen").classList.add("hidden");
+      sessionStorage.setItem("admin_auth", "true");
+      loadApplicants();
+    } else {
+      document.getElementById("pw-error").classList.remove("hidden");
+      document.getElementById("pw-input").value = "";
+      document.getElementById("pw-input").focus();
+    }
+  } catch(err){
     document.getElementById("pw-error").classList.remove("hidden");
-    document.getElementById("pw-input").value = "";
-    document.getElementById("pw-input").focus();
   }
 }
 
