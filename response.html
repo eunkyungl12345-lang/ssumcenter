@@ -157,7 +157,7 @@
   </div>
 </section>
 
-<!-- 수락 완료 화면 -->
+<!-- 수락 완료 - 상대방 대기 중 -->
 <section id="accept-screen" class="hidden px-5 py-20">
   <div class="max-w-lg mx-auto text-center fade">
     <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-y flex items-center justify-center">
@@ -176,12 +176,49 @@
         <div class="w-6 h-6 rounded-lg bg-[#242422] text-[#9E9E97] flex items-center justify-center"><i class="fa-solid fa-hourglass-half text-[10px]"></i></div>
         <span class="text-[#9E9E97]">상대방 응답 대기 중...</span>
       </div>
-      <div class="flex gap-3 items-center text-sm">
-        <div class="w-6 h-6 rounded-lg bg-[#242422] text-[#9E9E97] flex items-center justify-center text-xs font-bold">3</div>
-        <span class="text-[#9E9E97]">양쪽 수락 시 연락처 자동 전달</span>
-      </div>
     </div>
-    <p class="text-xs text-[#9E9E97] mt-5 leading-relaxed">결과는 메시지로 안내해 드릴게요.</p>
+    <p class="text-xs text-[#9E9E97] mt-5 leading-relaxed">상대방이 수락하면 이 페이지에서 연락처가 바로 표시돼요.<br>잠시 후 다시 확인해보세요!</p>
+    <button onclick="checkMatch()" class="mt-4 bg-[#161615] border border-[#FFD400]/30 text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#FFD400] transition">
+      <i class="fa-solid fa-arrows-rotate mr-1.5"></i>상대방 응답 확인하기
+    </button>
+  </div>
+</section>
+
+<!-- 매칭 성사! 연락처 공개 -->
+<section id="matched-screen" class="hidden px-5 py-20">
+  <div class="max-w-lg mx-auto text-center fade">
+    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-y flex items-center justify-center">
+      <i class="fa-solid fa-heart-circle-check text-black text-2xl"></i>
+    </div>
+    <h2 class="text-2xl font-black">매칭 성사!</h2>
+    <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">
+      양쪽 모두 수락했어요. 연락처를 확인하세요!
+    </p>
+    <div class="bg-[#161615] border border-[#FFD400]/30 rounded-2xl p-6 mt-6">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-xl bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+        <i class="fa-solid fa-phone y text-xl"></i>
+      </div>
+      <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider mb-2">상대방 연락처</div>
+      <div class="text-2xl font-black y" id="matched-phone">-</div>
+      <div class="text-sm text-white mt-1" id="matched-name">-</div>
+    </div>
+    <p class="text-xs text-[#9E9E97] mt-5 leading-relaxed">먼저 편하게 연락해보세요! 좋은 인연이 되길 바랍니다.</p>
+  </div>
+</section>
+
+<!-- 매칭 불발 -->
+<section id="unmatched-screen" class="hidden px-5 py-20">
+  <div class="max-w-lg mx-auto text-center fade">
+    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#242422] flex items-center justify-center">
+      <i class="fa-solid fa-heart-crack text-[#9E9E97] text-2xl"></i>
+    </div>
+    <h2 class="text-2xl font-black">아쉽지만 이번엔...</h2>
+    <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">
+      상대방이 이번 매칭을 거절했어요.<br>다음에 더 좋은 인연을 찾아드릴게요.
+    </p>
+    <a href="index.html" class="inline-block mt-8 bg-[#161615] border border-[#242422] text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#FFD400] transition">
+      <i class="fa-solid fa-arrow-left mr-1.5"></i>홈으로 돌아가기
+    </a>
   </div>
 </section>
 
@@ -350,9 +387,97 @@ async function respond(action){
   }
 
   if(action === "accept"){
-    showScreen("accept");
+    // 수락 후 상대방 응답 확인
+    const otherAccepted = await checkOtherResponse();
+    if(otherAccepted === true){
+      showContact();
+    } else if(otherAccepted === false){
+      showScreen("unmatched");
+    } else {
+      showScreen("accept"); // 아직 미응답 → 대기
+    }
   } else {
     showScreen("reject");
+  }
+}
+
+// 상대방 응답 확인
+async function checkOtherResponse(){
+  const AIRTABLE_TOKEN = "patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
+  const BASE_ID = "appwejZxBm9oRt0AM";
+
+  // matchId는 상대방의 record ID
+  // 나의 record ID는 myId 파라미터로 전달
+  const myId = params.get("myId");
+  if(!myId || !matchId) return null;
+
+  try {
+    // 상대방이 나(myId)에 대해 응답했는지 확인
+    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("매칭 응답")}?filterByFormula={매칭ID}="${myId}"`, {
+      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}` }
+    });
+    const data = await res.json();
+    if(data.records && data.records.length > 0){
+      const response = data.records[0].fields["응답"];
+      if(response === "수락") return true;
+      if(response === "거절") return false;
+    }
+    return null; // 아직 미응답
+  } catch(err){
+    console.error(err);
+    return null;
+  }
+}
+
+// 매칭 성사 → 연락처 표시
+async function showContact(){
+  const AIRTABLE_TOKEN = "patzgC2Hs1t9Bz740.a8dc1c89811da2a4ccf573652ceea6554b4b3dbd968fabadca9c5c250031b17b";
+  const BASE_ID = "appwejZxBm9oRt0AM";
+
+  try {
+    // matchId = 상대방의 record ID → 상대방 연락처 가져오기
+    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}/${matchId}`, {
+      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}` }
+    });
+    const data = await res.json();
+    const phone = data.fields["연락처"] || "연락처 없음";
+    const name = data.fields["이름"] || "";
+
+    document.getElementById("matched-phone").textContent = phone;
+    document.getElementById("matched-name").textContent = name + "님";
+
+    // 매칭 상태 업데이트
+    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}`, {
+      method: "PATCH",
+      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ records: [
+        { id: matchId, fields: { "매칭상태": "연락처전달" } },
+        { id: params.get("myId"), fields: { "매칭상태": "연락처전달" } }
+      ]})
+    });
+
+    showScreen("matched");
+  } catch(err){
+    console.error(err);
+    showScreen("accept");
+  }
+}
+
+// "상대방 응답 확인하기" 버튼
+async function checkMatch(){
+  const btn = document.querySelector("#accept-screen button");
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>확인 중...';
+
+  const result = await checkOtherResponse();
+  if(result === true){
+    showContact();
+  } else if(result === false){
+    showScreen("unmatched");
+  } else {
+    btn.innerHTML = '<i class="fa-solid fa-arrows-rotate mr-1.5"></i>아직 대기 중이에요. 나중에 다시 확인해주세요!';
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fa-solid fa-arrows-rotate mr-1.5"></i>상대방 응답 확인하기';
+    }, 3000);
   }
 }
 
@@ -361,6 +486,8 @@ function showScreen(screen){
   document.getElementById("accept-screen").classList.add("hidden");
   document.getElementById("reject-screen").classList.add("hidden");
   document.getElementById("expired-screen").classList.add("hidden");
+  document.getElementById("matched-screen").classList.add("hidden");
+  document.getElementById("unmatched-screen").classList.add("hidden");
   document.getElementById(screen + "-screen").classList.remove("hidden");
   window.scrollTo({top: 0, behavior: "smooth"});
 }
