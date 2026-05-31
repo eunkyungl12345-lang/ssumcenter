@@ -225,6 +225,41 @@
           <input type="text" name="job" required placeholder="예: 마케터, 개발자, 간호사"
             class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
         </div>
+
+        <!-- 키 -->
+        <div>
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">키 <span class="y">*</span></label>
+          <input type="text" name="height" required placeholder="예: 175"
+            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+
+        <!-- 사는 곳 -->
+        <div>
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">사는 곳 <span class="y">*</span></label>
+          <input type="text" name="location" required placeholder="예: 서울 강남구, 경기 성남시"
+            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+
+        <!-- 취미 -->
+        <div>
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">취미 <span class="y">*</span></label>
+          <input type="text" name="hobby" required placeholder="예: 러닝, 카페투어, 넷플릭스"
+            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+
+        <!-- 종교 -->
+        <div>
+          <label class="block text-xs font-bold text-[#9E9E97] mb-2">종교 <span class="y">*</span></label>
+          <select name="religion" required
+            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white focus:border-[#FFD400] focus:outline-none transition appearance-none">
+            <option value="" disabled selected>종교를 선택해주세요</option>
+            <option value="무교">무교</option>
+            <option value="기독교">기독교</option>
+            <option value="천주교">천주교</option>
+            <option value="불교">불교</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
       </div>
 
       <!-- 신분 인증 서류 -->
@@ -708,6 +743,8 @@ async function handleSubmit(e){
     const fields = {
       "이름": payload.name || "", "연락처": payload.phone || "", "성별": payload.gender || "",
       "출생연도": payload.birthYear || "", "직업": payload.job || "",
+      "키": payload.height || "", "사는곳": payload.location || "",
+      "취미": payload.hobby || "", "종교": payload.religion || "",
       "선호나이대": [...selectedAges].join(", "), "선호직업군": [...selectedJobs].join(", "),
       "성격키워드": [...selectedKeywords].join(", "), "자기소개": payload.intro || "",
       "테스트결과": payload.testResult || "", "매칭상태": "대기",
