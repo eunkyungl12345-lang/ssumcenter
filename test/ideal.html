@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>썸류센터 | 나의 연애 커피 유형은?</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0D0D0C;color:#F5F5F3;overflow-x:hidden}
+  .y{color:#FFD400}.bg-y{background:#FFD400}.bd-y{border-color:#FFD400}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#161615}::-webkit-scrollbar-thumb{background:#FFD400;border-radius:3px}
+  @keyframes pulseY{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,212,0,.4)}50%{transform:scale(1.03);box-shadow:0 0 18px 6px rgba(255,212,0,.18)}}
+  .pulse{animation:pulseY 2s infinite ease-in-out}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .fade{animation:fadeUp .4s ease both}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .fade-in{animation:fadeIn .6s ease both}
+  @keyframes pop{0%{opacity:0;transform:scale(.5) translateY(10px)}60%{transform:scale(1.08)}100%{opacity:1;transform:scale(1) translateY(0)}}
+  .pop{animation:pop .5s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes countUp{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+  .count-anim{animation:countUp .9s cubic-bezier(.34,1.56,.64,1) both}
+  .glow{background:radial-gradient(circle at 50% 0%,rgba(255,212,0,.12),transparent 60%)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spinner{animation:spin 1s linear infinite}
+  @keyframes fbFill{from{width:0}}
+  .fb-bar{animation:fbFill 1s ease both}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .float{animation:float 3s ease-in-out infinite}
+  @keyframes steam{0%{opacity:.4;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-24px) scale(1.4)}}
+  .steam{animation:steam 2s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .blink{animation:blink 1.4s infinite}
+</style>
+</head>
+<body class="min-h-screen selection:bg-[#FFD400] selection:text-black">
+
+<div class="fixed top-0 inset-x-0 h-1.5 bg-[#161615] z-50">
+  <div id="progress" class="h-full bg-y transition-all duration-500" style="width:0%"></div>
+</div>
+
+<nav class="px-4 py-3 border-b border-[#242422]">
+  <div class="max-w-xl mx-auto flex justify-between items-center">
+    <a href="index.html" class="flex items-center gap-2 text-sm text-[#9E9E97] hover:text-white transition">
+      <i class="fa-solid fa-chevron-left text-xs"></i>
+      <span>썸류<span class="y font-bold">센터</span> 메인</span>
+    </a>
+    <a href="index.html#apply" class="text-xs text-[#9E9E97] hover:text-white">테스트 건너뛰고 신청</a>
+  </div>
+</nav>
+
+<div class="max-w-xl mx-auto px-5 pt-8 pb-24">
+
+  <!-- 인트로 -->
+  <section id="intro" class="fade text-center glow rounded-3xl pt-4">
+    <div class="inline-flex items-center gap-2 bg-[#161615] border border-[#242422] px-4 py-2 rounded-full text-xs mb-6">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 blink"></span>
+      <span class="text-[#9E9E97]">오늘 <b id="live-today" class="text-white">0</b>명 참여 중</span>
+    </div>
+    <div class="relative inline-block mb-2">
+      <span class="absolute -top-1 left-3 text-xl steam">~</span>
+      <span class="absolute -top-2 left-7 text-xl steam" style="animation-delay:.5s">~</span>
+      <span class="absolute -top-1 left-11 text-xl steam" style="animation-delay:1s">~</span>
+      <div class="text-7xl float">☕</div>
+    </div>
+    <h1 class="text-3xl md:text-4xl font-black leading-tight tracking-tight mt-3">
+      나의 <span class="y">연애 커피 유형</span>은?
+    </h1>
+    <p class="text-sm text-[#9E9E97] mt-4 leading-relaxed">
+      직진드리퍼? 콜드브루형? 아아고수?<br>
+      8가지 썸류 커피 유형 중 <b class="text-white">내 연애 취향</b>을 찾아드려요 ☕
+    </p>
+    <div class="flex flex-wrap gap-1.5 justify-center mt-5 px-2">
+      <span class="text-[10px] bg-[#161615] border border-[#242422] text-[#9E9E97] px-2.5 py-1 rounded-full">🔥 직진드리퍼</span>
+      <span class="text-[10px] bg-[#161615] border border-[#242422] text-[#9E9E97] px-2.5 py-1 rounded-full">🧊 콜드브루형</span>
+      <span class="text-[10px] bg-[#161615] border border-[#242422] text-[#9E9E97] px-2.5 py-1 rounded-full">🍯 꿀라떼형</span>
+      <span class="text-[10px] bg-[#161615] border border-[#242422] text-[#9E9E97] px-2.5 py-1 rounded-full">😎 아아고수</span>
+      <span class="text-[10px] bg-[#161615] border border-[#242422] text-[#9E9E97] px-2.5 py-1 rounded-full">+4</span>
+    </div>
+    <button onclick="startTest()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl pulse text-base mt-7">
+      <i class="fa-solid fa-mug-hot mr-2"></i>내 커피 유형 찾기
+    </button>
+    <p class="text-[11px] text-[#666] mt-4">10문항 · 1분 소요 · 무료</p>
+  </section>
+
+  <!-- 질문 -->
+  <section id="quiz" class="hidden">
+    <div class="flex items-center justify-between mb-5">
+      <span id="qcount" class="text-xs y font-bold tracking-widest">Q1 / 10</span>
+      <button onclick="restart()" class="text-[11px] text-[#9E9E97] hover:text-white"><i class="fa-solid fa-rotate-left mr-1"></i>처음으로</button>
+    </div>
+    <span class="text-[11px] text-[#9E9E97] tracking-wider uppercase" id="qcat"></span>
+    <h2 id="qtext" class="text-xl md:text-2xl font-black leading-snug mt-2 mb-6 min-h-[3rem]"></h2>
+    <div id="qopts" class="space-y-3"></div>
+    <div id="feedback" class="hidden mt-5 bg-[#161615] border border-[#FFD400]/20 rounded-xl p-3 text-center fade">
+      <p class="text-xs"><i class="fa-solid fa-users y mr-1"></i> <span id="fb-text"></span></p>
+      <div class="h-1.5 bg-[#0D0D0C] rounded-full overflow-hidden mt-2"><div id="fb-bar" class="h-full bg-y rounded-full fb-bar"></div></div>
+    </div>
+  </section>
+
+  <!-- 로딩 -->
+  <section id="loading" class="hidden text-center pt-20">
+    <div class="relative inline-block mb-8">
+      <div class="w-20 h-20 border-4 border-[#242422] border-t-[#FFD400] rounded-full spinner mx-auto"></div>
+      <div class="absolute inset-0 flex items-center justify-center text-3xl">☕</div>
+    </div>
+    <h2 id="loading-text" class="text-lg font-black">AI가 당신의 답변을 분석 중...</h2>
+    <p id="loading-sub" class="text-sm text-[#9E9E97] mt-2">8가지 커피 유형과 매칭하고 있어요</p>
+    <div class="max-w-xs mx-auto mt-6 h-1.5 bg-[#161615] rounded-full overflow-hidden">
+      <div id="loading-bar" class="h-full bg-y rounded-full transition-all duration-300" style="width:0%"></div>
+    </div>
+  </section>
+
+  <!-- 정보 입력 -->
+  <section id="info" class="hidden fade">
+    <div class="text-center mb-6">
+      <div class="text-5xl mb-3 pop">🎁</div>
+      <h2 class="text-2xl md:text-3xl font-black leading-tight">결과가 나왔어요!</h2>
+      <p class="text-sm text-[#9E9E97] mt-2 leading-relaxed">
+        <b class="text-white">누구의 결과인지</b> 알려주시면<br>나만의 결과지를 완성해드릴게요 ✨
+      </p>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-xs font-bold text-[#9E9E97] mb-2 block"><i class="fa-solid fa-user y mr-1"></i> 이름 또는 닉네임</label>
+        <input id="i-name" type="text" placeholder="결과지에 들어갈 이름" class="w-full bg-[#161615] border border-[#242422] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
+      </div>
+      <div>
+        <label class="text-xs font-bold text-[#9E9E97] mb-2 block"><i class="fa-solid fa-venus-mars y mr-1"></i> 당신은?</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="setGender('남성')" id="g-m" class="border border-[#242422] bg-[#161615] rounded-xl py-3.5 text-sm font-bold transition">👨 남성</button>
+          <button onclick="setGender('여성')" id="g-f" class="border border-[#242422] bg-[#161615] rounded-xl py-3.5 text-sm font-bold transition">👩 여성</button>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-[#9E9E97] mb-2 block"><i class="fa-solid fa-cake-candles y mr-1"></i> 또래 매칭률도 함께 보여드릴게요</label>
+        <input id="i-year" type="number" inputmode="numeric" placeholder="출생연도 (예: 1996)" class="w-full bg-[#161615] border border-[#242422] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
+      </div>
+      <div class="bg-gradient-to-br from-[#FFD400]/5 to-transparent border border-[#FFD400]/20 rounded-xl p-4">
+        <label class="text-xs font-bold text-white mb-1 block"><i class="fa-brands fa-rocketchat y mr-1"></i> 결과지를 카톡으로도 받을래요?</label>
+        <p class="text-[11px] text-[#9E9E97] mb-3">내 유형과 잘 맞는 실제 매칭 상대도 같이 보내드려요 (선택)</p>
+        <input id="i-phone" type="tel" inputmode="numeric" placeholder="휴대폰 번호 (예: 01012345678)" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
+      </div>
+      <div class="bg-[#161615] border border-[#242422] rounded-xl p-3">
+        <label class="flex items-start gap-2.5 cursor-pointer">
+          <input id="i-agree" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#FFD400]">
+          <span class="text-[11px] text-[#9E9E97] leading-relaxed">결과 안내 및 매칭을 위한 <b class="text-white">개인정보 수집·이용에 동의</b>합니다.
+          <button onclick="togglePolicy(event)" class="y underline ml-1">자세히</button></span>
+        </label>
+        <p id="policy" class="hidden text-[10px] text-[#666] mt-2 pt-2 border-t border-[#242422] leading-relaxed">수집항목: 이름, 성별, 출생연도, 연락처(선택) / 목적: 결과 안내 및 매칭 서비스 / 보유: 목적 달성 후 파기. 동의 철회 시 즉시 삭제.</p>
+      </div>
+      <button onclick="submitInfo()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl text-base pulse"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>내 결과 확인하기</button>
+      <button onclick="skipInfo()" class="w-full py-2 text-xs text-[#666] hover:text-[#9E9E97]">정보 없이 결과만 보기 →</button>
+    </div>
+  </section>
+
+  <!-- 결과 -->
+  <section id="result" class="hidden fade-in">
+    <div class="text-center">
+      <span class="text-[11px] y font-bold tracking-widest uppercase">YOUR COFFEE TYPE</span>
+      <p id="r-greeting" class="text-sm text-[#9E9E97] mt-3"></p>
+      <div id="r-emoji" class="text-8xl my-4 pop"></div>
+      <div id="r-eng" class="text-xs text-[#9E9E97] tracking-[0.2em] uppercase"></div>
+      <h2 class="text-3xl md:text-4xl font-black tracking-tight mt-1"><span id="r-type" class="y"></span></h2>
+      <p id="r-tagline" class="text-sm font-bold text-white mt-2"></p>
+      <p id="r-desc" class="text-sm text-[#9E9E97] mt-4 leading-relaxed px-2"></p>
+    </div>
+
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 mt-6 text-center">
+      <p class="text-xs text-[#9E9E97]">이 유형은 전체 참가자 중</p>
+      <div class="text-4xl font-black y count-anim my-1"><span id="r-rare"></span>%</div>
+      <p class="text-xs text-[#9E9E97]">의 희소한 유형이에요</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 mt-4">
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4">
+        <h3 class="text-xs font-bold y mb-2"><i class="fa-solid fa-heart mr-1"></i>연애할 때 나는</h3>
+        <ul id="r-traits" class="space-y-1.5 text-[12px] text-[#9E9E97]"></ul>
+      </div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4">
+        <h3 class="text-xs font-bold text-pink-400 mb-2"><i class="fa-solid fa-mug-saucer mr-1"></i>찰떡 궁합</h3>
+        <div id="r-match" class="text-sm"></div>
+      </div>
+    </div>
+
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 mt-4 text-center">
+      <p class="text-xs text-[#9E9E97]"><span id="r-age-range" class="text-white"></span> · 지금 매칭 가능한 상대</p>
+      <div class="text-3xl font-black y count-anim my-1"><span id="r-count"></span>명</div>
+    </div>
+
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mt-4 flex items-center justify-between">
+      <div class="text-xs"><i class="fa-solid fa-share-nodes y mr-1"></i>내 유형 친구한테 자랑하기</div>
+      <button onclick="copyShare()" class="bg-[#242422] hover:bg-[#FFD400]/10 hover:y text-xs font-bold px-3 py-2 rounded-lg transition">링크 복사</button>
+    </div>
+
+    <div class="mt-6 text-center bg-gradient-to-b from-[#FFD400]/15 to-transparent border border-[#FFD400]/30 rounded-2xl p-6">
+      <h3 class="text-lg font-black">내 유형과 <span class="y">찰떡인 상대</span>,<br>지금 만나러 갈까요?</h3>
+      <p class="text-xs text-[#9E9E97] mt-2">강남 로테이션 소개팅 / 1:1 온라인 매칭으로 연결해드려요.</p>
+      <button onclick="goApply()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl mt-5 pulse"><i class="fa-solid fa-mug-hot mr-2"></i>오프라인 커피팅 신청</button>
+      <button onclick="goMatching()" class="w-full bg-[#0D0D0C] border border-[#FFD400]/40 text-white font-extrabold py-4 rounded-2xl mt-2 hover:bg-[#FFD400]/10 transition"><i class="fa-solid fa-video y mr-2"></i>1:1 온라인 매칭 신청</button>
+      <button onclick="restart()" class="text-xs text-[#9E9E97] hover:text-white mt-4">다시 테스트하기</button>
+    </div>
+  </section>
+</div>
+
+<div id="toast" class="fixed bottom-6 inset-x-5 max-w-md mx-auto bg-[#242422] border border-[#FFD400]/30 rounded-xl p-4 text-sm text-center translate-y-32 opacity-0 transition-all duration-300 z-50"></div>
+
+<script>
+const ENDPOINT_URL = "";
+
+const Q=[
+ {cat:"첫인상", q:"소개팅 상대가 카페 문 열고 들어왔다. 나의 첫 행동은?",
+  a:[{t:"먼저 손 흔들며 \"여기예요!\" 외친다",s:{bold:2}},
+     {t:"눈 마주치면 살짝 미소만",s:{cool:1,chill:1}},
+     {t:"\"오시느라 고생했어요\" 다정하게",s:{sweet:2}},
+     {t:"쿨하게 목례하고 자리 안내",s:{cool:2}}]},
+ {cat:"연락 스타일", q:"썸 상대에게 답장 오는 속도는?",
+  a:[{t:"읽씹 불가. 거의 실시간",s:{sweet:1,bold:1}},
+     {t:"보고 싶을 때 바로바로",s:{bold:2}},
+     {t:"적당한 텀 두고 여유롭게",s:{cool:2}},
+     {t:"내 페이스대로 편하게",s:{chill:2}}]},
+ {cat:"애정 표현", q:"좋아하는 마음, 어떻게 보여줘?",
+  a:[{t:"\"좋아해\" 말로 직진",s:{bold:2}},
+     {t:"표정·눈빛에서 다 티남",s:{sweet:2}},
+     {t:"티 안 내고 챙겨주기",s:{cool:1,chill:1}},
+     {t:"은근하게 밀당 섞어서",s:{cool:2}}]},
+ {cat:"데이트", q:"이상적인 첫 데이트는?",
+  a:[{t:"핫플 다 도는 알찬 코스",s:{bold:2}},
+     {t:"분위기 좋은 카페 수다",s:{sweet:1,chill:1}},
+     {t:"산책하며 자연스럽게",s:{chill:2}},
+     {t:"적당히 거리 두며 탐색",s:{cool:2}}]},
+ {cat:"밀당", q:"상대가 먼저 연락 안 하면?",
+  a:[{t:"내가 먼저 한다. 밀당 뭐임?",s:{bold:2}},
+     {t:"조금 서운하지만 기다림",s:{sweet:1,chill:1}},
+     {t:"나도 똑같이 연락 안 함",s:{cool:2}},
+     {t:"별로 신경 안 쓰임",s:{chill:2}}]},
+ {cat:"갈등", q:"다퉜을 때 나는?",
+  a:[{t:"그날 바로 풀어야 직성 풀림",s:{bold:1,sweet:1}},
+     {t:"먼저 사과하고 안아줌",s:{sweet:2}},
+     {t:"시간 갖고 쿨하게 정리",s:{cool:2}},
+     {t:"크게 동요 안 하고 차분히",s:{chill:2}}]},
+ {cat:"주말", q:"연인과 보내고 싶은 주말은?",
+  a:[{t:"새로운 데 가서 신나게",s:{bold:2}},
+     {t:"붙어서 종일 꽁냥꽁냥",s:{sweet:2}},
+     {t:"각자 할 일 하다 저녁에",s:{cool:1,chill:1}},
+     {t:"집에서 뒹굴뒹굴 편하게",s:{chill:2}}]},
+ {cat:"질투", q:"연인이 이성이랑 친하게 지내면?",
+  a:[{t:"바로 솔직하게 말함",s:{bold:2}},
+     {t:"티 내고 삐짐 (귀엽게)",s:{sweet:2}},
+     {t:"쿨한 척하지만 속으론...",s:{cool:2}},
+     {t:"믿으니까 크게 신경 안 씀",s:{chill:2}}]},
+ {cat:"표현 받기", q:"연인에게 가장 받고 싶은 건?",
+  a:[{t:"적극적인 이벤트·서프라이즈",s:{bold:2}},
+     {t:"매일 다정한 연락과 말",s:{sweet:2}},
+     {t:"적당한 자유와 존중",s:{cool:1,chill:1}},
+     {t:"편안하고 안정적인 일상",s:{chill:2}}]},
+ {cat:"연애관", q:"나에게 연애란?",
+  a:[{t:"불타오르는 열정 그 자체",s:{bold:2}},
+     {t:"매일이 달콤한 디저트",s:{sweet:2}},
+     {t:"적당한 긴장감이 있는 게임",s:{cool:2}},
+     {t:"편안한 휴식 같은 것",s:{chill:2}}]},
+];
+
+const TYPES={
+ dripper:{name:"직진드리퍼",eng:"STRAIGHT DRIPPER",emoji:"🔥",rare:11,
+   tagline:"마음 들면 바로 내려버리는 직진파 ☕",
+   desc:"밀당? 그게 뭔데. 좋으면 좋다고 바로 표현하는 화끈한 직진파예요. 망설이는 사이 식어버리는 게 더 싫은, 솔직하고 적극적인 타입.",
+   traits:["고백도 연락도 내가 먼저","읽씹 절대 안 함","감정 숨기는 거 못함"],
+   match:{emoji:"🌙",name:"디카페인형",reason:"내 직진을 편안하게 받아주는 사람"}},
+ coldbrew:{name:"콜드브루형",eng:"COLD BREW",emoji:"🧊",rare:9,
+   tagline:"천천히 우러나는 반전 깊이 🧊",
+   desc:"처음엔 차갑고 거리감 있어 보여도, 알수록 깊은 맛이 우러나는 반전 매력파. 시간은 걸려도 한번 빠지면 진국인 츤데레 스타일.",
+   traits:["초반엔 쿨한 척","마음 열리면 한없이 깊음","겉바속촉 그 자체"],
+   match:{emoji:"🍯",name:"꿀라떼형",reason:"내 차가움을 다정하게 녹여주는 사람"}},
+ honeylatte:{name:"꿀라떼형",eng:"HONEY LATTE",emoji:"🍯",rare:14,
+   tagline:"단내 풀풀, 애정표현 만렙 🍯",
+   desc:"보고 싶으면 보고 싶다고, 좋으면 좋다고. 애정 표현이 끊이지 않는 다정함 만렙 타입. 함께 있으면 매일이 달달한 사람.",
+   traits:["애정표현 아끼지 않음","연락·케어 꾸준","상대를 늘 챙김"],
+   match:{emoji:"🧊",name:"콜드브루형",reason:"내 다정함에 서서히 녹는 사람"}},
+ americano:{name:"아아고수",eng:"ICE AMERICANO MASTER",emoji:"😎",rare:8,
+   tagline:"쿨한 척, 다 계산된 밀당러 😎",
+   desc:"겉으론 시크하고 쿨하지만 사실 모든 게 계산된 밀당의 고수. 적당한 긴장감으로 상대를 애타게 만드는 매력적인 전략가예요.",
+   traits:["밀당 마스터","쿨한 척 1등","속마음은 잘 안 보여줌"],
+   match:{emoji:"🫧",name:"바닐라라떼형",reason:"내 밀당에도 흔들림 없이 순수한 사람"}},
+ vanilla:{name:"바닐라라떼형",eng:"VANILLA LATTE",emoji:"🫧",rare:15,
+   tagline:"부드럽고 무해한 순둥이 🫧",
+   desc:"착하고 순하고 부드러운, 누구에게나 호감인 순둥이 타입. 자극적이지 않아도 곁에 있으면 마음이 편안해지는 사람이에요.",
+   traits:["다툼을 싫어함","상대 배려 1순위","무해美 그 자체"],
+   match:{emoji:"😎",name:"아아고수",reason:"내가 안심하고 기댈 수 있는 단단한 사람"}},
+ espresso:{name:"에스프레소샷",eng:"ESPRESSO SHOT",emoji:"⚡",rare:7,
+   tagline:"짧고 강렬, 텐션 폭발 ⚡",
+   desc:"함께 있으면 텐션이 폭발하는 에너지 그 자체. 짧고 굵게, 강렬하게 타오르는 열정파예요. 지루할 틈을 안 주는 사람.",
+   traits:["텐션 항상 풀가동","즉흥·열정적","같이 있으면 안 심심함"],
+   match:{emoji:"🌙",name:"디카페인형",reason:"내 텐션을 차분히 받쳐주는 사람"}},
+ decaf:{name:"디카페인형",eng:"DECAF",emoji:"🌙",rare:13,
+   tagline:"자극 없이 편안한 힐링러 🌙",
+   desc:"호들갑 없이 잔잔하고 편안한 힐링형. 과한 텐션보다는 안정적이고 차분한 관계를 선호하는, 곁에 있으면 마음이 놓이는 사람.",
+   traits:["감정 기복 적음","편안한 분위기 메이커","안정 지향"],
+   match:{emoji:"⚡",name:"에스프레소샷",reason:"잔잔한 내 일상에 설렘을 주는 사람"}},
+ todaycoffee:{name:"오늘의커피형",eng:"TODAY'S SPECIAL",emoji:"🎭",rare:10,
+   tagline:"그날그날 다른 변화무쌍 매력 🎭",
+   desc:"어떤 날은 다정, 어떤 날은 쿨, 어떤 날은 텐션 폭발. 종잡을 수 없는 변화무쌍한 매력으로 절대 질리지 않게 만드는 반전의 아이콘.",
+   traits:["예측 불가 매력","상황 따라 다른 모습","늘 새로움"],
+   match:{emoji:"🍯",name:"꿀라떼형",reason:"변덕스러운 나를 한결같이 좋아해주는 사람"}},
+};
+
+let step=0, scores={bold:0,cool:0,sweet:0,chill:0};
+let userInfo={name:"",gender:"",year:"",phone:"",agree:false};
+let result=null;
+const $=id=>document.getElementById(id);
+
+function initLiveCounter(){
+  const h=new Date().getHours();
+  const base=420+h*47+Math.floor(Math.random()*60);
+  let cur=Math.max(80,base-180);
+  $("live-today").textContent=cur.toLocaleString();
+  const timer=setInterval(()=>{
+    if(cur<base){cur+=Math.floor(Math.random()*3)+1;$("live-today").textContent=cur.toLocaleString();}
+    else clearInterval(timer);
+  },800);
+}
+initLiveCounter();
+
+function show(id){["intro","quiz","loading","info","result"].forEach(p=>$(p).classList.add("hidden"));$(id).classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});}
+function startTest(){step=0;scores={bold:0,cool:0,sweet:0,chill:0};show("quiz");renderQ();}
+function renderQ(){
+  $("feedback").classList.add("hidden");
+  const item=Q[step];
+  $("qcount").textContent=`Q${step+1} / ${Q.length}`;
+  $("progress").style.width=`${(step/Q.length)*100}%`;
+  $("qcat").textContent=item.cat;
+  $("qtext").textContent=item.q;
+  $("qtext").classList.remove("fade");void $("qtext").offsetWidth;$("qtext").classList.add("fade");
+  $("qopts").innerHTML=item.a.map((o,i)=>`<button onclick="answer(${i})" class="fade w-full bg-[#161615] hover:bg-[#1f1f1d] border border-[#242422] hover:border-y text-left p-4 rounded-xl text-sm font-medium transition" style="animation-delay:${i*50}ms">${o.t}</button>`).join("");
+}
+function answer(i){
+  const s=Q[step].a[i].s;
+  for(const k in s)scores[k]+=s[k];
+  const pct=Math.floor(Math.random()*45)+35;
+  const msgs=[`방금 선택, ${pct}%의 사람들과 같아요!`,`이 답변을 고른 사람 ${pct}%!`,`상위 ${100-pct}%의 선택이에요 👀`,`${pct}%가 같은 선택을 했어요`];
+  $("fb-text").textContent=msgs[Math.floor(Math.random()*msgs.length)];
+  $("fb-bar").style.width=pct+"%";
+  $("feedback").classList.remove("hidden");
+  $("fb-bar").classList.remove("fb-bar");void $("fb-bar").offsetWidth;$("fb-bar").classList.add("fb-bar");
+  $("qopts").querySelectorAll("button").forEach(b=>b.disabled=true);
+  setTimeout(()=>{
+    step++;
+    if(step<Q.length)renderQ();
+    else runLoading();
+  },750);
+}
+
+function runLoading(){
+  $("progress").style.width="100%";
+  show("loading");
+  const steps=[
+    {t:"AI가 당신의 답변을 분석 중...",s:"8가지 커피 유형과 매칭하고 있어요",p:25},
+    {t:"당신의 연애 취향 추출 중...",s:"직진? 밀당? 다정함? 계산하는 중",p:55},
+    {t:"찰떡 궁합 유형 찾는 중...",s:"가장 잘 맞는 상대를 분석해요",p:80},
+    {t:"결과지 완성 중...",s:"거의 다 됐어요!",p:100},
+  ];
+  let idx=0;
+  function tick(){
+    if(idx<steps.length){
+      $("loading-text").textContent=steps[idx].t;
+      $("loading-sub").textContent=steps[idx].s;
+      $("loading-bar").style.width=steps[idx].p+"%";
+      idx++;
+      setTimeout(tick,700);
+    }else{
+      setTimeout(()=>show("info"),400);
+    }
+  }
+  tick();
+}
+
+function setGender(g){userInfo.gender=g;
+  $("g-m").className="border rounded-xl py-3.5 text-sm font-bold transition "+(g==="남성"?"bd-y bg-[#FFD400]/10 y":"border-[#242422] bg-[#161615] text-white");
+  $("g-f").className="border rounded-xl py-3.5 text-sm font-bold transition "+(g==="여성"?"bd-y bg-[#FFD400]/10 y":"border-[#242422] bg-[#161615] text-white");}
+function togglePolicy(e){e.preventDefault();$("policy").classList.toggle("hidden");}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.remove("translate-y-32","opacity-0");setTimeout(()=>t.classList.add("translate-y-32","opacity-0"),3000);}
+
+async function submitInfo(){
+  const name=$("i-name").value.trim();
+  const year=$("i-year").value.trim();
+  const phone=$("i-phone").value.trim().replace(/[^0-9]/g,"");
+  const agree=$("i-agree").checked;
+  if(!name)return toast("이름을 입력해주세요.");
+  if(!userInfo.gender)return toast("성별을 선택해주세요.");
+  if(!year||year.length!==4)return toast("출생연도 4자리를 입력해주세요.");
+  if(!agree)return toast("개인정보 수집·이용에 동의해주세요.");
+  userInfo.name=name;userInfo.year=year;userInfo.phone=phone;userInfo.agree=agree;
+  await sendData();
+  showResult();
+}
+function skipInfo(){showResult();}
+async function sendData(){
+  if(!ENDPOINT_URL)return;
+  try{await fetch(ENDPOINT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+    type:"커피유형테스트",...userInfo,phone:userInfo.phone?"'"+userInfo.phone:"",resultType:result?TYPES[result].name:"",scores,submittedAt:new Date().toISOString()
+  })});}catch(e){console.error(e);}
+}
+
+function calc(){
+  const entries=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const top1=entries[0];
+  const dominant=top1[0];
+  const spread=top1[1]-entries[3][1];
+  if(spread<=2)return "todaycoffee";
+  if(dominant==="bold") return scores.sweet>=scores.cool?(scores.bold>=6?"espresso":"dripper"):(scores.bold>=6?"espresso":"dripper");
+  if(dominant==="sweet")return "honeylatte";
+  if(dominant==="cool") return scores.chill>=scores.sweet?"americano":"coldbrew";
+  if(dominant==="chill")return scores.bold>=4?"espresso":(scores.sweet>=4?"vanilla":"decaf");
+  return "todaycoffee";
+}
+
+function showResult(){
+  $("progress").style.width="100%";
+  result=calc();const t=TYPES[result];
+  $("r-greeting").textContent=userInfo.name?`${userInfo.name}님의 연애 커피 유형은`:`당신의 연애 커피 유형은`;
+  $("r-emoji").textContent=t.emoji;
+  $("r-eng").textContent=t.eng;
+  $("r-type").textContent=t.name;
+  $("r-tagline").textContent=t.tagline;
+  $("r-desc").textContent=t.desc;
+  $("r-rare").textContent=t.rare;
+  $("r-traits").innerHTML=t.traits.map(tr=>`<li class="flex items-start gap-1.5"><i class="fa-solid fa-check y mt-0.5 text-[10px]"></i><span>${tr}</span></li>`).join("");
+  $("r-match").innerHTML=`<div class="text-2xl">${t.match.emoji}</div><div class="font-bold text-white mt-1">${t.match.name}</div><div class="text-[11px] text-[#9E9E97] mt-1 leading-snug">${t.match.reason}</div>`;
+  const c=Math.floor(Math.random()*22)+16;
+  $("r-count").textContent=c;
+  if(userInfo.year){const age=2026-parseInt(userInfo.year);$("r-age-range").textContent=`${Math.max(20,age-3)}~${age+3}세`;}
+  else $("r-age-range").textContent="2030 싱글";
+  show("result");
+}
+function goApply(){
+  const url=`index.html?result=${encodeURIComponent(TYPES[result].name)}&pct=${TYPES[result].rare}&type=커피유형&name=${encodeURIComponent(userInfo.name||"")}#apply`;
+  window.location.href=url;
+}
+function goMatching(){
+  const url=`../matching?result=${encodeURIComponent(TYPES[result].name)}&pct=${TYPES[result].rare}`;
+  window.location.href=url;
+}
+function copyShare(){
+  navigator.clipboard.writeText(location.origin+location.pathname).then(()=>toast("링크 복사 완료! 친구한테 공유해보세요 ☕"));
+}
+function restart(){step=0;scores={bold:0,cool:0,sweet:0,chill:0};userInfo={name:"",gender:"",year:"",phone:"",agree:false};result=null;$("progress").style.width="0%";show("intro");}
+</script>
+</body>
+</html>
