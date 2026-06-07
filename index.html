@@ -835,16 +835,16 @@ document.querySelectorAll("[data-reveal]").forEach(el=>io.observe(el));
 const participants = {
   "0611": {
     "M": [
-      {age:"95년생",job:"IT 개발자",height:"178cm",area:"강남",sup:false},
-      {age:"97년생",job:"금융 애널리스트",height:"181cm",area:"서초",sup:false},
-      {age:"93년생",job:"마케팅 팀장",height:"175cm",area:"송파",sup:true},
-      {age:"98년생",job:"건축 설계사",height:"180cm",area:"강남",sup:false},
+      {age:"95년생",job:"IT 개발자",height:"178cm",area:"강남"},
+      {age:"97년생",job:"금융 애널리스트",height:"181cm",area:"서초"},
+      {age:"93년생",job:"마케팅 팀장",height:"175cm",area:"송파"},
+      {age:"98년생",job:"건축 설계사",height:"180cm",area:"강남"},
     ],
     "F": [
-      {age:"99년생",job:"디자이너",height:"165cm",area:"강남",sup:false},
-      {age:"96년생",job:"간호사",height:"163cm",area:"마포",sup:false},
-      {age:"97년생",job:"회계사",height:"168cm",area:"서초",sup:false},
-      {age:"00년생",job:"대학원생",height:"162cm",area:"강남",sup:false},
+      {age:"99년생",job:"디자이너",height:"165cm",area:"강남"},
+      {age:"96년생",job:"간호사",height:"163cm",area:"마포"},
+      {age:"97년생",job:"회계사",height:"168cm",area:"서초"},
+      {age:"00년생",job:"대학원생",height:"162cm",area:"강남"},
     ]
   },
   "0625": {
@@ -885,7 +885,6 @@ function renderParticipants(){
       <div class="p-info">
         <span class="p-tag">${p.height}</span>
         <span class="p-tag">${p.area}</span>
-        ${p.sup?'<span class="p-super"><i class="fa-solid fa-crown" style="margin-right:2px"></i>슈퍼매칭</span>':''}
       </div>
     </div>
   `).join('');
