@@ -8,9 +8,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
-  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0D0D0C;color:#F5F5F3;overflow-x:hidden}
-  .y{color:#FFD400}.bg-y{background:#FFD400}.bd-y{border-color:#FFD400}
-  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#161615}::-webkit-scrollbar-thumb{background:#FFD400;border-radius:3px}
+  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0e0c0a;color:#F5F5F3;overflow-x:hidden}
+  .y{color:#FFBE2E}.bg-y{background:#FFBE2E}.bd-y{border-color:#FFBE2E}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#16140f}::-webkit-scrollbar-thumb{background:#FFBE2E;border-radius:3px}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
   .fade{animation:fadeUp .5s ease both}
   .glow{background:radial-gradient(circle at 50% 0%,rgba(255,212,0,.12),transparent 60%)}
@@ -18,28 +18,28 @@
   [data-reveal].in{opacity:1;transform:none}
   /* 키워드 칩 선택 */
   .chip{cursor:pointer;transition:all .2s}
-  .chip:hover{border-color:#FFD400;color:#FFD400}
-  .chip.selected{background:#FFD400;color:#0D0D0C;border-color:#FFD400;font-weight:700}
+  .chip:hover{border-color:#FFBE2E;color:#FFBE2E}
+  .chip.selected{background:#FFBE2E;color:#0e0c0a;border-color:#FFBE2E;font-weight:700}
   /* 자기소개 카운터 */
   .counter{transition:color .2s}
   .counter.over{color:#FF4A4A}
   /* 라디오/체크 커스텀 */
   input[type="radio"],input[type="checkbox"]{display:none}
   .radio-card{cursor:pointer;transition:all .2s}
-  .radio-card:hover{border-color:#FFD400}
-  input:checked+.radio-card{background:rgba(255,212,0,.08);border-color:#FFD400}
-  input:checked+.radio-card .dot{background:#FFD400}
+  .radio-card:hover{border-color:#FFBE2E}
+  input:checked+.radio-card{background:rgba(255,212,0,.08);border-color:#FFBE2E}
+  input:checked+.radio-card .dot{background:#FFBE2E}
 </style>
 </head>
-<body class="min-h-screen selection:bg-[#FFD400] selection:text-black">
+<body class="min-h-screen selection:bg-[#FFBE2E] selection:text-black">
 
 <!-- 네비 -->
-<nav class="sticky top-0 z-50 bg-[#0D0D0C]/95 backdrop-blur-md border-b border-[#242422] px-4 py-3">
+<nav class="sticky top-0 z-50 bg-[#0e0c0a]/95 backdrop-blur-md border-b border-[#1e1c17] px-4 py-3">
   <div class="max-w-6xl mx-auto flex justify-between items-center">
     <a href="index.html" class="flex items-center gap-2">
       <img src="logo.png" alt="썸류센터" class="h-8">
     </a>
-    <a href="index.html" class="text-sm font-semibold text-[#9E9E97] hover:text-white transition">
+    <a href="index.html" class="text-sm font-semibold text-[#9a9080] hover:text-white transition">
       <i class="fa-solid fa-arrow-left mr-1"></i>홈으로
     </a>
   </div>
@@ -48,28 +48,28 @@
 <!-- 헤더 -->
 <header class="pt-10 pb-8 px-5 glow">
   <div class="max-w-lg mx-auto text-center fade">
-    <span class="inline-flex items-center gap-2 bg-[#FFD400]/10 border border-[#FFD400]/30 y px-4 py-1.5 rounded-full text-[11px] font-bold tracking-widest uppercase mb-4">
+    <span class="inline-flex items-center gap-2 bg-[#FFBE2E]/10 border border-[#FFBE2E]/30 y px-4 py-1.5 rounded-full text-[11px] font-bold tracking-widest uppercase mb-4">
       <i class="fa-solid fa-video"></i> 1:1 온라인 매칭
     </span>
     <h1 class="text-2xl md:text-3xl font-black leading-tight">
       장소와 시간에 구애 없이<br><span class="y">나만을 위한 매칭</span>
     </h1>
-    <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">
+    <p class="text-sm text-[#9a9080] mt-3 leading-relaxed">
       센터장이 직접 검토하고, 당신에게 맞는 한 사람을 매칭해 드려요.
     </p>
     <div class="flex flex-wrap items-center justify-center gap-2 mt-4">
-      <span class="inline-flex items-center gap-2 bg-[#FFD400]/10 border border-[#FFD400]/30 rounded-full px-4 py-1.5 text-xs y font-bold">
+      <span class="inline-flex items-center gap-2 bg-[#FFBE2E]/10 border border-[#FFBE2E]/30 rounded-full px-4 py-1.5 text-xs y font-bold">
         <i class="fa-solid fa-tag"></i> 일반 매칭 19,900원
       </span>
-      <span class="inline-flex items-center gap-2 bg-[#FFD400]/20 border border-[#FFD400]/50 rounded-full px-4 py-1.5 text-xs y font-bold">
+      <span class="inline-flex items-center gap-2 bg-[#FFBE2E]/20 border border-[#FFBE2E]/50 rounded-full px-4 py-1.5 text-xs y font-bold">
         <i class="fa-solid fa-crown"></i> 슈퍼매칭 39,800원
       </span>
     </div>
     <!-- 테스트 결과 배지 (URL 파라미터로 넘어온 경우) -->
-    <div id="test-result-badge" class="hidden bg-[#161615] border border-[#FFD400]/40 rounded-xl p-3 mt-5 text-sm">
+    <div id="test-result-badge" class="hidden bg-[#16140f] border border-[#FFBE2E]/40 rounded-xl p-3 mt-5 text-sm">
       <div class="flex items-center justify-center gap-2">
         <i class="fa-solid fa-flask y"></i>
-        <span class="text-[#9E9E97]">테스트 결과:</span>
+        <span class="text-[#9a9080]">테스트 결과:</span>
         <b id="test-result-text" class="text-white"></b>
       </div>
     </div>
@@ -82,20 +82,20 @@
     <div class="grid grid-cols-4 gap-2 text-center" data-reveal>
       <div class="relative">
         <div class="w-8 h-8 mx-auto rounded-lg bg-y text-black font-black text-xs flex items-center justify-center">1</div>
-        <div class="text-[10px] text-[#9E9E97] mt-1.5">신청서 제출</div>
-        <div class="hidden md:block absolute top-4 left-[calc(50%+20px)] w-[calc(100%-40px)] h-px bg-[#FFD400]/30"></div>
+        <div class="text-[10px] text-[#9a9080] mt-1.5">신청서 제출</div>
+        <div class="hidden md:block absolute top-4 left-[calc(50%+20px)] w-[calc(100%-40px)] h-px bg-[#FFBE2E]/30"></div>
       </div>
       <div class="relative">
-        <div class="w-8 h-8 mx-auto rounded-lg bg-[#161615] border border-[#242422] text-[#9E9E97] font-black text-xs flex items-center justify-center">2</div>
-        <div class="text-[10px] text-[#9E9E97] mt-1.5">센터장 검토</div>
+        <div class="w-8 h-8 mx-auto rounded-lg bg-[#16140f] border border-[#1e1c17] text-[#9a9080] font-black text-xs flex items-center justify-center">2</div>
+        <div class="text-[10px] text-[#9a9080] mt-1.5">센터장 검토</div>
       </div>
       <div class="relative">
-        <div class="w-8 h-8 mx-auto rounded-lg bg-[#161615] border border-[#242422] text-[#9E9E97] font-black text-xs flex items-center justify-center">3</div>
-        <div class="text-[10px] text-[#9E9E97] mt-1.5">매칭 프로필</div>
+        <div class="w-8 h-8 mx-auto rounded-lg bg-[#16140f] border border-[#1e1c17] text-[#9a9080] font-black text-xs flex items-center justify-center">3</div>
+        <div class="text-[10px] text-[#9a9080] mt-1.5">매칭 프로필</div>
       </div>
       <div>
-        <div class="w-8 h-8 mx-auto rounded-lg bg-[#161615] border border-[#242422] text-[#9E9E97] font-black text-xs flex items-center justify-center">4</div>
-        <div class="text-[10px] text-[#9E9E97] mt-1.5">연락처 교환</div>
+        <div class="w-8 h-8 mx-auto rounded-lg bg-[#16140f] border border-[#1e1c17] text-[#9a9080] font-black text-xs flex items-center justify-center">4</div>
+        <div class="text-[10px] text-[#9a9080] mt-1.5">연락처 교환</div>
       </div>
     </div>
   </div>
@@ -107,9 +107,9 @@
     <form id="matching-form" class="space-y-6" onsubmit="return handleSubmit(event)">
 
       <!-- 기본 정보 -->
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-5" data-reveal>
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-5" data-reveal>
         <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#FFBE2E]/10 border border-[#FFBE2E]/30 flex items-center justify-center">
             <i class="fa-solid fa-user y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">기본 정보</h2>
@@ -117,14 +117,14 @@
 
         <!-- 프로필 사진 (최대 3장) -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">프로필 사진 <span class="y">*</span> <span class="text-[#555] font-normal ml-1">최소 1장, 최대 3장</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">프로필 사진 <span class="y">*</span> <span class="text-[#6b6358] font-normal ml-1">최소 1장, 최대 3장</span></label>
           <div class="grid grid-cols-3 gap-2" id="photo-slots">
             <div class="photo-slot" data-index="0" onclick="triggerPhoto(0)">
-              <div class="aspect-square bg-[#0D0D0C] border-2 border-dashed border-[#FFD400]/40 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFD400] transition group relative overflow-hidden">
+              <div class="aspect-square bg-[#0e0c0a] border-2 border-dashed border-[#FFBE2E]/40 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFBE2E] transition group relative overflow-hidden">
                 <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
                 <div class="photo-placeholder flex flex-col items-center">
-                  <i class="fa-solid fa-camera text-[#FFD400] text-lg mb-1"></i>
-                  <span class="text-[10px] text-[#FFD400] font-bold">대표 사진</span>
+                  <i class="fa-solid fa-camera text-[#FFBE2E] text-lg mb-1"></i>
+                  <span class="text-[10px] text-[#FFBE2E] font-bold">대표 사진</span>
                 </div>
                 <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(0)">
                   <i class="fa-solid fa-xmark"></i>
@@ -132,11 +132,11 @@
               </div>
             </div>
             <div class="photo-slot" data-index="1" onclick="triggerPhoto(1)">
-              <div class="aspect-square bg-[#0D0D0C] border-2 border-dashed border-[#242422] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFD400] transition group relative overflow-hidden">
+              <div class="aspect-square bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFBE2E] transition group relative overflow-hidden">
                 <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
                 <div class="photo-placeholder flex flex-col items-center">
-                  <i class="fa-solid fa-plus text-[#555] text-lg mb-1 group-hover:text-[#FFD400] transition"></i>
-                  <span class="text-[10px] text-[#555]">추가</span>
+                  <i class="fa-solid fa-plus text-[#6b6358] text-lg mb-1 group-hover:text-[#FFBE2E] transition"></i>
+                  <span class="text-[10px] text-[#6b6358]">추가</span>
                 </div>
                 <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(1)">
                   <i class="fa-solid fa-xmark"></i>
@@ -144,11 +144,11 @@
               </div>
             </div>
             <div class="photo-slot" data-index="2" onclick="triggerPhoto(2)">
-              <div class="aspect-square bg-[#0D0D0C] border-2 border-dashed border-[#242422] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFD400] transition group relative overflow-hidden">
+              <div class="aspect-square bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#FFBE2E] transition group relative overflow-hidden">
                 <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
                 <div class="photo-placeholder flex flex-col items-center">
-                  <i class="fa-solid fa-plus text-[#555] text-lg mb-1 group-hover:text-[#FFD400] transition"></i>
-                  <span class="text-[10px] text-[#555]">추가</span>
+                  <i class="fa-solid fa-plus text-[#6b6358] text-lg mb-1 group-hover:text-[#FFBE2E] transition"></i>
+                  <span class="text-[10px] text-[#6b6358]">추가</span>
                 </div>
                 <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(2)">
                   <i class="fa-solid fa-xmark"></i>
@@ -157,38 +157,38 @@
             </div>
           </div>
           <input type="file" id="photo-input" accept="image/*" class="hidden">
-          <p class="text-[10px] text-[#444] mt-2">얼굴이 잘 보이는 사진을 올려주세요 (장당 최대 5MB)</p>
+          <p class="text-[10px] text-[#5a5248] mt-2">얼굴이 잘 보이는 사진을 올려주세요 (장당 최대 5MB)</p>
         </div>
 
         <!-- 이름 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">이름 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">이름 <span class="y">*</span></label>
           <input type="text" name="name" required placeholder="실명을 입력해주세요"
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition">
         </div>
 
         <!-- 연락처 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">연락처 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">연락처 <span class="y">*</span></label>
           <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="01[0-9]{1}[0-9\-]{7,9}"
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition">
         </div>
 
         <!-- 성별 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">성별 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">성별 <span class="y">*</span></label>
           <div class="grid grid-cols-2 gap-2">
             <label>
               <input type="radio" name="gender" value="남성" required>
-              <div class="radio-card bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-center flex items-center justify-center gap-2">
-                <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>
+              <div class="radio-card bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-center flex items-center justify-center gap-2">
+                <div class="dot w-3 h-3 rounded-full border-2 border-[#6b6358] shrink-0"></div>
                 남성
               </div>
             </label>
             <label>
               <input type="radio" name="gender" value="여성">
-              <div class="radio-card bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-center flex items-center justify-center gap-2">
-                <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>
+              <div class="radio-card bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-center flex items-center justify-center gap-2">
+                <div class="dot w-3 h-3 rounded-full border-2 border-[#6b6358] shrink-0"></div>
                 여성
               </div>
             </label>
@@ -197,10 +197,10 @@
 
         <!-- 나이 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">출생 연도 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">출생 연도 <span class="y">*</span></label>
           <select name="birthYear" required
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white focus:border-[#FFD400] focus:outline-none transition appearance-none">
-            <option value="" disabled selected class="text-[#555]">출생 연도를 선택해주세요</option>
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#FFBE2E] focus:outline-none transition appearance-none">
+            <option value="" disabled selected class="text-[#6b6358]">출생 연도를 선택해주세요</option>
             <option value="2006">2006년생</option>
             <option value="2005">2005년생</option>
             <option value="2004">2004년생</option>
@@ -226,37 +226,37 @@
 
         <!-- 직업 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">직업 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">직업 <span class="y">*</span></label>
           <input type="text" name="job" required placeholder="예: 마케터, 개발자, 간호사"
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition">
         </div>
 
         <!-- 키 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">키 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">키 <span class="y">*</span></label>
           <input type="text" name="height" required placeholder="예: 175"
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition">
         </div>
 
         <!-- 사는 곳 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">사는 곳 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">사는 곳 <span class="y">*</span></label>
           <input type="text" name="location" required placeholder="예: 서울 강남구, 경기 성남시"
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition">
         </div>
 
         <!-- 취미 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">취미 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">취미 <span class="y">*</span></label>
           <input type="text" name="hobby" required placeholder="예: 러닝, 카페투어, 넷플릭스"
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition">
         </div>
 
         <!-- 종교 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">종교 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">종교 <span class="y">*</span></label>
           <select name="religion" required
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white focus:border-[#FFD400] focus:outline-none transition appearance-none">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#FFBE2E] focus:outline-none transition appearance-none">
             <option value="" disabled selected>종교를 선택해주세요</option>
             <option value="무교">무교</option>
             <option value="기독교">기독교</option>
@@ -268,28 +268,28 @@
       </div>
 
       <!-- 신분 인증 서류 -->
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-5" data-reveal>
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-5" data-reveal>
         <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#FFBE2E]/10 border border-[#FFBE2E]/30 flex items-center justify-center">
             <i class="fa-solid fa-shield-check y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">신분 인증</h2>
-          <span class="text-[10px] text-[#555] ml-auto">센터장만 확인하며, 매칭 상대에게 공개되지 않아요</span>
+          <span class="text-[10px] text-[#6b6358] ml-auto">센터장만 확인하며, 매칭 상대에게 공개되지 않아요</span>
         </div>
 
         <!-- 재직증명서 / 사업자등록증 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">재직증명서 또는 사업자등록증 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">재직증명서 또는 사업자등록증 <span class="y">*</span></label>
           <div id="doc-job-upload" onclick="document.getElementById('doc-job-input').click()"
-            class="w-full bg-[#0D0D0C] border-2 border-dashed border-[#242422] rounded-xl p-4 text-center cursor-pointer hover:border-[#FFD400] transition group">
+            class="w-full bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl p-4 text-center cursor-pointer hover:border-[#FFBE2E] transition group">
             <div id="doc-job-done" class="hidden flex items-center justify-center gap-2">
               <i class="fa-solid fa-file-circle-check y"></i>
               <span id="doc-job-name" class="text-xs text-white truncate max-w-[200px]"></span>
-              <button type="button" class="text-[#555] hover:text-red-400 text-xs ml-1" onclick="event.stopPropagation();removeDoc('job')"><i class="fa-solid fa-xmark"></i></button>
+              <button type="button" class="text-[#6b6358] hover:text-red-400 text-xs ml-1" onclick="event.stopPropagation();removeDoc('job')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="doc-job-placeholder" class="flex flex-col items-center">
-              <i class="fa-solid fa-cloud-arrow-up text-[#555] text-lg mb-1 group-hover:text-[#FFD400] transition"></i>
-              <span class="text-[10px] text-[#555]">파일 선택 (PDF, JPG, PNG / 최대 10MB)</span>
+              <i class="fa-solid fa-cloud-arrow-up text-[#6b6358] text-lg mb-1 group-hover:text-[#FFBE2E] transition"></i>
+              <span class="text-[10px] text-[#6b6358]">파일 선택 (PDF, JPG, PNG / 최대 10MB)</span>
             </div>
           </div>
           <input type="file" id="doc-job-input" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
@@ -297,32 +297,32 @@
 
         <!-- 신분증 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">신분증 사본 <span class="y">*</span> <span class="text-[#555] font-normal ml-1">주민번호 뒷자리는 가려주세요</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">신분증 사본 <span class="y">*</span> <span class="text-[#6b6358] font-normal ml-1">주민번호 뒷자리는 가려주세요</span></label>
           <div id="doc-id-upload" onclick="document.getElementById('doc-id-input').click()"
-            class="w-full bg-[#0D0D0C] border-2 border-dashed border-[#242422] rounded-xl p-4 text-center cursor-pointer hover:border-[#FFD400] transition group">
+            class="w-full bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl p-4 text-center cursor-pointer hover:border-[#FFBE2E] transition group">
             <div id="doc-id-done" class="hidden flex items-center justify-center gap-2">
               <i class="fa-solid fa-file-circle-check y"></i>
               <span id="doc-id-name" class="text-xs text-white truncate max-w-[200px]"></span>
-              <button type="button" class="text-[#555] hover:text-red-400 text-xs ml-1" onclick="event.stopPropagation();removeDoc('id')"><i class="fa-solid fa-xmark"></i></button>
+              <button type="button" class="text-[#6b6358] hover:text-red-400 text-xs ml-1" onclick="event.stopPropagation();removeDoc('id')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="doc-id-placeholder" class="flex flex-col items-center">
-              <i class="fa-solid fa-cloud-arrow-up text-[#555] text-lg mb-1 group-hover:text-[#FFD400] transition"></i>
-              <span class="text-[10px] text-[#555]">파일 선택 (PDF, JPG, PNG / 최대 10MB)</span>
+              <i class="fa-solid fa-cloud-arrow-up text-[#6b6358] text-lg mb-1 group-hover:text-[#FFBE2E] transition"></i>
+              <span class="text-[10px] text-[#6b6358]">파일 선택 (PDF, JPG, PNG / 최대 10MB)</span>
             </div>
           </div>
           <input type="file" id="doc-id-input" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
         </div>
 
-        <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-3 flex gap-2 items-start">
+        <div class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 flex gap-2 items-start">
           <i class="fa-solid fa-lock y text-xs mt-0.5 shrink-0"></i>
-          <p class="text-[11px] text-[#555] leading-relaxed">제출하신 서류는 본인 인증 목적으로만 사용되며, 인증 완료 후 즉시 폐기됩니다.</p>
+          <p class="text-[11px] text-[#6b6358] leading-relaxed">제출하신 서류는 본인 인증 목적으로만 사용되며, 인증 완료 후 즉시 폐기됩니다.</p>
         </div>
       </div>
 
       <!-- 이상형 조건 -->
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-5" data-reveal>
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-5" data-reveal>
         <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#FFBE2E]/10 border border-[#FFBE2E]/30 flex items-center justify-center">
             <i class="fa-solid fa-heart y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">이상형 조건</h2>
@@ -330,113 +330,113 @@
 
         <!-- 선호 나이대 (년생, 복수 선택) -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">선호 나이대 <span class="y">*</span> <span class="text-[#555] font-normal ml-1">복수 선택 가능</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">선호 나이대 <span class="y">*</span> <span class="text-[#6b6358] font-normal ml-1">복수 선택 가능</span></label>
           <div id="age-chips" class="grid grid-cols-2 gap-2">
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm" data-val="00~06년생">00~06년생</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm" data-val="96~99년생">96~99년생</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm" data-val="92~95년생">92~95년생</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm" data-val="87~91년생">87~91년생</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm" data-val="00~06년생">00~06년생</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm" data-val="96~99년생">96~99년생</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm" data-val="92~95년생">92~95년생</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm" data-val="87~91년생">87~91년생</button>
           </div>
           <input type="hidden" name="prefAge" id="pref-age-input">
         </div>
 
         <!-- 선호 직업군 (복수 선택) -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">선호 직업군 <span class="y">*</span> <span class="text-[#555] font-normal ml-1">복수 선택 가능</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">선호 직업군 <span class="y">*</span> <span class="text-[#6b6358] font-normal ml-1">복수 선택 가능</span></label>
           <div id="job-chips" class="flex flex-wrap gap-2">
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="사무직/회사원">사무직/회사원</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="전문직">전문직</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="공무원/공공기관">공무원/공공기관</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="IT/개발">IT/개발</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="금융/경영">금융/경영</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="디자인/크리에이티브">디자인/크리에이티브</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="교육">교육</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="의료/보건">의료/보건</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="자영업/창업">자영업/창업</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-val="상관없음">상관없음</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="사무직/회사원">사무직/회사원</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="전문직">전문직</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="공무원/공공기관">공무원/공공기관</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="IT/개발">IT/개발</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="금융/경영">금융/경영</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="디자인/크리에이티브">디자인/크리에이티브</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="교육">교육</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="의료/보건">의료/보건</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="자영업/창업">자영업/창업</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="상관없음">상관없음</button>
           </div>
           <input type="hidden" name="prefJob" id="pref-job-input">
         </div>
 
         <!-- 성격 키워드 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">
             이상형 성격 키워드 <span class="y">*</span>
-            <span class="text-[#555] font-normal ml-1">3개 선택</span>
+            <span class="text-[#6b6358] font-normal ml-1">3개 선택</span>
           </label>
           <div id="keyword-chips" class="flex flex-wrap gap-2">
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="유머러스">유머러스</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="다정한">다정한</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="지적인">지적인</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="활발한">활발한</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="차분한">차분한</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="리더십">리더십</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="감성적">감성적</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="솔직한">솔직한</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="배려심">배려심</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="독립적">독립적</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="낙천적">낙천적</button>
-            <button type="button" class="chip bg-[#0D0D0C] border border-[#242422] rounded-full px-3.5 py-2 text-xs" data-kw="성실한">성실한</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="유머러스">유머러스</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="다정한">다정한</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="지적인">지적인</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="활발한">활발한</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="차분한">차분한</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="리더십">리더십</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="감성적">감성적</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="솔직한">솔직한</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="배려심">배려심</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="독립적">독립적</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="낙천적">낙천적</button>
+            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="성실한">성실한</button>
           </div>
           <input type="hidden" name="keywords" id="keywords-input" required>
-          <p id="keyword-count" class="text-[11px] text-[#555] mt-2">0 / 3개 선택됨</p>
+          <p id="keyword-count" class="text-[11px] text-[#6b6358] mt-2">0 / 3개 선택됨</p>
         </div>
 
         <!-- 자기소개 -->
         <div>
-          <label class="block text-xs font-bold text-[#9E9E97] mb-2">간단한 자기소개 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">간단한 자기소개 <span class="y">*</span></label>
           <textarea name="intro" id="intro" required maxlength="100" rows="3"
             placeholder="상대방에게 보여질 자기소개를 작성해주세요 (100자 이내)"
-            class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition resize-none"></textarea>
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition resize-none"></textarea>
           <p class="text-right text-[11px] mt-1">
-            <span id="intro-count" class="counter text-[#555]">0</span><span class="text-[#555]"> / 100자</span>
+            <span id="intro-count" class="counter text-[#6b6358]">0</span><span class="text-[#6b6358]"> / 100자</span>
           </p>
         </div>
       </div>
 
       <!-- 연애 테스트 결과 (선택) -->
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5" data-reveal>
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5" data-reveal>
         <div class="flex items-center gap-2 mb-3">
-          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#FFBE2E]/10 border border-[#FFBE2E]/30 flex items-center justify-center">
             <i class="fa-solid fa-flask y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">연애 테스트 결과</h2>
-          <span class="text-[10px] bg-[#242422] text-[#9E9E97] px-2 py-0.5 rounded-full font-bold ml-auto">선택</span>
+          <span class="text-[10px] bg-[#1e1c17] text-[#9a9080] px-2 py-0.5 rounded-full font-bold ml-auto">선택</span>
         </div>
-        <div id="test-result-filled" class="hidden bg-[#FFD400]/5 border border-[#FFD400]/30 rounded-xl p-3 mb-3">
+        <div id="test-result-filled" class="hidden bg-[#FFBE2E]/5 border border-[#FFBE2E]/30 rounded-xl p-3 mb-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-circle-check y text-sm"></i>
               <span class="text-sm font-bold" id="test-result-display"></span>
             </div>
-            <button type="button" onclick="clearTestResult()" class="text-xs text-[#555] hover:text-white">변경</button>
+            <button type="button" onclick="clearTestResult()" class="text-xs text-[#6b6358] hover:text-white">변경</button>
           </div>
         </div>
         <div id="test-result-empty">
-          <p class="text-xs text-[#9E9E97] mb-3 leading-relaxed">테스트를 하셨다면 결과를 입력해주세요. 매칭 시 참고됩니다.</p>
+          <p class="text-xs text-[#9a9080] mb-3 leading-relaxed">테스트를 하셨다면 결과를 입력해주세요. 매칭 시 참고됩니다.</p>
           <div class="grid grid-cols-2 gap-2">
-            <a href="test/ideal.html" target="_blank" class="bg-[#0D0D0C] border border-[#FFD400]/30 rounded-xl p-3 text-center hover:border-[#FFD400] transition block">
+            <a href="test/ideal.html" target="_blank" class="bg-[#0e0c0a] border border-[#FFBE2E]/30 rounded-xl p-3 text-center hover:border-[#FFBE2E] transition block">
               <div class="text-lg mb-0.5">☕</div>
               <div class="text-[11px] font-bold">연애 커피 유형</div>
-              <div class="text-[10px] text-[#555] mt-0.5">테스트 하러가기 →</div>
+              <div class="text-[10px] text-[#6b6358] mt-0.5">테스트 하러가기 →</div>
             </a>
-            <a href="test/index.html" target="_blank" class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-3 text-center hover:border-[#FFD400] transition block">
+            <a href="test/index.html" target="_blank" class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 text-center hover:border-[#FFBE2E] transition block">
               <div class="text-lg mb-0.5">🍺</div>
               <div class="text-[11px] font-bold">연애 향과 맛</div>
-              <div class="text-[10px] text-[#555] mt-0.5">테스트 하러가기 →</div>
+              <div class="text-[10px] text-[#6b6358] mt-0.5">테스트 하러가기 →</div>
             </a>
           </div>
           <div class="mt-3">
             <input type="text" name="testResult" id="test-result-input" placeholder="테스트 결과를 입력해주세요 (예: 직진드리퍼형)"
-              class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+              class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition">
           </div>
         </div>
       </div>
 
       <!-- 매칭 유형 설명 -->
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-4" data-reveal>
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-4" data-reveal>
         <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#FFBE2E]/10 border border-[#FFBE2E]/30 flex items-center justify-center">
             <i class="fa-solid fa-circle-info y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">매칭 유형 안내</h2>
@@ -444,13 +444,13 @@
 
         <div class="space-y-3">
           <!-- 일반 매칭 설명 -->
-          <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-5">
+          <div class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-5">
             <div class="flex items-center gap-2 mb-3">
               <i class="fa-solid fa-handshake y"></i>
               <span class="font-bold">일반 매칭</span>
               <span class="ml-auto text-sm y font-bold">19,900원</span>
             </div>
-            <ul class="space-y-2 text-[13px] text-[#9E9E97] leading-relaxed">
+            <ul class="space-y-2 text-[13px] text-[#9a9080] leading-relaxed">
               <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>센터장이 이상형 조건에 맞는 상대를 찾아드려요</li>
               <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>상대방이 수락하면 매칭 성사!</li>
               <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>양쪽 모두 각자 19,900원 결제 후 연락처 교환</li>
@@ -459,14 +459,14 @@
           </div>
 
           <!-- 슈퍼매칭 설명 -->
-          <div class="bg-[#0D0D0C] border border-[#FFD400]/30 rounded-xl p-5 relative">
+          <div class="bg-[#0e0c0a] border border-[#FFBE2E]/30 rounded-xl p-5 relative">
             <span class="absolute top-0 right-0 text-[9px] bg-y text-black font-bold px-2.5 py-1 rounded-bl-lg rounded-tr-xl">추천</span>
             <div class="flex items-center gap-2 mb-3">
               <i class="fa-solid fa-crown y"></i>
               <span class="font-bold">슈퍼매칭</span>
               <span class="ml-auto text-sm y font-bold">39,800원</span>
             </div>
-            <ul class="space-y-2 text-[13px] text-[#9E9E97] leading-relaxed">
+            <ul class="space-y-2 text-[13px] text-[#9a9080] leading-relaxed">
               <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>상대방 비용까지 내가 부담해요</li>
               <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>상대방에게 <b class="text-white">"슈퍼매칭이 왔어요!"</b> 표시 → 진심 전달</li>
               <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>상대방은 무료로 연락처를 받아요</li>
@@ -475,16 +475,16 @@
           </div>
         </div>
 
-        <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-3 flex gap-2 items-start">
+        <div class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 flex gap-2 items-start">
           <i class="fa-solid fa-circle-info y text-xs mt-0.5 shrink-0"></i>
-          <p class="text-[11px] text-[#555] leading-relaxed">두 유형 모두 매칭이 성사되지 않으면 비용이 발생하지 않아요. 매칭 성사 후 결제 안내를 드립니다.</p>
+          <p class="text-[11px] text-[#6b6358] leading-relaxed">두 유형 모두 매칭이 성사되지 않으면 비용이 발생하지 않아요. 매칭 성사 후 결제 안내를 드립니다.</p>
         </div>
       </div>
 
       <!-- 매칭 유형 선택 -->
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-4" data-reveal>
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-4" data-reveal>
         <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#FFBE2E]/10 border border-[#FFBE2E]/30 flex items-center justify-center">
             <i class="fa-solid fa-crown y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">매칭 유형 선택 <span class="y">*</span></h2>
@@ -492,12 +492,12 @@
 
         <label>
           <input type="radio" name="matchType" value="일반매칭" required>
-          <div class="radio-card bg-[#0D0D0C] border border-[#242422] rounded-xl px-5 py-4">
+          <div class="radio-card bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-5 py-4">
             <div class="flex items-center gap-3">
-              <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>
+              <div class="dot w-3 h-3 rounded-full border-2 border-[#6b6358] shrink-0"></div>
               <div class="flex-1">
                 <div class="font-bold text-sm">일반 매칭</div>
-                <div class="text-[11px] text-[#9E9E97] mt-0.5">매칭 성사 시 본인 비용만 결제</div>
+                <div class="text-[11px] text-[#9a9080] mt-0.5">매칭 성사 시 본인 비용만 결제</div>
               </div>
               <div class="text-sm font-black y">19,900원</div>
             </div>
@@ -506,33 +506,33 @@
 
         <label>
           <input type="radio" name="matchType" value="슈퍼매칭">
-          <div class="radio-card bg-[#0D0D0C] border border-[#FFD400]/30 rounded-xl px-5 py-4 relative overflow-hidden">
+          <div class="radio-card bg-[#0e0c0a] border border-[#FFBE2E]/30 rounded-xl px-5 py-4 relative overflow-hidden">
             <span class="absolute top-0 right-0 text-[9px] bg-y text-black font-bold px-2.5 py-1 rounded-bl-lg">추천</span>
             <div class="flex items-center gap-3">
-              <div class="dot w-3 h-3 rounded-full border-2 border-[#555] shrink-0"></div>
+              <div class="dot w-3 h-3 rounded-full border-2 border-[#6b6358] shrink-0"></div>
               <div class="flex-1">
                 <div class="font-bold text-sm flex items-center gap-1.5"><i class="fa-solid fa-crown y text-xs"></i>슈퍼매칭</div>
-                <div class="text-[11px] text-[#9E9E97] mt-0.5">상대방 비용까지 내가 부담 → 수락률 UP!</div>
+                <div class="text-[11px] text-[#9a9080] mt-0.5">상대방 비용까지 내가 부담 → 수락률 UP!</div>
               </div>
               <div class="text-sm font-black y">39,800원</div>
             </div>
-            <div class="mt-3 bg-[#FFD400]/5 border border-[#FFD400]/20 rounded-lg p-2.5 flex gap-2 items-start">
+            <div class="mt-3 bg-[#FFBE2E]/5 border border-[#FFBE2E]/20 rounded-lg p-2.5 flex gap-2 items-start">
               <i class="fa-solid fa-bolt y text-[10px] mt-0.5 shrink-0"></i>
-              <p class="text-[10px] text-[#9E9E97] leading-relaxed">상대방에게 <b class="text-white">"슈퍼매칭이 왔어요!"</b> 표시가 돼요. 진심이 전달되어 매칭 수락률이 높아집니다.</p>
+              <p class="text-[10px] text-[#9a9080] leading-relaxed">상대방에게 <b class="text-white">"슈퍼매칭이 왔어요!"</b> 표시가 돼요. 진심이 전달되어 매칭 수락률이 높아집니다.</p>
             </div>
           </div>
         </label>
       </div>
 
       <!-- 동의 -->
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5" data-reveal>
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5" data-reveal>
         <label class="flex items-start gap-3 cursor-pointer">
           <input type="checkbox" id="agree" required class="mt-0.5">
           <div class="flex items-start gap-3">
-            <div class="w-5 h-5 shrink-0 mt-0.5 rounded border-2 border-[#555] flex items-center justify-center transition" id="agree-box">
+            <div class="w-5 h-5 shrink-0 mt-0.5 rounded border-2 border-[#6b6358] flex items-center justify-center transition" id="agree-box">
               <i class="fa-solid fa-check text-[10px] text-black hidden" id="agree-check"></i>
             </div>
-            <span class="text-xs text-[#9E9E97] leading-relaxed">
+            <span class="text-xs text-[#9a9080] leading-relaxed">
               개인정보 수집 및 이용에 동의합니다. 허위 기재 시 이용이 제한될 수 있습니다. <span class="y">*</span>
             </span>
           </div>
@@ -542,10 +542,10 @@
       <!-- 제출 -->
       <div data-reveal>
         <button type="submit" id="submit-btn"
-          class="bg-y text-black font-extrabold w-full px-6 py-4 rounded-2xl text-base transition hover:bg-[#E6BE00] disabled:opacity-50 disabled:cursor-not-allowed">
+          class="bg-y text-black font-extrabold w-full px-6 py-4 rounded-2xl text-base transition hover:bg-[#e0a820] disabled:opacity-50 disabled:cursor-not-allowed">
           <i class="fa-solid fa-paper-plane mr-1.5"></i>신청서 제출하기
         </button>
-        <p class="text-center text-[11px] text-[#555] mt-3">신청 무료 · 매칭 성사 시 선택한 유형에 따라 결제 후 연락처 전달</p>
+        <p class="text-center text-[11px] text-[#6b6358] mt-3">신청 무료 · 매칭 성사 시 선택한 유형에 따라 결제 후 연락처 전달</p>
       </div>
 
     </form>
@@ -559,31 +559,31 @@
       <i class="fa-solid fa-check text-black text-2xl"></i>
     </div>
     <h2 class="text-2xl font-black">신청이 완료되었어요!</h2>
-    <p class="text-sm text-[#9E9E97] mt-3 leading-relaxed">
+    <p class="text-sm text-[#9a9080] mt-3 leading-relaxed">
       센터장이 신청서를 검토한 후<br>매칭 상대를 찾아 연락드릴게요.
     </p>
-    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 mt-6 space-y-3 text-left">
+    <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 mt-6 space-y-3 text-left">
       <div class="flex gap-3 items-center text-sm">
         <div class="w-6 h-6 rounded-lg bg-y text-black flex items-center justify-center text-xs font-bold">1</div>
-        <span class="text-[#9E9E97]">신청 접수 확인 메시지를 보내드려요</span>
+        <span class="text-[#9a9080]">신청 접수 확인 메시지를 보내드려요</span>
       </div>
       <div class="flex gap-3 items-center text-sm">
-        <div class="w-6 h-6 rounded-lg bg-[#242422] text-[#9E9E97] flex items-center justify-center text-xs font-bold">2</div>
-        <span class="text-[#9E9E97]">센터장이 매칭 상대를 찾아드려요</span>
+        <div class="w-6 h-6 rounded-lg bg-[#1e1c17] text-[#9a9080] flex items-center justify-center text-xs font-bold">2</div>
+        <span class="text-[#9a9080]">센터장이 매칭 상대를 찾아드려요</span>
       </div>
       <div class="flex gap-3 items-center text-sm">
-        <div class="w-6 h-6 rounded-lg bg-[#242422] text-[#9E9E97] flex items-center justify-center text-xs font-bold">3</div>
-        <span class="text-[#9E9E97]">상대방 프로필과 수락 링크를 보내드려요</span>
+        <div class="w-6 h-6 rounded-lg bg-[#1e1c17] text-[#9a9080] flex items-center justify-center text-xs font-bold">3</div>
+        <span class="text-[#9a9080]">상대방 프로필과 수락 링크를 보내드려요</span>
       </div>
     </div>
-    <a href="index.html" class="inline-block mt-8 bg-[#161615] border border-[#242422] text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#FFD400] transition">
+    <a href="index.html" class="inline-block mt-8 bg-[#16140f] border border-[#1e1c17] text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#FFBE2E] transition">
       <i class="fa-solid fa-arrow-left mr-1.5"></i>홈으로 돌아가기
     </a>
   </div>
 </section>
 
 <!-- 푸터 -->
-<footer class="border-t border-[#242422] px-5 py-8 text-center text-xs text-[#666]">
+<footer class="border-t border-[#1e1c17] px-5 py-8 text-center text-xs text-[#8a7f70]">
   <img src="logo.png" alt="썸류센터" class="h-6 mx-auto mb-2">
   <p>1:1 온라인 매칭 서비스</p>
   <p class="mt-2">문의: 카카오톡 채널 @썸류센터</p>
@@ -737,7 +737,7 @@ document.querySelectorAll("#keyword-chips .chip").forEach(chip => {
     document.getElementById("keywords-input").value = [...selectedKeywords].join(",");
     const count = selectedKeywords.size;
     document.getElementById("keyword-count").textContent = `${count} / 3개 선택됨`;
-    document.getElementById("keyword-count").style.color = count === 3 ? "#FFD400" : "#555";
+    document.getElementById("keyword-count").style.color = count === 3 ? "#FFBE2E" : "#6b6358";
   });
 });
 
@@ -754,12 +754,12 @@ document.getElementById("agree").addEventListener("change", function(){
   const box = document.getElementById("agree-box");
   const check = document.getElementById("agree-check");
   if(this.checked){
-    box.style.background = "#FFD400";
-    box.style.borderColor = "#FFD400";
+    box.style.background = "#FFBE2E";
+    box.style.borderColor = "#FFBE2E";
     check.classList.remove("hidden");
   } else {
     box.style.background = "transparent";
-    box.style.borderColor = "#555";
+    box.style.borderColor = "#6b6358";
     check.classList.add("hidden");
   }
 });

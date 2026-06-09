@@ -9,17 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0a0a09;color:#f5f5f3;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
-  ::selection{background:#FFD400;color:#000}
-  .y{color:#FFD400}
-  .card{background:#131312;border-radius:24px;border:1px solid rgba(255,255,255,.06)}
+  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0e0c0a;color:#f5f5f3;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+  ::selection{background:#FFBE2E;color:#000}
+  .y{color:#FFBE2E}
+  .card{background:#16140f;border-radius:24px;border:1px solid rgba(255,255,255,.06)}
   .input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;font-size:14px;color:#fff;outline:none;transition:border-color .2s;font-family:inherit}
-  .input::placeholder{color:#444}
+  .input::placeholder{color:#5a5248}
   .input:focus{border-color:rgba(255,212,0,.5)}
   .input-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
-  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,212,0,.08);border:1px solid rgba(255,212,0,.18);color:#FFD400;padding:6px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,212,0,.08);border:1px solid rgba(255,212,0,.18);color:#FFBE2E;padding:6px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px}
   .btn{width:100%;padding:16px;border-radius:16px;font-size:15px;font-weight:800;border:none;cursor:pointer;transition:all .2s;font-family:inherit}
-  .btn-primary{background:#FFD400;color:#0a0a09}
+  .btn-primary{background:#FFBE2E;color:#0e0c0a}
   .btn-primary:hover{filter:brightness(.9)}
   .btn-primary:disabled{opacity:.4;cursor:not-allowed;filter:none}
   .radio-wrap{cursor:pointer}
@@ -27,10 +27,10 @@
   .radio-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;text-align:center;font-size:14px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
   .radio-card:hover{border-color:rgba(255,212,0,.3)}
   .radio-wrap input:checked+.radio-card{background:rgba(255,212,0,.06);border-color:rgba(255,212,0,.4)}
-  .radio-wrap input:checked+.radio-card .dot{background:#FFD400}
-  .dot{width:10px;height:10px;border-radius:50%;border:2px solid #444;transition:all .2s;flex-shrink:0}
-  .label{display:block;font-size:12px;font-weight:600;color:#888;margin-bottom:8px}
-  .label .req{color:#FFD400}
+  .radio-wrap input:checked+.radio-card .dot{background:#FFBE2E}
+  .dot{width:10px;height:10px;border-radius:50%;border:2px solid #5a5248;transition:all .2s;flex-shrink:0}
+  .label{display:block;font-size:12px;font-weight:600;color:#9a9080;margin-bottom:8px}
+  .label .req{color:#FFBE2E}
   .err-msg{font-size:12px;color:#ff5555;margin-top:6px;display:none}
   .err-msg.show{display:block}
   .pw-str{height:3px;border-radius:2px;margin-top:8px;transition:all .3s}
@@ -39,10 +39,10 @@
 <body>
 
 <!-- Nav -->
-<nav class="sticky top-0 z-50 backdrop-blur-xl bg-[#0a0a09]/80 border-b border-white/[.04] px-5 py-3.5">
+<nav class="sticky top-0 z-50 backdrop-blur-xl bg-[#0e0c0a]/80 border-b border-white/[.04] px-5 py-3.5">
   <div class="max-w-[480px] mx-auto flex items-center justify-between">
     <a href="index.html" class="flex items-center gap-2"><img src="logo.png" alt="썸류센터" class="h-7"></a>
-    <a href="login.html" class="text-sm font-semibold text-[#888] hover:text-white transition">로그인</a>
+    <a href="login.html" class="text-sm font-semibold text-[#9a9080] hover:text-white transition">로그인</a>
   </div>
 </nav>
 
@@ -53,7 +53,7 @@
     <div class="text-center mb-8">
       <span class="badge mb-4"><i class="fa-solid fa-user-plus"></i> SIGN UP</span>
       <h1 class="text-2xl font-black mt-3">썸류센터 <span class="y">회원가입</span></h1>
-      <p class="text-sm text-[#888] mt-2">가입하고 커피팅에 참여해보세요</p>
+      <p class="text-sm text-[#9a9080] mt-2">가입하고 커피팅에 참여해보세요</p>
     </div>
 
     <!-- Form -->
@@ -78,7 +78,7 @@
           <label class="label">비밀번호 <span class="req">*</span></label>
           <div class="relative">
             <input type="password" name="password" required placeholder="6자 이상" class="input" id="pw-input" minlength="6">
-            <button type="button" onclick="togglePw()" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#555] hover:text-white transition text-sm"><i class="fa-solid fa-eye" id="pw-icon"></i></button>
+            <button type="button" onclick="togglePw()" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#6b6358] hover:text-white transition text-sm"><i class="fa-solid fa-eye" id="pw-icon"></i></button>
           </div>
           <div class="pw-str" id="pw-str" style="background:rgba(255,255,255,.06);width:0%"></div>
         </div>
@@ -109,7 +109,7 @@
         <div>
           <label class="label">출생 연도 <span class="req">*</span></label>
           <select name="birthYear" required class="input input-select">
-            <option value="" disabled selected style="color:#444">출생 연도를 선택해주세요</option>
+            <option value="" disabled selected style="color:#5a5248">출생 연도를 선택해주세요</option>
             <option value="2006">2006년생</option><option value="2005">2005년생</option>
             <option value="2004">2004년생</option><option value="2003">2003년생</option>
             <option value="2002">2002년생</option><option value="2001">2001년생</option>
@@ -128,10 +128,10 @@
       <div class="card p-6">
         <label class="flex items-start gap-3 cursor-pointer">
           <input type="checkbox" id="agree-all" class="hidden">
-          <div class="w-5 h-5 shrink-0 mt-0.5 rounded-md border-2 border-[#444] flex items-center justify-center transition" id="agree-box">
+          <div class="w-5 h-5 shrink-0 mt-0.5 rounded-md border-2 border-[#5a5248] flex items-center justify-center transition" id="agree-box">
             <i class="fa-solid fa-check text-[10px] text-black hidden" id="agree-icon"></i>
           </div>
-          <span class="text-sm text-[#888] leading-relaxed">
+          <span class="text-sm text-[#9a9080] leading-relaxed">
             개인정보 수집 및 이용에 동의합니다. <span class="y">*</span>
           </span>
         </label>
@@ -142,18 +142,18 @@
         <i class="fa-solid fa-user-plus mr-1.5"></i>가입하기
       </button>
 
-      <p class="text-center text-xs text-[#555] mt-2">
+      <p class="text-center text-xs text-[#6b6358] mt-2">
         이미 계정이 있으신가요? <a href="login.html" class="y font-bold hover:underline">로그인</a>
       </p>
     </form>
 
     <!-- 완료 화면 -->
     <div id="success" class="hidden text-center py-16">
-      <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#FFD400] flex items-center justify-center">
+      <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#FFBE2E] flex items-center justify-center">
         <i class="fa-solid fa-check text-black text-2xl"></i>
       </div>
       <h2 class="text-2xl font-black">가입 완료!</h2>
-      <p class="text-sm text-[#888] mt-3 leading-relaxed">썸류센터에 오신 걸 환영해요.<br>이제 커피팅에 신청할 수 있어요.</p>
+      <p class="text-sm text-[#9a9080] mt-3 leading-relaxed">썸류센터에 오신 걸 환영해요.<br>이제 커피팅에 신청할 수 있어요.</p>
       <div class="flex flex-col gap-3 mt-8 max-w-[280px] mx-auto">
         <a href="index.html" class="btn btn-primary text-center block"><i class="fa-solid fa-home mr-1.5"></i>홈으로</a>
         <a href="login.html" class="btn text-center block" style="background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.08)">로그인하기</a>
@@ -165,7 +165,7 @@
 
 <!-- Footer -->
 <footer class="border-t border-white/[.04] px-5 py-8 text-center">
-  <p class="text-[11px] text-[#444]">문의: 카카오톡 채널 @썸류센터</p>
+  <p class="text-[11px] text-[#5a5248]">문의: 카카오톡 채널 @썸류센터</p>
 </footer>
 
 <script>
@@ -204,8 +204,8 @@ document.getElementById('phone-input').addEventListener('input',function(){
 // 동의 체크
 document.getElementById('agree-all').addEventListener('change',function(){
   const box=document.getElementById('agree-box'),icon=document.getElementById('agree-icon');
-  if(this.checked){box.style.background='#FFD400';box.style.borderColor='#FFD400';icon.classList.remove('hidden')}
-  else{box.style.background='transparent';box.style.borderColor='#444';icon.classList.add('hidden')}
+  if(this.checked){box.style.background='#FFBE2E';box.style.borderColor='#FFBE2E';icon.classList.remove('hidden')}
+  else{box.style.background='transparent';box.style.borderColor='#5a5248';icon.classList.add('hidden')}
 });
 
 // 가입 처리

@@ -8,9 +8,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
-  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0D0D0C;color:#F5F5F3;overflow-x:hidden}
-  .y{color:#FFD400}.bg-y{background:#FFD400}.bd-y{border-color:#FFD400}
-  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#161615}::-webkit-scrollbar-thumb{background:#FFD400;border-radius:3px}
+  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0e0c0a;color:#F5F5F3;overflow-x:hidden}
+  .y{color:#FFBE2E}.bg-y{background:#FFBE2E}.bd-y{border-color:#FFBE2E}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#16140f}::-webkit-scrollbar-thumb{background:#FFBE2E;border-radius:3px}
   @keyframes pulseY{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,212,0,.4)}50%{transform:scale(1.03);box-shadow:0 0 18px 6px rgba(255,212,0,.18)}}
   .pulse{animation:pulseY 2s infinite ease-in-out}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -34,19 +34,19 @@
   .blink{animation:blink 1.4s infinite}
 </style>
 </head>
-<body class="min-h-screen selection:bg-[#FFD400] selection:text-black">
+<body class="min-h-screen selection:bg-[#FFBE2E] selection:text-black">
 
-<div class="fixed top-0 inset-x-0 h-1.5 bg-[#161615] z-50">
+<div class="fixed top-0 inset-x-0 h-1.5 bg-[#16140f] z-50">
   <div id="progress" class="h-full bg-y transition-all duration-500" style="width:0%"></div>
 </div>
 
-<nav class="px-4 py-3 border-b border-[#242422]">
+<nav class="px-4 py-3 border-b border-[#1e1c17]">
   <div class="max-w-xl mx-auto flex justify-between items-center">
-    <a href="../index.html" class="flex items-center gap-2 text-sm text-[#9E9E97] hover:text-white transition">
+    <a href="../index.html" class="flex items-center gap-2 text-sm text-[#9a9080] hover:text-white transition">
       <i class="fa-solid fa-chevron-left text-xs"></i>
       <span class="y font-bold">썸류센터</span> 메인
     </a>
-    <a href="../index.html#apply" class="text-xs text-[#9E9E97] hover:text-white">테스트 건너뛰고 신청</a>
+    <a href="../index.html#apply" class="text-xs text-[#9a9080] hover:text-white">테스트 건너뛰고 신청</a>
   </div>
 </nav>
 
@@ -54,9 +54,9 @@
 
   <!-- 인트로 -->
   <section id="intro" class="fade text-center glow rounded-3xl pt-4">
-    <div class="inline-flex items-center gap-2 bg-[#161615] border border-[#242422] px-4 py-2 rounded-full text-xs mb-6">
+    <div class="inline-flex items-center gap-2 bg-[#16140f] border border-[#1e1c17] px-4 py-2 rounded-full text-xs mb-6">
       <span class="w-2 h-2 rounded-full bg-emerald-500 blink"></span>
-      <span class="text-[#9E9E97]">오늘 <b id="live-today" class="text-white">0</b>명 참여 중</span>
+      <span class="text-[#9a9080]">오늘 <b id="live-today" class="text-white">0</b>명 참여 중</span>
     </div>
     <div class="relative inline-block mb-2">
       <span class="absolute -top-1 left-3 text-xl steam">~</span>
@@ -67,47 +67,47 @@
     <h1 class="text-3xl md:text-4xl font-black leading-tight tracking-tight mt-3">
       나의 <span class="y">연애 커피 유형</span>은?
     </h1>
-    <p class="text-sm text-[#9E9E97] mt-4 leading-relaxed">
+    <p class="text-sm text-[#9a9080] mt-4 leading-relaxed">
       직진드리퍼? 콜드브루형? 아아고수?<br>
       8가지 썸류 커피 유형 중 <b class="text-white">내 연애 취향</b>을 찾아드려요 ☕
     </p>
     <div class="flex flex-wrap gap-1.5 justify-center mt-5 px-2">
-      <span class="text-[10px] bg-[#161615] border border-[#242422] text-[#9E9E97] px-2.5 py-1 rounded-full">🔥 직진드리퍼</span>
-      <span class="text-[10px] bg-[#161615] border border-[#242422] text-[#9E9E97] px-2.5 py-1 rounded-full">🧊 콜드브루형</span>
-      <span class="text-[10px] bg-[#161615] border border-[#242422] text-[#9E9E97] px-2.5 py-1 rounded-full">🍯 꿀라떼형</span>
-      <span class="text-[10px] bg-[#161615] border border-[#242422] text-[#9E9E97] px-2.5 py-1 rounded-full">😎 아아고수</span>
-      <span class="text-[10px] bg-[#161615] border border-[#242422] text-[#9E9E97] px-2.5 py-1 rounded-full">+4</span>
+      <span class="text-[10px] bg-[#16140f] border border-[#1e1c17] text-[#9a9080] px-2.5 py-1 rounded-full">🔥 직진드리퍼</span>
+      <span class="text-[10px] bg-[#16140f] border border-[#1e1c17] text-[#9a9080] px-2.5 py-1 rounded-full">🧊 콜드브루형</span>
+      <span class="text-[10px] bg-[#16140f] border border-[#1e1c17] text-[#9a9080] px-2.5 py-1 rounded-full">🍯 꿀라떼형</span>
+      <span class="text-[10px] bg-[#16140f] border border-[#1e1c17] text-[#9a9080] px-2.5 py-1 rounded-full">😎 아아고수</span>
+      <span class="text-[10px] bg-[#16140f] border border-[#1e1c17] text-[#9a9080] px-2.5 py-1 rounded-full">+4</span>
     </div>
     <button onclick="startTest()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl pulse text-base mt-7">
       <i class="fa-solid fa-mug-hot mr-2"></i>내 커피 유형 찾기
     </button>
-    <p class="text-[11px] text-[#666] mt-4">10문항 · 1분 소요 · 무료</p>
+    <p class="text-[11px] text-[#8a7f70] mt-4">10문항 · 1분 소요 · 무료</p>
   </section>
 
   <!-- 질문 -->
   <section id="quiz" class="hidden">
     <div class="flex items-center justify-between mb-5">
       <span id="qcount" class="text-xs y font-bold tracking-widest">Q1 / 10</span>
-      <button onclick="restart()" class="text-[11px] text-[#9E9E97] hover:text-white"><i class="fa-solid fa-rotate-left mr-1"></i>처음으로</button>
+      <button onclick="restart()" class="text-[11px] text-[#9a9080] hover:text-white"><i class="fa-solid fa-rotate-left mr-1"></i>처음으로</button>
     </div>
-    <span class="text-[11px] text-[#9E9E97] tracking-wider uppercase" id="qcat"></span>
+    <span class="text-[11px] text-[#9a9080] tracking-wider uppercase" id="qcat"></span>
     <h2 id="qtext" class="text-xl md:text-2xl font-black leading-snug mt-2 mb-6 min-h-[3rem]"></h2>
     <div id="qopts" class="space-y-3"></div>
-    <div id="feedback" class="hidden mt-5 bg-[#161615] border border-[#FFD400]/20 rounded-xl p-3 text-center fade">
+    <div id="feedback" class="hidden mt-5 bg-[#16140f] border border-[#FFBE2E]/20 rounded-xl p-3 text-center fade">
       <p class="text-xs"><i class="fa-solid fa-users y mr-1"></i> <span id="fb-text"></span></p>
-      <div class="h-1.5 bg-[#0D0D0C] rounded-full overflow-hidden mt-2"><div id="fb-bar" class="h-full bg-y rounded-full fb-bar"></div></div>
+      <div class="h-1.5 bg-[#0e0c0a] rounded-full overflow-hidden mt-2"><div id="fb-bar" class="h-full bg-y rounded-full fb-bar"></div></div>
     </div>
   </section>
 
   <!-- 로딩 -->
   <section id="loading" class="hidden text-center pt-20">
     <div class="relative inline-block mb-8">
-      <div class="w-20 h-20 border-4 border-[#242422] border-t-[#FFD400] rounded-full spinner mx-auto"></div>
+      <div class="w-20 h-20 border-4 border-[#1e1c17] border-t-[#FFBE2E] rounded-full spinner mx-auto"></div>
       <div class="absolute inset-0 flex items-center justify-center text-3xl">☕</div>
     </div>
     <h2 id="loading-text" class="text-lg font-black">AI가 당신의 답변을 분석 중...</h2>
-    <p id="loading-sub" class="text-sm text-[#9E9E97] mt-2">8가지 커피 유형과 매칭하고 있어요</p>
-    <div class="max-w-xs mx-auto mt-6 h-1.5 bg-[#161615] rounded-full overflow-hidden">
+    <p id="loading-sub" class="text-sm text-[#9a9080] mt-2">8가지 커피 유형과 매칭하고 있어요</p>
+    <div class="max-w-xs mx-auto mt-6 h-1.5 bg-[#16140f] rounded-full overflow-hidden">
       <div id="loading-bar" class="h-full bg-y rounded-full transition-all duration-300" style="width:0%"></div>
     </div>
   </section>
@@ -117,41 +117,41 @@
     <div class="text-center mb-6">
       <div class="text-5xl mb-3 pop">🎁</div>
       <h2 class="text-2xl md:text-3xl font-black leading-tight">결과가 나왔어요!</h2>
-      <p class="text-sm text-[#9E9E97] mt-2 leading-relaxed">
+      <p class="text-sm text-[#9a9080] mt-2 leading-relaxed">
         <b class="text-white">누구의 결과인지</b> 알려주시면<br>나만의 결과지를 완성해드릴게요 ✨
       </p>
     </div>
     <div class="space-y-4">
       <div>
-        <label class="text-xs font-bold text-[#9E9E97] mb-2 block"><i class="fa-solid fa-user y mr-1"></i> 이름 또는 닉네임</label>
-        <input id="i-name" type="text" placeholder="결과지에 들어갈 이름" class="w-full bg-[#161615] border border-[#242422] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
+        <label class="text-xs font-bold text-[#9a9080] mb-2 block"><i class="fa-solid fa-user y mr-1"></i> 이름 또는 닉네임</label>
+        <input id="i-name" type="text" placeholder="결과지에 들어갈 이름" class="w-full bg-[#16140f] border border-[#1e1c17] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
       </div>
       <div>
-        <label class="text-xs font-bold text-[#9E9E97] mb-2 block"><i class="fa-solid fa-venus-mars y mr-1"></i> 당신은?</label>
+        <label class="text-xs font-bold text-[#9a9080] mb-2 block"><i class="fa-solid fa-venus-mars y mr-1"></i> 당신은?</label>
         <div class="grid grid-cols-2 gap-3">
-          <button onclick="setGender('남성')" id="g-m" class="border border-[#242422] bg-[#161615] rounded-xl py-3.5 text-sm font-bold transition">👨 남성</button>
-          <button onclick="setGender('여성')" id="g-f" class="border border-[#242422] bg-[#161615] rounded-xl py-3.5 text-sm font-bold transition">👩 여성</button>
+          <button onclick="setGender('남성')" id="g-m" class="border border-[#1e1c17] bg-[#16140f] rounded-xl py-3.5 text-sm font-bold transition">👨 남성</button>
+          <button onclick="setGender('여성')" id="g-f" class="border border-[#1e1c17] bg-[#16140f] rounded-xl py-3.5 text-sm font-bold transition">👩 여성</button>
         </div>
       </div>
       <div>
-        <label class="text-xs font-bold text-[#9E9E97] mb-2 block"><i class="fa-solid fa-cake-candles y mr-1"></i> 또래 매칭률도 함께 보여드릴게요</label>
-        <input id="i-year" type="number" inputmode="numeric" placeholder="출생연도 (예: 1996)" class="w-full bg-[#161615] border border-[#242422] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
+        <label class="text-xs font-bold text-[#9a9080] mb-2 block"><i class="fa-solid fa-cake-candles y mr-1"></i> 또래 매칭률도 함께 보여드릴게요</label>
+        <input id="i-year" type="number" inputmode="numeric" placeholder="출생연도 (예: 1996)" class="w-full bg-[#16140f] border border-[#1e1c17] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
       </div>
-      <div class="bg-gradient-to-br from-[#FFD400]/5 to-transparent border border-[#FFD400]/20 rounded-xl p-4">
+      <div class="bg-gradient-to-br from-[#FFBE2E]/5 to-transparent border border-[#FFBE2E]/20 rounded-xl p-4">
         <label class="text-xs font-bold text-white mb-1 block"><i class="fa-brands fa-rocketchat y mr-1"></i> 결과지를 카톡으로도 받을래요?</label>
-        <p class="text-[11px] text-[#9E9E97] mb-3">내 유형과 잘 맞는 실제 매칭 상대도 같이 보내드려요 (선택)</p>
-        <input id="i-phone" type="tel" inputmode="numeric" placeholder="휴대폰 번호 (예: 01012345678)" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
+        <p class="text-[11px] text-[#9a9080] mb-3">내 유형과 잘 맞는 실제 매칭 상대도 같이 보내드려요 (선택)</p>
+        <input id="i-phone" type="tel" inputmode="numeric" placeholder="휴대폰 번호 (예: 01012345678)" class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
       </div>
-      <div class="bg-[#161615] border border-[#242422] rounded-xl p-3">
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-xl p-3">
         <label class="flex items-start gap-2.5 cursor-pointer">
-          <input id="i-agree" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#FFD400]">
-          <span class="text-[11px] text-[#9E9E97] leading-relaxed">결과 안내 및 매칭을 위한 <b class="text-white">개인정보 수집·이용에 동의</b>합니다.
+          <input id="i-agree" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#FFBE2E]">
+          <span class="text-[11px] text-[#9a9080] leading-relaxed">결과 안내 및 매칭을 위한 <b class="text-white">개인정보 수집·이용에 동의</b>합니다.
           <button onclick="togglePolicy(event)" class="y underline ml-1">자세히</button></span>
         </label>
-        <p id="policy" class="hidden text-[10px] text-[#666] mt-2 pt-2 border-t border-[#242422] leading-relaxed">수집항목: 이름, 성별, 출생연도, 연락처(선택) / 목적: 결과 안내 및 매칭 서비스 / 보유: 목적 달성 후 파기. 동의 철회 시 즉시 삭제.</p>
+        <p id="policy" class="hidden text-[10px] text-[#8a7f70] mt-2 pt-2 border-t border-[#1e1c17] leading-relaxed">수집항목: 이름, 성별, 출생연도, 연락처(선택) / 목적: 결과 안내 및 매칭 서비스 / 보유: 목적 달성 후 파기. 동의 철회 시 즉시 삭제.</p>
       </div>
       <button onclick="submitInfo()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl text-base pulse"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>내 결과 확인하기</button>
-      <button onclick="skipInfo()" class="w-full py-2 text-xs text-[#666] hover:text-[#9E9E97]">정보 없이 결과만 보기 →</button>
+      <button onclick="skipInfo()" class="w-full py-2 text-xs text-[#8a7f70] hover:text-[#9a9080]">정보 없이 결과만 보기 →</button>
     </div>
   </section>
 
@@ -159,52 +159,52 @@
   <section id="result" class="hidden fade-in">
     <div class="text-center">
       <span class="text-[11px] y font-bold tracking-widest uppercase">YOUR COFFEE TYPE</span>
-      <p id="r-greeting" class="text-sm text-[#9E9E97] mt-3"></p>
+      <p id="r-greeting" class="text-sm text-[#9a9080] mt-3"></p>
       <div id="r-emoji" class="text-8xl my-4 pop"></div>
-      <div id="r-eng" class="text-xs text-[#9E9E97] tracking-[0.2em] uppercase"></div>
+      <div id="r-eng" class="text-xs text-[#9a9080] tracking-[0.2em] uppercase"></div>
       <h2 class="text-3xl md:text-4xl font-black tracking-tight mt-1"><span id="r-type" class="y"></span></h2>
       <p id="r-tagline" class="text-sm font-bold text-white mt-2"></p>
-      <p id="r-desc" class="text-sm text-[#9E9E97] mt-4 leading-relaxed px-2"></p>
+      <p id="r-desc" class="text-sm text-[#9a9080] mt-4 leading-relaxed px-2"></p>
     </div>
 
-    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 mt-6 text-center">
-      <p class="text-xs text-[#9E9E97]">이 유형은 전체 참가자 중</p>
+    <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 mt-6 text-center">
+      <p class="text-xs text-[#9a9080]">이 유형은 전체 참가자 중</p>
       <div class="text-4xl font-black y count-anim my-1"><span id="r-rare"></span>%</div>
-      <p class="text-xs text-[#9E9E97]">의 희소한 유형이에요</p>
+      <p class="text-xs text-[#9a9080]">의 희소한 유형이에요</p>
     </div>
 
     <div class="grid grid-cols-2 gap-3 mt-4">
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4">
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-4">
         <h3 class="text-xs font-bold y mb-2"><i class="fa-solid fa-heart mr-1"></i>연애할 때 나는</h3>
-        <ul id="r-traits" class="space-y-1.5 text-[12px] text-[#9E9E97]"></ul>
+        <ul id="r-traits" class="space-y-1.5 text-[12px] text-[#9a9080]"></ul>
       </div>
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4">
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-4">
         <h3 class="text-xs font-bold text-pink-400 mb-2"><i class="fa-solid fa-mug-saucer mr-1"></i>찰떡 궁합</h3>
         <div id="r-match" class="text-sm"></div>
       </div>
     </div>
 
-    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 mt-4 text-center">
-      <p class="text-xs text-[#9E9E97]"><span id="r-age-range" class="text-white"></span> · 지금 매칭 가능한 상대</p>
+    <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 mt-4 text-center">
+      <p class="text-xs text-[#9a9080]"><span id="r-age-range" class="text-white"></span> · 지금 매칭 가능한 상대</p>
       <div class="text-3xl font-black y count-anim my-1"><span id="r-count"></span>명</div>
     </div>
 
-    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mt-4 flex items-center justify-between">
+    <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-4 mt-4 flex items-center justify-between">
       <div class="text-xs"><i class="fa-solid fa-share-nodes y mr-1"></i>내 유형 친구한테 자랑하기</div>
-      <button onclick="copyShare()" class="bg-[#242422] hover:bg-[#FFD400]/10 hover:y text-xs font-bold px-3 py-2 rounded-lg transition">링크 복사</button>
+      <button onclick="copyShare()" class="bg-[#1e1c17] hover:bg-[#FFBE2E]/10 hover:y text-xs font-bold px-3 py-2 rounded-lg transition">링크 복사</button>
     </div>
 
-    <div class="mt-6 text-center bg-gradient-to-b from-[#FFD400]/15 to-transparent border border-[#FFD400]/30 rounded-2xl p-6">
+    <div class="mt-6 text-center bg-gradient-to-b from-[#FFBE2E]/15 to-transparent border border-[#FFBE2E]/30 rounded-2xl p-6">
       <h3 class="text-lg font-black">내 유형과 <span class="y">찰떡인 상대</span>,<br>지금 만나러 갈까요?</h3>
-      <p class="text-xs text-[#9E9E97] mt-2">강남 로테이션 소개팅 / 1:1 온라인 매칭으로 연결해드려요.</p>
+      <p class="text-xs text-[#9a9080] mt-2">강남 로테이션 소개팅 / 1:1 온라인 매칭으로 연결해드려요.</p>
       <button onclick="goApply()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl mt-5 pulse"><i class="fa-solid fa-mug-hot mr-2"></i>오프라인 커피팅 신청</button>
-      <button onclick="goMatching()" class="w-full bg-[#0D0D0C] border border-[#FFD400]/40 text-white font-extrabold py-4 rounded-2xl mt-2 hover:bg-[#FFD400]/10 transition"><i class="fa-solid fa-video y mr-2"></i>1:1 온라인 매칭 신청</button>
-      <button onclick="restart()" class="text-xs text-[#9E9E97] hover:text-white mt-4">다시 테스트하기</button>
+      <button onclick="goMatching()" class="w-full bg-[#0e0c0a] border border-[#FFBE2E]/40 text-white font-extrabold py-4 rounded-2xl mt-2 hover:bg-[#FFBE2E]/10 transition"><i class="fa-solid fa-video y mr-2"></i>1:1 온라인 매칭 신청</button>
+      <button onclick="restart()" class="text-xs text-[#9a9080] hover:text-white mt-4">다시 테스트하기</button>
     </div>
   </section>
 </div>
 
-<div id="toast" class="fixed bottom-6 inset-x-5 max-w-md mx-auto bg-[#242422] border border-[#FFD400]/30 rounded-xl p-4 text-sm text-center translate-y-32 opacity-0 transition-all duration-300 z-50"></div>
+<div id="toast" class="fixed bottom-6 inset-x-5 max-w-md mx-auto bg-[#1e1c17] border border-[#FFBE2E]/30 rounded-xl p-4 text-sm text-center translate-y-32 opacity-0 transition-all duration-300 z-50"></div>
 
 <script>
 const ENDPOINT_URL = "";
@@ -332,7 +332,7 @@ function renderQ(){
   $("qcat").textContent=item.cat;
   $("qtext").textContent=item.q;
   $("qtext").classList.remove("fade");void $("qtext").offsetWidth;$("qtext").classList.add("fade");
-  $("qopts").innerHTML=item.a.map((o,i)=>`<button onclick="answer(${i})" class="fade w-full bg-[#161615] hover:bg-[#1f1f1d] border border-[#242422] hover:border-y text-left p-4 rounded-xl text-sm font-medium transition" style="animation-delay:${i*50}ms">${o.t}</button>`).join("");
+  $("qopts").innerHTML=item.a.map((o,i)=>`<button onclick="answer(${i})" class="fade w-full bg-[#16140f] hover:bg-[#1f1f1d] border border-[#1e1c17] hover:border-y text-left p-4 rounded-xl text-sm font-medium transition" style="animation-delay:${i*50}ms">${o.t}</button>`).join("");
 }
 function answer(i){
   const s=Q[step].a[i].s;
@@ -376,8 +376,8 @@ function runLoading(){
 }
 
 function setGender(g){userInfo.gender=g;
-  $("g-m").className="border rounded-xl py-3.5 text-sm font-bold transition "+(g==="남성"?"bd-y bg-[#FFD400]/10 y":"border-[#242422] bg-[#161615] text-white");
-  $("g-f").className="border rounded-xl py-3.5 text-sm font-bold transition "+(g==="여성"?"bd-y bg-[#FFD400]/10 y":"border-[#242422] bg-[#161615] text-white");}
+  $("g-m").className="border rounded-xl py-3.5 text-sm font-bold transition "+(g==="남성"?"bd-y bg-[#FFBE2E]/10 y":"border-[#1e1c17] bg-[#16140f] text-white");
+  $("g-f").className="border rounded-xl py-3.5 text-sm font-bold transition "+(g==="여성"?"bd-y bg-[#FFBE2E]/10 y":"border-[#1e1c17] bg-[#16140f] text-white");}
 function togglePolicy(e){e.preventDefault();$("policy").classList.toggle("hidden");}
 function toast(msg){const t=$("toast");t.textContent=msg;t.classList.remove("translate-y-32","opacity-0");setTimeout(()=>t.classList.add("translate-y-32","opacity-0"),3000);}
 
@@ -426,7 +426,7 @@ function showResult(){
   $("r-desc").textContent=t.desc;
   $("r-rare").textContent=t.rare;
   $("r-traits").innerHTML=t.traits.map(tr=>`<li class="flex items-start gap-1.5"><i class="fa-solid fa-check y mt-0.5 text-[10px]"></i><span>${tr}</span></li>`).join("");
-  $("r-match").innerHTML=`<div class="text-2xl">${t.match.emoji}</div><div class="font-bold text-white mt-1">${t.match.name}</div><div class="text-[11px] text-[#9E9E97] mt-1 leading-snug">${t.match.reason}</div>`;
+  $("r-match").innerHTML=`<div class="text-2xl">${t.match.emoji}</div><div class="font-bold text-white mt-1">${t.match.name}</div><div class="text-[11px] text-[#9a9080] mt-1 leading-snug">${t.match.reason}</div>`;
   const c=Math.floor(Math.random()*22)+16;
   $("r-count").textContent=c;
   if(userInfo.year){const age=2026-parseInt(userInfo.year);$("r-age-range").textContent=`${Math.max(20,age-3)}~${age+3}세`;}
