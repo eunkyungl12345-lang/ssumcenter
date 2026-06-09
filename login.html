@@ -76,7 +76,12 @@
   <p class="text-[11px] text-[#5a5248]">문의: 카카오톡 채널 @썸류센터</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPA_URL='https://nvqlguhzsucrcnmjlxoe.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cWxndWh6c3VjcmNubWpseG9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDk4NDgsImV4cCI6MjA5NjU4NTg0OH0.ClU6JArejkQQibf6XBFuYkF-fCQKnD2cVzJgXvkdgNc';
+const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+
 function togglePw(){
   const pw=document.getElementById('pw-input');
   const icon=document.getElementById('pw-icon');
@@ -105,28 +110,24 @@ async function handleLogin(e){
   btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>로그인 중...';
 
   try{
-    const res=await fetch('/api/auth?action=login',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({phone:p.phone,password:p.password})
-    });
-    const result=await res.json();
+    const email=p.phone.replace(/-/g,'')+'@ssum.local';
+    const{data:authData,error:authErr}=await supabase.auth.signInWithPassword({email,password:p.password});
 
-    if(!res.ok){
-      err.textContent=result.error||'로그인에 실패했습니다.';
+    if(authErr){
+      err.textContent=authErr.message==='Invalid login credentials'?'연락처 또는 비밀번호가 일치하지 않습니다.':authErr.message;
       err.classList.remove('hidden');
-      btn.disabled=false;
-      btn.innerHTML='<i class="fa-solid fa-right-to-bracket mr-1.5"></i>로그인';
+      btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-right-to-bracket mr-1.5"></i>로그인';
       return false;
     }
 
-    localStorage.setItem('ssumUser',JSON.stringify(result.user));
+    // 프로필 정보 가져오기
+    const{data:profile}=await supabase.from('profiles').select('*').eq('id',authData.user.id).single();
+    localStorage.setItem('ssumUser',JSON.stringify(profile||{id:authData.user.id}));
     window.location.href='index.html';
   }catch(e){
     err.textContent='네트워크 오류가 발생했습니다.';
     err.classList.remove('hidden');
-    btn.disabled=false;
-    btn.innerHTML='<i class="fa-solid fa-right-to-bracket mr-1.5"></i>로그인';
+    btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-right-to-bracket mr-1.5"></i>로그인';
   }
   return false;
 }

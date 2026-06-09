@@ -168,8 +168,12 @@
   <p class="text-[11px] text-[#5a5248]">문의: 카카오톡 채널 @썸류센터</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// 비밀번호 표시 토글
+const SUPA_URL='https://nvqlguhzsucrcnmjlxoe.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cWxndWh6c3VjcmNubWpseG9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDk4NDgsImV4cCI6MjA5NjU4NTg0OH0.ClU6JArejkQQibf6XBFuYkF-fCQKnD2cVzJgXvkdgNc';
+const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+
 function togglePw(){
   const pw=document.getElementById('pw-input');
   const icon=document.getElementById('pw-icon');
@@ -177,7 +181,6 @@ function togglePw(){
   else{pw.type='password';icon.className='fa-solid fa-eye'}
 }
 
-// 비밀번호 강도
 document.getElementById('pw-input').addEventListener('input',function(){
   const v=this.value,bar=document.getElementById('pw-str');
   let s=0;
@@ -187,13 +190,11 @@ document.getElementById('pw-input').addEventListener('input',function(){
   bar.style.width=pct+'%';bar.style.background=s?col:'rgba(255,255,255,.06)';
 });
 
-// 비밀번호 확인
 document.getElementById('pw2-input').addEventListener('input',function(){
   const pw=document.getElementById('pw-input').value;
   document.getElementById('pw2-err').classList.toggle('show',this.value&&this.value!==pw);
 });
 
-// 연락처 자동 포맷
 document.getElementById('phone-input').addEventListener('input',function(){
   let v=this.value.replace(/[^0-9]/g,'');
   if(v.length>3&&v.length<=7)v=v.slice(0,3)+'-'+v.slice(3);
@@ -201,28 +202,20 @@ document.getElementById('phone-input').addEventListener('input',function(){
   this.value=v;
 });
 
-// 동의 체크
 document.getElementById('agree-all').addEventListener('change',function(){
   const box=document.getElementById('agree-box'),icon=document.getElementById('agree-icon');
   if(this.checked){box.style.background='#FFBE2E';box.style.borderColor='#FFBE2E';icon.classList.remove('hidden')}
   else{box.style.background='transparent';box.style.borderColor='#5a5248';icon.classList.add('hidden')}
 });
 
-// 가입 처리
 async function handleSignup(e){
   e.preventDefault();
   const form=document.getElementById('signup-form');
   const data=new FormData(form);
   const p=Object.fromEntries(data.entries());
 
-  // 비밀번호 확인
-  if(p.password!==p.passwordConfirm){
-    document.getElementById('pw2-err').classList.add('show');
-    return false;
-  }
+  if(p.password!==p.passwordConfirm){document.getElementById('pw2-err').classList.add('show');return false}
   if(p.password.length<6){alert('비밀번호는 6자 이상이어야 합니다.');return false}
-
-  // 동의 확인
   if(!document.getElementById('agree-all').checked){alert('개인정보 수집 동의가 필요합니다.');return false}
 
   const btn=document.getElementById('submit-btn');
@@ -230,35 +223,39 @@ async function handleSignup(e){
   btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>가입 중...';
 
   try{
-    const res=await fetch('/api/auth?action=signup',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        name:p.name,
-        phone:p.phone,
-        password:p.password,
-        gender:p.gender,
-        birthYear:p.birthYear
-      })
+    // Supabase Auth 회원가입 (이메일 = 연락처@ssum.local)
+    const email=p.phone.replace(/-/g,'')+'@ssum.local';
+    const{data:authData,error:authErr}=await supabase.auth.signUp({
+      email,
+      password:p.password,
+      options:{data:{name:p.name,phone:p.phone,gender:p.gender,birth_year:p.birthYear}}
     });
-    const result=await res.json();
 
-    if(!res.ok){
-      alert(result.error||'가입 중 오류가 발생했습니다.');
-      btn.disabled=false;
-      btn.innerHTML='<i class="fa-solid fa-user-plus mr-1.5"></i>가입하기';
+    if(authErr){
+      if(authErr.message.includes('already registered'))alert('이미 가입된 연락처입니다.');
+      else alert(authErr.message||'가입 중 오류가 발생했습니다.');
+      btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-user-plus mr-1.5"></i>가입하기';
       return false;
     }
 
-    // 성공
-    localStorage.setItem('ssumUser',JSON.stringify(result.user));
+    // profiles 테이블에 추가 정보 저장
+    if(authData.user){
+      await supabase.from('profiles').insert({
+        id:authData.user.id,
+        name:p.name,
+        phone:p.phone,
+        gender:p.gender,
+        birth_year:p.birthYear
+      });
+    }
+
+    localStorage.setItem('ssumUser',JSON.stringify({id:authData.user?.id,name:p.name,phone:p.phone,gender:p.gender}));
     form.classList.add('hidden');
     document.querySelector('.text-center.mb-8').classList.add('hidden');
     document.getElementById('success').classList.remove('hidden');
   }catch(err){
     alert('네트워크 오류가 발생했습니다.');
-    btn.disabled=false;
-    btn.innerHTML='<i class="fa-solid fa-user-plus mr-1.5"></i>가입하기';
+    btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-user-plus mr-1.5"></i>가입하기';
   }
   return false;
 }
