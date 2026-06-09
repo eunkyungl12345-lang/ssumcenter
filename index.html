@@ -105,7 +105,7 @@
       <a href="#faq" class="nav-link">FAQ</a>
       <a href="test/ideal.html" class="nav-link">유형 테스트</a>
       <a href="login.html" class="nav-link">로그인</a>
-      <button onclick="openApplyModal()" class="ml-2 bg-y text-black font-bold text-xs px-5 py-2.5 rounded-full hover:brightness-90 transition">신청하기</button>
+      <button onclick="openApplyModal()" class="ml-2 bg-y text-black font-bold text-xs px-5 py-2.5 rounded-full hover:brightness-90 transition">주문하기</button>
     </div>
     <button class="burger text-white/60 text-lg" onclick="document.getElementById('mob').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
     <div class="nav-mob" id="mob">
@@ -115,7 +115,7 @@
       <a href="#faq" class="nav-link" onclick="this.parentElement.classList.remove('open')">FAQ</a>
       <a href="test/ideal.html" class="nav-link">유형 테스트</a>
       <a href="login.html" class="nav-link">로그인</a>
-      <button onclick="openApplyModal()" class="bg-y text-black font-bold text-sm px-5 py-3 rounded-xl mt-1">신청하기</button>
+      <button onclick="openApplyModal()" class="bg-y text-black font-bold text-sm px-5 py-3 rounded-xl mt-1">주문하기</button>
     </div>
   </div>
 </nav>
@@ -128,14 +128,14 @@
     <div class="hero-slide">
       <div style="position:relative;z-index:1">
         <div class="flex flex-wrap justify-center gap-2 mb-7">
-          <span class="badge"><span class="w-1.5 h-1.5 rounded-full bg-[#FFBE2E] animate-ping"></span>누적 매칭 3,000건+</span>
-          <span class="badge" style="background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:#b0a590"><i class="fa-solid fa-shield-check y"></i>승인제</span>
+          <span class="badge"><i class="fa-solid fa-box-open"></i>누적 배송 3,000건+</span>
+          <span class="badge" style="background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:#b0a590"><i class="fa-solid fa-truck-fast y"></i>설렘 배송 중</span>
         </div>
-        <h1 class="text-[32px] md:text-[52px] font-black leading-[1.2] tracking-tight"><span class="y">매칭 경험 있는 주선자들</span>이<br>만든 강남 커피팅</h1>
-        <p class="text-[15px] text-[#888] mt-5 leading-relaxed">목요일 퇴근 후, 강남에서 설렘을 만나세요.<br>검증된 2030 싱글들과 케미 가득한 커피 한 잔.</p>
+        <h1 class="text-[32px] md:text-[52px] font-black leading-[1.2] tracking-tight">당신의 설렘,<br><span class="y">배송 준비 완료</span> 📦</h1>
+        <p class="text-[15px] text-[#9a9080] mt-5 leading-relaxed">썸류센터가 검증된 설렘을 포장해서 배달해 드려요.<br>목요일 퇴근 후, 강남에서 수령하세요.</p>
         <div class="max-w-[340px] mx-auto mt-9">
           <button onclick="openApplyModal()" class="bg-y text-black font-extrabold w-full py-[18px] rounded-2xl text-[15px] cta-glow hover:brightness-90 transition">
-            <i class="fa-solid fa-paper-plane mr-1.5"></i>바로 신청하기
+            <i class="fa-solid fa-box mr-1.5"></i>설렘 주문하기
           </button>
           <p class="text-[11px] text-[#6b6358] mt-3">이미 마음을 정했다면</p>
         </div>
@@ -148,19 +148,19 @@
     </div>
     <div class="hero-slide">
       <div style="position:relative;z-index:1">
-        <span class="badge mb-7"><i class="fa-solid fa-shield-check"></i>승인제 운영</span>
-        <h1 class="text-[32px] md:text-[52px] font-black leading-[1.2] tracking-tight">아무나 참가할 수 없어요.<br><span class="y">승인받은 분만 만나세요.</span></h1>
-        <p class="text-[15px] text-[#888] mt-5 leading-relaxed">센터장이 직접 검토하고 승인한 분들만 참가합니다.<br>그만큼 함께하는 분들의 퀄리티를 책임져요.</p>
-        <button onclick="openApplyModal()" class="mt-9 bg-y text-black font-extrabold px-10 py-4 rounded-2xl text-[15px] hover:brightness-90 transition"><i class="fa-solid fa-paper-plane mr-1.5"></i>신청서 제출하기</button>
+        <span class="badge mb-7"><i class="fa-solid fa-clipboard-check"></i>품질 검수 완료</span>
+        <h1 class="text-[32px] md:text-[52px] font-black leading-[1.2] tracking-tight">아무 택배나 보내지 않아요.<br><span class="y">검수 통과한 설렘만 배송해요.</span></h1>
+        <p class="text-[15px] text-[#9a9080] mt-5 leading-relaxed">센터장이 직접 검수하고 승인한 분들만 참가합니다.<br>그만큼 함께하는 분들의 퀄리티를 책임져요.</p>
+        <button onclick="openApplyModal()" class="mt-9 bg-y text-black font-extrabold px-10 py-4 rounded-2xl text-[15px] hover:brightness-90 transition"><i class="fa-solid fa-box mr-1.5"></i>입고 신청하기</button>
       </div>
       <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(255,212,0,.06) 0%,transparent 65%)"></div>
     </div>
     <div class="hero-slide">
       <div style="position:relative;z-index:1">
-        <span class="badge mb-7"><i class="fa-solid fa-heart"></i>실제 커플 탄생</span>
-        <h1 class="text-[32px] md:text-[52px] font-black leading-[1.2] tracking-tight">매 회차 <span class="y">7커플 이상</span> 매칭!<br>다음은 당신의 차례에요.</h1>
-        <p class="text-[15px] text-[#888] mt-5 leading-relaxed">실제 후기와 인증이 증명하는 썸류센터의 매칭력.</p>
-        <button onclick="openApplyModal()" class="mt-9 bg-y text-black font-extrabold px-10 py-4 rounded-2xl text-[15px] hover:brightness-90 transition"><i class="fa-solid fa-paper-plane mr-1.5"></i>지금 신청하기</button>
+        <span class="badge mb-7"><i class="fa-solid fa-heart"></i>배송 완료 후기</span>
+        <h1 class="text-[32px] md:text-[52px] font-black leading-[1.2] tracking-tight">매 회차 <span class="y">7건 이상</span> 배송 성공!<br>다음 수령인은 당신이에요.</h1>
+        <p class="text-[15px] text-[#9a9080] mt-5 leading-relaxed">실제 후기와 인증이 증명하는 썸류센터의 배송력.</p>
+        <button onclick="openApplyModal()" class="mt-9 bg-y text-black font-extrabold px-10 py-4 rounded-2xl text-[15px] hover:brightness-90 transition"><i class="fa-solid fa-box mr-1.5"></i>지금 주문하기</button>
       </div>
       <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(255,212,0,.06) 0%,transparent 65%)"></div>
     </div>
@@ -175,12 +175,12 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto" data-r>
       <a href="https://form.naver.com/response/hZCZ4iRavCm3vmsqEJaIfw" target="_blank" rel="noopener" class="card p-5 flex items-center gap-4 hover:cursor-pointer">
         <div class="w-11 h-11 rounded-xl bg-[#FFBE2E]/10 flex items-center justify-center shrink-0"><i class="fa-solid fa-mug-hot y text-lg"></i></div>
-        <div><div class="font-bold text-sm">강남 목요일 커피팅</div><div class="text-[11px] text-[#8a7f70] mt-0.5">6월 25일 (목) 신청하기</div></div>
+        <div><div class="font-bold text-sm">강남 목요일 커피팅</div><div class="text-[11px] text-[#8a7f70] mt-0.5">6월 25일 (목) 수령 가능</div></div>
       </a>
       <a href="matching.html" class="card p-5 flex items-center gap-4 hover:cursor-pointer relative">
         <span class="absolute top-3 right-3 text-[8px] bg-[#FFBE2E]/15 text-[#FFBE2E] font-bold px-2 py-0.5 rounded-full">BETA</span>
         <div class="w-11 h-11 rounded-xl bg-[#FFBE2E]/10 flex items-center justify-center shrink-0"><i class="fa-solid fa-heart y text-lg"></i></div>
-        <div><div class="font-bold text-sm">1:1 온라인 매칭</div><div class="text-[11px] text-[#8a7f70] mt-0.5">나만을 위한 맞춤 매칭</div></div>
+        <div><div class="font-bold text-sm">1:1 온라인 매칭</div><div class="text-[11px] text-[#8a7f70] mt-0.5">나만을 위한 맞춤 배송</div></div>
       </a>
     </div>
   </div>
@@ -189,14 +189,14 @@
 <!-- Stats -->
 <section class="sec" id="about">
   <div class="sec-inner text-center">
-    <span class="badge mb-5" data-r>ABOUT US</span>
-    <h2 class="sec-title" data-r>썸류센터 — <span class="y">강남 커피팅</span></h2>
-    <p class="sec-sub" data-r>매주 검증된 2030 싱글들이 참가하는 프리미엄 커피팅</p>
+    <span class="badge mb-5" data-r><i class="fa-solid fa-warehouse"></i> 센터 현황</span>
+    <h2 class="sec-title" data-r>썸류센터 <span class="y">배송 실적</span></h2>
+    <p class="sec-sub" data-r>설렘을 포장하고, 검수하고, 배달합니다</p>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10" data-r>
-      <div class="card p-6 text-center"><div class="text-3xl font-black y">3,000+</div><div class="text-xs text-[#8a7f70] mt-2">누적 매칭</div></div>
-      <div class="card p-6 text-center"><div class="text-3xl font-black y">7커플+</div><div class="text-xs text-[#8a7f70] mt-2">회차당 매칭</div></div>
-      <div class="card p-6 text-center"><div class="text-3xl font-black y">100%</div><div class="text-xs text-[#8a7f70] mt-2">신원 검증</div></div>
-      <div class="card p-6 text-center"><div class="text-3xl font-black y">2030</div><div class="text-xs text-[#8a7f70] mt-2">검증된 싱글</div></div>
+      <div class="card p-6 text-center"><div class="text-2xl mb-1">📦</div><div class="text-3xl font-black y">3,000+</div><div class="text-xs text-[#8a7f70] mt-2">누적 배송 건수</div></div>
+      <div class="card p-6 text-center"><div class="text-2xl mb-1">💛</div><div class="text-3xl font-black y">7건+</div><div class="text-xs text-[#8a7f70] mt-2">회차당 배송 성공</div></div>
+      <div class="card p-6 text-center"><div class="text-2xl mb-1">🔍</div><div class="text-3xl font-black y">100%</div><div class="text-xs text-[#8a7f70] mt-2">품질 검수 완료</div></div>
+      <div class="card p-6 text-center"><div class="text-2xl mb-1">✅</div><div class="text-3xl font-black y">2030</div><div class="text-xs text-[#8a7f70] mt-2">검증된 입고자</div></div>
     </div>
   </div>
 </section>
@@ -245,9 +245,9 @@
 <!-- Participants -->
 <section class="sec" id="participants">
   <div class="sec-inner text-center">
-    <span class="badge mb-5" data-r><i class="fa-solid fa-user-group"></i>PARTICIPANTS</span>
-    <h2 class="sec-title" data-r>이런 분들이 <span class="y">참가해요</span></h2>
-    <p class="sec-sub" data-r>승인된 참가자 프로필을 미리 확인해보세요</p>
+    <span class="badge mb-5" data-r><i class="fa-solid fa-boxes-stacked"></i> 입고 현황</span>
+    <h2 class="sec-title" data-r>이런 분들이 <span class="y">입고됐어요</span></h2>
+    <p class="sec-sub" data-r>검수 통과한 참가자 프로필을 미리 확인해보세요</p>
 
     <div class="flex justify-center gap-2 mt-8 mb-3" data-r>
       <button class="ptab on" data-gender="M" onclick="swGender(this)"><i class="fa-solid fa-mars mr-1"></i>남성</button>
@@ -256,13 +256,13 @@
 
     <div id="p-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4" data-r></div>
     <div id="p-empty" class="hidden py-16" data-r>
-      <div class="text-4xl mb-3 opacity-30">📋</div>
-      <p class="text-sm text-[#8a7f70]">아직 등록된 참가자가 없어요</p>
-      <p class="text-xs text-[#5a5248] mt-1">참가자가 확정되면 여기에 표시됩니다</p>
+      <div class="text-4xl mb-3 opacity-30">📦</div>
+      <p class="text-sm text-[#8a7f70]">아직 입고된 인원이 없어요</p>
+      <p class="text-xs text-[#5a5248] mt-1">검수 완료되면 여기에 표시됩니다</p>
     </div>
 
     <div class="mt-8" data-r>
-      <button onclick="openApplyModal()" class="bg-y text-black font-bold px-7 py-3.5 rounded-xl text-sm hover:brightness-90 transition"><i class="fa-solid fa-paper-plane mr-1.5"></i>나도 참가 신청하기</button>
+      <button onclick="openApplyModal()" class="bg-y text-black font-bold px-7 py-3.5 rounded-xl text-sm hover:brightness-90 transition"><i class="fa-solid fa-box mr-1.5"></i>나도 입고 신청하기</button>
       <p class="text-[11px] text-[#5a5248] mt-3">프로필은 블러 처리되어 프라이버시가 보호됩니다</p>
     </div>
   </div>
@@ -271,17 +271,17 @@
 <!-- Steps -->
 <section class="sec" style="background:rgba(255,255,255,.015)">
   <div class="sec-inner text-center">
-    <span class="badge mb-5" data-r><i class="fa-solid fa-shield-check"></i>승인제 운영</span>
-    <h2 class="sec-title" data-r>신청부터 참가까지 <span class="y">4단계</span></h2>
+    <span class="badge mb-5" data-r><i class="fa-solid fa-truck-fast"></i> 배송 프로세스</span>
+    <h2 class="sec-title" data-r>설렘 배송 <span class="y">4단계</span></h2>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10" data-r>
-      <div class="card p-6 text-center relative"><div class="text-[10px] y font-bold tracking-widest mb-2">STEP 1</div><div class="w-10 h-10 mx-auto mb-3 rounded-xl bg-[#FFBE2E]/10 flex items-center justify-center"><i class="fa-solid fa-file-lines y"></i></div><div class="font-bold text-sm">신청서 제출</div><div class="text-[11px] text-[#8a7f70] mt-1">네이버폼으로 간단히</div><span class="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-[#333] text-lg">›</span></div>
-      <div class="card p-6 text-center relative"><div class="text-[10px] y font-bold tracking-widest mb-2">STEP 2</div><div class="w-10 h-10 mx-auto mb-3 rounded-xl bg-[#FFBE2E]/10 flex items-center justify-center"><i class="fa-solid fa-magnifying-glass y"></i></div><div class="font-bold text-sm">심사 & 검토</div><div class="text-[11px] text-[#8a7f70] mt-1">센터장이 직접 검토</div><span class="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-[#333] text-lg">›</span></div>
-      <div class="card p-6 text-center relative"><div class="text-[10px] y font-bold tracking-widest mb-2">STEP 3</div><div class="w-10 h-10 mx-auto mb-3 rounded-xl bg-[#FFBE2E]/10 flex items-center justify-center"><i class="fa-solid fa-circle-check y"></i></div><div class="font-bold text-sm">승인 확정</div><div class="text-[11px] text-[#8a7f70] mt-1">확정 문자 안내</div><span class="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-[#333] text-lg">›</span></div>
-      <div class="card p-6 text-center" style="border-color:rgba(255,212,0,.2);background:rgba(255,212,0,.03)"><div class="text-[10px] y font-bold tracking-widest mb-2">STEP 4</div><div class="w-10 h-10 mx-auto mb-3 rounded-xl bg-y flex items-center justify-center"><i class="fa-solid fa-heart text-black"></i></div><div class="font-bold text-sm y">참가 확정!</div><div class="text-[11px] text-[#8a7f70] mt-1">설레는 만남</div></div>
+      <div class="card p-6 text-center relative"><div class="text-[10px] y font-bold tracking-widest mb-2">STEP 1</div><div class="text-2xl mb-2">📋</div><div class="font-bold text-sm">주문 접수</div><div class="text-[11px] text-[#8a7f70] mt-1">네이버폼으로<br>간단히 주문</div><span class="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-[#3a3530] text-lg">›</span></div>
+      <div class="card p-6 text-center relative"><div class="text-[10px] y font-bold tracking-widest mb-2">STEP 2</div><div class="text-2xl mb-2">🔍</div><div class="font-bold text-sm">품질 검수</div><div class="text-[11px] text-[#8a7f70] mt-1">센터장이<br>직접 검수</div><span class="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-[#3a3530] text-lg">›</span></div>
+      <div class="card p-6 text-center relative"><div class="text-[10px] y font-bold tracking-widest mb-2">STEP 3</div><div class="text-2xl mb-2">📦</div><div class="font-bold text-sm">포장 완료</div><div class="text-[11px] text-[#8a7f70] mt-1">확정 문자로<br>출고 안내</div><span class="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-[#3a3530] text-lg">›</span></div>
+      <div class="card p-6 text-center" style="border-color:rgba(255,190,46,.2);background:rgba(255,190,46,.03)"><div class="text-[10px] y font-bold tracking-widest mb-2">STEP 4</div><div class="text-2xl mb-2">💛</div><div class="font-bold text-sm y">배송 완료!</div><div class="text-[11px] text-[#8a7f70] mt-1">설렘이<br>도착했습니다</div></div>
     </div>
     <div class="card mt-6 p-5 flex gap-4 items-center text-left" data-r>
-      <div class="shrink-0 w-11 h-11 rounded-xl bg-y flex items-center justify-center text-black"><i class="fa-solid fa-shield-check"></i></div>
-      <div><p class="font-bold text-sm">신청 = 참가 확정이 아니에요</p><p class="text-xs text-[#888] mt-1">센터장 검토를 거쳐 <span class="y font-bold">별도 확정 문자</span>를 받으셔야 참가 가능합니다.</p></div>
+      <div class="shrink-0 w-11 h-11 rounded-xl bg-y flex items-center justify-center text-black"><i class="fa-solid fa-box"></i></div>
+      <div><p class="font-bold text-sm">주문 접수 = 배송 확정이 아니에요</p><p class="text-xs text-[#9a9080] mt-1">센터장 검수를 거쳐 <span class="y font-bold">출고 확정 문자</span>를 받으셔야 수령 가능합니다.</p></div>
     </div>
   </div>
 </section>
@@ -289,8 +289,8 @@
 <!-- Reviews -->
 <section class="sec" id="reviews">
   <div class="sec-inner text-center">
-    <span class="badge mb-5" data-r><i class="fa-solid fa-quote-left"></i>REVIEWS</span>
-    <h2 class="sec-title" data-r>참가자 <span class="y">리얼 후기</span></h2>
+    <span class="badge mb-5" data-r><i class="fa-solid fa-star"></i> 수령 후기</span>
+    <h2 class="sec-title" data-r>설렘 수령자 <span class="y">리얼 후기</span></h2>
     <div class="mt-10" data-r>
       <div class="rv-track" id="rv">
         <div class="rv-card card p-6"><div class="y text-xs mb-3 tracking-widest"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i></div><p class="text-[14px] leading-[1.8]">"편안하고 싱그러운 기운을 나눠주는 분을 만났어요. 끊김 없이 즐거웠고 배려가 인상적이었습니다."</p><p class="text-[11px] text-[#6b6358] mt-4 pt-4 border-t border-white/[.06]">— 30대 여성 참가자</p></div>
@@ -361,13 +361,13 @@
     <div id="from-test" class="hidden card p-4 mb-6 max-w-sm mx-auto text-sm" style="border-color:rgba(255,212,0,.2)">
       <div class="flex items-center justify-center gap-2"><i class="fa-solid fa-flask y"></i><span class="text-[#888]">테스트 결과:</span><b id="from-test-result"></b></div>
     </div>
-    <span class="badge mb-5">APPLY NOW</span>
-    <h2 class="sec-title mt-3">마음 정했다면<br><span class="y">지금 바로 신청하세요</span></h2>
-    <p class="sec-sub">네이버폼 신청 → 센터장 검토 → 확정 문자</p>
+    <span class="badge mb-5"><i class="fa-solid fa-box-open"></i> ORDER NOW</span>
+    <h2 class="sec-title mt-3">마음 정했다면<br><span class="y">설렘을 주문하세요</span> 📦</h2>
+    <p class="sec-sub">주문 접수 → 품질 검수 → 포장 → 배송 완료</p>
     <div class="max-w-[320px] mx-auto mt-9">
-      <button onclick="openApplyModal()" class="bg-y text-black font-extrabold w-full py-[18px] rounded-2xl text-[15px] cta-glow hover:brightness-90 transition"><i class="fa-solid fa-paper-plane mr-1.5"></i>바로 신청하기</button>
+      <button onclick="openApplyModal()" class="bg-y text-black font-extrabold w-full py-[18px] rounded-2xl text-[15px] cta-glow hover:brightness-90 transition"><i class="fa-solid fa-box mr-1.5"></i>설렘 주문하기</button>
     </div>
-    <p class="text-xs text-[#6b6358] mt-4">신청 후 확정 문자를 별도로 보내드려요</p>
+    <p class="text-xs text-[#6b6358] mt-4">주문 후 출고 확정 문자를 별도로 보내드려요</p>
   </div>
 </section>
 
@@ -383,14 +383,14 @@
   <div class="modal-box">
     <button onclick="closeApplyModal()" class="absolute top-4 right-5 text-[#6b6358] hover:text-white text-lg">✕</button>
     <div class="text-center mb-6">
-      <span class="badge mb-3"><i class="fa-solid fa-paper-plane"></i>신청하기</span>
-      <h3 class="text-xl font-black mt-3">희망 매칭 방식을<br><span class="y">선택해주세요</span></h3>
+      <span class="badge mb-3"><i class="fa-solid fa-box-open"></i> 주문하기</span>
+      <h3 class="text-xl font-black mt-3">어떤 설렘을<br><span class="y">주문하시겠어요?</span></h3>
     </div>
     <div class="space-y-3">
-      <button onclick="closeApplyModal();openDateModal()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl flex flex-col items-center gap-0.5 hover:brightness-90 transition"><span><i class="fa-solid fa-mug-hot mr-1.5"></i>강남 목요일 커피팅</span><span class="text-[11px] font-medium opacity-60">퇴근 후 · 6월 25일 (목)</span></button>
-      <a href="matching.html" class="relative w-full bg-white/[.03] border border-white/[.08] text-white font-extrabold py-4 rounded-2xl flex flex-col items-center gap-0.5 hover:bg-white/[.06] transition block text-center"><span><i class="fa-solid fa-heart mr-1.5 y"></i>1:1 온라인 매칭</span><span class="text-[11px] font-medium text-[#8a7f70]">신청하기 →</span><span class="absolute top-2.5 right-3 text-[9px] bg-[#FFBE2E]/15 text-[#FFBE2E] font-bold px-2 py-0.5 rounded-full">BETA</span></a>
+      <button onclick="closeApplyModal();openDateModal()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl flex flex-col items-center gap-0.5 hover:brightness-90 transition"><span><i class="fa-solid fa-mug-hot mr-1.5"></i>강남 목요일 커피팅</span><span class="text-[11px] font-medium opacity-60">퇴근 후 수령 · 6월 25일 (목)</span></button>
+      <a href="matching.html" class="relative w-full bg-white/[.03] border border-white/[.08] text-white font-extrabold py-4 rounded-2xl flex flex-col items-center gap-0.5 hover:bg-white/[.06] transition block text-center"><span><i class="fa-solid fa-heart mr-1.5 y"></i>1:1 온라인 매칭</span><span class="text-[11px] font-medium text-[#8a7f70]">주문하기 →</span><span class="absolute top-2.5 right-3 text-[9px] bg-[#FFBE2E]/15 text-[#FFBE2E] font-bold px-2 py-0.5 rounded-full">BETA</span></a>
     </div>
-    <p class="text-[11px] text-[#5a5248] text-center mt-5">확정 문자를 별도로 보내드려요</p>
+    <p class="text-[11px] text-[#5a5248] text-center mt-5">출고 확정 문자를 별도로 보내드려요</p>
   </div>
 </div>
 
