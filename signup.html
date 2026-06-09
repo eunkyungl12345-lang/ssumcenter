@@ -172,7 +172,7 @@
 <script>
 const SUPA_URL='https://nvqlguhzsucrcnmjlxoe.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cWxndWh6c3VjcmNubWpseG9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDk4NDgsImV4cCI6MjA5NjU4NTg0OH0.ClU6JArejkQQibf6XBFuYkF-fCQKnD2cVzJgXvkdgNc';
-const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 
 function togglePw(){
   const pw=document.getElementById('pw-input');
@@ -228,7 +228,7 @@ async function handleSignup(e){
   try{
     // Supabase Auth 회원가입 (이메일 = 연락처@ssum.local)
     const email=p.phone.replace(/-/g,'')+'@ssum.local';
-    const{data:authData,error:authErr}=await supabase.auth.signUp({
+    const{data:authData,error:authErr}=await sb.auth.signUp({
       email,
       password:p.password,
       options:{data:{name:p.name,phone:p.phone,gender:p.gender,birth_year:p.birthYear}}
@@ -247,7 +247,7 @@ async function handleSignup(e){
 
     // profiles 테이블에 추가 정보 저장
     if(authData.user){
-      await supabase.from('profiles').insert({
+      await sb.from('profiles').insert({
         id:authData.user.id,
         name:p.name,
         phone:p.phone,

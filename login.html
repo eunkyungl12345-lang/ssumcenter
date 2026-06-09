@@ -80,7 +80,7 @@
 <script>
 const SUPA_URL='https://nvqlguhzsucrcnmjlxoe.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cWxndWh6c3VjcmNubWpseG9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDk4NDgsImV4cCI6MjA5NjU4NTg0OH0.ClU6JArejkQQibf6XBFuYkF-fCQKnD2cVzJgXvkdgNc';
-const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 
 function togglePw(){
   const pw=document.getElementById('pw-input');
@@ -111,7 +111,7 @@ async function handleLogin(e){
 
   try{
     const email=p.phone.replace(/-/g,'')+'@ssum.local';
-    const{data:authData,error:authErr}=await supabase.auth.signInWithPassword({email,password:p.password});
+    const{data:authData,error:authErr}=await sb.auth.signInWithPassword({email,password:p.password});
 
     if(authErr){
       err.textContent=authErr.message==='Invalid login credentials'?'연락처 또는 비밀번호가 일치하지 않습니다.':authErr.message;
@@ -121,7 +121,7 @@ async function handleLogin(e){
     }
 
     // 프로필 정보 가져오기
-    const{data:profile}=await supabase.from('profiles').select('*').eq('id',authData.user.id).single();
+    const{data:profile}=await sb.from('profiles').select('*').eq('id',authData.user.id).single();
     localStorage.setItem('ssumUser',JSON.stringify(profile||{id:authData.user.id}));
     window.location.href='index.html';
   }catch(e){
