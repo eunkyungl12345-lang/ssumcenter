@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회원가입 | 썸류센터</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0a0a09;color:#f5f5f3;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+  ::selection{background:#FFD400;color:#000}
+  .y{color:#FFD400}
+  .card{background:#131312;border-radius:24px;border:1px solid rgba(255,255,255,.06)}
+  .input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;font-size:14px;color:#fff;outline:none;transition:border-color .2s;font-family:inherit}
+  .input::placeholder{color:#444}
+  .input:focus{border-color:rgba(255,212,0,.5)}
+  .input-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,212,0,.08);border:1px solid rgba(255,212,0,.18);color:#FFD400;padding:6px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px}
+  .btn{width:100%;padding:16px;border-radius:16px;font-size:15px;font-weight:800;border:none;cursor:pointer;transition:all .2s;font-family:inherit}
+  .btn-primary{background:#FFD400;color:#0a0a09}
+  .btn-primary:hover{filter:brightness(.9)}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;filter:none}
+  .radio-wrap{cursor:pointer}
+  .radio-wrap input{display:none}
+  .radio-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;text-align:center;font-size:14px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .radio-card:hover{border-color:rgba(255,212,0,.3)}
+  .radio-wrap input:checked+.radio-card{background:rgba(255,212,0,.06);border-color:rgba(255,212,0,.4)}
+  .radio-wrap input:checked+.radio-card .dot{background:#FFD400}
+  .dot{width:10px;height:10px;border-radius:50%;border:2px solid #444;transition:all .2s;flex-shrink:0}
+  .label{display:block;font-size:12px;font-weight:600;color:#888;margin-bottom:8px}
+  .label .req{color:#FFD400}
+  .err-msg{font-size:12px;color:#ff5555;margin-top:6px;display:none}
+  .err-msg.show{display:block}
+  .pw-str{height:3px;border-radius:2px;margin-top:8px;transition:all .3s}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="sticky top-0 z-50 backdrop-blur-xl bg-[#0a0a09]/80 border-b border-white/[.04] px-5 py-3.5">
+  <div class="max-w-[480px] mx-auto flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2"><img src="logo.png" alt="썸류센터" class="h-7"></a>
+    <a href="login.html" class="text-sm font-semibold text-[#888] hover:text-white transition">로그인</a>
+  </div>
+</nav>
+
+<main class="flex-1 flex items-start justify-center px-5 py-10">
+  <div class="w-full max-w-[440px]">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <span class="badge mb-4"><i class="fa-solid fa-user-plus"></i> SIGN UP</span>
+      <h1 class="text-2xl font-black mt-3">썸류센터 <span class="y">회원가입</span></h1>
+      <p class="text-sm text-[#888] mt-2">가입하고 커피팅에 참여해보세요</p>
+    </div>
+
+    <!-- Form -->
+    <form id="signup-form" class="space-y-5" onsubmit="return handleSignup(event)">
+
+      <div class="card p-6 space-y-5">
+        <!-- 이름 -->
+        <div>
+          <label class="label">이름 <span class="req">*</span></label>
+          <input type="text" name="name" required placeholder="실명을 입력해주세요" class="input">
+        </div>
+
+        <!-- 연락처 -->
+        <div>
+          <label class="label">연락처 <span class="req">*</span></label>
+          <input type="tel" name="phone" required placeholder="010-0000-0000" class="input" id="phone-input">
+          <p class="err-msg" id="phone-err">올바른 연락처를 입력해주세요</p>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div>
+          <label class="label">비밀번호 <span class="req">*</span></label>
+          <div class="relative">
+            <input type="password" name="password" required placeholder="6자 이상" class="input" id="pw-input" minlength="6">
+            <button type="button" onclick="togglePw()" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#555] hover:text-white transition text-sm"><i class="fa-solid fa-eye" id="pw-icon"></i></button>
+          </div>
+          <div class="pw-str" id="pw-str" style="background:rgba(255,255,255,.06);width:0%"></div>
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div>
+          <label class="label">비밀번호 확인 <span class="req">*</span></label>
+          <input type="password" name="passwordConfirm" required placeholder="비밀번호를 다시 입력해주세요" class="input" id="pw2-input">
+          <p class="err-msg" id="pw2-err">비밀번호가 일치하지 않습니다</p>
+        </div>
+
+        <!-- 성별 -->
+        <div>
+          <label class="label">성별 <span class="req">*</span></label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="radio-wrap">
+              <input type="radio" name="gender" value="남성" required>
+              <div class="radio-card"><div class="dot"></div>남성</div>
+            </label>
+            <label class="radio-wrap">
+              <input type="radio" name="gender" value="여성">
+              <div class="radio-card"><div class="dot"></div>여성</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- 출생 연도 -->
+        <div>
+          <label class="label">출생 연도 <span class="req">*</span></label>
+          <select name="birthYear" required class="input input-select">
+            <option value="" disabled selected style="color:#444">출생 연도를 선택해주세요</option>
+            <option value="2006">2006년생</option><option value="2005">2005년생</option>
+            <option value="2004">2004년생</option><option value="2003">2003년생</option>
+            <option value="2002">2002년생</option><option value="2001">2001년생</option>
+            <option value="2000">2000년생</option><option value="1999">1999년생</option>
+            <option value="1998">1998년생</option><option value="1997">1997년생</option>
+            <option value="1996">1996년생</option><option value="1995">1995년생</option>
+            <option value="1994">1994년생</option><option value="1993">1993년생</option>
+            <option value="1992">1992년생</option><option value="1991">1991년생</option>
+            <option value="1990">1990년생</option><option value="1989">1989년생</option>
+            <option value="1988">1988년생</option><option value="1987">1987년생</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 동의 -->
+      <div class="card p-6">
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" id="agree-all" class="hidden">
+          <div class="w-5 h-5 shrink-0 mt-0.5 rounded-md border-2 border-[#444] flex items-center justify-center transition" id="agree-box">
+            <i class="fa-solid fa-check text-[10px] text-black hidden" id="agree-icon"></i>
+          </div>
+          <span class="text-sm text-[#888] leading-relaxed">
+            개인정보 수집 및 이용에 동의합니다. <span class="y">*</span>
+          </span>
+        </label>
+      </div>
+
+      <!-- 제출 -->
+      <button type="submit" id="submit-btn" class="btn btn-primary">
+        <i class="fa-solid fa-user-plus mr-1.5"></i>가입하기
+      </button>
+
+      <p class="text-center text-xs text-[#555] mt-2">
+        이미 계정이 있으신가요? <a href="login.html" class="y font-bold hover:underline">로그인</a>
+      </p>
+    </form>
+
+    <!-- 완료 화면 -->
+    <div id="success" class="hidden text-center py-16">
+      <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#FFD400] flex items-center justify-center">
+        <i class="fa-solid fa-check text-black text-2xl"></i>
+      </div>
+      <h2 class="text-2xl font-black">가입 완료!</h2>
+      <p class="text-sm text-[#888] mt-3 leading-relaxed">썸류센터에 오신 걸 환영해요.<br>이제 커피팅에 신청할 수 있어요.</p>
+      <div class="flex flex-col gap-3 mt-8 max-w-[280px] mx-auto">
+        <a href="index.html" class="btn btn-primary text-center block"><i class="fa-solid fa-home mr-1.5"></i>홈으로</a>
+        <a href="login.html" class="btn text-center block" style="background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.08)">로그인하기</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="border-t border-white/[.04] px-5 py-8 text-center">
+  <p class="text-[11px] text-[#444]">문의: 카카오톡 채널 @썸류센터</p>
+</footer>
+
+<script>
+// 비밀번호 표시 토글
+function togglePw(){
+  const pw=document.getElementById('pw-input');
+  const icon=document.getElementById('pw-icon');
+  if(pw.type==='password'){pw.type='text';icon.className='fa-solid fa-eye-slash'}
+  else{pw.type='password';icon.className='fa-solid fa-eye'}
+}
+
+// 비밀번호 강도
+document.getElementById('pw-input').addEventListener('input',function(){
+  const v=this.value,bar=document.getElementById('pw-str');
+  let s=0;
+  if(v.length>=6)s++;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
+  const pct=[0,20,40,60,80,100][s];
+  const col=['#ff3333','#ff6633','#ffaa33','#aacc33','#44cc44'][Math.max(0,s-1)]||'#333';
+  bar.style.width=pct+'%';bar.style.background=s?col:'rgba(255,255,255,.06)';
+});
+
+// 비밀번호 확인
+document.getElementById('pw2-input').addEventListener('input',function(){
+  const pw=document.getElementById('pw-input').value;
+  document.getElementById('pw2-err').classList.toggle('show',this.value&&this.value!==pw);
+});
+
+// 연락처 자동 포맷
+document.getElementById('phone-input').addEventListener('input',function(){
+  let v=this.value.replace(/[^0-9]/g,'');
+  if(v.length>3&&v.length<=7)v=v.slice(0,3)+'-'+v.slice(3);
+  else if(v.length>7)v=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
+  this.value=v;
+});
+
+// 동의 체크
+document.getElementById('agree-all').addEventListener('change',function(){
+  const box=document.getElementById('agree-box'),icon=document.getElementById('agree-icon');
+  if(this.checked){box.style.background='#FFD400';box.style.borderColor='#FFD400';icon.classList.remove('hidden')}
+  else{box.style.background='transparent';box.style.borderColor='#444';icon.classList.add('hidden')}
+});
+
+// 가입 처리
+async function handleSignup(e){
+  e.preventDefault();
+  const form=document.getElementById('signup-form');
+  const data=new FormData(form);
+  const p=Object.fromEntries(data.entries());
+
+  // 비밀번호 확인
+  if(p.password!==p.passwordConfirm){
+    document.getElementById('pw2-err').classList.add('show');
+    return false;
+  }
+  if(p.password.length<6){alert('비밀번호는 6자 이상이어야 합니다.');return false}
+
+  // 동의 확인
+  if(!document.getElementById('agree-all').checked){alert('개인정보 수집 동의가 필요합니다.');return false}
+
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>가입 중...';
+
+  try{
+    const res=await fetch('/api/auth?action=signup',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name:p.name,
+        phone:p.phone,
+        password:p.password,
+        gender:p.gender,
+        birthYear:p.birthYear
+      })
+    });
+    const result=await res.json();
+
+    if(!res.ok){
+      alert(result.error||'가입 중 오류가 발생했습니다.');
+      btn.disabled=false;
+      btn.innerHTML='<i class="fa-solid fa-user-plus mr-1.5"></i>가입하기';
+      return false;
+    }
+
+    // 성공
+    localStorage.setItem('ssumUser',JSON.stringify(result.user));
+    form.classList.add('hidden');
+    document.querySelector('.text-center.mb-8').classList.add('hidden');
+    document.getElementById('success').classList.remove('hidden');
+  }catch(err){
+    alert('네트워크 오류가 발생했습니다.');
+    btn.disabled=false;
+    btn.innerHTML='<i class="fa-solid fa-user-plus mr-1.5"></i>가입하기';
+  }
+  return false;
+}
+</script>
+</body>
+</html>
