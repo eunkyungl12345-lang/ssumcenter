@@ -126,15 +126,15 @@
 
       <!-- 동의 -->
       <div class="card p-6">
-        <label class="flex items-start gap-3 cursor-pointer">
-          <input type="checkbox" id="agree-all" class="hidden">
+        <div class="flex items-start gap-3 cursor-pointer" onclick="toggleAgree()">
           <div class="w-5 h-5 shrink-0 mt-0.5 rounded-md border-2 border-[#5a5248] flex items-center justify-center transition" id="agree-box">
             <i class="fa-solid fa-check text-[10px] text-black hidden" id="agree-icon"></i>
           </div>
           <span class="text-sm text-[#9a9080] leading-relaxed">
             개인정보 수집 및 이용에 동의합니다. <span class="y">*</span>
           </span>
-        </label>
+        </div>
+        <input type="hidden" id="agree-all" value="false">
       </div>
 
       <!-- 제출 -->
@@ -202,11 +202,14 @@ document.getElementById('phone-input').addEventListener('input',function(){
   this.value=v;
 });
 
-document.getElementById('agree-all').addEventListener('change',function(){
+let agreed=false;
+function toggleAgree(){
+  agreed=!agreed;
   const box=document.getElementById('agree-box'),icon=document.getElementById('agree-icon');
-  if(this.checked){box.style.background='#FFBE2E';box.style.borderColor='#FFBE2E';icon.classList.remove('hidden')}
+  document.getElementById('agree-all').value=agreed?'true':'false';
+  if(agreed){box.style.background='#FFBE2E';box.style.borderColor='#FFBE2E';icon.classList.remove('hidden')}
   else{box.style.background='transparent';box.style.borderColor='#5a5248';icon.classList.add('hidden')}
-});
+}
 
 async function handleSignup(e){
   e.preventDefault();
@@ -216,7 +219,7 @@ async function handleSignup(e){
 
   if(p.password!==p.passwordConfirm){document.getElementById('pw2-err').classList.add('show');return false}
   if(p.password.length<6){alert('비밀번호는 6자 이상이어야 합니다.');return false}
-  if(!document.getElementById('agree-all').checked){alert('개인정보 수집 동의가 필요합니다.');return false}
+  if(!agreed){alert('개인정보 수집 동의가 필요합니다.');return false}
 
   const btn=document.getElementById('submit-btn');
   btn.disabled=true;
@@ -232,8 +235,12 @@ async function handleSignup(e){
     });
 
     if(authErr){
-      if(authErr.message.includes('already registered'))alert('이미 가입된 연락처입니다.');
-      else alert(authErr.message||'가입 중 오류가 발생했습니다.');
+      let msg='가입 중 오류가 발생했습니다.';
+      if(authErr.message.includes('already registered'))msg='이미 가입된 연락처입니다.';
+      else if(authErr.message.includes('password'))msg='비밀번호는 6자 이상이어야 합니다.';
+      else if(authErr.message)msg=authErr.message;
+      alert(msg);
+      console.error('Supabase signup error:',authErr);
       btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-user-plus mr-1.5"></i>가입하기';
       return false;
     }
