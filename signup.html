@@ -184,17 +184,21 @@
   <p class="text-[11px] text-[#5a5248]">문의: 카카오톡 채널 @썸류센터</p>
 </footer>
 
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPA_URL='https://nvqlguhzsucrcnmjlxoe.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cWxndWh6c3VjcmNubWpseG9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDk4NDgsImV4cCI6MjA5NjU4NTg0OH0.ClU6JArejkQQibf6XBFuYkF-fCQKnD2cVzJgXvkdgNc';
 const sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 
-// 카카오 로그인
+// 카카오 SDK 초기화
+Kakao.init('702b5ffe9fbe4643438cdedc5e4e1a52');
+
 function kakaoLogin(){
-  const KAKAO_KEY='f27b06fa1f606f4ef7b083a627b41b83';
-  const REDIRECT=encodeURIComponent('https://ssumcenter.vercel.app/auth-callback.html');
-  window.location.href='https://kauth.kakao.com/oauth/authorize?client_id='+KAKAO_KEY+'&redirect_uri='+REDIRECT+'&response_type=code';
+  Kakao.Auth.authorize({
+    redirectUri:'https://ssumcenter.vercel.app/auth-callback.html',
+    scope:'profile_nickname,profile_image'
+  });
 }
 
 function togglePw(){
