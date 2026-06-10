@@ -96,7 +96,10 @@ const sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 async function kakaoLogin(){
   const{error}=await sb.auth.signInWithOAuth({
     provider:'kakao',
-    options:{redirectTo:window.location.origin+'/index.html'}
+    options:{
+      redirectTo:window.location.origin+'/index.html',
+      scopes:'profile_nickname profile_image'
+    }
   });
   if(error)alert('카카오 로그인 연결에 실패했습니다: '+error.message);
 }
