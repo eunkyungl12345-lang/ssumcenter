@@ -195,9 +195,26 @@ const sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 Kakao.init('702b5ffe9fbe4643438cdedc5e4e1a52');
 
 function kakaoLogin(){
-  Kakao.Auth.authorize({
-    redirectUri:'https://ssumcenter.vercel.app/auth-callback.html',
-    scope:'profile_nickname,profile_image'
+  Kakao.Auth.login({
+    success:function(authObj){
+      Kakao.API.request({
+        url:'/v2/user/me',
+        success:function(res){
+          const user={
+            id:'kakao_'+res.id,
+            name:res.properties?.nickname||'카카오 유저',
+            profileImage:res.properties?.profile_image||'',
+            provider:'kakao'
+          };
+          localStorage.setItem('ssumUser',JSON.stringify(user));
+          document.getElementById('signup-form').classList.add('hidden');
+          document.querySelector('.text-center.mb-8').classList.add('hidden');
+          document.getElementById('success').classList.remove('hidden');
+        },
+        fail:function(err){alert('사용자 정보 조회 실패: '+JSON.stringify(err))}
+      });
+    },
+    fail:function(err){alert('카카오 로그인 실패: '+JSON.stringify(err))}
   });
 }
 
