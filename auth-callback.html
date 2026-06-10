@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로그인 중... | 썸류센터</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:Pretendard,'Apple SD Gothic Neo',sans-serif;background:#110f0b;color:#F5E6D0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+  .wrap{text-align:center;padding:40px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spinner{width:40px;height:40px;border:3px solid #3a3228;border-top-color:#E8A020;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="spinner"></div>
+  <p style="font-size:15px;font-weight:600">카카오 로그인 처리 중...</p>
+  <p style="font-size:13px;color:#9e8e78;margin-top:8px">잠시만 기다려주세요</p>
+</div>
+<script>
+(async function(){
+  const code=new URLSearchParams(location.search).get('code');
+  if(!code){alert('인증 코드가 없습니다.');location.href='login.html';return}
+
+  try{
+    const res=await fetch('/api/kakao-auth',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({code,origin:location.origin})
+    });
+    const data=await res.json();
+
+    if(!res.ok||!data.ok){
+      alert(data.error||'카카오 로그인에 실패했습니다.');
+      location.href='login.html';
+      return;
+    }
+
+    localStorage.setItem('ssumUser',JSON.stringify(data.user));
+    location.href='index.html';
+  }catch(e){
+    alert('로그인 처리 중 오류가 발생했습니다.');
+    location.href='login.html';
+  }
+})();
+</script>
+</body>
+</html>
