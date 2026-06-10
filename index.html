@@ -435,7 +435,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
       <h3 class="gm" style="font-size:20px;font-weight:700;margin-top:12px">어떤 만남을<br><span class="ac">신청하시겠어요?</span></h3>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px">
-      <a href="matching.html" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center;transition:all .2s"><span><i class="fa-solid fa-truck-fast" style="margin-right:6px"></i>1:1 매칭</span><span style="font-size:11px;font-weight:500;opacity:.6">신청하기 →</span><span style="position:absolute;top:10px;right:12px;font-size:9px;background:rgba(0,0,0,.15);padding:2px 8px;border-radius:100px;font-weight:700">BETA</span></a>
+      <a href="#" onclick="goMatching();return false" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center;transition:all .2s"><span><i class="fa-solid fa-truck-fast" style="margin-right:6px"></i>1:1 매칭</span><span style="font-size:11px;font-weight:500;opacity:.6">신청하기 →</span><span style="position:absolute;top:10px;right:12px;font-size:9px;background:rgba(0,0,0,.15);padding:2px 8px;border-radius:100px;font-weight:700">BETA</span></a>
       <button onclick="closeApplyModal();openDateModal()" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);font-weight:800;padding:18px;border-radius:18px;cursor:pointer;transition:all .2s;font-family:inherit;font-size:inherit"><span><i class="fa-solid fa-mug-hot ac" style="margin-right:6px"></i>강남 목요일 커피팅</span><span style="font-size:11px;font-weight:500;color:var(--dim)">퇴근 후 참가 · <span data-date-text>6월 25일 (목)</span></span></button>
     </div>
     <p style="font-size:11px;color:var(--faint);text-align:center;margin-top:20px">확정 문자를 별도로 보내드려요</p>
@@ -499,6 +499,13 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeApplyModal();c
 /* Reveal */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});
 document.querySelectorAll('[data-r]').forEach(el=>io.observe(el));
+
+/* 로그인 체크 후 매칭 페이지 이동 */
+function goMatching(){
+  const user=localStorage.getItem('ssumUser');
+  if(user){window.location.href='matching.html'}
+  else{window.location.href='login.html?redirect=matching.html'}
+}
 
 /* Test result */
 (function(){const p=new URLSearchParams(location.search);if(p.get('result')){document.getElementById('from-test').classList.remove('hidden');document.getElementById('from-test-result').textContent=p.get('result')+'형 (상위 '+(p.get('pct')||'')+'%)';setTimeout(()=>document.getElementById('apply').scrollIntoView({behavior:'smooth'}),300)}})();

@@ -152,7 +152,7 @@
     <h2 class="text-2xl font-black">나만을 위한 설렘,<br><span class="y">특급 배송 신청하기</span> 🎁</h2>
     <p class="text-sm text-[#9a9080] mt-3">매칭 불발 시 비용이 발생하지 않아요</p>
     <div class="max-w-[320px] mx-auto mt-8">
-      <a href="matching.html" class="bg-y text-black font-extrabold w-full py-[18px] rounded-2xl text-[15px] cta-glow hover:brightness-90 transition block text-center"><i class="fa-solid fa-gift mr-1.5"></i>1:1 매칭 신청하기</a>
+      <a href="#" onclick="if(localStorage.getItem('ssumUser')){location.href='matching.html'}else{location.href='login.html?redirect=matching.html'};return false" class="bg-y text-black font-extrabold w-full py-[18px] rounded-2xl text-[15px] cta-glow hover:brightness-90 transition block text-center"><i class="fa-solid fa-gift mr-1.5"></i>1:1 매칭 신청하기</a>
     </div>
     <p class="text-xs text-[#6b6358] mt-4">신청 무료 · 매칭 성사 시에만 결제</p>
     <a href="index.html" class="inline-block mt-6 text-sm text-[#9a9080] hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i>홈으로 돌아가기</a>

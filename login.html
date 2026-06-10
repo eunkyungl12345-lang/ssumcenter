@@ -109,7 +109,7 @@ a{text-decoration:none;color:inherit}
     </form>
 
     <div class="links">
-      아직 계정이 없으신가요? <a href="signup.html">회원가입</a>
+      아직 계정이 없으신가요? <a id="signup-link" href="signup.html">회원가입</a>
     </div>
   </div>
 </main>
@@ -121,6 +121,8 @@ a{text-decoration:none;color:inherit}
 <script>
 const sb=window.supabase.createClient('https://nvqlguhzsucrcnmjlxoe.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cWxndWh6c3VjcmNubWpseG9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDk4NDgsImV4cCI6MjA5NjU4NTg0OH0.ClU6JArejkQQibf6XBFuYkF-fCQKnD2cVzJgXvkdgNc');
 Kakao.init('702b5ffe9fbe4643438cdedc5e4e1a52');
+const redirectTo=new URLSearchParams(location.search).get('redirect');
+if(redirectTo){document.getElementById('signup-link').href='signup.html?redirect='+redirectTo}
 
 function kakaoLogin(){
   Kakao.Auth.authorize({redirectUri:'https://ssumcenter.vercel.app/auth-callback.html'});
@@ -139,7 +141,8 @@ async function handleLogin(e){
     if(error){err.textContent=error.message==='Invalid login credentials'?'이메일 또는 비밀번호가 일치하지 않아요':error.message;err.classList.add('show');btn.disabled=false;btn.textContent='로그인';return false}
     const{data:profile}=await sb.from('profiles').select('*').eq('id',data.user.id).single();
     localStorage.setItem('ssumUser',JSON.stringify(profile||{id:data.user.id}));
-    window.location.href='index.html';
+    const redirect=new URLSearchParams(location.search).get('redirect');
+    window.location.href=redirect||'index.html';
   }catch(e){err.textContent='네트워크 오류가 발생했어요';err.classList.add('show');btn.disabled=false;btn.textContent='로그인'}
   return false;
 }
