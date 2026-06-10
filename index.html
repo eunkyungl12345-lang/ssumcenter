@@ -8,127 +8,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;500;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
-:root{
-  --bg:#110f0b;--surface:#1a1612;--glass:rgba(30,26,20,.65);--glass-border:rgba(255,200,120,.08);
-  --amber:#E8A020;--amber-light:#F5C960;--amber-glow:rgba(232,160,32,.15);
-  --cream:#F5E6D0;--muted:#9e8e78;--dim:#6a5e50;--faint:#3a3228;
-}
+:root{--bg:#110f0b;--surface:#1a1612;--glass:rgba(30,26,20,.6);--glass-border:rgba(255,200,120,.07);--amber:#E8A020;--amber-light:#F5C960;--cream:#F5E6D0;--muted:#9e8e78;--dim:#6a5e50;--faint:#3a3228}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Pretendard,'Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--cream);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.6}
 a{text-decoration:none;color:inherit}
 ::selection{background:var(--amber);color:#000}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--faint);border-radius:9px}
-
-/* Display font */
 .gm{font-family:'Gmarket Sans',Pretendard,sans-serif}
-
-/* Accent */
 .ac{color:var(--amber)}
+.hidden{display:none!important}
 
-/* Glass card */
+/* Glass */
 .glass{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:24px;transition:all .4s cubic-bezier(.22,1,.36,1)}
-.glass:hover{border-color:rgba(232,160,32,.2);box-shadow:0 12px 48px rgba(232,160,32,.08);transform:translateY(-4px)}
+.glass:hover{border-color:rgba(232,160,32,.18);box-shadow:0 12px 48px rgba(232,160,32,.06);transform:translateY(-3px)}
 
-/* Noise texture overlay */
+/* Noise */
 body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.4}
 
-/* Hero */
-.hero-wrap{position:relative;overflow:hidden}
-.hero-slides{display:flex;transition:transform .7s cubic-bezier(.22,1,.36,1)}
-.hero-slide{min-width:100%;min-height:540px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:72px 24px 88px;position:relative}
-@media(max-width:640px){.hero-slide{min-height:480px;padding:56px 20px 72px}}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(232,160,32,.08),transparent 65%),radial-gradient(ellipse at 80% 20%,rgba(180,120,60,.05),transparent 50%)}
-.hero-dots{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
-.hero-dot{width:8px;height:8px;border-radius:50%;background:var(--faint);cursor:pointer;transition:all .4s}
-.hero-dot.on{background:var(--amber);width:24px;border-radius:4px}
-
-/* Pill badge */
-.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 18px;border-radius:100px;font-size:12px;font-weight:600;letter-spacing:.3px}
+/* Pill */
+.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 18px;border-radius:100px;font-size:12px;font-weight:600}
 .pill-amber{background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.2);color:var(--amber)}
 .pill-ghost{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--muted)}
 
-/* Section */
-.sec{padding:88px 24px}
-@media(max-width:640px){.sec{padding:64px 20px}}
-.sec-alt{background:linear-gradient(180deg,rgba(232,160,32,.015) 0%,transparent 100%)}
-.wrap{max-width:880px;margin:0 auto}
-.title{font-weight:700;line-height:1.25;letter-spacing:-.02em}
-
-/* Trust bar */
-.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;padding:20px 24px;background:rgba(26,22,18,.8);border-bottom:1px solid var(--glass-border)}
-.trust-item{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:var(--muted)}
-.trust-icon{width:30px;height:30px;border-radius:50%;background:var(--amber-glow);display:grid;place-items:center;color:var(--amber);font-size:12px;flex-shrink:0}
-
-/* Service cards */
-.svc{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:640px;margin:0 auto}
-@media(max-width:500px){.svc{grid-template-columns:1fr}}
-.svc-card{padding:24px;position:relative;cursor:pointer;display:flex;align-items:flex-start;gap:16px}
-.svc-icon{width:48px;height:48px;border-radius:16px;background:var(--amber-glow);display:grid;place-items:center;font-size:20px;color:var(--amber);flex-shrink:0}
-.svc-tag{position:absolute;top:14px;right:14px;font-size:9px;font-weight:700;background:var(--amber);color:#000;padding:3px 10px;border-radius:100px}
-
-/* Stats */
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media(max-width:640px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
-.stat{padding:28px 16px;text-align:center}
-.stat-num{font-size:32px;font-weight:700;color:var(--amber);letter-spacing:-.02em}
-.stat-label{font-size:11px;color:var(--dim);margin-top:6px}
-
-/* Steps */
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media(max-width:640px){.steps{grid-template-columns:repeat(2,1fr)}}
-.step{padding:24px 16px;text-align:center;position:relative}
-.step-num{font-size:10px;font-weight:700;color:var(--amber);letter-spacing:2px;text-transform:uppercase}
-.step-emoji{font-size:28px;margin:10px 0}
-.step-title{font-size:14px;font-weight:700}
-.step-desc{font-size:11px;color:var(--dim);margin-top:4px;line-height:1.5}
-.step-arrow{position:absolute;right:-10px;top:50%;color:var(--faint);font-size:14px;transform:translateY(-50%)}
-@media(max-width:640px){.step-arrow{display:none}}
-.step-highlight{border-color:rgba(232,160,32,.2)!important;background:rgba(232,160,32,.03)!important}
-
-/* Review carousel */
-.rv-track{display:flex;gap:14px;overflow-x:auto;scroll-behavior:smooth;padding:4px;-ms-overflow-style:none;scrollbar-width:none}
-.rv-track::-webkit-scrollbar{display:none}
-.rv-card{min-width:290px;max-width:290px;flex-shrink:0;padding:24px}
-@media(max-width:640px){.rv-card{min-width:260px;max-width:260px;padding:20px}}
-.rv-hearts{color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px}
-.rv-text{font-size:14px;line-height:1.85;color:var(--cream)}
-.rv-author{font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)}
-
-/* FAQ */
-.faq{border-radius:16px;border:1px solid var(--glass-border);overflow:hidden;margin-bottom:8px;transition:all .3s;background:transparent}
-.faq:hover{border-color:rgba(232,160,32,.15)}
-.faq.open{border-color:rgba(232,160,32,.25);background:rgba(232,160,32,.02)}
-.faq-q{padding:20px 24px;font-size:15px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.faq-q i{color:var(--dim);font-size:11px;transition:transform .3s}
-.faq.open .faq-q i{transform:rotate(180deg);color:var(--amber)}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
-.faq.open .faq-a{max-height:200px;padding:0 24px 20px}
-.faq-a p{font-size:14px;color:var(--muted);line-height:1.85}
-
-/* Program tabs */
-.ptab{padding:10px 24px;border-radius:100px;font-size:13px;font-weight:700;cursor:pointer;transition:all .3s;border:1px solid transparent;background:rgba(255,255,255,.03)}
-.ptab.on{background:var(--amber);color:#000;border-color:var(--amber)}
-.ptab:not(.on):hover{background:rgba(255,255,255,.06)}
-
-/* CTA */
-.cta-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:18px 36px;border-radius:18px;font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all .3s;font-family:inherit}
-.cta-primary{background:var(--amber);color:#000}
-.cta-primary:hover{background:var(--amber-light);transform:translateY(-2px);box-shadow:0 8px 32px rgba(232,160,32,.25)}
-@keyframes float-pkg{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
-.float-pkg{animation:float-pkg 4s ease-in-out infinite}
-
-/* Reveal */
-[data-r]{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
-[data-r].in{opacity:1;transform:none}
-
-/* Modal */
-.modal-bg{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.65);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s}
-.modal-bg.show{opacity:1;pointer-events:all}
-.modal-box{background:var(--surface);border:1px solid var(--glass-border);border-radius:28px;padding:36px 28px;max-width:380px;width:100%;margin:20px;transform:translateY(20px);transition:transform .4s cubic-bezier(.22,1,.36,1)}
-.modal-bg.show .modal-box{transform:none}
-
 /* Nav */
-.nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(17,15,11,.85);border-bottom:1px solid var(--glass-border);padding:0 24px}
+.nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);background:rgba(17,15,11,.85);border-bottom:1px solid var(--glass-border);padding:0 24px}
 .nav-inner{max-width:880px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
 .nav-link{font-size:13px;font-weight:500;color:var(--dim);transition:color .2s}
 .nav-link:hover{color:var(--cream)}
@@ -138,6 +41,67 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 .nav-mob{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--glass-border);padding:20px 24px;gap:16px;z-index:100}
 .nav-mob.open{display:flex}
 @media(max-width:640px){.burger{display:block}.desk{display:none!important}}
+
+/* Section */
+.sec{padding:88px 24px}
+@media(max-width:640px){.sec{padding:64px 20px}}
+.wrap{max-width:880px;margin:0 auto}
+
+/* Reveal */
+[data-r]{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+[data-r].in{opacity:1;transform:none}
+
+/* Hero */
+.hero{min-height:85vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 24px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(232,160,32,.07),transparent 65%),radial-gradient(ellipse at 80% 20%,rgba(180,120,60,.04),transparent 50%)}
+@media(max-width:640px){.hero{min-height:auto;padding:64px 20px 48px}}
+
+/* CTA */
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:18px 36px;border-radius:18px;font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all .3s;font-family:inherit;background:var(--amber);color:#000}
+.cta:hover{background:var(--amber-light);transform:translateY(-2px);box-shadow:0 8px 32px rgba(232,160,32,.25)}
+@keyframes gp{0%,100%{box-shadow:0 0 0 0 rgba(232,160,32,.3)}50%{box-shadow:0 0 24px 8px rgba(232,160,32,.12)}}
+.cta-glow{animation:gp 2.5s infinite}
+@keyframes fp{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+.float-pkg{animation:fp 4s ease-in-out infinite}
+
+/* Trust */
+.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;padding:20px 24px;background:rgba(26,22,18,.8);border-bottom:1px solid var(--glass-border)}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:var(--muted)}
+.trust-ico{width:30px;height:30px;border-radius:50%;background:rgba(232,160,32,.12);display:grid;place-items:center;color:var(--amber);font-size:12px;flex-shrink:0}
+
+/* Program cards */
+.prog-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:640px;margin:0 auto}
+@media(max-width:500px){.prog-grid{grid-template-columns:1fr}}
+.prog-card{padding:32px 24px;text-align:center;cursor:pointer;position:relative}
+.prog-card:hover{transform:translateY(-4px)}
+.prog-emoji{font-size:48px;margin-bottom:16px}
+.prog-title{font-size:20px;font-weight:700}
+.prog-sub{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6}
+.prog-tag{position:absolute;top:16px;right:16px;font-size:9px;font-weight:700;background:var(--amber);color:#000;padding:3px 10px;border-radius:100px}
+.prog-arrow{margin-top:16px;font-size:13px;color:var(--amber);font-weight:600}
+
+/* Review */
+.rv-track{display:flex;gap:14px;overflow-x:auto;scroll-behavior:smooth;padding:4px;-ms-overflow-style:none;scrollbar-width:none}
+.rv-track::-webkit-scrollbar{display:none}
+.rv-card{min-width:290px;max-width:290px;flex-shrink:0;padding:24px}
+@media(max-width:640px){.rv-card{min-width:260px;max-width:260px;padding:20px}}
+
+/* FAQ */
+.faq{border-radius:16px;border:1px solid var(--glass-border);overflow:hidden;margin-bottom:8px;transition:all .3s}
+.faq:hover{border-color:rgba(232,160,32,.15)}
+.faq.open{border-color:rgba(232,160,32,.25);background:rgba(232,160,32,.02)}
+.faq-q{padding:20px 24px;font-size:15px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-q i{color:var(--dim);font-size:11px;transition:transform .3s}
+.faq.open .faq-q i{transform:rotate(180deg);color:var(--amber)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq.open .faq-a{max-height:200px;padding:0 24px 20px}
+.faq-a p{font-size:14px;color:var(--muted);line-height:1.85}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.65);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-bg.show{opacity:1;pointer-events:all}
+.modal-box{background:var(--surface);border:1px solid var(--glass-border);border-radius:28px;padding:36px 28px;max-width:380px;width:100%;margin:20px;transform:translateY(20px);transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.modal-bg.show .modal-box{transform:none}
 </style>
 </head>
 <body>
@@ -152,7 +116,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
       <a href="#faq" class="nav-link">FAQ</a>
       <a href="test/ideal.html" class="nav-link">유형 테스트</a>
       <a href="login.html" class="nav-link">로그인</a>
-      <button class="nav-cta" onclick="openApplyModal()"><i class="fa-solid fa-truck-fast" style="margin-right:4px"></i>신청하기</button>
+      <button class="nav-cta" onclick="openModal()"><i class="fa-solid fa-truck-fast" style="margin-right:4px"></i>신청하기</button>
     </div>
     <button class="burger" onclick="document.getElementById('mob').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
     <div class="nav-mob" id="mob">
@@ -161,245 +125,128 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
       <a href="#faq" class="nav-link" onclick="this.parentElement.classList.remove('open')">FAQ</a>
       <a href="test/ideal.html" class="nav-link">유형 테스트</a>
       <a href="login.html" class="nav-link">로그인</a>
-      <button class="nav-cta" onclick="openApplyModal()" style="width:100%;padding:14px;font-size:14px;border-radius:14px;margin-top:4px"><i class="fa-solid fa-truck-fast" style="margin-right:6px"></i>신청하기</button>
+      <button class="nav-cta" onclick="openModal()" style="width:100%;padding:14px;font-size:14px;border-radius:14px;margin-top:4px"><i class="fa-solid fa-truck-fast" style="margin-right:6px"></i>신청하기</button>
     </div>
   </div>
 </nav>
-
 <div id="top"></div>
 
 <!-- Hero -->
-<div class="hero-wrap">
-  <div class="hero-slides" id="hero-slides">
-    <!-- Slide 1: 1:1 -->
-    <div class="hero-slide">
-      <div class="hero-bg"></div>
-      <div style="position:relative;z-index:1;max-width:600px">
-        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:28px">
-          <span class="pill pill-amber"><i class="fa-solid fa-truck-fast"></i>특급 배송</span>
-          <span class="pill pill-ghost"><i class="fa-solid fa-shield-check ac"></i>승인된 분만</span>
-        </div>
-        <h1 class="gm title" style="font-size:clamp(28px,7vw,52px)">나를 위해 딱 한 사람,<br><span class="ac">맞춤으로 찾아드려요</span></h1>
-        <p style="font-size:13px;color:var(--amber);font-weight:600;margin-top:12px;letter-spacing:1px">강남 1:1 소개팅 · 검증된 인연</p>
-        <p style="font-size:15px;color:var(--muted);margin-top:12px;line-height:1.7">로테이션 소개팅이 부담스럽다면,<br>나만을 위한 단 한 분을 매칭해 드려요.</p>
-        <div style="margin-top:32px">
-          <button class="cta-btn cta-primary" onclick="openApplyModal()"><i class="fa-solid fa-truck-fast"></i>1:1 매칭 신청하기</button>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-top:28px;font-size:12px;color:var(--dim)">
-          <span><i class="fa-solid fa-map-pin ac" style="margin-right:4px"></i>강남역 인근</span>
-          <span><i class="fa-solid fa-clock ac" style="margin-right:4px"></i>시간·장소 자유</span>
-          <span style="color:var(--amber);font-weight:600"><i class="fa-solid fa-coins" style="margin-right:4px"></i>매칭 성사 시만 비용</span>
-        </div>
-      </div>
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div style="position:relative;z-index:1;max-width:600px">
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:32px">
+      <span class="pill pill-amber"><i class="fa-solid fa-truck-fast"></i>설렘 배송 서비스</span>
+      <span class="pill pill-ghost"><i class="fa-solid fa-shield-check ac"></i>승인제 · 신분 확인</span>
     </div>
-    <!-- Slide 2: Trust -->
-    <div class="hero-slide">
-      <div class="hero-bg"></div>
-      <div style="position:relative;z-index:1;max-width:600px">
-        <span class="pill pill-amber" style="margin-bottom:28px"><i class="fa-solid fa-shield-check"></i>승인제 운영</span>
-        <h1 class="gm title" style="font-size:clamp(28px,7vw,52px)">아무나 참가할 수 없어요.<br><span class="ac">승인받은 분만 만나세요.</span></h1>
-        <p style="font-size:15px;color:var(--muted);margin-top:16px;line-height:1.7">센터장이 직접 확인하고 승인한 분들만 참가합니다.<br>그만큼 함께하는 분들의 퀄리티를 책임져요.</p>
-        <button class="cta-btn cta-primary" onclick="openApplyModal()" style="margin-top:32px"><i class="fa-solid fa-box"></i>참가 신청하기</button>
-      </div>
+    <h1 class="gm" style="font-size:clamp(32px,8vw,56px);font-weight:700;line-height:1.15;letter-spacing:-.03em">
+      설렘을 포장해서<br><span class="ac">당신에게 배송해 드려요</span>
+    </h1>
+    <p style="font-size:16px;color:var(--muted);margin-top:20px;line-height:1.7">
+      검증된 2030 싱글들만 모이는 강남 소개팅.<br>
+      1:1 맞춤 매칭부터 로테이션 커피팅까지.
+    </p>
+    <div style="margin-top:36px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px">
+      <button class="cta cta-glow" onclick="openModal()"><i class="fa-solid fa-truck-fast"></i>신청하기</button>
+      <a href="test/ideal.html" class="cta" style="background:var(--glass);color:var(--cream);border:1px solid var(--glass-border);box-shadow:none;animation:none"><i class="fa-solid fa-flask"></i>유형 테스트</a>
     </div>
-    <!-- Slide 3: Social proof -->
-    <div class="hero-slide">
-      <div class="hero-bg"></div>
-      <div style="position:relative;z-index:1;max-width:600px">
-        <span class="pill pill-amber" style="margin-bottom:28px"><i class="fa-solid fa-heart"></i>배송 완료 후기</span>
-        <h1 class="gm title" style="font-size:clamp(28px,7vw,52px)">매 회차 <span class="ac">7건 이상</span> 배송 성공!<br>다음 수령인은 당신이에요.</h1>
-        <p style="font-size:15px;color:var(--muted);margin-top:16px;line-height:1.7">실제 후기와 인증이 증명하는 썸류센터의 배송력.</p>
-        <button class="cta-btn cta-primary" onclick="openApplyModal()" style="margin-top:32px"><i class="fa-solid fa-truck-fast"></i>지금 신청하기</button>
-      </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-top:32px;font-size:12px;color:var(--dim)">
+      <span><i class="fa-solid fa-map-pin ac" style="margin-right:4px"></i>강남역 인근</span>
+      <span><i class="fa-solid fa-users ac" style="margin-right:4px"></i>누적 4,000+ 매칭</span>
+      <span><i class="fa-solid fa-coins ac" style="margin-right:4px"></i>성사 시에만 비용</span>
     </div>
   </div>
-  <div class="hero-dots" id="dots"><span class="hero-dot on" onclick="go(0)"></span><span class="hero-dot" onclick="go(1)"></span><span class="hero-dot" onclick="go(2)"></span></div>
-</div>
+</section>
 
-<!-- Trust bar -->
+<!-- Trust -->
 <div class="trust">
-  <div class="trust-item"><div class="trust-icon"><i class="fa-solid fa-id-card"></i></div>신분증 인증 필수</div>
-  <div class="trust-item"><div class="trust-icon"><i class="fa-solid fa-user-shield"></i></div>센터장 승인제</div>
-  <div class="trust-item"><div class="trust-icon"><i class="fa-solid fa-rotate-left"></i></div>7일 전 전액 환불</div>
-  <div class="trust-item"><div class="trust-icon"><i class="fa-solid fa-lock"></i></div>개인정보 보호</div>
+  <div class="trust-item"><div class="trust-ico"><i class="fa-solid fa-id-card"></i></div>신분증 인증</div>
+  <div class="trust-item"><div class="trust-ico"><i class="fa-solid fa-user-shield"></i></div>센터장 승인제</div>
+  <div class="trust-item"><div class="trust-ico"><i class="fa-solid fa-rotate-left"></i></div>7일 전 전액 환불</div>
+  <div class="trust-item"><div class="trust-ico"><i class="fa-solid fa-lock"></i></div>개인정보 보호</div>
 </div>
 
-<!-- Services -->
-<section class="sec" style="padding-top:48px;padding-bottom:48px">
-  <div class="svc" data-r>
-    <a href="oneone.html" class="glass svc-card">
-      <span class="svc-tag">BETA</span>
-      <div class="svc-icon"><i class="fa-solid fa-truck-fast"></i></div>
-      <div>
-        <div style="font-size:16px;font-weight:700" class="gm">특급 배송</div>
-        <div style="font-size:12px;color:var(--dim);margin-top:2px">1:1 매칭 · 나만을 위한 맞춤</div>
-      </div>
-    </a>
-    <a href="rotation.html" class="glass svc-card">
-      <div class="svc-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
-      <div>
-        <div style="font-size:16px;font-weight:700" class="gm">묶음 배송</div>
-        <div style="font-size:12px;color:var(--dim);margin-top:2px">로테이션 소개팅 · 여러 설렘</div>
-      </div>
-    </a>
-  </div>
-</section>
-
-<!-- Stats -->
-<section class="sec" id="about">
+<!-- Program (카테고리) -->
+<section class="sec" id="program">
   <div class="wrap" style="text-align:center">
-    <span class="pill pill-amber" data-r><i class="fa-solid fa-warehouse"></i>센터 현황</span>
-    <h2 class="gm title ac" style="font-size:clamp(24px,5vw,36px);margin-top:16px" data-r>배송 실적</h2>
-    <p style="font-size:14px;color:var(--dim);margin-top:8px" data-r>설렘을 포장하고, 확인하고, 배달합니다</p>
-    <div class="stat-grid" style="margin-top:40px" data-r>
-      <div class="glass stat"><div style="font-size:24px;margin-bottom:6px">📦</div><div class="stat-num gm">4,000+</div><div class="stat-label">누적 배송 건수</div></div>
-      <div class="glass stat"><div style="font-size:24px;margin-bottom:6px">💛</div><div class="stat-num gm">7건+</div><div class="stat-label">회차당 배송 성공</div></div>
-      <div class="glass stat"><div style="font-size:24px;margin-bottom:6px">🔍</div><div class="stat-num gm">100%</div><div class="stat-label">신원 확인 완료</div></div>
-      <div class="glass stat"><div style="font-size:24px;margin-bottom:6px">✅</div><div class="stat-num gm">2030</div><div class="stat-label">검증된 싱글</div></div>
+    <span class="pill pill-amber" data-r><i class="fa-solid fa-boxes-stacked"></i>PROGRAM</span>
+    <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>어떤 설렘을 <span class="ac">받아보시겠어요?</span></h2>
+    <p style="font-size:14px;color:var(--dim);margin-top:8px" data-r>나에게 맞는 프로그램을 선택하세요</p>
+
+    <div class="prog-grid" style="margin-top:40px" data-r>
+      <a href="oneone.html" class="glass prog-card">
+        <span class="prog-tag">BETA</span>
+        <div class="prog-emoji">🎁</div>
+        <div class="prog-title gm">특급 배송</div>
+        <div class="prog-sub">1:1 맞춤 매칭<br>나만을 위한 단 한 사람</div>
+        <div class="prog-arrow">자세히 보기 →</div>
+      </a>
+      <a href="rotation.html" class="glass prog-card">
+        <div class="prog-emoji">📦</div>
+        <div class="prog-title gm">묶음 썸배달</div>
+        <div class="prog-sub">로테이션 소개팅<br>여러 설렘을 한 번에</div>
+        <div class="prog-arrow">자세히 보기 →</div>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- Program -->
-<section class="sec sec-alt" id="program">
-  <div class="wrap" style="text-align:center">
-    <span class="pill pill-amber" data-r><i class="fa-solid fa-mug-hot"></i>PROGRAM</span>
-    <h2 class="gm title" style="font-size:clamp(24px,5vw,36px);margin-top:16px" data-r>썸류센터 <span class="ac">커피팅 프로그램</span></h2>
-    <p style="font-size:14px;color:var(--dim);margin-top:8px" data-r>평일 퇴근 후, 부담 없이 참여하는 프리미엄 소개팅</p>
-
-    <div style="display:flex;justify-content:center;gap:8px;margin-top:40px;margin-bottom:28px" data-r>
-      <button class="ptab" data-prog="rotation" onclick="swProg(this)"><i class="fa-solid fa-boxes-stacked" style="margin-right:4px"></i>묶음 배송</button>
-      <button class="ptab on" data-prog="oneone" onclick="swProg(this)"><i class="fa-solid fa-truck-fast" style="margin-right:4px"></i>특급 배송</button>
-    </div>
-
-    <!-- 묶음 배송 -->
-    <div id="prog-rotation" class="hidden">
-      <div class="glass" style="padding:32px;text-align:center;margin-bottom:20px;border-color:rgba(232,160,32,.12);background:rgba(232,160,32,.02)" data-r>
-        <div style="font-size:40px;margin-bottom:12px">🌙</div>
-        <h3 class="gm" style="font-size:22px;font-weight:700">평일 퇴근 후, <span class="ac">강남에서 바로 수령!</span></h3>
-        <p style="font-size:14px;color:var(--muted);margin-top:10px">주말을 따로 빼지 않아도 돼요.</p>
-        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:16px">
-          <span class="pill pill-ghost"><i class="fa-solid fa-clock ac"></i>목요일 저녁 7~9시</span>
-          <span class="pill pill-ghost"><i class="fa-solid fa-map-pin ac"></i>강남역 도보 5분</span>
-          <span class="pill pill-ghost"><i class="fa-solid fa-mug-hot ac"></i>음료 포함</span>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;text-align:left" data-r>
-        <div class="glass" style="padding:28px;text-align:center"><div style="font-size:36px;margin-bottom:12px">🔄</div><div style="font-weight:700;font-size:15px;margin-bottom:8px">진행 방식</div><div style="font-size:13px;color:var(--muted);line-height:1.8">남녀 동수 10:10~14:14<br>인당 약 8분 1:1 대화<br>대화용 종이 제공<br>자유로운 분위기</div></div>
-        <div class="glass" style="padding:28px;text-align:center"><div style="font-size:36px;margin-bottom:12px">💌</div><div style="font-weight:700;font-size:15px;margin-bottom:8px">매칭 & 결과</div><div style="font-size:13px;color:var(--muted);line-height:1.8">마음에 드는 상대 비공개 선택<br>서로 선택하면 매칭 성사!<br>결과는 웹페이지로 확인<br>매 회차 평균 7건+ 성공</div></div>
-        <div class="glass" style="padding:28px;text-align:center"><div style="font-size:36px;margin-bottom:12px">🪪</div><div style="font-weight:700;font-size:15px;margin-bottom:8px">이런 분을 찾아요</div><div style="font-size:13px;color:var(--muted);line-height:1.8">20~30대 미혼 싱글<br>센터장 승인 필수<br>신분 확인된 분만<br>매너 있는 분</div></div>
-        <div class="glass" style="padding:28px;text-align:center"><div style="font-size:36px;margin-bottom:12px">☕</div><div style="font-weight:700;font-size:15px;margin-bottom:8px">참가비</div><div style="font-size:13px;color:var(--muted);line-height:1.8">음료 포함<br>승인 후 입금 안내<br>7일 전 전액 환불<br>당일 노쇼 시 환불 불가</div></div>
-      </div>
-    </div>
-
-    <!-- 특급 배송 -->
-    <div id="prog-oneone">
-      <div class="glass" style="padding:32px;text-align:center;margin-bottom:20px;border-color:rgba(232,160,32,.12);background:rgba(232,160,32,.02)" data-r>
-        <div style="font-size:40px;margin-bottom:12px">🎁</div>
-        <h3 class="gm" style="font-size:22px;font-weight:700">나만을 위한 <span class="ac">맞춤 특급 배송!</span></h3>
-        <p style="font-size:14px;color:var(--muted);margin-top:10px">장소와 시간에 구애 없이, 딱 맞는 한 사람을 찾아드려요.</p>
-        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:16px">
-          <span class="pill pill-amber"><i class="fa-solid fa-truck-fast"></i>1:1 맞춤 매칭</span>
-          <span class="pill pill-ghost"><i class="fa-solid fa-clock ac"></i>시간/장소 자유</span>
-          <span class="pill pill-ghost"><i class="fa-solid fa-crown ac"></i>슈퍼매칭 가능</span>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;text-align:left" data-r>
-        <div class="glass" style="padding:28px;text-align:center"><div style="font-size:36px;margin-bottom:12px">🎯</div><div style="font-weight:700;font-size:15px;margin-bottom:8px">진행 방식</div><div style="font-size:13px;color:var(--muted);line-height:1.8">신청서 → 센터장이 상대 물색<br>이상형 조건 맞춤 매칭<br>프로필 전달 → 수락 시 성사<br>슈퍼매칭으로 수락률 UP</div></div>
-        <div class="glass" style="padding:28px;text-align:center"><div style="font-size:36px;margin-bottom:12px">💰</div><div style="font-weight:700;font-size:15px;margin-bottom:8px">매칭 & 가격</div><div style="font-size:13px;color:var(--muted);line-height:1.8">성사 시에만 비용 발생<br>일반 매칭 19,900원<br>슈퍼매칭 39,800원<br>불발 시 비용 없음</div></div>
-        <div class="glass" style="padding:28px;text-align:center"><div style="font-size:36px;margin-bottom:12px">🪪</div><div style="font-weight:700;font-size:15px;margin-bottom:8px">이런 분을 찾아요</div><div style="font-size:13px;color:var(--muted);line-height:1.8">20~30대 미혼 싱글<br>프로필 사진 + 신분 인증<br>재직증명서 or 사업자등록증<br>매너 있는 분</div></div>
-        <div class="glass" style="padding:28px;text-align:center"><div style="font-size:36px;margin-bottom:12px">👑</div><div style="font-weight:700;font-size:15px;margin-bottom:8px">슈퍼매칭이란?</div><div style="font-size:13px;color:var(--muted);line-height:1.8">상대방 비용까지 내가 부담<br>"슈퍼매칭" 표시로 진심 전달<br>상대방은 무료로 연락처 수령<br>수락률이 확 올라가요</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Steps -->
-<section class="sec">
+<!-- How it works -->
+<section class="sec" style="background:linear-gradient(180deg,rgba(232,160,32,.015),transparent)">
   <div class="wrap" style="text-align:center">
     <span class="pill pill-amber" data-r><i class="fa-solid fa-truck-fast"></i>배송 프로세스</span>
-    <h2 class="gm title" style="font-size:clamp(24px,5vw,36px);margin-top:16px" data-r>설렘 배송 <span class="ac">4단계</span></h2>
-    <div class="steps" style="margin-top:40px" data-r>
-      <div class="glass step"><div class="step-num">STEP 1</div><div class="step-emoji">📋</div><div class="step-title">주문 접수</div><div class="step-desc">네이버폼으로<br>간단히 신청</div><span class="step-arrow">›</span></div>
-      <div class="glass step"><div class="step-num">STEP 2</div><div class="step-emoji">🔍</div><div class="step-title">프로필 확인</div><div class="step-desc">센터장이<br>직접 확인</div><span class="step-arrow">›</span></div>
-      <div class="glass step"><div class="step-num">STEP 3</div><div class="step-emoji">📦</div><div class="step-title">포장 완료</div><div class="step-desc">확정 문자로<br>출고 안내</div><span class="step-arrow">›</span></div>
-      <div class="glass step step-highlight"><div class="step-num">STEP 4</div><div class="step-emoji">💛</div><div class="step-title ac">배송 완료!</div><div class="step-desc">설렘이<br>도착했습니다</div></div>
-    </div>
-    <div class="glass" style="margin-top:20px;padding:20px 24px;display:flex;gap:16px;align-items:center;text-align:left" data-r>
-      <div style="width:44px;height:44px;border-radius:14px;background:var(--amber);display:grid;place-items:center;flex-shrink:0"><i class="fa-solid fa-box" style="color:#000;font-size:16px"></i></div>
-      <div><p style="font-weight:700;font-size:14px">주문 접수 = 배송 확정이 아니에요</p><p style="font-size:13px;color:var(--muted);margin-top:4px">센터장 확인을 거쳐 <span class="ac" style="font-weight:700">출고 확정 문자</span>를 받으셔야 수령 가능합니다.</p></div>
+    <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>설렘 배송 <span class="ac">4단계</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:40px" data-r>
+      <div class="glass" style="padding:24px 16px;text-align:center;position:relative"><div style="font-size:28px;margin-bottom:8px">📋</div><div style="font-weight:700;font-size:14px">접수</div><div style="font-size:11px;color:var(--dim);margin-top:4px">신청서 제출</div><span style="position:absolute;right:-8px;top:50%;color:var(--faint);font-size:14px;transform:translateY(-50%)" class="hidden md:block">›</span></div>
+      <div class="glass" style="padding:24px 16px;text-align:center;position:relative"><div style="font-size:28px;margin-bottom:8px">🔍</div><div style="font-weight:700;font-size:14px">확인</div><div style="font-size:11px;color:var(--dim);margin-top:4px">센터장 검토</div><span style="position:absolute;right:-8px;top:50%;color:var(--faint);font-size:14px;transform:translateY(-50%)" class="hidden md:block">›</span></div>
+      <div class="glass" style="padding:24px 16px;text-align:center;position:relative"><div style="font-size:28px;margin-bottom:8px">📦</div><div style="font-weight:700;font-size:14px">포장</div><div style="font-size:11px;color:var(--dim);margin-top:4px">확정 문자</div><span style="position:absolute;right:-8px;top:50%;color:var(--faint);font-size:14px;transform:translateY(-50%)" class="hidden md:block">›</span></div>
+      <div class="glass" style="padding:24px 16px;text-align:center;border-color:rgba(232,160,32,.15);background:rgba(232,160,32,.03)"><div style="font-size:28px;margin-bottom:8px">💛</div><div style="font-weight:700;font-size:14px;color:var(--amber)">배송 완료!</div><div style="font-size:11px;color:var(--dim);margin-top:4px">설렘 도착</div></div>
     </div>
   </div>
 </section>
 
 <!-- Reviews -->
-<section class="sec sec-alt" id="reviews">
+<section class="sec" id="reviews">
   <div class="wrap" style="text-align:center">
-    <span class="pill pill-amber" data-r><i class="fa-solid fa-star"></i>수령 후기</span>
-    <h2 class="gm title" style="font-size:clamp(24px,5vw,36px);margin-top:16px" data-r>설렘 수령자 <span class="ac">리얼 후기</span></h2>
+    <span class="pill pill-amber" data-r><i class="fa-solid fa-star"></i>REVIEWS</span>
+    <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>수령자 <span class="ac">리얼 후기</span></h2>
     <div style="margin-top:40px" data-r>
       <div class="rv-track" id="rv">
-        <div class="rv-card glass"><div class="rv-hearts"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i></div><p class="rv-text">"편안하고 싱그러운 기운을 나눠주는 분을 만났어요. 끊김 없이 즐거웠고 배려가 인상적이었습니다."</p><p class="rv-author">— 30대 여성 참가자</p></div>
-        <div class="rv-card glass"><div class="rv-hearts"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i></div><p class="rv-text">"어색할 줄 알았는데 로테이션이라 자연스럽게 여러 분과 대화했어요. 진짜 케미 맞는 분을 만났습니다."</p><p class="rv-author">— 20대 남성 참가자</p></div>
-        <div class="rv-card glass"><div class="rv-hearts"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i></div><p class="rv-text">"소개팅 앱은 지쳤는데, 오프라인이라 확실히 느낌이 달랐어요. 대화 시트 덕분에 어색하지 않았어요."</p><p class="rv-author">— 20대 여성 참가자</p></div>
-        <div class="rv-card glass"><div class="rv-hearts"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i></div><p class="rv-text">"혼자 갔는데도 전혀 어색하지 않았어요. 센터장분들이 잘 이끌어주셔서 편하게 대화할 수 있었습니다."</p><p class="rv-author">— 30대 남성 참가자</p></div>
-        <div class="rv-card glass"><div class="rv-hearts"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i></div><p class="rv-text">"검증된 분들이라 안심이 됐어요. 대화도 수준 있고, 이런 만남이 있었으면 진작 알았을 텐데!"</p><p class="rv-author">— 20대 여성 참가자</p></div>
-        <div class="rv-card glass"><div class="rv-hearts"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i></div><p class="rv-text">"매칭됐습니다! 커피팅에서 만난 분과 지금 잘 만나고 있어요. 진짜 감사합니다!"</p><p class="rv-author">— 30대 남성 참가자</p></div>
+        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"편안하고 싱그러운 기운을 나눠주는 분을 만났어요. 배려가 인상적이었습니다."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 30대 여성</p></div>
+        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"로테이션이라 자연스럽게 여러 분과 대화했어요. 진짜 케미 맞는 분을 만났습니다."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 20대 남성</p></div>
+        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"소개팅 앱은 지쳤는데, 오프라인이라 확실히 느낌이 달랐어요."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 20대 여성</p></div>
+        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"혼자 갔는데 전혀 어색하지 않았어요. 센터장분들이 잘 이끌어주셨어요."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 30대 남성</p></div>
+        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"매칭됐습니다! 커피팅에서 만난 분과 지금 잘 만나고 있어요."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 30대 남성</p></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Test -->
-<section class="sec">
+<section class="sec" style="background:linear-gradient(180deg,rgba(232,160,32,.015),transparent)">
   <div class="wrap" style="text-align:center">
     <span class="pill pill-amber" data-r><i class="fa-solid fa-flask"></i>FREE TEST</span>
-    <h2 class="gm title" style="font-size:clamp(24px,5vw,36px);margin-top:16px" data-r>망설여진다면? <span class="ac">무료 테스트</span></h2>
+    <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>망설여진다면? <span class="ac">무료 테스트</span></h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:40px;max-width:480px;margin-left:auto;margin-right:auto" data-r>
-      <a href="test/ideal.html" class="glass" style="padding:24px;text-align:left;position:relative"><span style="position:absolute;top:14px;right:14px;font-size:9px;background:var(--amber);color:#000;font-weight:700;padding:3px 10px;border-radius:100px">HOT</span><div style="font-size:32px;margin-bottom:10px">☕</div><div style="font-weight:700;font-size:15px">나의 연애 커피 유형</div><div style="font-size:12px;color:var(--dim);margin-top:4px">직진드리퍼? 아아고수?</div></a>
-      <a href="test/index.html" class="glass" style="padding:24px;text-align:left"><div style="font-size:32px;margin-bottom:10px">🍺</div><div style="font-weight:700;font-size:15px">연애 향과 맛</div><div style="font-size:12px;color:var(--dim);margin-top:4px">나의 연애 맛 분석</div></a>
+      <a href="test/ideal.html" class="glass" style="padding:24px;text-align:left;position:relative"><span style="position:absolute;top:14px;right:14px;font-size:9px;background:var(--amber);color:#000;font-weight:700;padding:3px 10px;border-radius:100px">HOT</span><div style="font-size:32px;margin-bottom:10px">☕</div><div style="font-weight:700">나의 연애 커피 유형</div><div style="font-size:12px;color:var(--dim);margin-top:4px">직진드리퍼? 아아고수?</div></a>
+      <a href="test/index.html" class="glass" style="padding:24px;text-align:left"><div style="font-size:32px;margin-bottom:10px">🍺</div><div style="font-weight:700">연애 향과 맛</div><div style="font-size:12px;color:var(--dim);margin-top:4px">나의 연애 맛 분석</div></a>
     </div>
   </div>
 </section>
 
 <!-- FAQ -->
-<section class="sec sec-alt" id="faq">
+<section class="sec" id="faq">
   <div class="wrap">
     <div style="text-align:center;margin-bottom:40px">
       <span class="pill pill-amber" data-r>FAQ</span>
-      <h2 class="gm title" style="font-size:clamp(24px,5vw,36px);margin-top:16px" data-r>자주 묻는 <span class="ac">질문</span></h2>
+      <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>자주 묻는 <span class="ac">질문</span></h2>
     </div>
     <div style="max-width:640px;margin:0 auto" data-r>
-      <div class="faq"><div class="faq-q" onclick="toggleFaq(this)"><span><span class="ac" style="margin-right:6px;font-weight:800">Q.</span>혼자서도 참여 가능한가요?</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-a"><p>물론이죠! 센터장들이 혼자서도 무안하지 않도록 도와드리겠습니다.</p></div></div>
-      <div class="faq"><div class="faq-q" onclick="toggleFaq(this)"><span><span class="ac" style="margin-right:6px;font-weight:800">Q.</span>대화하기 어려울 것 같아요.</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-a"><p>편하게 대화하실 수 있도록, 서로에 대해 이야기할 수 있는 대화 시트를 나눠드리고 있습니다.</p></div></div>
-      <div class="faq"><div class="faq-q" onclick="toggleFaq(this)"><span><span class="ac" style="margin-right:6px;font-weight:800">Q.</span>만나던 사람을 또 만나게 되진 않을까요?</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-a"><p>같은 분을 만나시지 않도록 중복 체크하고 있으며, 같은 회사·부서도 만나지 않도록 안내합니다.</p></div></div>
-      <div class="faq"><div class="faq-q" onclick="toggleFaq(this)"><span><span class="ac" style="margin-right:6px;font-weight:800">Q.</span>신청 후 연락은 언제 오나요?</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-a"><p>간단한 검토를 통하여 빠르게 확정 문자를 보내드리고 있습니다.</p></div></div>
+      <div class="faq"><div class="faq-q" onclick="toggleFaq(this)"><span><span class="ac" style="margin-right:6px;font-weight:800">Q.</span>혼자서도 참여 가능한가요?</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-a"><p>물론이죠! 혼자 오시는 분이 대부분이에요. 전혀 어색하지 않아요.</p></div></div>
+      <div class="faq"><div class="faq-q" onclick="toggleFaq(this)"><span><span class="ac" style="margin-right:6px;font-weight:800">Q.</span>대화하기 어려울 것 같아요.</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-a"><p>대화용 종이를 제공해 드려요. 메모하면서 자연스럽게 대화할 수 있어요.</p></div></div>
+      <div class="faq"><div class="faq-q" onclick="toggleFaq(this)"><span><span class="ac" style="margin-right:6px;font-weight:800">Q.</span>같은 사람을 또 만나게 되진 않나요?</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-a"><p>중복 체크하고 있어요. 같은 회사·부서도 만나지 않도록 안내합니다.</p></div></div>
       <div class="faq"><div class="faq-q" onclick="toggleFaq(this)"><span><span class="ac" style="margin-right:6px;font-weight:800">Q.</span>환불은 어떻게 되나요?</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-a"><p>일정 기준 7일 이전까지 전액 환불 가능합니다. 당일 노쇼 시 환불 불가.</p></div></div>
     </div>
-  </div>
-</section>
-
-<!-- Notice -->
-<section class="sec">
-  <div class="wrap" style="max-width:640px;text-align:center">
-    <h3 class="gm" style="font-size:18px;font-weight:700;margin-bottom:24px" data-r>예약 <span class="ac">유의사항</span></h3>
-    <div class="glass" style="padding:28px;text-align:left" data-r>
-      <div style="display:flex;flex-direction:column;gap:14px;font-size:13px;color:var(--muted);line-height:1.7">
-        <div style="display:flex;gap:10px"><i class="fa-solid fa-circle-check ac" style="margin-top:3px;flex-shrink:0;font-size:12px"></i>구매 완료가 예약 확정은 아닙니다. 별도 확정 문자를 받으셔야 참여 가능합니다.</div>
-        <div style="display:flex;gap:10px"><i class="fa-solid fa-circle-check ac" style="margin-top:3px;flex-shrink:0;font-size:12px"></i>환불은 일정 기준 7일 이전까지 가능합니다. 당일 노쇼/지각 시 환불 불가.</div>
-        <div style="display:flex;gap:10px"><i class="fa-solid fa-circle-check ac" style="margin-top:3px;flex-shrink:0;font-size:12px"></i>장소는 예약 상황에 따라 변동될 수 있습니다. 확정 후 별도 공지합니다.</div>
-        <div style="display:flex;gap:10px"><i class="fa-solid fa-circle-check ac" style="margin-top:3px;flex-shrink:0;font-size:12px"></i>사진 촬영이 진행될 수 있으며, 참여 시 동의한 것으로 간주합니다. (얼굴 가림)</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Detail -->
-<section class="sec sec-alt">
-  <div style="max-width:560px;margin:0 auto;text-align:center" data-r>
-    <span class="pill pill-amber">DETAIL</span>
-    <h2 class="gm title" style="font-size:clamp(24px,5vw,36px);margin-top:16px">이런 곳이에요 👀</h2>
-    <img src="detail.jpg" alt="썸류센터" style="width:100%;border-radius:24px;border:1px solid var(--glass-border);margin-top:32px" loading="lazy">
   </div>
 </section>
 
@@ -410,10 +257,9 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
       <div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px"><i class="fa-solid fa-flask ac"></i><span style="color:var(--muted)">테스트 결과:</span><b id="from-test-result"></b></div>
     </div>
     <div style="font-size:48px;margin-bottom:16px" class="float-pkg">📦</div>
-    <h2 class="gm title" style="font-size:clamp(24px,5vw,36px)">마음 정했다면<br><span class="ac">설렘을 신청하세요</span></h2>
-    <p style="font-size:14px;color:var(--dim);margin-top:12px">주문 접수 → 프로필 확인 → 포장 → 배송 완료</p>
+    <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700">마음 정했다면<br><span class="ac">설렘을 신청하세요</span></h2>
     <div style="margin-top:32px">
-      <button class="cta-btn cta-primary" onclick="openApplyModal()"><i class="fa-solid fa-truck-fast"></i>지금 신청하기</button>
+      <button class="cta cta-glow" onclick="openModal()"><i class="fa-solid fa-truck-fast"></i>지금 신청하기</button>
     </div>
     <p style="font-size:12px;color:var(--dim);margin-top:16px">신청 후 확정 문자를 별도로 보내드려요</p>
   </div>
@@ -422,21 +268,21 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 <!-- Footer -->
 <footer style="border-top:1px solid var(--glass-border);padding:40px 24px;text-align:center">
   <img src="logo.png" alt="썸류센터" style="height:20px;opacity:.3;margin-bottom:12px">
-  <p style="font-size:11px;color:var(--faint)">강남역 인근 · 목요일 퇴근 후 커피팅</p>
+  <p style="font-size:11px;color:var(--faint)">강남역 인근 · 소개팅 서비스</p>
   <p style="font-size:11px;color:var(--faint);margin-top:4px">문의: 카카오톡 채널 @썸류센터</p>
 </footer>
 
-<!-- Apply Modal -->
-<div class="modal-bg" id="apply-modal">
+<!-- Modal -->
+<div class="modal-bg" id="modal">
   <div class="modal-box">
-    <button onclick="closeApplyModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer">✕</button>
+    <button onclick="closeModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer">✕</button>
     <div style="text-align:center;margin-bottom:24px">
       <span class="pill pill-amber" style="margin-bottom:12px"><i class="fa-solid fa-truck-fast"></i>신청하기</span>
       <h3 class="gm" style="font-size:20px;font-weight:700;margin-top:12px">어떤 만남을<br><span class="ac">신청하시겠어요?</span></h3>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px">
-      <a href="#" onclick="goMatching();return false" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center;transition:all .2s"><span><i class="fa-solid fa-truck-fast" style="margin-right:6px"></i>1:1 매칭</span><span style="font-size:11px;font-weight:500;opacity:.6">신청하기 →</span><span style="position:absolute;top:10px;right:12px;font-size:9px;background:rgba(0,0,0,.15);padding:2px 8px;border-radius:100px;font-weight:700">BETA</span></a>
-      <button onclick="closeApplyModal();openDateModal()" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);font-weight:800;padding:18px;border-radius:18px;cursor:pointer;transition:all .2s;font-family:inherit;font-size:inherit"><span><i class="fa-solid fa-mug-hot ac" style="margin-right:6px"></i>강남 목요일 커피팅</span><span style="font-size:11px;font-weight:500;color:var(--dim)">퇴근 후 참가 · <span data-date-text>6월 25일 (목)</span></span></button>
+      <a href="#" onclick="goMatching();return false" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center;transition:all .2s;font-size:15px"><span>🎁 특급 배송 · 1:1 매칭</span><span style="font-size:11px;font-weight:500;opacity:.6">신청하기 →</span><span style="position:absolute;top:10px;right:12px;font-size:9px;background:rgba(0,0,0,.15);padding:2px 8px;border-radius:100px;font-weight:700">BETA</span></a>
+      <button onclick="closeModal();openDateModal()" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);font-weight:800;padding:18px;border-radius:18px;cursor:pointer;transition:all .2s;font-family:inherit;font-size:15px"><span>📦 묶음 썸배달 · 로테이션</span><span style="font-size:11px;font-weight:500;color:var(--dim)">다음 일정 확인 →</span></button>
     </div>
     <p style="font-size:11px;color:var(--faint);text-align:center;margin-top:20px">확정 문자를 별도로 보내드려요</p>
   </div>
@@ -447,34 +293,19 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
   <div class="modal-box">
     <button onclick="closeDateModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer">✕</button>
     <div style="text-align:center;margin-bottom:24px">
-      <span class="pill pill-amber" style="margin-bottom:12px"><i class="fa-solid fa-mug-hot"></i>강남 목요일 커피팅</span>
+      <span class="pill pill-amber" style="margin-bottom:12px"><i class="fa-solid fa-mug-hot"></i>묶음 썸배달</span>
       <h3 class="gm" style="font-size:20px;font-weight:700;margin-top:12px">참여할 날짜를<br><span class="ac">선택해주세요</span></h3>
-      <p style="font-size:12px;color:var(--dim);margin-top:8px">네이버폼으로 이동해요</p>
     </div>
-    <a data-date-link href="https://form.naver.com/response/hZCZ4iRavCm3vmsqEJaIfw" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center"><span><i class="fa-solid fa-calendar-day" style="margin-right:6px"></i><span data-date-text>6월 25일 (목)</span></span><span style="font-size:11px;font-weight:500;opacity:.6">신청하기 →</span></a>
+    <a data-date-link href="https://form.naver.com/response/hZCZ4iRavCm3vmsqEJaIfw" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center;font-size:15px"><span><span data-date-text>6월 25일 (목)</span></span><span style="font-size:11px;font-weight:500;opacity:.6">신청하기 →</span></a>
     <p style="font-size:11px;color:var(--faint);text-align:center;margin-top:20px">확정 문자를 별도로 보내드려요</p>
   </div>
 </div>
 
 <script>
-/* Date constants */
+/* Date */
 const NEXT_DATE="6월 25일 (목)",NEXT_FORM="https://form.naver.com/response/hZCZ4iRavCm3vmsqEJaIfw";
 document.querySelectorAll('[data-date-text]').forEach(el=>el.textContent=NEXT_DATE);
 document.querySelectorAll('[data-date-link]').forEach(el=>el.href=NEXT_FORM);
-
-/* Slider */
-let cur=0;const tot=3;let tmr;
-function upd(){document.getElementById('hero-slides').style.transform=`translateX(-${cur*100}%)`;document.querySelectorAll('.hero-dot').forEach((d,i)=>d.classList.toggle('on',i===cur))}
-function slide(d){cur=(cur+d+tot)%tot;upd();rst()}
-function go(i){cur=i;upd();rst()}
-function rst(){clearInterval(tmr);tmr=setInterval(()=>slide(1),5000)}
-rst();
-const hs=document.querySelector('.hero-slides').parentElement;
-let tx=0;
-hs.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
-hs.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)slide(d>0?1:-1)},{passive:true});
-hs.addEventListener('mouseenter',()=>clearInterval(tmr));
-hs.addEventListener('mouseleave',rst);
 
 /* Reviews */
 const rv=document.getElementById('rv');
@@ -482,30 +313,27 @@ let rvt=setInterval(()=>{if(rv.scrollLeft+rv.offsetWidth>=rv.scrollWidth-10)rv.s
 rv.addEventListener('mouseenter',()=>clearInterval(rvt));
 rv.addEventListener('mouseleave',()=>{rvt=setInterval(()=>{if(rv.scrollLeft+rv.offsetWidth>=rv.scrollWidth-10)rv.scrollTo({left:0,behavior:'smooth'});else rv.scrollBy({left:310,behavior:'smooth'})},3500)});
 
-/* Program tabs */
-function swProg(el){document.querySelectorAll('[data-prog]').forEach(b=>b.classList.remove('on'));el.classList.add('on');document.getElementById('prog-rotation').classList.toggle('hidden',el.dataset.prog!=='rotation');document.getElementById('prog-oneone').classList.toggle('hidden',el.dataset.prog!=='oneone')}
-
 /* FAQ */
 function toggleFaq(el){const f=el.parentElement;const o=f.classList.contains('open');document.querySelectorAll('.faq').forEach(x=>x.classList.remove('open'));if(!o)f.classList.add('open')}
 
 /* Modals */
-function openApplyModal(){document.getElementById('apply-modal').classList.add('show');document.body.style.overflow='hidden'}
-function closeApplyModal(){document.getElementById('apply-modal').classList.remove('show');document.body.style.overflow=''}
+function openModal(){document.getElementById('modal').classList.add('show');document.body.style.overflow='hidden'}
+function closeModal(){document.getElementById('modal').classList.remove('show');document.body.style.overflow=''}
 function openDateModal(){document.getElementById('date-modal').classList.add('show');document.body.style.overflow='hidden'}
 function closeDateModal(){document.getElementById('date-modal').classList.remove('show');document.body.style.overflow=''}
 document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m){m.classList.remove('show');document.body.style.overflow=''}}));
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeApplyModal();closeDateModal()}if(e.key==='ArrowLeft')slide(-1);if(e.key==='ArrowRight')slide(1)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDateModal()}});
+
+/* Auth guard */
+function goMatching(){
+  closeModal();
+  if(localStorage.getItem('ssumUser'))window.location.href='matching.html';
+  else window.location.href='login.html?redirect=matching.html';
+}
 
 /* Reveal */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});
 document.querySelectorAll('[data-r]').forEach(el=>io.observe(el));
-
-/* 로그인 체크 후 매칭 페이지 이동 */
-function goMatching(){
-  const user=localStorage.getItem('ssumUser');
-  if(user){window.location.href='matching.html'}
-  else{window.location.href='login.html?redirect=matching.html'}
-}
 
 /* Test result */
 (function(){const p=new URLSearchParams(location.search);if(p.get('result')){document.getElementById('from-test').classList.remove('hidden');document.getElementById('from-test-result').textContent=p.get('result')+'형 (상위 '+(p.get('pct')||'')+'%)';setTimeout(()=>document.getElementById('apply').scrollIntoView({behavior:'smooth'}),300)}})();
