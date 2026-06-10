@@ -4,308 +4,246 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>회원가입 | 썸류센터</title>
-<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0e0c0a;color:#f5f5f3;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
-  ::selection{background:#FFBE2E;color:#000}
-  .y{color:#FFBE2E}
-  .card{background:#16140f;border-radius:24px;border:1px solid rgba(255,255,255,.06)}
-  .input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;font-size:14px;color:#fff;outline:none;transition:border-color .2s;font-family:inherit}
-  .input::placeholder{color:#5a5248}
-  .input:focus{border-color:rgba(255,212,0,.5)}
-  .input-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
-  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,212,0,.08);border:1px solid rgba(255,212,0,.18);color:#FFBE2E;padding:6px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px}
-  .btn{width:100%;padding:16px;border-radius:16px;font-size:15px;font-weight:800;border:none;cursor:pointer;transition:all .2s;font-family:inherit}
-  .btn-primary{background:#FFBE2E;color:#0e0c0a}
-  .btn-primary:hover{filter:brightness(.9)}
-  .btn-primary:disabled{opacity:.4;cursor:not-allowed;filter:none}
-  .radio-wrap{cursor:pointer}
-  .radio-wrap input{display:none}
-  .radio-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;text-align:center;font-size:14px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-  .radio-card:hover{border-color:rgba(255,212,0,.3)}
-  .radio-wrap input:checked+.radio-card{background:rgba(255,212,0,.06);border-color:rgba(255,212,0,.4)}
-  .radio-wrap input:checked+.radio-card .dot{background:#FFBE2E}
-  .dot{width:10px;height:10px;border-radius:50%;border:2px solid #5a5248;transition:all .2s;flex-shrink:0}
-  .label{display:block;font-size:12px;font-weight:600;color:#9a9080;margin-bottom:8px}
-  .label .req{color:#FFBE2E}
-  .err-msg{font-size:12px;color:#ff5555;margin-top:6px;display:none}
-  .err-msg.show{display:block}
-  .pw-str{height:3px;border-radius:2px;margin-top:8px;transition:all .3s}
+:root{--bg:#110f0b;--surface:#1a1612;--amber:#E8A020;--amber-light:#F5C960;--cream:#F5E6D0;--muted:#9e8e78;--dim:#6a5e50;--faint:#3a3228;--glass:rgba(30,26,20,.65);--glass-border:rgba(255,200,120,.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Pretendard,'Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+::selection{background:var(--amber);color:#000}
+.gm{font-family:'Gmarket Sans',Pretendard,sans-serif}
+
+.page{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px}
+.box{width:100%;max-width:400px}
+.logo-area{text-align:center;margin-bottom:36px}
+.logo-area h1{font-size:24px;font-weight:700}
+.logo-area p{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.6}
+
+.social-btn{width:100%;padding:16px;border-radius:14px;font-size:15px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;transition:all .2s;margin-bottom:10px}
+.social-btn:hover{transform:translateY(-1px)}
+.btn-kakao{background:#FEE500;color:#191919}
+.btn-kakao:hover{background:#F5DC00}
+
+.divider{display:flex;align-items:center;gap:16px;margin:28px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--faint)}
+.divider span{font-size:12px;color:var(--dim);white-space:nowrap}
+
+.card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:20px;padding:28px;margin-bottom:16px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.form-label .req{color:var(--amber)}
+.form-input{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--faint);border-radius:12px;padding:14px 16px;font-size:14px;color:var(--cream);outline:none;transition:border-color .2s;font-family:inherit}
+.form-input::placeholder{color:var(--dim)}
+.form-input:focus{border-color:rgba(232,160,32,.4)}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236a5e50' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.pw-wrap{position:relative}
+.pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px}
+.pw-str{height:3px;border-radius:2px;margin-top:8px;transition:all .3s;background:var(--faint)}
+.err-msg{font-size:12px;color:#ff6b6b;margin-top:6px;display:none}
+.err-msg.show{display:block}
+
+.gender-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gender-opt{cursor:pointer}
+.gender-opt input{display:none}
+.gender-card{background:rgba(255,255,255,.03);border:1px solid var(--faint);border-radius:12px;padding:14px;text-align:center;font-size:14px;font-weight:500;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.gender-card:hover{border-color:rgba(232,160,32,.2)}
+.gender-opt input:checked+.gender-card{background:rgba(232,160,32,.08);border-color:rgba(232,160,32,.4);color:var(--amber)}
+
+.agree-row{display:flex;align-items:flex-start;gap:12px;cursor:pointer}
+.agree-box{width:20px;height:20px;border-radius:6px;border:2px solid var(--faint);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all .2s}
+.agree-box.on{background:var(--amber);border-color:var(--amber)}
+.agree-box i{font-size:10px;color:#000;display:none}
+.agree-box.on i{display:block}
+
+.submit-btn{width:100%;padding:16px;border-radius:14px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .2s;background:var(--amber);color:#000}
+.submit-btn:hover{background:var(--amber-light);transform:translateY(-1px)}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+.links{text-align:center;margin-top:20px;font-size:13px;color:var(--dim)}
+.links a{color:var(--amber);font-weight:600}
+.links a:hover{text-decoration:underline}
+
+.success{text-align:center;padding:60px 0}
+.success-icon{width:64px;height:64px;border-radius:20px;background:var(--amber);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.success h2{font-size:24px;font-weight:700}
+.success p{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.6}
+.success-btn{display:inline-block;margin-top:24px;padding:14px 32px;border-radius:14px;font-size:14px;font-weight:700;transition:all .2s}
+
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--glass-border)}
+.top-bar a{font-size:13px;color:var(--muted);transition:color .2s}
+.top-bar a:hover{color:var(--cream)}
+.foot{text-align:center;padding:20px;font-size:11px;color:var(--faint)}
 </style>
 </head>
 <body>
 
-<!-- Nav -->
-<nav class="sticky top-0 z-50 backdrop-blur-xl bg-[#0e0c0a]/80 border-b border-white/[.04] px-5 py-3.5">
-  <div class="max-w-[480px] mx-auto flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-2"><img src="logo.png" alt="썸류센터" class="h-7"></a>
-    <a href="login.html" class="text-sm font-semibold text-[#9a9080] hover:text-white transition">로그인</a>
-  </div>
-</nav>
+<div class="top-bar">
+  <a href="index.html"><img src="logo.png" alt="썸류센터" style="height:24px"></a>
+  <a href="login.html">로그인</a>
+</div>
 
-<main class="flex-1 flex items-start justify-center px-5 py-10">
-  <div class="w-full max-w-[440px]">
-
-    <!-- Header -->
-    <div class="text-center mb-8">
-      <span class="badge mb-4"><i class="fa-solid fa-user-plus"></i> SIGN UP</span>
-      <h1 class="text-2xl font-black mt-3">썸류센터 <span class="y">회원가입</span></h1>
-      <p class="text-sm text-[#9a9080] mt-2">가입하고 커피팅에 참여해보세요</p>
+<main class="page">
+  <div class="box">
+    <div class="logo-area" id="header">
+      <h1 class="gm">설렘 배송, 시작해볼까요? 📦</h1>
+      <p>가입하고 나에게 딱 맞는 만남을 받아보세요</p>
     </div>
 
-    <!-- Form -->
-    <form id="signup-form" class="space-y-5" onsubmit="return handleSignup(event)">
+    <!-- 카카오 -->
+    <button class="social-btn btn-kakao" onclick="kakaoLogin()">
+      <svg width="20" height="20" viewBox="0 0 18 18"><path fill="#191919" d="M9 1C4.58 1 1 3.8 1 7.2c0 2.18 1.45 4.1 3.63 5.2-.16.56-.57 2.03-.66 2.35-.1.39.14.39.3.28.12-.08 1.94-1.32 2.72-1.85.64.09 1.3.14 1.97.14 4.42 0 8-2.8 8-6.2C17 3.8 13.42 1 9 1"/></svg>
+      카카오로 시작하기
+    </button>
 
-      <!-- 카카오 로그인 -->
-      <div class="card p-6 text-center">
-        <p style="font-size:13px;color:#9a9080;margin-bottom:14px">간편하게 시작하기</p>
-        <button type="button" onclick="kakaoLogin()" style="width:100%;padding:14px;border-radius:14px;background:#FEE500;color:#000;font-weight:700;font-size:15px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;transition:filter .2s" onmouseover="this.style.filter='brightness(.95)'" onmouseout="this.style.filter=''">
-          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#000" d="M9 1C4.58 1 1 3.8 1 7.2c0 2.18 1.45 4.1 3.63 5.2-.16.56-.57 2.03-.66 2.35-.1.39.14.39.3.28.12-.08 1.94-1.32 2.72-1.85.64.09 1.3.14 1.97.14 4.42 0 8-2.8 8-6.2C17 3.8 13.42 1 9 1"/></svg>
-          카카오로 시작하기
-        </button>
-        <p style="font-size:11px;color:#5a5248;margin-top:10px">또는 이메일로 가입</p>
-        <div style="width:100%;height:1px;background:rgba(255,255,255,.06);margin-top:14px"></div>
-      </div>
+    <div class="divider"><span>또는 이메일로 가입</span></div>
 
-      <div class="card p-6 space-y-5">
-        <!-- 이메일 -->
-        <div>
-          <label class="label">이메일 <span class="req">*</span></label>
-          <input type="email" name="email" required placeholder="example@email.com" class="input" id="email-input">
+    <!-- 폼 -->
+    <form id="signup-form" onsubmit="return handleSignup(event)">
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">이메일 <span class="req">*</span></label>
+          <input type="email" name="email" required placeholder="example@email.com" class="form-input">
         </div>
-
-        <!-- 이름 -->
-        <div>
-          <label class="label">이름 <span class="req">*</span></label>
-          <input type="text" name="name" required placeholder="실명을 입력해주세요" class="input">
+        <div class="form-group">
+          <label class="form-label">이름 <span class="req">*</span></label>
+          <input type="text" name="name" required placeholder="실명을 입력해주세요" class="form-input">
         </div>
-
-        <!-- 연락처 -->
-        <div>
-          <label class="label">연락처 <span class="req">*</span></label>
-          <input type="tel" name="phone" required placeholder="010-0000-0000" class="input" id="phone-input">
+        <div class="form-group">
+          <label class="form-label">연락처</label>
+          <input type="tel" name="phone" placeholder="010-0000-0000" class="form-input" id="phone">
         </div>
-
-        <!-- 비밀번호 -->
-        <div>
-          <label class="label">비밀번호 <span class="req">*</span></label>
-          <div class="relative">
-            <input type="password" name="password" required placeholder="6자 이상" class="input" id="pw-input" minlength="6">
-            <button type="button" onclick="togglePw()" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#6b6358] hover:text-white transition text-sm"><i class="fa-solid fa-eye" id="pw-icon"></i></button>
+        <div class="form-group">
+          <label class="form-label">비밀번호 <span class="req">*</span></label>
+          <div class="pw-wrap">
+            <input type="password" name="password" required placeholder="6자 이상" class="form-input" id="pw1" minlength="6">
+            <button type="button" class="pw-toggle" onclick="const p=document.getElementById('pw1');p.type=p.type==='password'?'text':'password'"><i class="fa-solid fa-eye"></i></button>
           </div>
-          <div class="pw-str" id="pw-str" style="background:rgba(255,255,255,.06);width:0%"></div>
+          <div class="pw-str" id="pw-str"></div>
         </div>
-
-        <!-- 비밀번호 확인 -->
-        <div>
-          <label class="label">비밀번호 확인 <span class="req">*</span></label>
-          <input type="password" name="passwordConfirm" required placeholder="비밀번호를 다시 입력해주세요" class="input" id="pw2-input">
-          <p class="err-msg" id="pw2-err">비밀번호가 일치하지 않습니다</p>
+        <div class="form-group">
+          <label class="form-label">비밀번호 확인 <span class="req">*</span></label>
+          <input type="password" name="passwordConfirm" required placeholder="비밀번호를 다시 입력해주세요" class="form-input" id="pw2">
+          <p class="err-msg" id="pw-err">비밀번호가 일치하지 않아요</p>
         </div>
-
-        <!-- 성별 -->
-        <div>
-          <label class="label">성별 <span class="req">*</span></label>
-          <div class="grid grid-cols-2 gap-3">
-            <label class="radio-wrap">
-              <input type="radio" name="gender" value="남성" required>
-              <div class="radio-card"><div class="dot"></div>남성</div>
-            </label>
-            <label class="radio-wrap">
-              <input type="radio" name="gender" value="여성">
-              <div class="radio-card"><div class="dot"></div>여성</div>
-            </label>
+        <div class="form-group">
+          <label class="form-label">성별 <span class="req">*</span></label>
+          <div class="gender-grid">
+            <label class="gender-opt"><input type="radio" name="gender" value="남성" required><div class="gender-card">남성</div></label>
+            <label class="gender-opt"><input type="radio" name="gender" value="여성"><div class="gender-card">여성</div></label>
           </div>
         </div>
-
-        <!-- 출생 연도 -->
-        <div>
-          <label class="label">출생 연도 <span class="req">*</span></label>
-          <select name="birthYear" required class="input input-select">
-            <option value="" disabled selected style="color:#5a5248">출생 연도를 선택해주세요</option>
-            <option value="2006">2006년생</option><option value="2005">2005년생</option>
-            <option value="2004">2004년생</option><option value="2003">2003년생</option>
-            <option value="2002">2002년생</option><option value="2001">2001년생</option>
-            <option value="2000">2000년생</option><option value="1999">1999년생</option>
-            <option value="1998">1998년생</option><option value="1997">1997년생</option>
-            <option value="1996">1996년생</option><option value="1995">1995년생</option>
-            <option value="1994">1994년생</option><option value="1993">1993년생</option>
-            <option value="1992">1992년생</option><option value="1991">1991년생</option>
-            <option value="1990">1990년생</option><option value="1989">1989년생</option>
-            <option value="1988">1988년생</option><option value="1987">1987년생</option>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">출생 연도 <span class="req">*</span></label>
+          <select name="birthYear" required class="form-input form-select">
+            <option value="" disabled selected>출생 연도를 선택해주세요</option>
+            <option>2006</option><option>2005</option><option>2004</option><option>2003</option>
+            <option>2002</option><option>2001</option><option>2000</option><option>1999</option>
+            <option>1998</option><option>1997</option><option>1996</option><option>1995</option>
+            <option>1994</option><option>1993</option><option>1992</option><option>1991</option>
+            <option>1990</option><option>1989</option><option>1988</option><option>1987</option>
           </select>
         </div>
       </div>
 
       <!-- 동의 -->
-      <div class="card p-6">
-        <div class="flex items-start gap-3 cursor-pointer" onclick="toggleAgree()">
-          <div class="w-5 h-5 shrink-0 mt-0.5 rounded-md border-2 border-[#5a5248] flex items-center justify-center transition" id="agree-box">
-            <i class="fa-solid fa-check text-[10px] text-black hidden" id="agree-icon"></i>
-          </div>
-          <span class="text-sm text-[#9a9080] leading-relaxed">
-            개인정보 수집 및 이용에 동의합니다. <span class="y">*</span>
-          </span>
+      <div class="card">
+        <div class="agree-row" onclick="toggleAgree()">
+          <div class="agree-box" id="agree-box"><i class="fa-solid fa-check"></i></div>
+          <span style="font-size:13px;color:var(--muted);line-height:1.5">개인정보 수집 및 이용에 동의합니다. <span style="color:var(--amber)">*</span></span>
         </div>
-        <input type="hidden" id="agree-all" value="false">
       </div>
 
-      <!-- 제출 -->
-      <button type="submit" id="submit-btn" class="btn btn-primary">
-        <i class="fa-solid fa-user-plus mr-1.5"></i>가입하기
-      </button>
-
-      <p class="text-center text-xs text-[#6b6358] mt-2">
-        이미 계정이 있으신가요? <a href="login.html" class="y font-bold hover:underline">로그인</a>
-      </p>
+      <button type="submit" class="submit-btn" id="submit-btn">가입하기</button>
     </form>
 
-    <!-- 완료 화면 -->
-    <div id="success" class="hidden text-center py-16">
-      <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#FFBE2E] flex items-center justify-center">
-        <i class="fa-solid fa-check text-black text-2xl"></i>
-      </div>
-      <h2 class="text-2xl font-black">가입 완료!</h2>
-      <p class="text-sm text-[#9a9080] mt-3 leading-relaxed">썸류센터에 오신 걸 환영해요.<br>이제 커피팅에 신청할 수 있어요.</p>
-      <div class="flex flex-col gap-3 mt-8 max-w-[280px] mx-auto">
-        <a href="index.html" class="btn btn-primary text-center block"><i class="fa-solid fa-home mr-1.5"></i>홈으로</a>
-        <a href="login.html" class="btn text-center block" style="background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.08)">로그인하기</a>
-      </div>
-    </div>
+    <div class="links">이미 계정이 있으신가요? <a href="login.html">로그인</a></div>
 
+    <!-- 완료 -->
+    <div class="success hidden" id="success">
+      <div class="success-icon"><i class="fa-solid fa-check" style="font-size:24px;color:#000"></i></div>
+      <h2 class="gm">가입 완료! 🎉</h2>
+      <p>썸류센터에 오신 걸 환영해요.<br>이제 설렘을 받아볼 수 있어요.</p>
+      <a href="index.html" class="success-btn" style="background:var(--amber);color:#000">홈으로</a>
+    </div>
   </div>
 </main>
 
-<!-- Footer -->
-<footer class="border-t border-white/[.04] px-5 py-8 text-center">
-  <p class="text-[11px] text-[#5a5248]">문의: 카카오톡 채널 @썸류센터</p>
-</footer>
+<div class="foot">문의: 카카오톡 채널 @썸류센터</div>
 
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPA_URL='https://nvqlguhzsucrcnmjlxoe.supabase.co';
-const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cWxndWh6c3VjcmNubWpseG9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDk4NDgsImV4cCI6MjA5NjU4NTg0OH0.ClU6JArejkQQibf6XBFuYkF-fCQKnD2cVzJgXvkdgNc';
-const sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);
-
-// 카카오 SDK 초기화
+const sb=window.supabase.createClient('https://nvqlguhzsucrcnmjlxoe.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cWxndWh6c3VjcmNubWpseG9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDk4NDgsImV4cCI6MjA5NjU4NTg0OH0.ClU6JArejkQQibf6XBFuYkF-fCQKnD2cVzJgXvkdgNc');
 Kakao.init('702b5ffe9fbe4643438cdedc5e4e1a52');
 
 function kakaoLogin(){
-  Kakao.Auth.login({
-    success:function(authObj){
-      Kakao.API.request({
-        url:'/v2/user/me',
-        success:function(res){
-          const user={
-            id:'kakao_'+res.id,
-            name:res.properties?.nickname||'카카오 유저',
-            profileImage:res.properties?.profile_image||'',
-            provider:'kakao'
-          };
-          localStorage.setItem('ssumUser',JSON.stringify(user));
-          document.getElementById('signup-form').classList.add('hidden');
-          document.querySelector('.text-center.mb-8').classList.add('hidden');
-          document.getElementById('success').classList.remove('hidden');
-        },
-        fail:function(err){alert('사용자 정보 조회 실패: '+JSON.stringify(err))}
-      });
-    },
-    fail:function(err){alert('카카오 로그인 실패: '+JSON.stringify(err))}
-  });
+  Kakao.Auth.authorize({redirectUri:'https://ssumcenter.vercel.app/auth-callback.html'});
 }
 
-function togglePw(){
-  const pw=document.getElementById('pw-input');
-  const icon=document.getElementById('pw-icon');
-  if(pw.type==='password'){pw.type='text';icon.className='fa-solid fa-eye-slash'}
-  else{pw.type='password';icon.className='fa-solid fa-eye'}
-}
-
-document.getElementById('pw-input').addEventListener('input',function(){
-  const v=this.value,bar=document.getElementById('pw-str');
-  let s=0;
-  if(v.length>=6)s++;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
-  const pct=[0,20,40,60,80,100][s];
-  const col=['#ff3333','#ff6633','#ffaa33','#aacc33','#44cc44'][Math.max(0,s-1)]||'#333';
-  bar.style.width=pct+'%';bar.style.background=s?col:'rgba(255,255,255,.06)';
-});
-
-document.getElementById('pw2-input').addEventListener('input',function(){
-  const pw=document.getElementById('pw-input').value;
-  document.getElementById('pw2-err').classList.toggle('show',this.value&&this.value!==pw);
-});
-
-document.getElementById('phone-input').addEventListener('input',function(){
+/* 연락처 포맷 */
+document.getElementById('phone').addEventListener('input',function(){
   let v=this.value.replace(/[^0-9]/g,'');
   if(v.length>3&&v.length<=7)v=v.slice(0,3)+'-'+v.slice(3);
   else if(v.length>7)v=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
   this.value=v;
 });
 
+/* 비밀번호 강도 */
+document.getElementById('pw1').addEventListener('input',function(){
+  const v=this.value,bar=document.getElementById('pw-str');
+  let s=0;if(v.length>=6)s++;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
+  bar.style.width=[0,20,40,60,80,100][s]+'%';
+  bar.style.background=s?['#ff3333','#ff6633','#ffaa33','#aacc33','#44cc44'][s-1]:'var(--faint)';
+});
+
+/* 비밀번호 확인 */
+document.getElementById('pw2').addEventListener('input',function(){
+  document.getElementById('pw-err').classList.toggle('show',this.value&&this.value!==document.getElementById('pw1').value);
+});
+
+/* 동의 */
 let agreed=false;
 function toggleAgree(){
   agreed=!agreed;
-  const box=document.getElementById('agree-box'),icon=document.getElementById('agree-icon');
-  document.getElementById('agree-all').value=agreed?'true':'false';
-  if(agreed){box.style.background='#FFBE2E';box.style.borderColor='#FFBE2E';icon.classList.remove('hidden')}
-  else{box.style.background='transparent';box.style.borderColor='#5a5248';icon.classList.add('hidden')}
+  document.getElementById('agree-box').classList.toggle('on',agreed);
 }
 
+/* 가입 */
 async function handleSignup(e){
   e.preventDefault();
-  const form=document.getElementById('signup-form');
-  const data=new FormData(form);
-  const p=Object.fromEntries(data.entries());
-
-  if(p.password!==p.passwordConfirm){document.getElementById('pw2-err').classList.add('show');return false}
-  if(p.password.length<6){alert('비밀번호는 6자 이상이어야 합니다.');return false}
-  if(!agreed){alert('개인정보 수집 동의가 필요합니다.');return false}
+  const fd=new FormData(document.getElementById('signup-form'));
+  const p=Object.fromEntries(fd.entries());
+  if(p.password!==p.passwordConfirm){document.getElementById('pw-err').classList.add('show');return false}
+  if(p.password.length<6){alert('비밀번호는 6자 이상이어야 해요');return false}
+  if(!agreed){alert('개인정보 수집 동의가 필요해요');return false}
 
   const btn=document.getElementById('submit-btn');
-  btn.disabled=true;
-  btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>가입 중...';
+  btn.disabled=true;btn.textContent='가입 중...';
 
   try{
-    // Supabase Auth 회원가입
     const{data:authData,error:authErr}=await sb.auth.signUp({
-      email:p.email,
-      password:p.password,
-      options:{data:{name:p.name,phone:p.phone,gender:p.gender,birth_year:p.birthYear}}
+      email:p.email,password:p.password,
+      options:{data:{name:p.name,phone:p.phone||'',gender:p.gender,birth_year:p.birthYear}}
     });
-
     if(authErr){
-      let msg='가입 중 오류가 발생했습니다.';
-      if(authErr.message.includes('already registered'))msg='이미 가입된 연락처입니다.';
-      else if(authErr.message.includes('password'))msg='비밀번호는 6자 이상이어야 합니다.';
-      else if(authErr.message)msg=authErr.message;
-      alert(msg);
-      console.error('Supabase signup error:',authErr);
-      btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-user-plus mr-1.5"></i>가입하기';
-      return false;
+      let msg='가입 중 오류가 발생했어요';
+      if(authErr.message.includes('already'))msg='이미 가입된 이메일이에요';
+      alert(msg);btn.disabled=false;btn.textContent='가입하기';return false;
     }
-
-    // profiles 테이블에 추가 정보 저장
     if(authData.user){
-      await sb.from('profiles').insert({
-        id:authData.user.id,
-        name:p.name,
-        phone:p.phone,
-        gender:p.gender,
-        birth_year:p.birthYear
-      });
+      await sb.from('profiles').insert({id:authData.user.id,name:p.name,phone:p.phone||'',gender:p.gender,birth_year:p.birthYear});
     }
-
-    localStorage.setItem('ssumUser',JSON.stringify({id:authData.user?.id,name:p.name,phone:p.phone,gender:p.gender}));
-    form.classList.add('hidden');
-    document.querySelector('.text-center.mb-8').classList.add('hidden');
+    localStorage.setItem('ssumUser',JSON.stringify({id:authData.user?.id,name:p.name}));
+    document.getElementById('signup-form').classList.add('hidden');
+    document.getElementById('header').classList.add('hidden');
+    document.querySelector('.social-btn').classList.add('hidden');
+    document.querySelector('.divider').classList.add('hidden');
+    document.querySelector('.links').classList.add('hidden');
     document.getElementById('success').classList.remove('hidden');
   }catch(err){
-    alert('네트워크 오류가 발생했습니다.');
-    btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-user-plus mr-1.5"></i>가입하기';
+    alert('네트워크 오류가 발생했어요');btn.disabled=false;btn.textContent='가입하기';
   }
   return false;
 }
