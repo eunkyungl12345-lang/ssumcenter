@@ -193,8 +193,8 @@ const sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 // 카카오 로그인
 function kakaoLogin(){
   const KAKAO_KEY='f27b06fa1f606f4ef7b083a627b41b83';
-  const REDIRECT=encodeURIComponent(window.location.origin+'/auth-callback.html');
-  window.location.href='https://kauth.kakao.com/oauth/authorize?client_id='+KAKAO_KEY+'&redirect_uri='+REDIRECT+'&response_type=code&scope=profile_nickname,profile_image';
+  const REDIRECT=encodeURIComponent('https://ssumcenter.vercel.app/auth-callback.html');
+  window.location.href='https://kauth.kakao.com/oauth/authorize?client_id='+KAKAO_KEY+'&redirect_uri='+REDIRECT+'&response_type=code';
 }
 
 function togglePw(){
