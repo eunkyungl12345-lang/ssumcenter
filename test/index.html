@@ -207,14 +207,15 @@ function calc(){
 function restart(){step=0;scores={warmth:0,depth:0,energy:0,play:0};result=null;$("progress").style.width="0%";show("intro");}
 
 function goApply(){
-  const t=TYPES[result];
-  const url=`index.html?result=${encodeURIComponent(t.name)}&pct=${t.pct}#apply`;
-  window.location.href=url;
+  window.open('https://form.naver.com/response/hZCZ4iRavCm3vmsqEJaIfw','_blank');
 }
 function goMatching(){
   const t=TYPES[result];
-  const url=`../matching?result=${encodeURIComponent(t.name)}&pct=${t.pct}`;
-  window.location.href=url;
+  if(localStorage.getItem('ssumUser')){
+    window.location.href='../matching.html?result='+encodeURIComponent(t.name)+'&pct='+t.pct;
+  }else{
+    window.location.href='../login.html?redirect=matching.html';
+  }
 }
 function copyShare(){
   const url=location.origin+location.pathname;

@@ -434,12 +434,14 @@ function showResult(){
   show("result");
 }
 function goApply(){
-  const url=`index.html?result=${encodeURIComponent(TYPES[result].name)}&pct=${TYPES[result].rare}&type=커피유형&name=${encodeURIComponent(userInfo.name||"")}#apply`;
-  window.location.href=url;
+  window.open('https://form.naver.com/response/hZCZ4iRavCm3vmsqEJaIfw','_blank');
 }
 function goMatching(){
-  const url=`../matching?result=${encodeURIComponent(TYPES[result].name)}&pct=${TYPES[result].rare}`;
-  window.location.href=url;
+  if(localStorage.getItem('ssumUser')){
+    window.location.href='../matching.html?result='+encodeURIComponent(TYPES[result].name)+'&pct='+TYPES[result].rare;
+  }else{
+    window.location.href='../login.html?redirect=matching.html';
+  }
 }
 function copyShare(){
   navigator.clipboard.writeText(location.origin+location.pathname).then(()=>toast("링크 복사 완료! 친구한테 공유해보세요 ☕"));
