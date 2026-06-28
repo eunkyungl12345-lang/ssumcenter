@@ -74,7 +74,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 
 /* Program cards */
 .prog-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:720px;margin:0 auto}
-@media(max-width:500px){.prog-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.prog-grid{grid-template-columns:1fr!important}}
 .prog-card{padding:48px 32px;text-align:center;cursor:pointer;position:relative;border-radius:24px}
 .prog-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(212,149,42,.08)}
 .prog-emoji{font-size:64px;margin-bottom:20px}
@@ -176,7 +176,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>어떤 설렘을 <span class="ac">받아보시겠어요?</span></h2>
     <p style="font-size:14px;color:var(--dim);margin-top:8px" data-r>나에게 맞는 프로그램을 선택하세요</p>
 
-    <div class="prog-grid" style="margin-top:40px" data-r>
+    <div class="prog-grid" style="margin-top:40px;grid-template-columns:repeat(3,1fr)" data-r>
       <a href="oneone.html" class="glass prog-card">
         <span class="prog-tag">BETA</span>
         <div class="prog-emoji">🎁</div>
@@ -188,6 +188,13 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
         <div class="prog-emoji">📦</div>
         <div class="prog-title gm">썸배달</div>
         <div class="prog-sub">로테이션 소개팅<br>여러 설렘을 한 번에</div>
+        <div class="prog-arrow">자세히 보기 →</div>
+      </a>
+      <a href="fintech.html" class="glass prog-card">
+        <span class="prog-tag">NEW</span>
+        <div class="prog-emoji">💰</div>
+        <div class="prog-title gm">재테크 미팅</div>
+        <div class="prog-sub">관심사 소개팅<br>돈 얘기하며 설렘까지</div>
         <div class="prog-arrow">자세히 보기 →</div>
       </a>
     </div>
@@ -273,6 +280,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     <div style="display:flex;flex-direction:column;gap:10px">
       <a href="#" onclick="goMatching();return false" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center;transition:all .2s;font-size:15px"><span>🎁 특급 배송 · 1:1 매칭</span><span style="font-size:11px;font-weight:500;opacity:.6">신청하기 →</span><span style="position:absolute;top:10px;right:12px;font-size:9px;background:rgba(0,0,0,.15);padding:2px 8px;border-radius:100px;font-weight:700">BETA</span></a>
       <button onclick="closeModal();openDateModal()" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);font-weight:800;padding:18px;border-radius:18px;cursor:pointer;transition:all .2s;font-family:inherit;font-size:15px"><span>📦 썸배달 · 로테이션</span><span style="font-size:11px;font-weight:500;color:var(--dim)">다음 일정 확인 →</span></button>
+      <a href="fintech.html" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);font-weight:800;padding:18px;border-radius:18px;transition:all .2s;font-size:15px"><span>💰 재테크 미팅</span><span style="font-size:11px;font-weight:500;color:var(--dim)">자세히 보기 →</span></a>
     </div>
     <p style="font-size:11px;color:var(--faint);text-align:center;margin-top:20px">확정 문자를 별도로 보내드려요</p>
   </div>
