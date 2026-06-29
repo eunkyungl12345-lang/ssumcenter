@@ -156,7 +156,7 @@
               </div>
             </div>
           </div>
-          <input type="file" id="photo-input" accept="image/*" class="hidden">
+          <input type="file" id="photo-input" accept="image/*" multiple class="hidden">
           <p class="text-[10px] text-[#5a5248] mt-2">얼굴이 잘 보이는 사진을 올려주세요 (장당 최대 5MB)</p>
         </div>
 
@@ -679,23 +679,24 @@ function removePhoto(index){
 }
 
 document.getElementById("photo-input").addEventListener("change", function(){
-  const file = this.files[0];
-  if(!file) return;
-  if(file.size > 5 * 1024 * 1024){
-    alert("사진 크기는 5MB 이하만 가능합니다.");
-    this.value = "";
-    return;
+  const files = [...this.files];
+  let slot = activeSlot;
+  for(const f of files){
+    if(slot > 2) break;
+    if(f.size > 5 * 1024 * 1024){ alert(f.name + " : 5MB 이하만 가능합니다."); continue; }
+    photoFiles[slot] = f;
+    const reader = new FileReader();
+    const s = slot;
+    reader.onload = function(e){
+      const el = document.querySelectorAll(".photo-slot")[s];
+      el.querySelector(".photo-preview").src = e.target.result;
+      el.querySelector(".photo-preview").classList.remove("hidden");
+      el.querySelector(".photo-placeholder").classList.add("hidden");
+      el.querySelector(".photo-remove").classList.remove("hidden");
+    };
+    reader.readAsDataURL(f);
+    slot++;
   }
-  photoFiles[activeSlot] = file;
-  const reader = new FileReader();
-  reader.onload = function(e){
-    const slot = document.querySelectorAll(".photo-slot")[activeSlot];
-    slot.querySelector(".photo-preview").src = e.target.result;
-    slot.querySelector(".photo-preview").classList.remove("hidden");
-    slot.querySelector(".photo-placeholder").classList.add("hidden");
-    slot.querySelector(".photo-remove").classList.remove("hidden");
-  };
-  reader.readAsDataURL(file);
   this.value = "";
 });
 
