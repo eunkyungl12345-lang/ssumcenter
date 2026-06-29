@@ -15,6 +15,8 @@
   ::selection{background:#FFBE2E;color:#000}
   @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,190,46,.3)}50%{box-shadow:0 0 24px 8px rgba(255,190,46,.12)}}
   .cta-glow{animation:glow-pulse 2.5s infinite ease-in-out}
+  .quote{border-left:3px solid #FFBE2E;background:rgba(255,190,46,.04);padding:14px 20px;border-radius:0 12px 12px 0;margin:10px 0;font-weight:500}
+  .warn{border-left:3px solid #ff6b6b;background:rgba(255,100,100,.04);padding:14px 20px;border-radius:0 12px 12px 0;margin:10px 0;font-weight:700}
 </style>
 </head>
 <body>
@@ -33,7 +35,7 @@
   <div class="text-center mb-10">
     <div class="text-4xl mb-3">💰📦</div>
     <h1 class="text-[24px] md:text-[32px] font-black leading-tight">7/24 썸류센터 재테크 미팅<br>모집요강</h1>
-    <p class="text-[15px] text-[#9a9080] mt-3 leading-relaxed">안녕하세요 설렘담당 썸류센터 센터장입니다.<br>재테크에 관심 있는 멋쟁이들을 초대할게요!</p>
+    <p class="text-[15px] text-[#9a9080] mt-3 leading-relaxed">안녕하세요 설렘담당 썸류센터 센터장입니다.<br>재테크에 관심 있는 멋쟁이들을 초대할게요! ✨</p>
     <div class="mt-6">
       <a href="apply.html" class="inline-block bg-[#FFBE2E] text-black font-extrabold py-[16px] px-10 rounded-2xl text-[15px] cta-glow hover:brightness-90 transition"><i class="fa-solid fa-chart-line mr-1.5"></i>신청하기</a>
     </div>
@@ -44,8 +46,10 @@
     <!-- 일정 -->
     <div>
       <h2 class="y font-black text-lg mb-2">❤️ 일정</h2>
-      <p class="font-bold text-[17px]">2026년 7월 24일 (목) 19:45</p>
-      <p class="text-[#9a9080]">약 2시간 반 소요될 예정이에요!</p>
+      <div class="quote">
+        <p class="text-[17px] font-bold">2026년 7월 24일 (목) 19:45</p>
+        <p class="text-[#9a9080] text-sm mt-1">약 2시간 반 소요될 예정이에요!</p>
+      </div>
     </div>
 
     <hr class="border-[#1e1c17]">
@@ -53,8 +57,10 @@
     <!-- 장소 -->
     <div>
       <h2 class="y font-black text-lg mb-2">❤️ 장소</h2>
-      <p class="font-bold">삼성역 도보 3분! 썸이 이루어질 그 곳!</p>
-      <p class="text-[#9a9080]">👉 정확한 장소는 참여 확정된 분들께만 알려드릴게요!</p>
+      <div class="quote">
+        <p class="font-bold">삼성역 도보 3분! 썸이 이루어질 그 곳!</p>
+      </div>
+      <p class="text-[#9a9080] text-sm mt-2">👉 정확한 장소는 참여 확정된 분들께만 알려드릴게요! 😘</p>
     </div>
 
     <hr class="border-[#1e1c17]">
@@ -62,11 +68,17 @@
     <!-- 신청 대상 -->
     <div>
       <h2 class="y font-black text-lg mb-2">❤️ 신청 대상</h2>
-      <p class="font-bold text-[17px]">1986년 ~ 2000년생</p>
-      <p class="text-[#9a9080] mt-1">🌟 재테크에 관심 있는 경제관념 넘치는 멋쟁이들 환영!</p>
+      <div class="quote">
+        <p class="text-[17px] font-bold">1986년 ~ 2000년생</p>
+      </div>
+      <p class="text-[#9a9080] mt-2">🌟 재테크에 관심 있는 경제관념 넘치는 멋쟁이들 환영!</p>
       <p class="text-[#9a9080]">🌟 매력 있는 분들은 1~2살 넘어가더라도 승인드립니다.</p>
-      <p class="text-[#9a9080] mt-2">선착순이 아닌 승인제로 진행합니다!<br>승인된 분들께 <b class="text-[#f5f0ea]">문자💌</b>로 참여 안내가 나가니<br>폼 작성 후 문자 확인을 꼼꼼하게 해주세요!</p>
-      <p class="text-red-400 font-bold mt-2">❗️ 지원불가 : 돌싱, 무직 분들은 다음에 만나요</p>
+      <div class="quote mt-3" style="border-left-color:#9a9080;background:rgba(255,255,255,.02)">
+        <p class="text-sm text-[#9a9080]">선착순이 아닌 <b class="text-[#f5f0ea]">승인제</b>로 진행합니다!<br>승인된 분들께 <b class="text-[#f5f0ea]">문자💌</b>로 참여 안내가 나가니<br>폼 작성 후 문자 확인을 꼼꼼하게 해주세요!</p>
+      </div>
+      <div class="warn mt-3">
+        <p class="text-sm">❗️ 지원불가 : 돌싱, 무직 분들은 다음에 만나요</p>
+      </div>
     </div>
 
     <hr class="border-[#1e1c17]">
@@ -74,7 +86,9 @@
     <!-- 진행 방식 -->
     <div>
       <h2 class="y font-black text-lg mb-2">🔥 진행방식</h2>
-      <p class="font-bold text-[17px]">최소 8:8 로테이션 재테크팅 🤍</p>
+      <div class="quote">
+        <p class="font-bold text-[17px]">최소 8:8 로테이션 재테크팅 🤍</p>
+      </div>
     </div>
 
     <hr class="border-[#1e1c17]">
@@ -82,10 +96,14 @@
     <!-- 참가비 -->
     <div>
       <h2 class="y font-black text-lg mb-2">❤️ 참가비</h2>
-      <p><span class="line-through text-[#6b6358]">50,000원</span> → <span class="y font-black text-xl">39,900원</span></p>
-      <p class="text-[#9a9080] mt-1">7월 19일부터는 환불 불가능합니다 🥰<br>당일 노쇼, 지각의 경우 환불 불가해요 🥲</p>
+      <div class="quote">
+        <p><span class="line-through text-[#6b6358]">50,000원</span> → <span class="y font-black text-xl">39,900원</span></p>
+      </div>
+      <p class="text-[#9a9080] mt-2">7월 19일부터는 환불 불가능합니다 🥰<br>당일 노쇼, 지각의 경우 환불 불가해요 🥲</p>
       <p class="text-[#9a9080] mt-1">☕️ 음료 한 잔 포함 가격입니다!</p>
-      <p class="y font-bold mt-3">🌟 지인 동반 할인, 재방문 시 최대 5,000원 할인! 🌟</p>
+      <div class="quote mt-3">
+        <p class="y font-bold">🌟 지인 동반 할인, 재방문 시 최대 5,000원 할인! 🌟</p>
+      </div>
     </div>
 
     <hr class="border-[#1e1c17]">
@@ -94,7 +112,9 @@
     <div>
       <h2 class="y font-black text-lg mb-2">📌 안내사항</h2>
       <p class="text-[#9a9080]">프로필 제출 후 일주일 내로 최종 확정 안내드리겠습니다 🗓️</p>
-      <p class="font-bold mt-2">💥 안내 문자를 받지 못하신 분들은 참여가 확정된 게 아닙니다 💥</p>
+      <div class="warn mt-2">
+        <p class="text-sm">💥 안내 문자를 받지 못하신 분들은 참여가 확정된 게 아닙니다 💥</p>
+      </div>
       <p class="text-[#9a9080] mt-2">긴장하지 말고 즐거운 시간이 될 수 있도록 센터장이 도와드릴게요 📦<br>입장은 19시 45분부터 가능하며 대화 전 프로필 카드를 작성할 수 있도록 늦지 말아주세요 ❤️</p>
     </div>
 
@@ -103,10 +123,11 @@
     <!-- 문의 -->
     <div>
       <h2 class="y font-black text-lg mb-2">❤️ 궁금한 점이 있다면?</h2>
-      <p>오픈카톡으로 문의주세요 🌸<br>
+      <p>오픈카톡으로 문의주세요 🌸</p>
+      <div class="quote mt-2">
         <a href="https://open.kakao.com/o/ghZ5uywh" target="_blank" rel="noopener" class="y font-bold hover:underline">👉 오픈카톡 바로가기</a>
-      </p>
-      <p class="text-[#9a9080] mt-1">답장이 왕 빠른 센터장들이 바로바로 답변드립니다!!</p>
+        <p class="text-sm text-[#9a9080] mt-1">답장이 왕 빠른 센터장들이 바로바로 답변드립니다!!</p>
+      </div>
     </div>
 
   </div>
