@@ -124,12 +124,6 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-[#9a9080] mb-2">키 <span class="y">*</span></label>
-          <input type="text" name="height" required placeholder="예: 175"
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition">
-        </div>
-
-        <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">직업 / 직장명 <span class="y">*</span></label>
           <input type="text" name="job" required placeholder="예: 삼성전자 마케터"
             class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition">
@@ -448,7 +442,7 @@ async function handleSubmit(e){
     const fm=document.getElementById("apply-form");const d=new FormData(fm);const p=Object.fromEntries(d.entries());
     const fields={
       "이름":p.name||"","성별":p.gender||"","출생연도":p.birthYear||"","연락처":p.phone||"",
-      "키":p.height||"","직업_직장명":p.job||"","어필포인트":p.appeal||"",
+      "직업_직장명":p.job||"","어필포인트":p.appeal||"",
       "음료선택":p.drink||"","닉네임":p.nickname||"",
       "관심재테크":[...selectedFintech].join(", "),
       "유입경로":selectedChannel,"추천인이름":p.referralName||"","할인혜택":p.discount||"",
