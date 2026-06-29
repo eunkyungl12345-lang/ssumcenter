@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>썸배달 — 로테이션 소개팅 | 썸류센터</title>
-<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
@@ -17,151 +16,205 @@
   .cta-glow{animation:glow-pulse 2.5s infinite ease-in-out}
   .quote{border-left:3px solid #FFBE2E;background:rgba(255,190,46,.04);padding:14px 20px;border-radius:0 12px 12px 0;margin:10px 0;font-weight:500}
   .warn{border-left:3px solid #ff6b6b;background:rgba(255,100,100,.04);padding:14px 20px;border-radius:0 12px 12px 0;margin:10px 0;font-weight:700}
+
+  /* Nav */
+  nav.site-nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:rgba(14,12,10,.8);border-bottom:1px solid rgba(255,255,255,.04);padding:14px 20px}
+  .nav-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+  .nav-inner img{height:28px}
+  .nav-link{font-size:14px;font-weight:600;color:#9a9080;transition:color .2s}
+  .nav-link:hover{color:#fff}
+  .nav-link i{margin-right:4px}
+
+  /* Main */
+  main.content{max-width:600px;margin:0 auto;padding:40px 20px}
+
+  /* Title section */
+  .title-section{text-align:center;margin-bottom:40px}
+  .title-emoji{font-size:36px;margin-bottom:12px}
+  .title-section h1{font-size:24px;font-weight:900;line-height:1.25}
+  @media(min-width:768px){.title-section h1{font-size:32px}}
+  .title-desc{font-size:15px;color:#9a9080;margin-top:12px;line-height:1.6}
+  .title-cta{margin-top:24px}
+
+  /* CTA button */
+  .cta-btn{display:inline-block;background:#FFBE2E;color:#000;font-weight:800;padding:16px 40px;border-radius:16px;font-size:15px;transition:filter .2s}
+  .cta-btn:hover{filter:brightness(.9)}
+  .cta-btn i{margin-right:6px}
+
+  /* Sections */
+  .sections{display:flex;flex-direction:column;gap:32px;font-size:15px;line-height:1.9}
+  .sections h2{font-weight:900;font-size:18px;margin-bottom:8px}
+  .sections hr{border:none;border-top:1px solid #1e1c17}
+  .sections .sm{font-size:14px}
+  .sections .muted{color:#9a9080}
+  .sections .bold{font-weight:700}
+  .sections .text-17{font-size:17px}
+  .sections .mt-1{margin-top:4px}
+  .sections .mt-2{margin-top:8px}
+  .sections .mt-3{margin-top:12px}
+  .sections .line-through{text-decoration:line-through;color:#6b6358}
+  .sections .price{font-weight:900;font-size:20px}
+  .sections .highlight{color:#f5f0ea;font-weight:700}
+
+  /* Bottom CTA */
+  .bottom-cta{text-align:center;margin-top:48px;margin-bottom:32px}
+  .bottom-cta .sub{font-size:12px;color:#6b6358;margin-top:16px}
+  .bottom-cta .back-link{display:inline-block;margin-top:16px;font-size:14px;color:#9a9080;transition:color .2s}
+  .bottom-cta .back-link:hover{color:#fff}
+  .bottom-cta .back-link i{margin-right:4px}
+
+  /* Footer */
+  footer.site-footer{border-top:1px solid rgba(255,255,255,.04);padding:32px 20px;text-align:center}
+  footer.site-footer img{height:20px;margin:0 auto 12px;display:block;opacity:.4}
+  footer.site-footer p{font-size:11px;color:#5a5248}
+
+  /* Hover underline for links */
+  .hover-underline:hover{text-decoration:underline}
 </style>
 </head>
 <body>
 
 <!-- Nav -->
-<nav class="sticky top-0 z-50 backdrop-blur-xl bg-[#0e0c0a]/80 border-b border-white/[.04] px-5 py-3.5">
-  <div class="max-w-[600px] mx-auto flex items-center justify-between">
-    <a href="index.html"><img src="logo.png" alt="썸류센터" class="h-7"></a>
-    <a href="index.html" class="text-sm font-semibold text-[#9a9080] hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i>홈으로</a>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html"><img src="logo.png" alt="썸류센터"></a>
+    <a href="index.html" class="nav-link"><i class="fa-solid fa-arrow-left"></i>홈으로</a>
   </div>
 </nav>
 
-<main class="max-w-[600px] mx-auto px-5 py-10">
+<main class="content">
 
   <!-- 타이틀 -->
-  <div class="text-center mb-10">
-    <div class="text-4xl mb-3">🩷📦</div>
-    <h1 class="text-[24px] md:text-[32px] font-black leading-tight">7/9 썸류센터 커피팅<br>모집요강</h1>
-    <p class="text-[15px] text-[#9a9080] mt-3 leading-relaxed">안녕하세요 설렘담당 썸류센터 센터장입니다 📦❤️<br>당신의 인연이 시작될 바로 그 자리,<br>썸류센터로 초대할게요. ✨</p>
-    <div class="mt-6">
-      <a href="https://form.naver.com/response/Lr0lM_rMW-PwIFPSG0lQnw" target="_blank" rel="noopener" class="inline-block bg-[#FFBE2E] text-black font-extrabold py-[16px] px-10 rounded-2xl text-[15px] cta-glow hover:brightness-90 transition"><i class="fa-solid fa-box mr-1.5"></i>신청하기</a>
+  <div class="title-section">
+    <div class="title-emoji">🩷📦</div>
+    <h1>7/9 썸류센터 커피팅<br>모집요강</h1>
+    <p class="title-desc">안녕하세요 설렘담당 썸류센터 센터장입니다 📦❤️<br>당신의 인연이 시작될 바로 그 자리,<br>썸류센터로 초대할게요. ✨</p>
+    <div class="title-cta">
+      <a href="https://form.naver.com/response/Lr0lM_rMW-PwIFPSG0lQnw" target="_blank" rel="noopener" class="cta-btn cta-glow"><i class="fa-solid fa-box"></i>신청하기</a>
     </div>
   </div>
 
-  <div class="space-y-8 text-[15px] leading-[1.9]">
+  <div class="sections">
 
     <!-- 일정 -->
     <div>
-      <h2 class="y font-black text-lg mb-2">❤️ 일정</h2>
+      <h2 class="y">❤️ 일정</h2>
       <div class="quote">
-        <p class="text-[17px] font-bold">2026년 7월 9일 (목) 19:45</p>
-        <p class="text-[#9a9080] text-sm mt-1">약 2시간 반 소요될 예정이에요!</p>
+        <p class="text-17 bold">2026년 7월 9일 (목) 19:45</p>
+        <p class="muted sm mt-1">약 2시간 반 소요될 예정이에요!</p>
       </div>
     </div>
 
-    <hr class="border-[#1e1c17]">
+    <hr>
 
     <!-- 장소 -->
     <div>
-      <h2 class="y font-black text-lg mb-2">❤️ 장소</h2>
+      <h2 class="y">❤️ 장소</h2>
       <div class="quote">
-        <p class="font-bold">강남역 도보 7분! 썸이 이루어질 그 곳!</p>
+        <p class="bold">강남역 도보 7분! 썸이 이루어질 그 곳!</p>
       </div>
-      <p class="text-[#9a9080] text-sm mt-2">👉 정확한 장소는 참여 확정된 분들께만 알려드릴게요! 😘</p>
+      <p class="muted sm mt-2">👉 정확한 장소는 참여 확정된 분들께만 알려드릴게요! 😘</p>
     </div>
 
-    <hr class="border-[#1e1c17]">
+    <hr>
 
     <!-- 신청 대상 -->
     <div>
-      <h2 class="y font-black text-lg mb-2">❤️ 신청 대상</h2>
+      <h2 class="y">❤️ 신청 대상</h2>
       <div class="quote">
-        <p class="text-[17px] font-bold">남성: 1991년 ~ 2001년생, 키 174 이상의 훈남!</p>
-        <p class="text-[17px] font-bold mt-1">여성: 1993년 ~ 2003년생의 훈녀!</p>
+        <p class="text-17 bold">남성: 1991년 ~ 2001년생, 키 174 이상의 훈남!</p>
+        <p class="text-17 bold mt-1">여성: 1993년 ~ 2003년생의 훈녀!</p>
       </div>
-      <p class="text-[#9a9080] mt-2">🌟 매력 있는 분들은 1~2살 넘어가더라도 승인드립니다.</p>
-      <p class="text-[#9a9080]">🌟 모두의 취향에 맞을 수 있도록 다양한 스타일의 이성으로 초대드립니다</p>
+      <p class="muted mt-2">🌟 매력 있는 분들은 1~2살 넘어가더라도 승인드립니다.</p>
+      <p class="muted">🌟 모두의 취향에 맞을 수 있도록 다양한 스타일의 이성으로 초대드립니다</p>
       <div class="quote mt-3" style="border-left-color:#9a9080;background:rgba(255,255,255,.02)">
-        <p class="text-sm text-[#9a9080]">선착순이 아닌 <b class="text-[#f5f0ea]">승인제</b>로 진행합니다!<br>승인된 분들께 <b class="text-[#f5f0ea]">문자💌</b>로 참여 안내가 나가니<br>폼 작성 후 문자 확인을 꼼꼼하게 해주세요!</p>
+        <p class="sm muted">선착순이 아닌 <b class="highlight">승인제</b>로 진행합니다!<br>승인된 분들께 <b class="highlight">문자💌</b>로 참여 안내가 나가니<br>폼 작성 후 문자 확인을 꼼꼼하게 해주세요!</p>
       </div>
       <div class="warn mt-3">
-        <p class="text-sm">❗️ 지원불가 : 돌싱, 무직 분들은 다음에 만나요</p>
+        <p class="sm">❗️ 지원불가 : 돌싱, 무직 분들은 다음에 만나요</p>
       </div>
     </div>
 
-    <hr class="border-[#1e1c17]">
+    <hr>
 
     <!-- 진행 방식 -->
     <div>
-      <h2 class="y font-black text-lg mb-2">🔥 진행방식</h2>
+      <h2 class="y">🔥 진행방식</h2>
       <div class="quote">
-        <p class="font-bold text-[17px]">14:14 로테이션 소개팅 🤍</p>
-        <p class="text-[#9a9080] text-sm mt-1">최소 10:10은 보장해드립니다!</p>
+        <p class="bold text-17">14:14 로테이션 소개팅 🤍</p>
+        <p class="muted sm mt-1">최소 10:10은 보장해드립니다!</p>
       </div>
     </div>
 
-    <hr class="border-[#1e1c17]">
+    <hr>
 
     <!-- 참가비 -->
     <div>
-      <h2 class="y font-black text-lg mb-2">❤️ 참가비</h2>
+      <h2 class="y">❤️ 참가비</h2>
       <div class="quote">
-        <p>남성: <span class="line-through text-[#6b6358]">50,000원</span> → <span class="y font-black text-xl">29,900원</span></p>
-        <p class="mt-1">여성: <span class="line-through text-[#6b6358]">45,000원</span> → <span class="y font-black text-xl">29,900원</span></p>
+        <p>남성: <span class="line-through">50,000원</span> → <span class="y price">29,900원</span></p>
+        <p class="mt-1">여성: <span class="line-through">45,000원</span> → <span class="y price">29,900원</span></p>
       </div>
-      <p class="text-[#9a9080] mt-2">26년 7월 5일부터는 환불 불가능합니다 🥰<br>당일 노쇼, 지각의 경우 환불 불가해요 🥲</p>
-      <p class="text-[#9a9080] mt-1">☕️ 음료 한 잔 포함 가격입니다!</p>
+      <p class="muted mt-2">26년 7월 5일부터는 환불 불가능합니다 🥰<br>당일 노쇼, 지각의 경우 환불 불가해요 🥲</p>
+      <p class="muted mt-1">☕️ 음료 한 잔 포함 가격입니다!</p>
       <div class="quote mt-3">
-        <p class="y font-bold">🌟 지인 동반 할인, 재방문 시 최대 5,000원 할인! 🌟</p>
+        <p class="y bold">🌟 지인 동반 할인, 재방문 시 최대 5,000원 할인! 🌟</p>
       </div>
     </div>
 
-    <hr class="border-[#1e1c17]">
+    <hr>
 
     <!-- 안내사항 -->
     <div>
-      <h2 class="y font-black text-lg mb-2">📌 안내사항</h2>
-      <p class="text-[#9a9080]">❤️ 신청자분들의 이상형을 최대한 반영하여 참가자를 선정하고 있어요!</p>
-      <p class="text-[#9a9080] mt-1">선정되신 분들과 이상형이 잘 맞지 않을 경우, 아쉽지만 이번 참여가 어려울 수 있어요. 양해 부탁드려요 😢</p>
-      <p class="text-[#9a9080] mt-1">실망하지 마시고 다음 번에 꼭 신청해주세요 ❤️</p>
-      <p class="text-[#9a9080] mt-2">프로필 제출 후 일주일 내로 최종 확정 안내드리겠습니다 🗓️</p>
+      <h2 class="y">📌 안내사항</h2>
+      <p class="muted">❤️ 신청자분들의 이상형을 최대한 반영하여 참가자를 선정하고 있어요!</p>
+      <p class="muted mt-1">선정되신 분들과 이상형이 잘 맞지 않을 경우, 아쉽지만 이번 참여가 어려울 수 있어요. 양해 부탁드려요 😢</p>
+      <p class="muted mt-1">실망하지 마시고 다음 번에 꼭 신청해주세요 ❤️</p>
+      <p class="muted mt-2">프로필 제출 후 일주일 내로 최종 확정 안내드리겠습니다 🗓️</p>
       <div class="warn mt-2">
-        <p class="text-sm">💥 안내 문자를 받지 못하신 분들은 참여가 확정된 게 아닙니다 💥</p>
+        <p class="sm">💥 안내 문자를 받지 못하신 분들은 참여가 확정된 게 아닙니다 💥</p>
       </div>
-      <p class="text-[#9a9080] mt-2">긴장하지 말고 즐거운 시간이 될 수 있도록 센터장이 도와드릴게요 📦<br>입장은 19시 45분부터 가능하며 대화 전 프로필 카드를 작성할 수 있도록 늦지 말아주세요 ❤️</p>
+      <p class="muted mt-2">긴장하지 말고 즐거운 시간이 될 수 있도록 센터장이 도와드릴게요 📦<br>입장은 19시 45분부터 가능하며 대화 전 프로필 카드를 작성할 수 있도록 늦지 말아주세요 ❤️</p>
     </div>
 
-    <hr class="border-[#1e1c17]">
+    <hr>
 
     <!-- 1:1 매칭 안내 -->
     <div>
-      <p class="text-[#9a9080]">만약 로테이션 소개팅이 부담스럽다면</p>
+      <p class="muted">만약 로테이션 소개팅이 부담스럽다면</p>
       <div class="quote">
-        <p class="font-bold">❤️ 썸류센터 1:1 매칭 유료 베타 ❤️</p>
-        <p class="text-sm text-[#9a9080] mt-1">인스타 DM or 오픈카톡으로 문의주세요!</p>
+        <p class="bold">❤️ 썸류센터 1:1 매칭 유료 베타 ❤️</p>
+        <p class="sm muted mt-1">인스타 DM or 오픈카톡으로 문의주세요!</p>
       </div>
     </div>
 
-    <hr class="border-[#1e1c17]">
+    <hr>
 
     <!-- 문의 -->
     <div>
-      <h2 class="y font-black text-lg mb-2">❤️ 궁금한 점이 있다면?</h2>
+      <h2 class="y">❤️ 궁금한 점이 있다면?</h2>
       <p>오픈카톡으로 문의주세요 🌸</p>
       <div class="quote mt-2">
-        <a href="https://open.kakao.com/o/ghZ5uywh" target="_blank" rel="noopener" class="y font-bold hover:underline">👉 오픈카톡 바로가기</a>
-        <p class="text-sm text-[#9a9080] mt-1">답장이 왕 빠른 센터장들이 바로바로 답변드립니다!!</p>
+        <a href="https://open.kakao.com/o/ghZ5uywh" target="_blank" rel="noopener" class="y bold hover-underline">👉 오픈카톡 바로가기</a>
+        <p class="sm muted mt-1">답장이 왕 빠른 센터장들이 바로바로 답변드립니다!!</p>
       </div>
     </div>
 
   </div>
 
   <!-- 하단 CTA -->
-  <div class="text-center mt-12 mb-8">
-    <a href="https://form.naver.com/response/Lr0lM_rMW-PwIFPSG0lQnw" target="_blank" rel="noopener" class="inline-block bg-[#FFBE2E] text-black font-extrabold py-[16px] px-10 rounded-2xl text-[15px] cta-glow hover:brightness-90 transition"><i class="fa-solid fa-box mr-1.5"></i>신청하기</a>
-    <p class="text-xs text-[#6b6358] mt-4">출고 확정 문자를 별도로 보내드려요</p>
-    <a href="index.html" class="inline-block mt-4 text-sm text-[#9a9080] hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i>홈으로 돌아가기</a>
+  <div class="bottom-cta">
+    <a href="https://form.naver.com/response/Lr0lM_rMW-PwIFPSG0lQnw" target="_blank" rel="noopener" class="cta-btn cta-glow"><i class="fa-solid fa-box"></i>신청하기</a>
+    <p class="sub">출고 확정 문자를 별도로 보내드려요</p>
+    <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i>홈으로 돌아가기</a>
   </div>
 
 </main>
 
 <!-- Footer -->
-<footer class="border-t border-white/[.04] px-5 py-8 text-center">
-  <img src="logo.png" alt="썸류센터" class="h-5 mx-auto mb-3 opacity-40">
-  <p class="text-[11px] text-[#5a5248]">문의: 카카오톡 채널 @썸류센터</p>
+<footer class="site-footer">
+  <img src="logo.png" alt="썸류센터">
+  <p>문의: 카카오톡 채널 @썸류센터</p>
 </footer>
 
 </body>
