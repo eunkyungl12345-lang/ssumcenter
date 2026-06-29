@@ -5,9 +5,10 @@ module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
 
-  const KAKAO_KEY = "f27b06fa1f606f4ef7b083a627b41b83";
+  const KAKAO_KEY = process.env.KAKAO_REST_KEY || "f27b06fa1f606f4ef7b083a627b41b83";
   const { code, origin } = req.body;
   const REDIRECT_URI = (origin || "https://ssumcenter.vercel.app") + "/auth-callback.html";
+  console.log("[kakao-auth] origin:", origin, "redirect_uri:", REDIRECT_URI);
 
   if (!code) return res.status(400).json({ error: "인증 코드가 없습니다" });
 
@@ -25,7 +26,8 @@ module.exports = async function handler(req, res) {
     });
     const tokenData = await tokenRes.json();
     if (!tokenRes.ok || !tokenData.access_token) {
-      return res.status(400).json({ error: "카카오 토큰 발급 실패: " + (tokenData.error_description || "") });
+      console.log("[kakao-auth] token error:", JSON.stringify(tokenData));
+      return res.status(400).json({ error: "카카오 토큰 발급 실패: " + (tokenData.error_description || tokenData.error || "") });
     }
 
     // 2. 토큰으로 사용자 정보 가져오기

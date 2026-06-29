@@ -182,25 +182,10 @@ const redirectTo=new URLSearchParams(location.search).get('redirect');
 if(redirectTo){document.getElementById('success-link').href=redirectTo;document.getElementById('success-link').textContent='신청 계속하기';document.querySelector('#login-link a').href='login.html?redirect='+redirectTo}
 
 function kakaoLogin(){
-  Kakao.Auth.login({
-    success:function(authObj){
-      Kakao.API.request({
-        url:'/v2/user/me',
-        success:function(res){
-          const user={
-            id:'kakao_'+res.id,
-            name:res.properties?.nickname||res.kakao_account?.profile?.nickname||'카카오 유저',
-            profileImage:res.properties?.profile_image||'',
-            provider:'kakao'
-          };
-          localStorage.setItem('ssumUser',JSON.stringify(user));
-          const redirect=new URLSearchParams(location.search).get('redirect');
-          window.location.href=redirect||'index.html';
-        },
-        fail:function(){alert('카카오 사용자 정보를 가져오지 못했어요.');}
-      });
-    },
-    fail:function(){alert('카카오 로그인에 실패했어요.');}
+  const redirect=new URLSearchParams(location.search).get('redirect')||'';
+  Kakao.Auth.authorize({
+    redirectUri:location.origin+'/auth-callback.html',
+    state:redirect
   });
 }
 
