@@ -57,10 +57,8 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 
 /* Hero */
 .hero{min-height:90vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:100px 32px;position:relative;overflow:hidden}
-.hero-bg{position:absolute;inset:0;background:
-  radial-gradient(ellipse at 50% 35%,rgba(212,149,42,.06),transparent 55%),
-  radial-gradient(ellipse at 20% 80%,rgba(140,90,40,.03),transparent 50%),
-  radial-gradient(ellipse at 80% 15%,rgba(180,120,50,.03),transparent 45%)}
+.hero-bg{position:absolute;inset:0;background:url('hero-bg.jpg') center/cover no-repeat}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,10,8,.75) 0%,rgba(12,10,8,.85) 50%,rgba(12,10,8,.95) 100%)}
 @media(max-width:640px){.hero{min-height:auto;padding:72px 20px 56px}}
 
 /* CTA */
