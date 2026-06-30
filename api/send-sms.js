@@ -22,11 +22,11 @@ module.exports = async function handler(req, res) {
 
   try {
     const messageService = new SolapiMessageService(API_KEY, API_SECRET);
-    const result = await messageService.sendOne({
+    const result = await messageService.send([{
       to: to.replace(/-/g, ""),
       from: SENDER.replace(/-/g, ""),
       text: text
-    });
+    }]);
     return res.status(200).json({ ok: true, result });
   } catch (err) {
     console.error("[send-sms] error:", err);
