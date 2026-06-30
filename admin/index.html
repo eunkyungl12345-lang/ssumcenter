@@ -248,8 +248,10 @@ function renderList(){
             <span class="text-[10px] ${statusColor} font-bold">${status}</span>
             <span class="text-[10px] text-[#555]">${f["성별"] || ""}</span>
           </div>
-          <div class="text-xs text-[#9E9E97] mt-0.5">${f["출생연도"] || ""}년생 · ${f["직업"] || ""}</div>
+          <div class="text-xs text-[#9E9E97] mt-0.5">${f["출생연도"] || ""}년생 · ${f["직업"] || ""} · ${f["키"] || ""}cm</div>
+          ${f["연락처"] ? `<div class="text-xs text-[#9E9E97] mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${f["연락처"]}</div>` : ""}
           <div class="text-xs text-[#555] mt-1 truncate">${f["자기소개"] || ""}</div>
+          <div class="text-[10px] text-[#444] mt-0.5">${f["사는곳"] || ""} · ${f["종교"] || ""} · ${f["매칭유형"] || "일반매칭"}</div>
           <div class="flex flex-wrap gap-1 mt-1.5">
             ${(f["성격키워드"] || "").split(", ").map(kw => kw ? `<span class="text-[10px] bg-[#FFD400]/10 text-[#FFD400] px-1.5 py-0.5 rounded-full">${kw}</span>` : "").join("")}
           </div>
@@ -417,8 +419,15 @@ function renderCoffeeList(){
             <span class="text-[10px] text-[#555]">${f["성별"] || ""}</span>
           </div>
           <div class="text-xs text-[#9E9E97] mt-0.5">${f["출생연도"] || ""}년생 · ${f["직업_직장명"] || ""}</div>
+          ${f["연락처"] ? `<div class="text-xs text-[#9E9E97] mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${f["연락처"]}</div>` : ""}
           <div class="text-xs text-[#555] mt-0.5"><i class="fa-solid fa-chart-line mr-1"></i>${f["관심재테크"] || ""}</div>
-          ${f["닉네임"] ? `<div class="text-[10px] text-[#FFD400] mt-1"><i class="fa-solid fa-user mr-1"></i>닉네임: ${f["닉네임"]}</div>` : ""}
+          ${f["어필포인트"] ? `<div class="text-xs text-[#9E9E97] mt-1">"${f["어필포인트"]}"</div>` : ""}
+          <div class="flex flex-wrap gap-1 mt-1">
+            ${f["닉네임"] ? `<span class="text-[10px] bg-[#FFD400]/10 text-[#FFD400] px-1.5 py-0.5 rounded-full">닉: ${f["닉네임"]}</span>` : ""}
+            ${f["음료선택"] ? `<span class="text-[10px] bg-[#242422] text-[#9E9E97] px-1.5 py-0.5 rounded-full">☕ ${f["음료선택"]}</span>` : ""}
+            ${f["할인혜택"] && f["할인혜택"] !== "해당없음" ? `<span class="text-[10px] bg-emerald-400/10 text-emerald-400 px-1.5 py-0.5 rounded-full">${f["할인혜택"]}</span>` : ""}
+          </div>
+          ${f["유입경로"] ? `<div class="text-[10px] text-[#444] mt-1">유입: ${f["유입경로"]}${f["추천인이름"] ? ` (${f["추천인이름"]})` : ""}</div>` : ""}
         </div>
         <div class="flex flex-col gap-1.5 shrink-0">
           ${status === "대기" ? `
