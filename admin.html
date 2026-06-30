@@ -190,11 +190,22 @@
 
 </div>
 
+<!-- 사진 크게보기 -->
+<div id="photo-modal" onclick="this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.9);cursor:pointer;justify-content:center;align-items:center">
+  <img id="photo-modal-img" style="max-width:90%;max-height:90%;border-radius:12px;object-fit:contain">
+</div>
+
 <!-- 토스트 -->
 <div id="toast" class="fixed bottom-6 inset-x-5 max-w-md mx-auto bg-[#242422] border border-[#FFD400]/30 rounded-xl p-4 text-sm text-center translate-y-32 opacity-0 transition-all duration-300 z-50"></div>
 
 <script>
 const SITE_URL = "https://ssumcenter.vercel.app";
+
+function openPhoto(url){
+  const m=document.getElementById("photo-modal");
+  document.getElementById("photo-modal-img").src=url;
+  m.style.display="flex";
+}
 
 let applicants = [];
 let selected = [null, null];
@@ -405,7 +416,7 @@ function renderCoffeeCard(r){
   return `<div class="bg-[#161615] border border-[#242422] rounded-2xl overflow-hidden">
     ${photos.length > 0 ? `
     <div class="flex gap-1 bg-[#0D0D0C]" style="max-height:180px;overflow:hidden">
-      ${photos.map(p => `<div class="flex-1"><img src="${p.url}" class="w-full h-full object-cover" style="max-height:180px"></div>`).join("")}
+      ${photos.map(p => `<div class="flex-1"><img src="${p.url}" onclick="event.stopPropagation();openPhoto('${p.url}')" class="w-full h-full object-cover cursor-pointer hover:opacity-80 transition" style="max-height:180px"></div>`).join("")}
     </div>` : ""}
     <div class="p-4">
       <div class="flex items-center justify-between mb-3">
