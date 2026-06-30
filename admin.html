@@ -516,7 +516,28 @@ async function updateCoffeeStatus(recordId, status){
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ records: [{ id: recordId, fields: { "승인상태": status } }] })
     });
-    toast(status === "승인" ? "승인 완료!" : "거절 처리되었습니다");
+
+    // 승인 시 자동 문자 발송
+    if(status === "승인"){
+      const record = coffeeApplicants.find(r => r.id === recordId);
+      const phone = record?.fields["연락처"];
+      const name = record?.fields["이름"] || "";
+      if(phone){
+        try {
+          await fetch("/api/send-sms", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+              to: phone,
+              text: `[썸류센터] ${name}님, 7/24 재테크 미팅 참여가 승인되었습니다!\n\n참가비: 39,900원\n카카오뱅크 3333-33-3333333 (예금주: 썸류센터)\n\n입금 확인 후 정확한 장소를 안내드릴게요.\n문의: https://open.kakao.com/o/ghZ5uywh`
+            })
+          });
+          toast("승인 완료 + 문자 발송!");
+        } catch(e){ toast("승인 완료! (문자 발송 실패)"); }
+      } else { toast("승인 완료! (연락처 없어 문자 미발송)"); }
+    } else {
+      toast("거절 처리되었습니다");
+    }
     loadCoffeeApplicants();
   } catch(err){ console.error(err); }
 }
