@@ -394,69 +394,92 @@ function updateCoffeeStats(){
   document.getElementById("coffee-stat-approved").textContent = approved;
 }
 
-function renderCoffeeList(){
-  const list = document.getElementById("coffee-list");
-  let filtered = coffeeApplicants;
-  if(coffeeFilter === "대기" || coffeeFilter === "승인"){
-    filtered = coffeeApplicants.filter(r => (r.fields["승인상태"] || "대기") === coffeeFilter);
-  } else if(coffeeFilter === "남성" || coffeeFilter === "여성"){
-    filtered = coffeeApplicants.filter(r => r.fields["성별"] === coffeeFilter);
-  }
+function renderCoffeeCard(r){
+  const f = r.fields;
+  const status = f["승인상태"] || "대기";
+  const payment = f["입금상태"] || "미입금";
+  const photos = f["프로필사진"] || [];
+  const docUrl = f["재직증명서"] && f["재직증명서"][0] ? f["재직증명서"][0].url : null;
+  const price = (f["할인혜택"] && f["할인혜택"] !== "해당없음") ? "34,900원" : "39,900원";
 
-  if(filtered.length === 0){
-    list.innerHTML = '<p class="text-center text-[#555] py-10">신청자가 없습니다</p>';
-    return;
-  }
-
-  list.innerHTML = filtered.map(r => {
-    const f = r.fields;
-    const status = f["승인상태"] || "대기";
-    const statusColor = status === "대기" ? "text-[#FFD400]" : status === "승인" ? "text-emerald-400" : "text-red-400";
-    const photos = f["프로필사진"] || [];
-    const docUrl = f["재직증명서"] && f["재직증명서"][0] ? f["재직증명서"][0].url : null;
-
-    return `<div class="bg-[#161615] border border-[#242422] rounded-2xl overflow-hidden">
-      <!-- 사진 영역 -->
-      ${photos.length > 0 ? `
-      <div class="flex gap-1 bg-[#0D0D0C]" style="max-height:200px;overflow:hidden">
-        ${photos.map(p => `<div class="flex-1"><img src="${p.url}" class="w-full h-full object-cover" style="max-height:200px"></div>`).join("")}
-      </div>` : ""}
-      <div class="p-4">
-        <!-- 기본 정보 -->
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-base">${f["이름"] || "이름없음"}</span>
-            <span class="text-[11px] ${statusColor} font-bold border ${status==="대기"?"border-[#FFD400]/30":"border-emerald-400/30"} px-2 py-0.5 rounded-full">${status}</span>
-            <span class="text-xs text-[#555]">${f["성별"] || ""}</span>
-          </div>
-          <div class="flex gap-1.5">
-            ${status === "대기" ? `
-              <button onclick="event.stopPropagation();updateCoffeeStatus('${r.id}','승인')" class="bg-y text-black text-[11px] font-bold px-3 py-1.5 rounded-lg hover:bg-[#E6BE00] transition">승인</button>
-              <button onclick="event.stopPropagation();updateCoffeeStatus('${r.id}','거절')" class="bg-[#242422] text-[#9E9E97] text-[11px] font-bold px-3 py-1.5 rounded-lg hover:text-white transition">거절</button>
-            ` : ""}
-          </div>
+  return `<div class="bg-[#161615] border border-[#242422] rounded-2xl overflow-hidden">
+    ${photos.length > 0 ? `
+    <div class="flex gap-1 bg-[#0D0D0C]" style="max-height:180px;overflow:hidden">
+      ${photos.map(p => `<div class="flex-1"><img src="${p.url}" class="w-full h-full object-cover" style="max-height:180px"></div>`).join("")}
+    </div>` : ""}
+    <div class="p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-bold text-base">${f["이름"] || "이름없음"}${f["닉네임"] ? `(${f["닉네임"]})` : ""}</span>
+          <span class="text-xs text-[#555]">${f["성별"] || ""}</span>
         </div>
-
-        <!-- 상세 프로필 -->
-        <div class="space-y-2 mt-3">
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">나이</span><br><b>${f["출생연도"] || ""}년생</b></div>
-            <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">직업</span><br><b>${f["직업_직장명"] || ""}</b></div>
-            <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">연락처</span><br><b>${f["연락처"] || "-"}</b></div>
-            <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">닉네임</span><br><b>${f["닉네임"] || "-"}</b></div>
-            <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">관심 재테크</span><br><b class="y">${f["관심재테크"] || "-"}</b></div>
-            <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">음료</span><br><b>${f["음료선택"] || "-"}</b></div>
-          </div>
-          ${f["어필포인트"] ? `<div class="bg-[#0D0D0C] rounded-lg p-3 text-xs"><span class="text-[#555]">어필포인트</span><p class="mt-1 text-[#9E9E97] leading-relaxed">"${f["어필포인트"]}"</p></div>` : ""}
-          <div class="flex flex-wrap gap-1.5 mt-1">
-            ${f["유입경로"] ? `<span class="text-[10px] bg-[#242422] text-[#9E9E97] px-2 py-1 rounded-full">유입: ${f["유입경로"]}${f["추천인이름"] ? ` (${f["추천인이름"]})` : ""}</span>` : ""}
-            ${f["할인혜택"] && f["할인혜택"] !== "해당없음" ? `<span class="text-[10px] bg-emerald-400/10 text-emerald-400 px-2 py-1 rounded-full">${f["할인혜택"]}</span>` : ""}
-            ${docUrl ? `<a href="${docUrl}" target="_blank" class="text-[10px] bg-blue-400/10 text-blue-400 px-2 py-1 rounded-full hover:underline"><i class="fa-solid fa-file mr-1"></i>재직증명서</a>` : ""}
-          </div>
-          <div class="text-[10px] text-[#444] mt-1">${f["신청일시"] || ""}</div>
+        <div class="flex gap-1.5">
+          ${status === "대기" ? `
+            <button onclick="event.stopPropagation();updateCoffeeStatus('${r.id}','승인')" class="bg-y text-black text-[11px] font-bold px-3 py-1.5 rounded-lg hover:bg-[#E6BE00] transition">승인</button>
+            <button onclick="event.stopPropagation();updateCoffeeStatus('${r.id}','거절')" class="bg-[#242422] text-[#9E9E97] text-[11px] font-bold px-3 py-1.5 rounded-lg hover:text-white transition">거절</button>
+          ` : status === "승인" ? `
+            <button onclick="event.stopPropagation();togglePayment('${r.id}','${payment}')" class="${payment==="입금완료"?"bg-emerald-500 text-white":"bg-[#242422] text-[#9E9E97]"} text-[11px] font-bold px-3 py-1.5 rounded-lg transition">${payment==="입금완료"?"입금완료":"미입금"}</button>
+          ` : ""}
         </div>
       </div>
-    </div>`;
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">나이</span><br><b>${f["출생연도"] || ""}년생</b></div>
+        <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">직업</span><br><b>${f["직업_직장명"] || ""}</b></div>
+        <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">연락처</span><br><b>${f["연락처"] || "-"}</b></div>
+        <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">관심 재테크</span><br><b class="y">${f["관심재테크"] || "-"}</b></div>
+      </div>
+      ${f["어필포인트"] ? `<div class="bg-[#0D0D0C] rounded-lg p-3 text-xs mt-2"><span class="text-[#555]">어필포인트</span><p class="mt-1 text-[#9E9E97] leading-relaxed">"${f["어필포인트"]}"</p></div>` : ""}
+      <div class="flex flex-wrap gap-1.5 mt-2">
+        ${f["음료선택"] ? `<span class="text-[10px] bg-[#242422] text-[#9E9E97] px-2 py-1 rounded-full">☕ ${f["음료선택"]}</span>` : ""}
+        ${f["할인혜택"] && f["할인혜택"] !== "해당없음" ? `<span class="text-[10px] bg-emerald-400/10 text-emerald-400 px-2 py-1 rounded-full">${f["할인혜택"]} → ${price}</span>` : `<span class="text-[10px] bg-[#242422] text-[#9E9E97] px-2 py-1 rounded-full">${price}</span>`}
+        ${f["유입경로"] ? `<span class="text-[10px] bg-[#242422] text-[#9E9E97] px-2 py-1 rounded-full">${f["유입경로"]}${f["추천인이름"] ? ` (${f["추천인이름"]})` : ""}</span>` : ""}
+        ${docUrl ? `<a href="${docUrl}" target="_blank" class="text-[10px] bg-blue-400/10 text-blue-400 px-2 py-1 rounded-full hover:underline"><i class="fa-solid fa-file mr-1"></i>재직증명서</a>` : ""}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCoffeeList(){
+  const list = document.getElementById("coffee-list");
+
+  const approved = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인");
+  const waiting = coffeeApplicants.filter(r => (r.fields["승인상태"] || "대기") === "대기");
+  const rejected = coffeeApplicants.filter(r => r.fields["승인상태"] === "거절");
+
+  const approvedM = approved.filter(r => r.fields["성별"] === "남성");
+  const approvedF = approved.filter(r => r.fields["성별"] === "여성");
+  const waitingM = waiting.filter(r => r.fields["성별"] === "남성");
+  const waitingF = waiting.filter(r => r.fields["성별"] === "여성");
+
+  let html = "";
+
+  // 확정 참가자
+  html += `<div class="mb-2"><h3 class="text-sm font-black flex items-center gap-2 mb-3"><span class="w-6 h-6 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-check"></i></span>확정 참가자</h3></div>`;
+
+  html += `<div class="text-xs font-bold text-[#9E9E97] mb-2 mt-4">🙋‍♂️ 남성 (${approvedM.length}명)</div>`;
+  if(approvedM.length > 0) html += approvedM.map(r => renderCoffeeCard(r)).join("");
+  else html += `<p class="text-[#555] text-xs py-3 pl-2">아직 없음</p>`;
+
+  html += `<div class="text-xs font-bold text-[#9E9E97] mb-2 mt-6">🙋‍♀️ 여성 (${approvedF.length}명)</div>`;
+  if(approvedF.length > 0) html += approvedF.map(r => renderCoffeeCard(r)).join("");
+  else html += `<p class="text-[#555] text-xs py-3 pl-2">아직 없음</p>`;
+
+  // 대기 중
+  if(waiting.length > 0){
+    html += `<div class="mt-8 mb-2"><h3 class="text-sm font-black flex items-center gap-2 mb-3"><span class="w-6 h-6 rounded-md bg-[#FFD400]/20 text-[#FFD400] flex items-center justify-center text-xs"><i class="fa-solid fa-clock"></i></span>대기 중 (${waiting.length}명)</h3></div>`;
+    html += `<div class="text-xs font-bold text-[#9E9E97] mb-2">🙋‍♂️ 남성 (${waitingM.length}명)</div>`;
+    html += waitingM.map(r => renderCoffeeCard(r)).join("");
+    html += `<div class="text-xs font-bold text-[#9E9E97] mb-2 mt-4">🙋‍♀️ 여성 (${waitingF.length}명)</div>`;
+    html += waitingF.map(r => renderCoffeeCard(r)).join("");
+  }
+
+  // 거절/블랙리스트
+  if(rejected.length > 0){
+    html += `<div class="mt-8 mb-2"><h3 class="text-sm font-black flex items-center gap-2 mb-3"><span class="w-6 h-6 rounded-md bg-red-500/20 text-red-400 flex items-center justify-center text-xs"><i class="fa-solid fa-ban"></i></span>거절 / 블랙리스트 (${rejected.length}명)</h3></div>`;
+    html += rejected.map(r => renderCoffeeCard(r)).join("");
+  }
+
+  list.innerHTML = html;
   }).join("");
 }
 
@@ -468,6 +491,19 @@ async function updateCoffeeStatus(recordId, status){
       body: JSON.stringify({ records: [{ id: recordId, fields: { "승인상태": status } }] })
     });
     toast(status === "승인" ? "승인 완료!" : "거절 처리되었습니다");
+    loadCoffeeApplicants();
+  } catch(err){ console.error(err); }
+}
+
+async function togglePayment(recordId, current){
+  const next = current === "입금완료" ? "미입금" : "입금완료";
+  try {
+    await fetch("/api/airtable?table=재테크 커피팅", {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "입금상태": next } }] })
+    });
+    toast(next === "입금완료" ? "입금 확인!" : "미입금으로 변경");
     loadCoffeeApplicants();
   } catch(err){ console.error(err); }
 }
