@@ -169,6 +169,12 @@
       </div>
     </div>
 
+    <!-- 음료 카운트 -->
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mb-8">
+      <div class="text-xs font-bold text-[#9E9E97] mb-3">☕ 음료 주문 현황 <span class="text-[#555]">(승인된 참가자 기준)</span></div>
+      <div id="drink-count" class="flex flex-wrap gap-2"></div>
+    </div>
+
     <!-- 커피팅 필터 -->
     <div class="flex flex-wrap gap-2 mb-4">
       <button onclick="coffeeFilterBy('all')" class="coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
@@ -403,6 +409,16 @@ function updateCoffeeStats(){
   document.getElementById("coffee-stat-total").textContent = total;
   document.getElementById("coffee-stat-waiting").textContent = waiting;
   document.getElementById("coffee-stat-approved").textContent = approved;
+
+  // 음료 카운트 (승인된 참가자만)
+  const drinks={};
+  coffeeApplicants.filter(r=>r.fields["승인상태"]==="승인").forEach(r=>{
+    const d=r.fields["음료선택"]||"미선택";
+    drinks[d]=(drinks[d]||0)+1;
+  });
+  const dc=document.getElementById("drink-count");
+  if(Object.keys(drinks).length===0){dc.innerHTML='<span class="text-xs text-[#555]">승인된 참가자가 없습니다</span>';}
+  else{dc.innerHTML=Object.entries(drinks).map(([k,v])=>`<span class="text-xs bg-[#242422] text-[#9E9E97] px-3 py-1.5 rounded-full">${k} <b class="y">${v}</b></span>`).join("");}
 }
 
 function renderCoffeeCard(r){
