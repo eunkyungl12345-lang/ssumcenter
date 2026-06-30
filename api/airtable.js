@@ -15,6 +15,20 @@ module.exports = async function handler(req, res) {
   const { table, recordId, filter, sort } = req.query;
   if (!table) return res.status(400).json({ error: "table 파라미터 필요" });
 
+  // POST 요청 시 필수 필드 검증 (빈 데이터 차단)
+  if (req.method === "POST" && req.body && req.body.records) {
+    const fields = req.body.records[0]?.fields || {};
+    if (!fields["이름"] || !fields["이름"].trim()) {
+      return res.status(400).json({ error: "이름은 필수입니다" });
+    }
+    if (!fields["연락처"] || !fields["연락처"].trim()) {
+      return res.status(400).json({ error: "연락처는 필수입니다" });
+    }
+    if (!fields["성별"]) {
+      return res.status(400).json({ error: "성별은 필수입니다" });
+    }
+  }
+
   let url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}`;
   if (recordId) url += `/${recordId}`;
 
