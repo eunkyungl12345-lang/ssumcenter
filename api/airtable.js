@@ -49,8 +49,8 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // POST 요청 시 필수 필드 검증 (빈 데이터 차단) — 신청 테이블만
-  if (req.method === "POST" && table !== "매칭 응답" && req.body && req.body.records) {
+  // POST 요청 시 필수 필드 검증 (빈 데이터 차단) — 비인증 신청 폼만
+  if (req.method === "POST" && !isAdmin && (table === "재테크 커피팅" || table === "1:1 매칭 신청") && req.body && req.body.records) {
     const fields = req.body.records[0]?.fields || {};
     if (!fields["이름"] || !fields["이름"].trim()) {
       return res.status(400).json({ error: "이름은 필수입니다" });
