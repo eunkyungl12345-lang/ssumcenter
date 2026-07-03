@@ -152,8 +152,8 @@
     <!-- 날짜 헤더 -->
     <div class="bg-[#161615] border border-[#FFD400]/20 rounded-2xl p-5 mb-6 text-center">
       <div class="text-2xl mb-2">💰</div>
-      <h2 class="text-lg font-black">7월 24일 (금) 재테크 미팅</h2>
-      <p class="text-xs text-[#9E9E97] mt-1">삼성역 도보 3분 · 19:45 시작</p>
+      <h2 class="text-lg font-black" id="coffee-event-title">7월 24일 (금) 재테크 미팅</h2>
+      <p class="text-xs text-[#9E9E97] mt-1" id="coffee-event-sub">삼성역 도보 3분 · 19:45 시작</p>
     </div>
 
     <!-- 파이프라인 진행 상태 (클릭하면 해당 단계 화면으로 이동) -->
@@ -222,6 +222,9 @@
       </button>
       <button onclick="switchCoffeeView('sms')" id="cv-sms" class="cv-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]">
         <i class="fa-solid fa-paper-plane mr-1"></i>문자발송
+      </button>
+      <button onclick="switchCoffeeView('settings')" id="cv-settings" class="cv-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]">
+        <i class="fa-solid fa-gear mr-1"></i>설정
       </button>
     </div>
 
@@ -329,6 +332,47 @@
       </div>
     </div>
 
+    <!-- 뷰: 설정 -->
+    <div id="coffee-view-settings" class="hidden">
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-4">
+        <h3 class="text-sm font-black"><i class="fa-solid fa-gear y mr-1.5"></i>회차 설정 <span class="text-[10px] text-[#555] font-normal">저장하면 화면·문자 내용에 바로 반영돼요</span></h3>
+        <div id="settings-warning" class="hidden bg-red-500/10 border border-red-500/30 rounded-xl p-3 text-xs text-red-400">
+          Airtable에 "설정" 테이블이 없어요. Airtable에서 테이블 이름 <b>설정</b>, 필드 <b>키</b>(싱글라인 텍스트) / <b>값</b>(긴 텍스트)으로 만들어주세요. 그 전까지는 기본값으로 작동해요.
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">행사 제목 (관리 화면 상단)</label>
+          <input type="text" id="set-행사제목" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">행사 부제 (장소 · 시간)</label>
+          <input type="text" id="set-행사부제" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">회차 키 (발송 이력 구분용, 예: 0724)</label>
+          <input type="text" id="set-회차키" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">💰 입금 안내 문자 (승인 시 자동 발송)</label>
+          <textarea id="set-입금안내문자" rows="8" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white focus:border-[#FFD400] focus:outline-none transition"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">✅ 확정 안내 문자 (입금 확인 시 발송)</label>
+          <textarea id="set-확정안내문자" rows="8" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white focus:border-[#FFD400] focus:outline-none transition"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">📍 전날 장소 안내 문자</label>
+          <textarea id="set-장소안내문자" rows="8" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white focus:border-[#FFD400] focus:outline-none transition"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">💌 행사 후 문자 (기본값)</label>
+          <textarea id="set-행사후문자" rows="6" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white focus:border-[#FFD400] focus:outline-none transition"></textarea>
+        </div>
+        <button onclick="saveSettings()" class="bg-y text-black text-xs font-extrabold px-4 py-3 rounded-xl w-full hover:bg-[#E6BE00] transition">
+          <i class="fa-solid fa-floppy-disk mr-1.5"></i>설정 저장
+        </button>
+      </div>
+    </div>
+
   </div><!-- /section-coffee -->
 
 </div>
@@ -347,6 +391,86 @@ const SITE_URL = "https://ssumcenter.vercel.app";
 // API 인증 헤더 (로그인한 비밀번호를 사용)
 function apiHeaders(){
   return {"Content-Type": "application/json", "x-admin-key": sessionStorage.getItem("admin_key") || ""};
+}
+
+// ---- 회차 설정 (Airtable "설정" 테이블: 키/값) ----
+const SETTING_DEFAULTS = {
+  "행사제목": "7월 24일 (금) 재테크 미팅",
+  "행사부제": "삼성역 도보 3분 · 19:45 시작",
+  "회차키": "0724",
+  "입금안내문자": `🩷📦썸류센터 7/24 재테크 관심 로테이션 커피팅 입금 안내📦🩷\n\n안녕하세요😊\n썸류센터 재테크 관심 로테이션 커피팅 참여자로 최종 선발되신 것을 축하드립니다!!\n참가비 안내드립니다📦\n아래 계좌로 39,900원 입금 부탁드립니다! 입금자명과 신청서에 작성해주신 이름이 일치해야 신청이 확인됩니다.\n✔️입금은 내일 자정 전까지 가능하며 기한 내 미입금시 확정 취소 예정입니다✔️\n입금이 확인되면 최종 확정 안내드립니다.\n\n환불은 7월 20일까지만 가능하며 당일 노쇼,지각 및 기타 사유로 인한 환불 또한 불가능한 점 양해부탁드려요🥲\n\n카카오뱅크 장민 3333-34-1009531`,
+  "확정안내문자": `🩷📦썸류센터 재테크 관심 로테이션 커피팅 최종 확정 안내📦🩷\n\n안녕하세요😊\n입금 확인되시어 참가자분께 최종 확정 안내드립니다📦\n설레는 인연, 함께 만들어가보아요💕\n\n❤️일정\n2026년 7월 24일(금) 19:45\n소개팅 시작 전 나를 표현할 수 있는 프로필 카드를 쓸 수 있도록 꼭 45분까지 도착 부탁드려요☺️ 늦으실수록 나를 어필할 수 있는 시간이 줄어듭니다!\n\n❤️시간\n19:45 - 20:00 : 프로필 카드 작성\n20:00 - 22:00 : 1대 1 대화 로테이션\n"약 2시간 남짓 소요될 예정이에요!"\n(인원에 따라 2대 2 가능성 있음)\n\n❤️장소\n"삼성역 근처 도보 3분 카페"\n정확한 장소는 하루 전 안내드립니다!\n\n❤️준비물\n신분증 + 사원증 또는 명함\n\n🔥 진행방식\n▻ 최소 8:8 로테이션 소개팅🤍\n최소 8팀(남8✕여8)이 테이블을 돌며 많은 이성과 1:1로 만나고 인원에 따라 2:2 변경 될 수 있습니다 (최대 16x16)\n\n▻ 라운드 시간 ⏱️\n대화 10분 이동 (여유 있게 이동·정리시간 포함! 😉)\n\n▻ 매칭\n자리를 옮기기 전에 맘에 드는 상대에게 쪽지에 내 번호를 적어 전달!🙆‍♀️🙆‍♂️`,
+  "장소안내문자": `안녕하세요😊\n썸류센터 로테이션 커피팅 참가자분께 장소 및 숙지하실 점 안내드립니다📦\n설레는 인연, 함께 만들어가보아요💕\n최대 14:14 (최소 10:10 보장)\n\n❤️일정\n2026년 7월 24일(금) 19:45\n서로를 위해 시간 꼭 지켜주세요.\n저녁 7시 45분 입니다.ᐟ ✅️\n늦게 도착하시면 프로필지 작성할 시간이 없어요.\n\n❤️장소\n"삼성역 언더라인카페 지하 1층☕"\n서울특별시 강남구 테헤란로84길 12 지하 1층\n\n들어와서 한 층 내려오시면 지하 1층 입구에 센터장들이 기다리고 있어요.\n먼저 신분증 확인 후 음료 수령하셔서 지하 1층으로 입장해주세요\n\n* 주차는 지원되지 않습니다.\n\n❤️준비물\n신분증 지참 부탁드립니다\n\n❤️드레스코드 필수.ᐟ\n깔끔한 복장으로 부탁드립니다.ᐟ\n\n* 무늬 및 그림 그려진 티셔츠 금지\n* 뭘 입을지 고민된다면?\n남성분들께는 화이트/블루/블랙 민무늬 셔츠 추천드립니다 🫶\n\n❤️더 궁금하신 점은 언제든 말씀주세요`,
+  "행사후문자": `🩷📦썸류센터 재테크 관심 로테이션 커피팅📦🩷\n\n안녕하세요😊\n오늘 함께해 주셔서 정말 감사합니다!\n즐거운 시간 보내셨길 바랍니다💕\n\n혹시 좋은 인연이 있으셨다면 꼭 연락해보세요☺️\n다음 커피팅 일정은 인스타그램에서 확인하실 수 있습니다.\n\n좋은 후기도 부탁드려요🙏\n다음에 또 만나요!`
+};
+let settings = {};
+let settingsRecordIds = {};
+let settingsTableOk = false;
+
+function S(key){
+  return (settings[key] !== undefined && settings[key] !== "") ? settings[key] : SETTING_DEFAULTS[key];
+}
+
+async function loadSettings(){
+  try {
+    const res = await fetch("/api/airtable?table=설정", {headers: apiHeaders()});
+    if(!res.ok) throw new Error();
+    const data = await res.json();
+    settings = {}; settingsRecordIds = {};
+    (data.records || []).forEach(r => {
+      const k = r.fields["키"];
+      if(k){ settings[k] = r.fields["값"] || ""; settingsRecordIds[k] = r.id; }
+    });
+    settingsTableOk = true;
+  } catch(e){
+    settingsTableOk = false;
+  }
+  applySettings();
+}
+
+function applySettings(){
+  const t = document.getElementById("coffee-event-title");
+  const s = document.getElementById("coffee-event-sub");
+  if(t) t.textContent = S("행사제목");
+  if(s) s.textContent = S("행사부제");
+  const post = document.getElementById("post-event-msg");
+  if(post && !post.dataset.touched) post.value = S("행사후문자");
+}
+
+function fillSettingsForm(){
+  ["행사제목","행사부제","회차키","입금안내문자","확정안내문자","장소안내문자","행사후문자"].forEach(k => {
+    const el = document.getElementById("set-" + k);
+    if(el) el.value = S(k);
+  });
+  document.getElementById("settings-warning").classList.toggle("hidden", settingsTableOk);
+}
+
+async function saveSettings(){
+  if(!settingsTableOk){
+    await loadSettings();
+    if(!settingsTableOk){ toast("Airtable에 '설정' 테이블(키/값 필드)을 먼저 만들어주세요"); return; }
+  }
+  const keys = ["행사제목","행사부제","회차키","입금안내문자","확정안내문자","장소안내문자","행사후문자"];
+  const creates = [], updates = [];
+  keys.forEach(k => {
+    const v = document.getElementById("set-" + k).value;
+    if(settingsRecordIds[k]) updates.push({ id: settingsRecordIds[k], fields: { "값": v } });
+    else creates.push({ fields: { "키": k, "값": v } });
+  });
+  try {
+    if(updates.length > 0){
+      const r = await fetch("/api/airtable?table=설정", {method: "PATCH", headers: apiHeaders(), body: JSON.stringify({records: updates})});
+      if(!r.ok) throw new Error();
+    }
+    if(creates.length > 0){
+      const r = await fetch("/api/airtable?table=설정", {method: "POST", headers: apiHeaders(), body: JSON.stringify({records: creates})});
+      if(!r.ok) throw new Error();
+    }
+    await loadSettings();
+    toast("설정 저장 완료! 화면·문자에 바로 반영돼요");
+  } catch(e){
+    toast("설정 저장 실패 — Airtable '설정' 테이블(키/값)을 확인해주세요");
+  }
 }
 
 function openPhoto(url){
@@ -715,7 +839,7 @@ async function updateCoffeeStatus(recordId, status){
       const name = record?.fields["이름"] || "";
       if(phone){
         try {
-          await sendSMS(phone, `🩷📦썸류센터 7/24 재테크 관심 로테이션 커피팅 입금 안내📦🩷\n\n안녕하세요😊\n썸류센터 재테크 관심 로테이션 커피팅 참여자로 최종 선발되신 것을 축하드립니다!!\n참가비 안내드립니다📦\n아래 계좌로 39,900원 입금 부탁드립니다! 입금자명과 신청서에 작성해주신 이름이 일치해야 신청이 확인됩니다.\n✔️입금은 내일 자정 전까지 가능하며 기한 내 미입금시 확정 취소 예정입니다✔️\n입금이 확인되면 최종 확정 안내드립니다.\n\n환불은 7월 20일까지만 가능하며 당일 노쇼,지각 및 기타 사유로 인한 환불 또한 불가능한 점 양해부탁드려요🥲\n\n카카오뱅크 장민 3333-34-1009531`);
+          await sendSMS(phone, S("입금안내문자"));
           toast("승인 완료 + 문자 발송!");
         } catch(e){ toast("승인 완료! (문자 발송 실패 — 재시도 필요)"); }
       } else { toast("승인 완료! (연락처 없어 문자 미발송)"); }
@@ -742,7 +866,7 @@ async function togglePayment(recordId, current){
       const wantSMS = phone && confirm("확정 안내 문자도 함께 보낼까요?\n(이미 따로 보냈다면 '취소'를 누르세요 — 입금완료 표시만 됩니다)");
       if(phone && wantSMS){
         try {
-          await sendSMS(phone, `🩷📦썸류센터 재테크 관심 로테이션 커피팅 최종 확정 안내📦🩷\n\n안녕하세요😊\n입금 확인되시어 참가자분께 최종 확정 안내드립니다📦\n설레는 인연, 함께 만들어가보아요💕\n\n❤️일정\n2026년 7월 24일(금) 19:45\n소개팅 시작 전 나를 표현할 수 있는 프로필 카드를 쓸 수 있도록 꼭 45분까지 도착 부탁드려요☺️ 늦으실수록 나를 어필할 수 있는 시간이 줄어듭니다!\n\n❤️시간\n19:45 - 20:00 : 프로필 카드 작성\n20:00 - 22:00 : 1대 1 대화 로테이션\n"약 2시간 남짓 소요될 예정이에요!"\n(인원에 따라 2대 2 가능성 있음)\n\n❤️장소\n"삼성역 근처 도보 3분 카페"\n정확한 장소는 하루 전 안내드립니다!\n\n❤️준비물\n신분증 + 사원증 또는 명함\n\n🔥 진행방식\n▻ 최소 8:8 로테이션 소개팅🤍\n최소 8팀(남8✕여8)이 테이블을 돌며 많은 이성과 1:1로 만나고 인원에 따라 2:2 변경 될 수 있습니다 (최대 16x16)\n\n▻ 라운드 시간 ⏱️\n대화 10분 이동 (여유 있게 이동·정리시간 포함! 😉)\n\n▻ 매칭\n자리를 옮기기 전에 맘에 드는 상대에게 쪽지에 내 번호를 적어 전달!🙆‍♀️🙆‍♂️`);
+          await sendSMS(phone, S("확정안내문자"));
           toast("입금 확인 + 확정 문자 발송!");
         } catch(e){ toast("입금 확인! (문자 발송 실패 — 재시도 필요)"); }
       } else if(phone && !wantSMS){ toast("입금완료 표시만 했어요 (문자 미발송)"); }
@@ -763,8 +887,8 @@ function setSMSLog(key, count){
   renderSMSHistory();
 }
 function renderSMSHistory(){
-  const loc = getSMSLog("location_0724");
-  const post = getSMSLog("post_0724");
+  const loc = getSMSLog("location_" + S("회차키"));
+  const post = getSMSLog("post_" + S("회차키"));
   const locEl = document.getElementById("location-sms-history");
   const postEl = document.getElementById("post-sms-history");
   if(locEl) locEl.textContent = loc ? `✅ 마지막 발송: ${loc.at} (${loc.count}명)` : "";
@@ -776,11 +900,11 @@ async function sendLocationSMS(){
   const confirmed = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료");
   if(confirmed.length === 0){ toast("입금완료된 참가자가 없습니다"); return; }
 
-  const prev = getSMSLog("location_0724");
+  const prev = getSMSLog("location_" + S("회차키"));
   if(prev && !confirm(`⚠️ 이미 ${prev.at}에 ${prev.count}명에게 발송했어요.\n정말 다시 보내시겠어요?`)) return;
   if(!confirm(`입금완료된 ${confirmed.length}명에게 장소 안내 문자를 보내시겠어요?`)) return;
 
-  const msg = `안녕하세요😊\n썸류센터 로테이션 커피팅 참가자분께 장소 및 숙지하실 점 안내드립니다📦\n설레는 인연, 함께 만들어가보아요💕\n최대 14:14 (최소 10:10 보장)\n\n❤️일정\n2026년 7월 24일(금) 19:45\n서로를 위해 시간 꼭 지켜주세요.\n저녁 7시 45분 입니다.ᐟ ✅️\n늦게 도착하시면 프로필지 작성할 시간이 없어요.\n\n❤️장소\n"삼성역 언더라인카페 지하 1층☕"\n서울특별시 강남구 테헤란로84길 12 지하 1층\n\n들어와서 한 층 내려오시면 지하 1층 입구에 센터장들이 기다리고 있어요.\n먼저 신분증 확인 후 음료 수령하셔서 지하 1층으로 입장해주세요\n\n* 주차는 지원되지 않습니다.\n\n❤️준비물\n신분증 지참 부탁드립니다\n\n❤️드레스코드 필수.ᐟ\n깔끔한 복장으로 부탁드립니다.ᐟ\n\n* 무늬 및 그림 그려진 티셔츠 금지\n* 뭘 입을지 고민된다면?\n남성분들께는 화이트/블루/블랙 민무늬 셔츠 추천드립니다 🫶\n\n❤️더 궁금하신 점은 언제든 말씀주세요`;
+  const msg = S("장소안내문자");
 
   let success = 0, fail = 0;
   for(const r of confirmed){
@@ -791,7 +915,7 @@ async function sendLocationSMS(){
       success++;
     } catch(e){ fail++; }
   }
-  if(success > 0) setSMSLog("location_0724", success);
+  if(success > 0) setSMSLog("location_" + S("회차키"), success);
   toast(`장소 안내 발송 완료! 성공 ${success}명${fail > 0 ? ` / 실패 ${fail}명` : ""}`);
 }
 
@@ -812,6 +936,7 @@ function switchCoffeeView(view){
   document.getElementById("coffee-view-list").classList.toggle("hidden", view !== "list");
   document.getElementById("coffee-view-lineup").classList.toggle("hidden", view !== "lineup");
   document.getElementById("coffee-view-sms").classList.toggle("hidden", view !== "sms");
+  document.getElementById("coffee-view-settings").classList.toggle("hidden", view !== "settings");
   document.querySelectorAll(".cv-btn").forEach(btn => {
     const id = btn.id.replace("cv-","");
     btn.className = id === view
@@ -820,6 +945,7 @@ function switchCoffeeView(view){
   });
   if(view === "lineup") renderLineup();
   if(view === "sms") renderSMSHistory();
+  if(view === "settings") fillSettingsForm();
 }
 
 // 파이프라인 업데이트
@@ -831,13 +957,27 @@ function updatePipeline(){
   document.getElementById("coffee-stat-paid").textContent = paid;
 }
 
-// 출석부 렌더링
-const attendanceData = JSON.parse(localStorage.getItem("coffee_attendance") || "{}");
+// 출석부 (Airtable "출석" 체크박스 필드에 저장 → 폰/컴퓨터 어디서든 공유)
+function isAttended(r){
+  return !!r.fields["출석"];
+}
 
-function toggleAttendance(recordId){
-  attendanceData[recordId] = !attendanceData[recordId];
-  localStorage.setItem("coffee_attendance", JSON.stringify(attendanceData));
-  renderLineup();
+async function toggleAttendance(recordId){
+  const record = coffeeApplicants.find(r => r.id === recordId);
+  if(!record) return;
+  const next = !isAttended(record);
+  try {
+    const res = await fetch("/api/airtable?table=재테크 커피팅", {
+      method: "PATCH",
+      headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "출석": next } }] })
+    });
+    if(!res.ok) throw new Error();
+    record.fields["출석"] = next;
+    renderLineup();
+  } catch(e){
+    toast("저장 실패 — Airtable '재테크 커피팅'에 체크박스 필드 '출석'을 추가해주세요");
+  }
 }
 
 function renderLineup(){
@@ -849,7 +989,7 @@ function renderLineup(){
 
   function renderRow(r, idx){
     const f = r.fields;
-    const attended = attendanceData[r.id] || false;
+    const attended = isAttended(r);
     return `<div class="flex items-center gap-3 bg-[#0D0D0C] rounded-xl p-3 ${attended ? 'border border-emerald-500/30' : 'border border-[#242422]'}">
       <div class="text-xs font-bold text-[#555] w-5 text-center">${idx + 1}</div>
       <button onclick="toggleAttendance('${r.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition ${attended ? 'bg-emerald-500 text-white' : 'bg-[#242422] text-[#555]'}">
@@ -871,7 +1011,7 @@ function renderLineup(){
     : '<p class="text-[#555] text-xs py-2 pl-2">입금완료된 여성 참가자가 없습니다</p>';
 
   const totalAttend = confirmed.length;
-  const checkedAttend = confirmed.filter(r => attendanceData[r.id]).length;
+  const checkedAttend = confirmed.filter(r => isAttended(r)).length;
   document.getElementById("attend-count").textContent = checkedAttend;
   document.getElementById("attend-total").textContent = totalAttend;
 }
@@ -879,14 +1019,14 @@ function renderLineup(){
 // 행사 후 전체 문자 발송
 async function sendPostEventSMS(){
   const attended = coffeeApplicants.filter(r =>
-    r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료" && attendanceData[r.id]
+    r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료" && isAttended(r)
   );
   if(attended.length === 0){ toast("출석 체크된 참가자가 없습니다"); return; }
 
   const msg = document.getElementById("post-event-msg").value.trim();
   if(!msg){ toast("문자 내용을 입력해주세요"); return; }
 
-  const prev = getSMSLog("post_0724");
+  const prev = getSMSLog("post_" + S("회차키"));
   if(prev && !confirm(`⚠️ 이미 ${prev.at}에 ${prev.count}명에게 발송했어요.\n정말 다시 보내시겠어요?`)) return;
   if(!confirm(`출석 참가자 ${attended.length}명에게 문자를 보내시겠어요?`)) return;
 
@@ -899,7 +1039,7 @@ async function sendPostEventSMS(){
       success++;
     } catch(e){ fail++; }
   }
-  if(success > 0) setSMSLog("post_0724", success);
+  if(success > 0) setSMSLog("post_" + S("회차키"), success);
   toast(`행사 후 문자 발송 완료! 성공 ${success}명${fail > 0 ? ` / 실패 ${fail}명` : ""}`);
 }
 
@@ -936,7 +1076,7 @@ async function sendCustomSMS(){
   else if(target === "all") recipients = coffeeApplicants;
   else if(target === "approved") recipients = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인");
   else if(target === "paid") recipients = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료");
-  else if(target === "attended") recipients = coffeeApplicants.filter(r => attendanceData[r.id]);
+  else if(target === "attended") recipients = coffeeApplicants.filter(r => isAttended(r));
 
   if(recipients.length === 0){ toast("발송 대상이 없습니다"); return; }
   if(!confirm(`${recipients.length}명에게 문자를 보내시겠어요?`)) return;
@@ -967,6 +1107,7 @@ async function checkPw(){
       document.getElementById("lock-screen").classList.add("hidden");
       sessionStorage.setItem("admin_key", input);
       loadApplicants();
+      loadSettings();
     } else {
       document.getElementById("pw-error").classList.remove("hidden");
       document.getElementById("pw-input").value = "";
@@ -981,7 +1122,11 @@ async function checkPw(){
 if(sessionStorage.getItem("admin_key")){
   document.getElementById("lock-screen").classList.add("hidden");
   loadApplicants();
+  loadSettings();
 }
+
+// 행사 후 문자: 직접 수정하면 설정 기본값으로 덮어쓰지 않음
+document.getElementById("post-event-msg").addEventListener("input", function(){ this.dataset.touched = "1"; });
 </script>
 </body>
 </html>
