@@ -3,9 +3,15 @@ const { SolapiMessageService } = require("solapi");
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-key");
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
+
+  // 인증: 관리자만 문자 발송 가능
+  const ADMIN_PW = process.env.ADMIN_PASSWORD;
+  if (!ADMIN_PW || req.headers["x-admin-key"] !== ADMIN_PW) {
+    return res.status(401).json({ error: "인증이 필요합니다" });
+  }
 
   const API_KEY = process.env.SOLAPI_API_KEY;
   const API_SECRET = process.env.SOLAPI_API_SECRET;
