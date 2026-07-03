@@ -1,0 +1,19 @@
+# Vercel
+.vercel
+
+# 환경변수
+.env*
+
+# 의존성
+node_modules/
+
+# Claude Code
+.claude/
+
+# Supabase
+supabase/
+
+# OS 파일
+.DS_Store
+*.swp
+*.swo
