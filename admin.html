@@ -344,6 +344,11 @@
 <script>
 const SITE_URL = "https://ssumcenter.vercel.app";
 
+// API 인증 헤더 (로그인한 비밀번호를 사용)
+function apiHeaders(){
+  return {"Content-Type": "application/json", "x-admin-key": sessionStorage.getItem("admin_key") || ""};
+}
+
 function openPhoto(url){
   const m=document.getElementById("photo-modal");
   document.getElementById("photo-modal-img").src=url;
@@ -356,7 +361,7 @@ let currentFilter = "all";
 
 async function loadApplicants(){
   try {
-    const res = await fetch("/api/airtable?table=1:1 매칭 신청&sort=신청일시");
+    const res = await fetch("/api/airtable?table=1:1 매칭 신청&sort=신청일시", {headers: apiHeaders()});
     const data = await res.json();
     applicants = data.records || [];
     updateStats();
@@ -475,7 +480,7 @@ async function updateMatchStatus(recordId){
   try {
     await fetch("/api/airtable?table=1:1 매칭 신청", {
       method: "PATCH",
-      headers: {"Content-Type": "application/json"},
+      headers: apiHeaders(),
       body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "매칭완료" } }] })
     });
   } catch(err){ console.error(err); }
@@ -544,7 +549,7 @@ let coffeeFilter = "all";
 
 async function loadCoffeeApplicants(){
   try {
-    const res = await fetch("/api/airtable?table=재테크 커피팅&sort=신청일시");
+    const res = await fetch("/api/airtable?table=재테크 커피팅&sort=신청일시", {headers: apiHeaders()});
     const data = await res.json();
     coffeeApplicants = data.records || [];
     updateCoffeeStats();
@@ -699,7 +704,7 @@ async function updateCoffeeStatus(recordId, status){
   try {
     await fetch("/api/airtable?table=재테크 커피팅", {
       method: "PATCH",
-      headers: {"Content-Type": "application/json"},
+      headers: apiHeaders(),
       body: JSON.stringify({ records: [{ id: recordId, fields: { "승인상태": status } }] })
     });
 
@@ -726,7 +731,7 @@ async function togglePayment(recordId, current){
   try {
     await fetch("/api/airtable?table=재테크 커피팅", {
       method: "PATCH",
-      headers: {"Content-Type": "application/json"},
+      headers: apiHeaders(),
       body: JSON.stringify({ records: [{ id: recordId, fields: { "입금상태": next } }] })
     });
 
@@ -954,13 +959,13 @@ async function checkPw(){
   try {
     const res = await fetch("/api/admin-auth", {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: apiHeaders(),
       body: JSON.stringify({ password: input })
     });
     const data = await res.json();
     if(data.ok){
       document.getElementById("lock-screen").classList.add("hidden");
-      sessionStorage.setItem("admin_auth", "true");
+      sessionStorage.setItem("admin_key", input);
       loadApplicants();
     } else {
       document.getElementById("pw-error").classList.remove("hidden");
@@ -973,7 +978,7 @@ async function checkPw(){
 }
 
 // 세션 유지 (탭 닫기 전까지)
-if(sessionStorage.getItem("admin_auth") === "true"){
+if(sessionStorage.getItem("admin_key")){
   document.getElementById("lock-screen").classList.add("hidden");
   loadApplicants();
 }
