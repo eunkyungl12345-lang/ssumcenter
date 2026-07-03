@@ -151,47 +151,176 @@
       <div class="text-2xl mb-2">💰</div>
       <h2 class="text-lg font-black">7월 24일 (금) 재테크 미팅</h2>
       <p class="text-xs text-[#9E9E97] mt-1">삼성역 도보 3분 · 19:45 시작</p>
-      <button onclick="sendLocationSMS()" class="bg-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2 rounded-xl mt-3 hover:text-white hover:border-[#FFD400] transition border border-[#242422]">
-        <i class="fa-solid fa-paper-plane mr-1.5"></i>전날 장소 안내 일괄 발송
-      </button>
+    </div>
+
+    <!-- 파이프라인 진행 상태 -->
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mb-6">
+      <div class="text-xs font-bold text-[#9E9E97] mb-3">📋 운영 파이프라인</div>
+      <div class="flex items-center gap-1 overflow-x-auto pb-1" style="scrollbar-width:none">
+        <div class="flex flex-col items-center min-w-[60px]">
+          <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-check"></i></div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">신청</div>
+        </div>
+        <div class="h-[2px] w-4 bg-[#242422] flex-shrink-0"></div>
+        <div class="flex flex-col items-center min-w-[60px]">
+          <div class="w-8 h-8 rounded-full bg-[#FFD400]/20 text-[#FFD400] flex items-center justify-center text-xs font-bold" id="pipe-approve">-</div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">승인</div>
+        </div>
+        <div class="h-[2px] w-4 bg-[#242422] flex-shrink-0"></div>
+        <div class="flex flex-col items-center min-w-[60px]">
+          <div class="w-8 h-8 rounded-full bg-[#FFD400]/20 text-[#FFD400] flex items-center justify-center text-xs font-bold" id="pipe-paid">-</div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">입금</div>
+        </div>
+        <div class="h-[2px] w-4 bg-[#242422] flex-shrink-0"></div>
+        <div class="flex flex-col items-center min-w-[60px]">
+          <div class="w-8 h-8 rounded-full bg-[#242422] text-[#555] flex items-center justify-center text-xs" id="pipe-location"><i class="fa-solid fa-map-pin"></i></div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">장소안내</div>
+        </div>
+        <div class="h-[2px] w-4 bg-[#242422] flex-shrink-0"></div>
+        <div class="flex flex-col items-center min-w-[60px]">
+          <div class="w-8 h-8 rounded-full bg-[#242422] text-[#555] flex items-center justify-center text-xs" id="pipe-attend"><i class="fa-solid fa-clipboard-check"></i></div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">출석</div>
+        </div>
+        <div class="h-[2px] w-4 bg-[#242422] flex-shrink-0"></div>
+        <div class="flex flex-col items-center min-w-[60px]">
+          <div class="w-8 h-8 rounded-full bg-[#242422] text-[#555] flex items-center justify-center text-xs" id="pipe-done"><i class="fa-solid fa-flag-checkered"></i></div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">완료</div>
+        </div>
+      </div>
     </div>
 
     <!-- 커피팅 통계 -->
-    <div class="grid grid-cols-3 gap-3 mb-8">
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
-        <div class="text-2xl font-black y" id="coffee-stat-total">-</div>
-        <div class="text-[11px] text-[#9E9E97] mt-1">전체 신청</div>
+    <div class="grid grid-cols-4 gap-2 mb-6">
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-3 text-center">
+        <div class="text-xl font-black y" id="coffee-stat-total">-</div>
+        <div class="text-[10px] text-[#9E9E97] mt-1">전체</div>
       </div>
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
-        <div class="text-2xl font-black y" id="coffee-stat-waiting">-</div>
-        <div class="text-[11px] text-[#9E9E97] mt-1">대기 중</div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-3 text-center">
+        <div class="text-xl font-black y" id="coffee-stat-waiting">-</div>
+        <div class="text-[10px] text-[#9E9E97] mt-1">대기</div>
       </div>
-      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
-        <div class="text-2xl font-black y" id="coffee-stat-approved">-</div>
-        <div class="text-[11px] text-[#9E9E97] mt-1">승인 완료</div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-3 text-center">
+        <div class="text-xl font-black y" id="coffee-stat-approved">-</div>
+        <div class="text-[10px] text-[#9E9E97] mt-1">승인</div>
+      </div>
+      <div class="bg-[#161615] border border-emerald-500/30 rounded-2xl py-3 text-center">
+        <div class="text-xl font-black text-emerald-400" id="coffee-stat-paid">-</div>
+        <div class="text-[10px] text-[#9E9E97] mt-1">입금완료</div>
       </div>
     </div>
 
-    <!-- 음료 카운트 -->
-    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mb-8">
-      <div class="text-xs font-bold text-[#9E9E97] mb-3">☕ 음료 주문 현황 <span class="text-[#555]">(승인된 참가자 기준)</span></div>
-      <div id="drink-count" class="flex flex-wrap gap-2"></div>
+    <!-- 서브탭: 신청자 / 출석부 / 문자발송 -->
+    <div class="flex gap-2 mb-5">
+      <button onclick="switchCoffeeView('list')" id="cv-list" class="cv-btn bg-y text-black text-xs font-bold px-4 py-2 rounded-xl transition">
+        <i class="fa-solid fa-list mr-1"></i>신청자 관리
+      </button>
+      <button onclick="switchCoffeeView('lineup')" id="cv-lineup" class="cv-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]">
+        <i class="fa-solid fa-clipboard-check mr-1"></i>출석부
+      </button>
+      <button onclick="switchCoffeeView('sms')" id="cv-sms" class="cv-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]">
+        <i class="fa-solid fa-paper-plane mr-1"></i>문자발송
+      </button>
     </div>
 
-    <!-- 커피팅 필터 -->
-    <div class="flex flex-wrap gap-2 mb-4">
-      <button onclick="coffeeFilterBy('all')" class="coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
-      <button onclick="coffeeFilterBy('대기')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
-      <button onclick="coffeeFilterBy('승인')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
-      <button onclick="coffeeFilterBy('남성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
-      <button onclick="coffeeFilterBy('여성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
+    <!-- 뷰: 신청자 관리 -->
+    <div id="coffee-view-list">
+      <!-- 음료 카운트 -->
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mb-6">
+        <div class="text-xs font-bold text-[#9E9E97] mb-3">☕ 음료 주문 현황 <span class="text-[#555]">(승인된 참가자 기준)</span></div>
+        <div id="drink-count" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- 커피팅 필터 -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button onclick="coffeeFilterBy('all')" class="coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
+        <button onclick="coffeeFilterBy('대기')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
+        <button onclick="coffeeFilterBy('승인')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
+        <button onclick="coffeeFilterBy('입금완료')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="입금완료">입금완료</button>
+        <button onclick="coffeeFilterBy('남성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
+        <button onclick="coffeeFilterBy('여성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
+      </div>
+
+      <!-- 커피팅 신청자 목록 -->
+      <div id="coffee-list" class="space-y-3">
+        <div class="text-center py-10 text-[#555]">
+          <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
+          <p class="text-sm">커피팅 신청자 불러오는 중...</p>
+        </div>
+      </div>
     </div>
 
-    <!-- 커피팅 신청자 목록 -->
-    <div id="coffee-list" class="space-y-3">
-      <div class="text-center py-10 text-[#555]">
-        <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
-        <p class="text-sm">커피팅 신청자 불러오는 중...</p>
+    <!-- 뷰: 출석부 -->
+    <div id="coffee-view-lineup" class="hidden">
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-black"><i class="fa-solid fa-clipboard-check y mr-1.5"></i>출석부 (입금완료 참가자)</h3>
+          <div class="text-xs text-[#9E9E97]">출석 <b class="y" id="attend-count">0</b> / <span id="attend-total">0</span></div>
+        </div>
+
+        <div class="text-xs font-bold text-[#9E9E97] mb-2">🙋‍♂️ 남성</div>
+        <div id="lineup-male" class="space-y-2 mb-4"></div>
+
+        <div class="text-xs font-bold text-[#9E9E97] mb-2">🙋‍♀️ 여성</div>
+        <div id="lineup-female" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- 뷰: 문자발송 -->
+    <div id="coffee-view-sms" class="hidden">
+      <div class="space-y-3">
+        <!-- 전날 장소 안내 -->
+        <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs"><i class="fa-solid fa-map-pin"></i></span>
+            <h3 class="text-sm font-bold">전날 장소 안내</h3>
+          </div>
+          <p class="text-xs text-[#9E9E97] mb-3">입금완료된 참가자에게 장소, 준비물, 드레스코드 안내</p>
+          <button onclick="sendLocationSMS()" class="bg-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2.5 rounded-xl hover:text-white hover:border-[#FFD400] transition border border-[#242422] w-full">
+            <i class="fa-solid fa-paper-plane mr-1.5"></i>장소 안내 일괄 발송
+          </button>
+        </div>
+
+        <!-- 행사 후 전체 문자 -->
+        <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-heart"></i></span>
+            <h3 class="text-sm font-bold">행사 후 전체 문자</h3>
+          </div>
+          <p class="text-xs text-[#9E9E97] mb-3">출석 체크된 참가자에게 감사 인사 + 후기 안내</p>
+          <textarea id="post-event-msg" rows="5" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition mb-3" placeholder="문자 내용을 입력하세요">🩷📦썸류센터 재테크 관심 로테이션 커피팅📦🩷
+
+안녕하세요😊
+오늘 함께해 주셔서 정말 감사합니다!
+즐거운 시간 보내셨길 바랍니다💕
+
+혹시 좋은 인연이 있으셨다면 꼭 연락해보세요☺️
+다음 커피팅 일정은 인스타그램에서 확인하실 수 있습니다.
+
+좋은 후기도 부탁드려요🙏
+다음에 또 만나요!</textarea>
+          <button onclick="sendPostEventSMS()" class="bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-600 transition w-full">
+            <i class="fa-solid fa-paper-plane mr-1.5"></i>행사 후 전체 문자 발송
+          </button>
+        </div>
+
+        <!-- 커스텀 문자 -->
+        <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs"><i class="fa-solid fa-pen"></i></span>
+            <h3 class="text-sm font-bold">커스텀 문자</h3>
+          </div>
+          <p class="text-xs text-[#9E9E97] mb-3">원하는 대상에게 자유롭게 문자 발송</p>
+          <select id="custom-sms-target" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white focus:border-[#FFD400] focus:outline-none transition mb-2">
+            <option value="all">전체 신청자</option>
+            <option value="approved">승인된 참가자</option>
+            <option value="paid">입금완료 참가자</option>
+            <option value="attended">출석 참가자</option>
+          </select>
+          <textarea id="custom-sms-msg" rows="4" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition mb-3" placeholder="문자 내용을 입력하세요"></textarea>
+          <button onclick="sendCustomSMS()" class="bg-purple-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-purple-600 transition w-full">
+            <i class="fa-solid fa-paper-plane mr-1.5"></i>커스텀 문자 발송
+          </button>
+        </div>
       </div>
     </div>
 
@@ -412,6 +541,7 @@ function updateCoffeeStats(){
   document.getElementById("coffee-stat-total").textContent = total;
   document.getElementById("coffee-stat-waiting").textContent = waiting;
   document.getElementById("coffee-stat-approved").textContent = approved;
+  updatePipeline();
 
   // 음료 카운트 (승인된 참가자만)
   const drinks={};
@@ -610,6 +740,134 @@ function coffeeFilterBy(f){
       : "coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]";
   });
   renderCoffeeList();
+}
+
+// 커피팅 서브탭 전환
+let currentCoffeeView = "list";
+function switchCoffeeView(view){
+  currentCoffeeView = view;
+  document.getElementById("coffee-view-list").classList.toggle("hidden", view !== "list");
+  document.getElementById("coffee-view-lineup").classList.toggle("hidden", view !== "lineup");
+  document.getElementById("coffee-view-sms").classList.toggle("hidden", view !== "sms");
+  document.querySelectorAll(".cv-btn").forEach(btn => {
+    const id = btn.id.replace("cv-","");
+    btn.className = id === view
+      ? "cv-btn bg-y text-black text-xs font-bold px-4 py-2 rounded-xl transition"
+      : "cv-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]";
+  });
+  if(view === "lineup") renderLineup();
+}
+
+// 파이프라인 업데이트
+function updatePipeline(){
+  const approved = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인").length;
+  const paid = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료").length;
+  document.getElementById("pipe-approve").textContent = approved;
+  document.getElementById("pipe-paid").textContent = paid;
+  document.getElementById("coffee-stat-paid").textContent = paid;
+}
+
+// 출석부 렌더링
+const attendanceData = JSON.parse(localStorage.getItem("coffee_attendance") || "{}");
+
+function toggleAttendance(recordId){
+  attendanceData[recordId] = !attendanceData[recordId];
+  localStorage.setItem("coffee_attendance", JSON.stringify(attendanceData));
+  renderLineup();
+}
+
+function renderLineup(){
+  const confirmed = coffeeApplicants.filter(r =>
+    r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료"
+  );
+  const males = confirmed.filter(r => r.fields["성별"] === "남성");
+  const females = confirmed.filter(r => r.fields["성별"] === "여성");
+
+  function renderRow(r, idx){
+    const f = r.fields;
+    const attended = attendanceData[r.id] || false;
+    return `<div class="flex items-center gap-3 bg-[#0D0D0C] rounded-xl p-3 ${attended ? 'border border-emerald-500/30' : 'border border-[#242422]'}">
+      <div class="text-xs font-bold text-[#555] w-5 text-center">${idx + 1}</div>
+      <button onclick="toggleAttendance('${r.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition ${attended ? 'bg-emerald-500 text-white' : 'bg-[#242422] text-[#555]'}">
+        <i class="fa-solid fa-check text-xs"></i>
+      </button>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-bold">${f["이름"] || "이름없음"} <span class="text-[10px] text-[#555] font-normal">${f["출생연도"] || ""}년생</span></div>
+        <div class="text-[11px] text-[#9E9E97]">${f["직업_직장명"] || ""} · ${f["연락처"] || ""}</div>
+      </div>
+      <div class="text-[10px] ${attended ? 'text-emerald-400' : 'text-[#555]'} font-bold">${attended ? '출석' : '미출석'}</div>
+    </div>`;
+  }
+
+  document.getElementById("lineup-male").innerHTML = males.length > 0
+    ? males.map((r, i) => renderRow(r, i)).join("")
+    : '<p class="text-[#555] text-xs py-2 pl-2">입금완료된 남성 참가자가 없습니다</p>';
+  document.getElementById("lineup-female").innerHTML = females.length > 0
+    ? females.map((r, i) => renderRow(r, i)).join("")
+    : '<p class="text-[#555] text-xs py-2 pl-2">입금완료된 여성 참가자가 없습니다</p>';
+
+  const totalAttend = confirmed.length;
+  const checkedAttend = confirmed.filter(r => attendanceData[r.id]).length;
+  document.getElementById("attend-count").textContent = checkedAttend;
+  document.getElementById("attend-total").textContent = totalAttend;
+}
+
+// 행사 후 전체 문자 발송
+async function sendPostEventSMS(){
+  const attended = coffeeApplicants.filter(r =>
+    r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료" && attendanceData[r.id]
+  );
+  if(attended.length === 0){ toast("출석 체크된 참가자가 없습니다"); return; }
+
+  const msg = document.getElementById("post-event-msg").value.trim();
+  if(!msg){ toast("문자 내용을 입력해주세요"); return; }
+  if(!confirm(`출석 참가자 ${attended.length}명에게 문자를 보내시겠어요?`)) return;
+
+  let success = 0, fail = 0;
+  for(const r of attended){
+    const phone = r.fields["연락처"];
+    if(!phone){ fail++; continue; }
+    try {
+      await fetch("/api/send-sms", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ to: phone, text: msg })
+      });
+      success++;
+    } catch(e){ fail++; }
+  }
+  toast(`행사 후 문자 발송 완료! 성공 ${success}명${fail > 0 ? ` / 실패 ${fail}명` : ""}`);
+}
+
+// 커스텀 문자 발송
+async function sendCustomSMS(){
+  const target = document.getElementById("custom-sms-target").value;
+  const msg = document.getElementById("custom-sms-msg").value.trim();
+  if(!msg){ toast("문자 내용을 입력해주세요"); return; }
+
+  let recipients = [];
+  if(target === "all") recipients = coffeeApplicants;
+  else if(target === "approved") recipients = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인");
+  else if(target === "paid") recipients = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료");
+  else if(target === "attended") recipients = coffeeApplicants.filter(r => attendanceData[r.id]);
+
+  if(recipients.length === 0){ toast("발송 대상이 없습니다"); return; }
+  if(!confirm(`${recipients.length}명에게 문자를 보내시겠어요?`)) return;
+
+  let success = 0, fail = 0;
+  for(const r of recipients){
+    const phone = r.fields["연락처"];
+    if(!phone){ fail++; continue; }
+    try {
+      await fetch("/api/send-sms", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ to: phone, text: msg })
+      });
+      success++;
+    } catch(e){ fail++; }
+  }
+  toast(`문자 발송 완료! 성공 ${success}명${fail > 0 ? ` / 실패 ${fail}명` : ""}`);
 }
 
 // 비밀번호 잠금
