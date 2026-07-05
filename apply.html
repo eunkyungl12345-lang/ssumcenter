@@ -616,7 +616,7 @@ async function handleSubmit(e){
 
     async function up(file,folder){const fd=new FormData();fd.append("file",file);fd.append("upload_preset",CP);fd.append("folder",folder);const r=await fetch(`https://api.cloudinary.com/v1_1/${CN}/auto/upload`,{method:"POST",body:fd});if(!r.ok)throw new Error();return(await r.json()).secure_url;}
 
-    const photoUrls=[];for(const f of photoFiles){if(f){const compressed=await compress(f);photoUrls.push({url:await up(compressed,"ssumcenter/fintech-photos")});}}
+    const photoUrls=await Promise.all(photoFiles.filter(f=>f).map(async f=>{const compressed=await compress(f);return{url:await up(compressed,"ssumcenter/fintech-photos")};}));
     btn.innerHTML='<i class="fa-solid fa-spinner fa-spin" style="margin-right:0.375rem"></i>서류 업로드 중...';
     const docUrl=await up(docFile,"ssumcenter/fintech-docs");
     btn.innerHTML='<i class="fa-solid fa-spinner fa-spin" style="margin-right:0.375rem"></i>신청서 제출 중...';
