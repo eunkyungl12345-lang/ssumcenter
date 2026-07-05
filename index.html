@@ -211,13 +211,31 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
   <div class="wrap" style="text-align:center">
     <span class="pill pill-amber" data-r><i class="fa-solid fa-star"></i>REVIEWS</span>
     <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>수령자 <span class="ac">리얼 후기</span></h2>
-    <div style="margin-top:40px" data-r>
+
+    <!-- 실적 카운터 -->
+    <div style="display:flex;justify-content:center;gap:clamp(16px,4vw,32px);margin-top:28px;margin-bottom:12px" data-r>
+      <div style="text-align:center">
+        <div class="ac gm" style="font-size:clamp(28px,6vw,40px);font-weight:800" id="cnt-events">0</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">회 진행</div>
+      </div>
+      <div style="text-align:center">
+        <div class="ac gm" style="font-size:clamp(28px,6vw,40px);font-weight:800" id="cnt-people">0</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">명 참여</div>
+      </div>
+      <div style="text-align:center">
+        <div class="ac gm" style="font-size:clamp(28px,6vw,40px);font-weight:800" id="cnt-match">0<span style="font-size:clamp(18px,4vw,28px)">%</span></div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">커플 매칭률</div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--faint);margin-bottom:32px" data-r>재참여·동반 참여율 높음</p>
+
+    <div data-r>
       <div class="rv-track" id="rv">
-        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"편안하고 싱그러운 기운을 나눠주는 분을 만났어요. 배려가 인상적이었습니다."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 30대 여성</p></div>
-        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"로테이션이라 자연스럽게 여러 분과 대화했어요. 진짜 케미 맞는 분을 만났습니다."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 20대 남성</p></div>
-        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"소개팅 앱은 지쳤는데, 오프라인이라 확실히 느낌이 달랐어요."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 20대 여성</p></div>
-        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"혼자 갔는데 전혀 어색하지 않았어요. 센터장분들이 잘 이끌어주셨어요."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 30대 남성</p></div>
-        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"매칭됐습니다! 커피팅에서 만난 분과 지금 잘 만나고 있어요."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 30대 남성</p></div>
+        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"3회차 참여 중인데 매번 새로운 분들 만나서 좋아요. 편안하고 싱그러운 기운을 나눠주는 분을 만났어요."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 30대 여성 · 재테크 커피팅 3회 참여</p></div>
+        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"로테이션이라 자연스럽게 8명과 대화했어요. 1:1 소개팅이랑 다르게 부담 없어서 진짜 케미 맞는 분을 찾았습니다."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 20대 남성 · 썸배달 참여</p></div>
+        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"소개팅 앱은 지쳤는데, 오프라인이라 확실히 느낌이 달랐어요. 직장인 인증도 해서 안심되고요."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 20대 여성 · 재테크 커피팅 참여</p></div>
+        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"혼자 갔는데 전혀 어색하지 않았어요. 센터장분들이 분위기 잘 이끌어주셔서 친구랑 다음에 같이 가기로 했어요."</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 30대 남성 · 썸배달 참여 후 동반 재참여</p></div>
+        <div class="rv-card glass"><div style="color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:12px">♥ ♥ ♥ ♥ ♥</div><p style="font-size:14px;line-height:1.85">"커피팅에서 만난 분과 지금 3개월째 잘 만나고 있어요. 진짜 감사합니다!"</p><p style="font-size:11px;color:var(--dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)">— 30대 남성 · 재테크 커피팅 → 커플 매칭 성사</p></div>
       </div>
     </div>
   </div>
@@ -328,6 +346,22 @@ function openDateModal(){document.getElementById('date-modal').classList.add('sh
 function closeDateModal(){document.getElementById('date-modal').classList.remove('show');document.body.style.overflow=''}
 document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m){m.classList.remove('show');document.body.style.overflow=''}}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDateModal()}});
+
+/* 실적 카운터 애니메이션 */
+function animateCount(el,target,suffix){
+  let current=0;const step=Math.ceil(target/40);
+  const timer=setInterval(()=>{current+=step;if(current>=target){current=target;clearInterval(timer);}el.innerHTML=current.toLocaleString()+(suffix||'');},30);
+}
+const cntObserver=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){
+    animateCount(document.getElementById('cnt-events'),21,'<span style="font-size:clamp(16px,3vw,24px)">회+</span>');
+    animateCount(document.getElementById('cnt-people'),600,'<span style="font-size:clamp(16px,3vw,24px)">명+</span>');
+    animateCount(document.getElementById('cnt-match'),50,'<span style="font-size:clamp(16px,3vw,24px)">%</span>');
+    cntObserver.disconnect();
+  }});
+},{threshold:0.3});
+const cntEl=document.getElementById('cnt-events');
+if(cntEl) cntObserver.observe(cntEl.parentElement.parentElement);
 
 /* Auth guard */
 function goMatching(){
