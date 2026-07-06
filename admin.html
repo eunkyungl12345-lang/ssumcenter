@@ -17,6 +17,50 @@
   .pipe-step{cursor:pointer;transition:all .15s;border-radius:12px;padding:4px 2px}
   .pipe-step:hover{background:rgba(255,212,0,.08)}
   .pipe-step:active{transform:scale(.95)}
+
+  /* 등록 모달 */
+  .reg-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.85);overflow-y:auto;display:none}
+  .reg-overlay.show{display:flex;justify-content:center;padding:20px 10px}
+  .reg-modal{background:#161615;border:1px solid #242422;border-radius:20px;max-width:560px;width:100%;margin:auto;position:relative}
+  .reg-header{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 0;position:sticky;top:0;background:#161615;border-radius:20px 20px 0 0;z-index:1}
+  .reg-body{padding:16px 20px 24px}
+  .reg-close{width:36px;height:36px;border-radius:10px;background:#242422;border:none;color:#9E9E97;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+  .reg-close:hover{color:#fff}
+  .ai-toggle{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#FF4D6D,#FF6B8A);color:#fff;border:none;padding:8px 16px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+  .ai-toggle.active{box-shadow:0 0 16px rgba(255,77,109,.4)}
+  .ai-toggle:hover{transform:scale(1.03)}
+  .ai-box{background:rgba(255,77,109,.08);border:1.5px solid rgba(255,77,109,.3);border-radius:16px;padding:16px;margin-bottom:16px;display:none}
+  .ai-box.show{display:block}
+  .ai-box p{color:#FF6B8A;font-size:11px;margin-bottom:10px}
+  .ai-box textarea{width:100%;background:#0D0D0C;border:1.5px solid rgba(255,77,109,.25);border-radius:12px;padding:12px;color:#F5F5F3;font-size:13px;resize:vertical;min-height:100px;font-family:inherit}
+  .ai-box textarea:focus{outline:none;border-color:#FF4D6D}
+  .ai-fill-btn{background:linear-gradient(135deg,#FF4D6D,#FF6B8A);color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;float:right;margin-top:8px}
+  .ai-fill-btn:hover{opacity:.9}
+  .reg-field{margin-bottom:12px}
+  .reg-field label{display:block;font-size:11px;color:#9E9E97;font-weight:700;margin-bottom:5px}
+  .reg-field label .req{color:#FF4D6D}
+  .reg-field input,.reg-field select,.reg-field textarea{width:100%;background:#0D0D0C;border:1px solid #242422;border-radius:12px;padding:10px 14px;color:#F5F5F3;font-size:13px;font-family:inherit}
+  .reg-field input:focus,.reg-field select:focus,.reg-field textarea:focus{outline:none;border-color:#FFD400}
+  .reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .reg-gender{display:flex;gap:8px}
+  .reg-gender button{flex:1;padding:10px;border-radius:12px;border:1px solid #242422;background:#0D0D0C;color:#9E9E97;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+  .reg-gender button.active{background:#FF4D6D;border-color:#FF4D6D;color:#fff}
+  .photo-upload-area{border:2px dashed #333;border-radius:16px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:12px}
+  .photo-upload-area:hover{border-color:#FFD400}
+  .photo-upload-area i{font-size:28px;color:#555;margin-bottom:6px}
+  .photo-preview-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .photo-preview-item{position:relative;width:80px;height:80px;border-radius:12px;overflow:hidden;border:2px solid #242422}
+  .photo-preview-item img{width:100%;height:100%;object-fit:cover}
+  .photo-preview-item .photo-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(255,0,0,.8);color:#fff;border:none;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .photo-preview-item .photo-drag{position:absolute;top:4px;left:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;cursor:grab}
+  .reg-submit{width:100%;padding:14px;border-radius:14px;border:none;background:#FFD400;color:#000;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;margin-top:8px}
+  .reg-submit:hover{background:#E6BE00}
+  .reg-submit:disabled{opacity:.4;cursor:not-allowed}
+  .reg-type-tabs{display:flex;gap:6px;margin-bottom:16px}
+  .reg-type-tab{flex:1;padding:10px;border-radius:12px;border:1px solid #242422;background:#0D0D0C;color:#9E9E97;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+  .reg-type-tab.active{background:#FFD400;border-color:#FFD400;color:#000}
+  .sort-select{background:#161615;border:1px solid #242422;color:#9E9E97;font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer}
+  .sort-select:focus{outline:none;border-color:#FFD400}
 </style>
 </head>
 <body class="min-h-screen selection:bg-[#FFD400] selection:text-black">
@@ -127,13 +171,27 @@
     </div>
   </div>
 
-  <!-- 필터 -->
-  <div class="flex flex-wrap gap-2 mb-4">
-    <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
-    <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
-    <button onclick="filterBy('매칭완료')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="매칭완료">매칭완료</button>
-    <button onclick="filterBy('남성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
-    <button onclick="filterBy('여성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
+  <!-- 신청자 등록 버튼 -->
+  <button onclick="openRegModal('matching')" class="w-full bg-[#161615] border border-dashed border-[#FFD400]/40 rounded-2xl py-4 text-sm font-bold text-[#FFD400] hover:bg-[#FFD400]/5 transition mb-6">
+    <i class="fa-solid fa-user-plus mr-2"></i>신청자 등록
+  </button>
+
+  <!-- 필터 + 정렬 -->
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-wrap gap-2">
+      <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
+      <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
+      <button onclick="filterBy('매칭완료')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="매칭완료">매칭완료</button>
+      <button onclick="filterBy('남성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
+      <button onclick="filterBy('여성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
+    </div>
+    <select id="matching-sort" onchange="sortMatching(this.value)" class="sort-select">
+      <option value="date-desc">최신순</option>
+      <option value="date-asc">오래된순</option>
+      <option value="name">이름순</option>
+      <option value="age-asc">나이 많은순</option>
+      <option value="age-desc">나이 적은순</option>
+    </select>
   </div>
 
   <!-- 신청자 목록 -->
@@ -236,19 +294,33 @@
         <div id="drink-count" class="flex flex-wrap gap-2"></div>
       </div>
 
+      <!-- 신청자 등록 버튼 -->
+      <button onclick="openRegModal('coffee')" class="w-full bg-[#0D0D0C] border border-dashed border-[#FFD400]/40 rounded-2xl py-3.5 text-sm font-bold text-[#FFD400] hover:bg-[#FFD400]/5 transition mb-4">
+        <i class="fa-solid fa-user-plus mr-2"></i>신청자 등록
+      </button>
+
       <!-- 신청자 검색 -->
       <div class="mb-3">
         <input type="text" id="coffeeSearch" oninput="coffeeSearchFilter()" placeholder="🔍 이름, 닉네임, 연락처로 검색" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
       </div>
 
-      <!-- 커피팅 필터 -->
-      <div class="flex flex-wrap gap-2 mb-4">
-        <button onclick="coffeeFilterBy('all')" class="coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
-        <button onclick="coffeeFilterBy('대기')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
-        <button onclick="coffeeFilterBy('승인')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
-        <button onclick="coffeeFilterBy('입금완료')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="입금완료">입금완료</button>
-        <button onclick="coffeeFilterBy('남성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
-        <button onclick="coffeeFilterBy('여성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
+      <!-- 커피팅 필터 + 정렬 -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex flex-wrap gap-2">
+          <button onclick="coffeeFilterBy('all')" class="coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
+          <button onclick="coffeeFilterBy('대기')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
+          <button onclick="coffeeFilterBy('승인')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
+          <button onclick="coffeeFilterBy('입금완료')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="입금완료">입금완료</button>
+          <button onclick="coffeeFilterBy('남성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
+          <button onclick="coffeeFilterBy('여성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
+        </div>
+        <select id="coffee-sort" onchange="sortCoffee(this.value)" class="sort-select">
+          <option value="date-desc">최신순</option>
+          <option value="date-asc">오래된순</option>
+          <option value="name">이름순</option>
+          <option value="age-asc">나이 많은순</option>
+          <option value="age-desc">나이 적은순</option>
+        </select>
       </div>
 
       <!-- 커피팅 신청자 목록 -->
@@ -386,6 +458,223 @@
 
   </div><!-- /section-coffee -->
 
+</div>
+
+<!-- 신청자 등록 모달 -->
+<div id="reg-overlay" class="reg-overlay" onclick="if(event.target===this)closeRegModal()">
+  <div class="reg-modal">
+    <div class="reg-header">
+      <h2 style="font-size:18px;font-weight:900">매물 정보 추가</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="ai-toggle-btn" class="ai-toggle" onclick="toggleAI()">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> AI 자동입력
+        </button>
+        <button class="reg-close" onclick="closeRegModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <div class="reg-body">
+      <p style="font-size:12px;color:#9E9E97;margin-bottom:16px">사진은 최대 4장까지 등록할 수 있습니다.</p>
+
+      <!-- 타입 선택 -->
+      <div class="reg-type-tabs">
+        <div class="reg-type-tab active" data-type="matching" onclick="switchRegType('matching')">
+          <i class="fa-solid fa-heart mr-1"></i>1:1 매칭
+        </div>
+        <div class="reg-type-tab" data-type="coffee" onclick="switchRegType('coffee')">
+          <i class="fa-solid fa-chart-line mr-1"></i>재테크 커피팅
+        </div>
+      </div>
+
+      <!-- AI 자동입력 영역 -->
+      <div id="ai-box" class="ai-box">
+        <p>텍스트를 붙여넣으면 AI가 폼을 자동으로 채워줍니다. 학력·특기 등 폼에 없는 내용은 기타에 입력됩니다.</p>
+        <textarea id="ai-text" placeholder="예시:
+키 183
+나이 92년생
+거주지 서울 강서구
+직업 경찰
+자기관리 잘해요"></textarea>
+        <button class="ai-fill-btn" onclick="aiParse()"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> 폼 채우기</button>
+        <div style="clear:both"></div>
+      </div>
+
+      <!-- 사진 업로드 -->
+      <div id="photo-upload-area" class="photo-upload-area" onclick="document.getElementById('reg-photo-input').click()">
+        <i class="fa-solid fa-camera-retro"></i>
+        <div style="font-size:13px;font-weight:700;color:#9E9E97;margin-top:4px">사진 업로드 <span style="color:#FF4D6D">*</span></div>
+        <div id="photo-count" style="font-size:11px;color:#555;margin-top:2px">0/4</div>
+        <div style="font-size:10px;color:#555;margin-top:4px">클릭·드래그 또는 붙여넣기(Ctrl/⌘+V)</div>
+      </div>
+      <input type="file" id="reg-photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(event)">
+      <div id="photo-preview-grid" class="photo-preview-grid"></div>
+
+      <!-- 공통 필드: 주요 정보 -->
+      <fieldset style="border:1px solid #242422;border-radius:16px;padding:16px;margin-bottom:16px">
+        <legend style="font-size:12px;font-weight:700;color:#FFD400;padding:0 8px">주요 정보</legend>
+
+        <div class="reg-field">
+          <label>성별 <span class="req">*</span></label>
+          <div class="reg-gender">
+            <button type="button" onclick="setGender('여성')" id="reg-gender-f">여성</button>
+            <button type="button" onclick="setGender('남성')" id="reg-gender-m">남성</button>
+          </div>
+        </div>
+
+        <div class="reg-grid">
+          <div class="reg-field">
+            <label>이름 <span class="req">*</span></label>
+            <input type="text" id="reg-name" placeholder="이름">
+          </div>
+          <div class="reg-field">
+            <label>년생 <span class="req">*</span></label>
+            <select id="reg-birth">
+              <option value="">선택</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="reg-grid">
+          <div class="reg-field">
+            <label>키 <span class="req">*</span></label>
+            <input type="number" id="reg-height" placeholder="cm">
+          </div>
+          <div class="reg-field">
+            <label>사는 곳 <span class="req">*</span></label>
+            <input type="text" id="reg-location" placeholder="서울 강남구">
+          </div>
+        </div>
+
+        <div class="reg-field">
+          <label>연락처</label>
+          <input type="tel" id="reg-phone" placeholder="010-0000-0000">
+        </div>
+      </fieldset>
+
+      <!-- 1:1 매칭 전용 필드 -->
+      <div id="reg-matching-fields">
+        <fieldset style="border:1px solid #242422;border-radius:16px;padding:16px;margin-bottom:16px">
+          <legend style="font-size:12px;font-weight:700;color:#FFD400;padding:0 8px">매칭 정보</legend>
+
+          <div class="reg-field">
+            <label>직업 <span class="req">*</span></label>
+            <input type="text" id="reg-job" placeholder="직업">
+          </div>
+
+          <div class="reg-grid">
+            <div class="reg-field">
+              <label>종교</label>
+              <input type="text" id="reg-religion" placeholder="무교, 기독교 등">
+            </div>
+            <div class="reg-field">
+              <label>취미</label>
+              <input type="text" id="reg-hobby" placeholder="운동, 독서 등">
+            </div>
+          </div>
+
+          <div class="reg-field">
+            <label>자기소개</label>
+            <textarea id="reg-intro" rows="3" placeholder="자기소개를 입력하세요"></textarea>
+          </div>
+
+          <div class="reg-field">
+            <label>성격키워드</label>
+            <input type="text" id="reg-keywords" placeholder="쉼표로 구분 (예: 활발한, 따뜻한)">
+          </div>
+
+          <div class="reg-grid">
+            <div class="reg-field">
+              <label>선호 나이대</label>
+              <input type="text" id="reg-pref-age" placeholder="예: 90~95년생">
+            </div>
+            <div class="reg-field">
+              <label>선호 직업군</label>
+              <input type="text" id="reg-pref-job" placeholder="예: 전문직">
+            </div>
+          </div>
+
+          <div class="reg-field">
+            <label>매칭유형</label>
+            <select id="reg-match-type">
+              <option value="일반매칭">일반매칭</option>
+              <option value="슈퍼매칭">슈퍼매칭</option>
+            </select>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- 재테크 커피팅 전용 필드 -->
+      <div id="reg-coffee-fields" style="display:none">
+        <fieldset style="border:1px solid #242422;border-radius:16px;padding:16px;margin-bottom:16px">
+          <legend style="font-size:12px;font-weight:700;color:#FFD400;padding:0 8px">커피팅 정보</legend>
+
+          <div class="reg-grid">
+            <div class="reg-field">
+              <label>닉네임</label>
+              <input type="text" id="reg-nickname" placeholder="닉네임">
+            </div>
+            <div class="reg-field">
+              <label>직업/직장명 <span class="req">*</span></label>
+              <input type="text" id="reg-coffee-job" placeholder="회사명/직업">
+            </div>
+          </div>
+
+          <div class="reg-field">
+            <label>관심 재테크</label>
+            <input type="text" id="reg-fintech" placeholder="주식, 부동산, 코인 등">
+          </div>
+
+          <div class="reg-field">
+            <label>어필포인트</label>
+            <textarea id="reg-appeal" rows="3" placeholder="어필포인트를 입력하세요"></textarea>
+          </div>
+
+          <div class="reg-grid">
+            <div class="reg-field">
+              <label>음료선택</label>
+              <select id="reg-drink">
+                <option value="">선택</option>
+                <option value="아메리카노(ICE)">아메리카노(ICE)</option>
+                <option value="아메리카노(HOT)">아메리카노(HOT)</option>
+                <option value="카페라떼(ICE)">카페라떼(ICE)</option>
+                <option value="카페라떼(HOT)">카페라떼(HOT)</option>
+                <option value="녹차라떼(ICE)">녹차라떼(ICE)</option>
+                <option value="기타">기타</option>
+              </select>
+            </div>
+            <div class="reg-field">
+              <label>할인혜택</label>
+              <select id="reg-discount">
+                <option value="해당없음">해당없음</option>
+                <option value="추천할인">추천할인</option>
+                <option value="직원할인">직원할인</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="reg-grid">
+            <div class="reg-field">
+              <label>유입경로</label>
+              <input type="text" id="reg-source" placeholder="인스타그램, 소개 등">
+            </div>
+            <div class="reg-field">
+              <label>추천인</label>
+              <input type="text" id="reg-referrer" placeholder="추천인 이름">
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- 기타 (AI 파싱 잔여) -->
+      <div class="reg-field">
+        <label>기타 메모</label>
+        <textarea id="reg-etc" rows="2" placeholder="기타 정보 (학력, 특기 등)"></textarea>
+      </div>
+
+      <button class="reg-submit" id="reg-submit-btn" onclick="submitRegistration()">
+        <i class="fa-solid fa-check mr-1"></i>등록하기
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- 사진 크게보기 -->
@@ -1170,6 +1459,435 @@ if(sessionStorage.getItem("admin_key")){
 
 // 행사 후 문자: 직접 수정하면 설정 기본값으로 덮어쓰지 않음
 document.getElementById("post-event-msg").addEventListener("input", function(){ this.dataset.touched = "1"; });
+
+// ===== 신청자 등록 모달 =====
+let regType = "matching";
+let regPhotos = []; // {file, preview}
+let regGender = "";
+let aiMode = false;
+
+// 년생 옵션 생성
+(function(){
+  const sel = document.getElementById("reg-birth");
+  for(let y = 2006; y >= 1970; y--){
+    const opt = document.createElement("option");
+    opt.value = y;
+    opt.textContent = y + "년생";
+    sel.appendChild(opt);
+  }
+})();
+
+function openRegModal(type){
+  regType = type || "matching";
+  resetRegForm();
+  switchRegType(regType);
+  document.getElementById("reg-overlay").classList.add("show");
+}
+
+function closeRegModal(){
+  document.getElementById("reg-overlay").classList.remove("show");
+}
+
+function switchRegType(type){
+  regType = type;
+  document.querySelectorAll(".reg-type-tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.type === type);
+  });
+  document.getElementById("reg-matching-fields").style.display = type === "matching" ? "block" : "none";
+  document.getElementById("reg-coffee-fields").style.display = type === "coffee" ? "block" : "none";
+}
+
+function setGender(g){
+  regGender = g;
+  document.getElementById("reg-gender-f").classList.toggle("active", g === "여성");
+  document.getElementById("reg-gender-m").classList.toggle("active", g === "남성");
+}
+
+function resetRegForm(){
+  regGender = "";
+  regPhotos = [];
+  aiMode = false;
+  document.getElementById("ai-box").classList.remove("show");
+  document.getElementById("ai-toggle-btn").classList.remove("active");
+  document.getElementById("ai-text").value = "";
+  document.getElementById("reg-gender-f").classList.remove("active");
+  document.getElementById("reg-gender-m").classList.remove("active");
+  document.getElementById("photo-preview-grid").innerHTML = "";
+  document.getElementById("photo-count").textContent = "0/4";
+  ["reg-name","reg-birth","reg-height","reg-location","reg-phone",
+   "reg-job","reg-religion","reg-hobby","reg-intro","reg-keywords","reg-pref-age","reg-pref-job","reg-match-type",
+   "reg-nickname","reg-coffee-job","reg-fintech","reg-appeal","reg-drink","reg-discount","reg-source","reg-referrer",
+   "reg-etc"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.tagName === "SELECT" ? el.selectedIndex = 0 : el.value = "";
+  });
+}
+
+// AI 토글
+function toggleAI(){
+  aiMode = !aiMode;
+  document.getElementById("ai-box").classList.toggle("show", aiMode);
+  document.getElementById("ai-toggle-btn").classList.toggle("active", aiMode);
+}
+
+// AI 텍스트 파싱
+function aiParse(){
+  const text = document.getElementById("ai-text").value.trim();
+  if(!text){ toast("텍스트를 붙여넣어주세요"); return; }
+
+  const lines = text.split("\n").map(l => l.trim()).filter(l => l);
+  const etcLines = [];
+
+  for(const line of lines){
+    const lower = line.toLowerCase();
+
+    // 키 파싱
+    const heightMatch = line.match(/키\s*[:\s]?\s*(\d{2,3})/);
+    if(heightMatch){
+      document.getElementById("reg-height").value = heightMatch[1];
+      continue;
+    }
+
+    // 나이/년생 파싱
+    const birthMatch = line.match(/(나이|년생|생년|출생)\s*[:\s]?\s*(\d{2,4})/) || line.match(/(\d{2,4})\s*년?\s*생/);
+    if(birthMatch){
+      let year = parseInt(birthMatch[2] || birthMatch[1]);
+      if(year < 100) year += 1900;
+      if(year >= 1970 && year <= 2006){
+        document.getElementById("reg-birth").value = year;
+      }
+      continue;
+    }
+
+    // 성별 파싱
+    if(/^성별\s*[:\s]?\s*(여|여성|여자)/.test(line) || line === "여성" || line === "여자"){
+      setGender("여성"); continue;
+    }
+    if(/^성별\s*[:\s]?\s*(남|남성|남자)/.test(line) || line === "남성" || line === "남자"){
+      setGender("남성"); continue;
+    }
+
+    // 거주지/사는곳 파싱
+    const locMatch = line.match(/(거주지|사는\s*곳|사는곳|지역|거주)\s*[:\s]?\s*(.+)/);
+    if(locMatch){
+      document.getElementById("reg-location").value = locMatch[2].trim();
+      continue;
+    }
+
+    // 직업 파싱
+    const jobMatch = line.match(/(직업|직장|회사|업종)\s*[:\s]?\s*(.+)/);
+    if(jobMatch){
+      if(regType === "matching") document.getElementById("reg-job").value = jobMatch[2].trim();
+      else document.getElementById("reg-coffee-job").value = jobMatch[2].trim();
+      continue;
+    }
+
+    // 이름 파싱
+    const nameMatch = line.match(/(이름|성명)\s*[:\s]?\s*(.+)/);
+    if(nameMatch){
+      document.getElementById("reg-name").value = nameMatch[2].trim();
+      continue;
+    }
+
+    // 연락처 파싱
+    const phoneMatch = line.match(/(연락처|전화|번호|핸드폰|휴대폰)\s*[:\s]?\s*([\d\-]+)/) || line.match(/(010[\-\s]?\d{4}[\-\s]?\d{4})/);
+    if(phoneMatch){
+      document.getElementById("reg-phone").value = (phoneMatch[2] || phoneMatch[1]).trim();
+      continue;
+    }
+
+    // 종교 파싱
+    const relMatch = line.match(/(종교)\s*[:\s]?\s*(.+)/);
+    if(relMatch){
+      document.getElementById("reg-religion").value = relMatch[2].trim();
+      continue;
+    }
+
+    // 취미 파싱
+    const hobbyMatch = line.match(/(취미|관심사)\s*[:\s]?\s*(.+)/);
+    if(hobbyMatch){
+      document.getElementById("reg-hobby").value = hobbyMatch[2].trim();
+      continue;
+    }
+
+    // 닉네임 파싱
+    const nickMatch = line.match(/(닉네임|별명)\s*[:\s]?\s*(.+)/);
+    if(nickMatch){
+      document.getElementById("reg-nickname").value = nickMatch[2].trim();
+      continue;
+    }
+
+    // 매칭 안 된 것 → 기타로
+    etcLines.push(line);
+  }
+
+  // 나머지 기타 텍스트
+  if(etcLines.length > 0){
+    const etcEl = document.getElementById("reg-etc");
+    etcEl.value = (etcEl.value ? etcEl.value + "\n" : "") + etcLines.join("\n");
+  }
+
+  toast("AI 자동입력 완료! 나머지 필드를 확인해주세요");
+}
+
+// ===== 사진 업로드 =====
+function handlePhotoSelect(event){
+  const files = Array.from(event.target.files);
+  addPhotos(files);
+  event.target.value = "";
+}
+
+function addPhotos(files){
+  const remaining = 4 - regPhotos.length;
+  if(remaining <= 0){ toast("사진은 최대 4장까지 등록 가능합니다"); return; }
+  const toAdd = files.slice(0, remaining);
+
+  for(const file of toAdd){
+    if(!file.type.startsWith("image/")) continue;
+    if(file.size > 10 * 1024 * 1024){ toast("10MB 이하 사진만 가능합니다"); continue; }
+    const reader = new FileReader();
+    reader.onload = function(e){
+      regPhotos.push({ file, preview: e.target.result });
+      renderPhotoPreview();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function renderPhotoPreview(){
+  const grid = document.getElementById("photo-preview-grid");
+  document.getElementById("photo-count").textContent = regPhotos.length + "/4";
+
+  if(regPhotos.length === 0){
+    grid.innerHTML = "";
+    return;
+  }
+
+  grid.innerHTML = regPhotos.map((p, i) => `
+    <div class="photo-preview-item" draggable="true" data-idx="${i}"
+      ondragstart="dragPhoto(event,${i})" ondragover="event.preventDefault()" ondrop="dropPhoto(event,${i})">
+      <div class="photo-drag"><i class="fa-solid fa-grip-dots-vertical"></i></div>
+      <img src="${p.preview}">
+      <button class="photo-del" onclick="removePhoto(${i})"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  `).join("");
+}
+
+function removePhoto(idx){
+  regPhotos.splice(idx, 1);
+  renderPhotoPreview();
+}
+
+let dragIdx = null;
+function dragPhoto(e, idx){ dragIdx = idx; }
+function dropPhoto(e, idx){
+  e.preventDefault();
+  if(dragIdx === null || dragIdx === idx) return;
+  const item = regPhotos.splice(dragIdx, 1)[0];
+  regPhotos.splice(idx, 0, item);
+  dragIdx = null;
+  renderPhotoPreview();
+}
+
+// 드래그 앤 드롭 (파일)
+const uploadArea = document.getElementById("photo-upload-area");
+uploadArea.addEventListener("dragover", e => { e.preventDefault(); uploadArea.style.borderColor = "#FFD400"; });
+uploadArea.addEventListener("dragleave", () => { uploadArea.style.borderColor = "#333"; });
+uploadArea.addEventListener("drop", e => {
+  e.preventDefault();
+  uploadArea.style.borderColor = "#333";
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+  if(files.length > 0) addPhotos(files);
+});
+
+// 붙여넣기로 사진 추가
+document.addEventListener("paste", e => {
+  if(!document.getElementById("reg-overlay").classList.contains("show")) return;
+  const items = Array.from(e.clipboardData.items).filter(i => i.type.startsWith("image/"));
+  if(items.length > 0){
+    e.preventDefault();
+    const files = items.map(i => i.getAsFile()).filter(Boolean);
+    addPhotos(files);
+  }
+});
+
+// 이미지 압축 (1200px)
+async function compressForUpload(file){
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if(w > MAX){ h = h * MAX / w; w = MAX; }
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      c.toBlob(blob => resolve(blob), "image/jpeg", 0.85);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// Cloudinary 업로드
+const CN = "ddvmmvcei";
+const CP = "ml_default";
+
+async function uploadPhotoToCloud(file){
+  const compressed = await compressForUpload(file);
+  const fd = new FormData();
+  fd.append("file", compressed);
+  fd.append("upload_preset", CP);
+  fd.append("folder", "ssumcenter/photos");
+  const r = await fetch("https://api.cloudinary.com/v1_1/" + CN + "/image/upload", { method: "POST", body: fd });
+  if(!r.ok) throw new Error("업로드 실패");
+  const data = await r.json();
+  return data.secure_url;
+}
+
+// 등록 제출
+async function submitRegistration(){
+  // 유효성 체크
+  const name = document.getElementById("reg-name").value.trim();
+  const birth = document.getElementById("reg-birth").value;
+  const height = document.getElementById("reg-height").value;
+  const location = document.getElementById("reg-location").value.trim();
+
+  if(!regGender){ toast("성별을 선택해주세요"); return; }
+  if(!name){ toast("이름을 입력해주세요"); return; }
+  if(!birth){ toast("년생을 선택해주세요"); return; }
+
+  if(regType === "matching"){
+    const job = document.getElementById("reg-job").value.trim();
+    if(!job){ toast("직업을 입력해주세요"); return; }
+  } else {
+    const coffeeJob = document.getElementById("reg-coffee-job").value.trim();
+    if(!coffeeJob){ toast("직업/직장명을 입력해주세요"); return; }
+  }
+
+  const btn = document.getElementById("reg-submit-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>등록 중...';
+
+  try {
+    // 사진 업로드
+    let photoUrls = [];
+    for(const p of regPhotos){
+      const url = await uploadPhotoToCloud(p.file);
+      photoUrls.push({ url });
+    }
+
+    // Airtable 레코드 생성
+    let fields = {};
+    const phone = document.getElementById("reg-phone").value.trim();
+    const etc = document.getElementById("reg-etc").value.trim();
+
+    if(regType === "matching"){
+      fields = {
+        "이름": name,
+        "성별": regGender,
+        "출생연도": birth,
+        "키": height,
+        "사는곳": location,
+        "직업": document.getElementById("reg-job").value.trim(),
+        "종교": document.getElementById("reg-religion").value.trim(),
+        "취미": document.getElementById("reg-hobby").value.trim(),
+        "자기소개": document.getElementById("reg-intro").value.trim() + (etc ? "\n\n[기타] " + etc : ""),
+        "성격키워드": document.getElementById("reg-keywords").value.trim(),
+        "선호나이대": document.getElementById("reg-pref-age").value.trim(),
+        "선호직업군": document.getElementById("reg-pref-job").value.trim(),
+        "매칭유형": document.getElementById("reg-match-type").value,
+        "매칭상태": "대기"
+      };
+      if(phone) fields["연락처"] = phone;
+      if(photoUrls.length > 0) fields["프로필사진"] = photoUrls;
+
+      await fetch("/api/airtable?table=1:1 매칭 신청", {
+        method: "POST",
+        headers: apiHeaders(),
+        body: JSON.stringify({ records: [{ fields }] })
+      });
+
+      toast("1:1 매칭 신청자 등록 완료!");
+      closeRegModal();
+      loadApplicants();
+
+    } else {
+      fields = {
+        "이름": name,
+        "성별": regGender,
+        "출생연도": birth,
+        "직업_직장명": document.getElementById("reg-coffee-job").value.trim(),
+        "닉네임": document.getElementById("reg-nickname").value.trim(),
+        "관심재테크": document.getElementById("reg-fintech").value.trim(),
+        "어필포인트": document.getElementById("reg-appeal").value.trim() + (etc ? "\n\n[기타] " + etc : ""),
+        "음료선택": document.getElementById("reg-drink").value,
+        "할인혜택": document.getElementById("reg-discount").value,
+        "유입경로": document.getElementById("reg-source").value.trim(),
+        "추천인이름": document.getElementById("reg-referrer").value.trim(),
+        "승인상태": "대기",
+        "입금상태": "미입금"
+      };
+      if(phone) fields["연락처"] = phone;
+      if(photoUrls.length > 0) fields["프로필사진"] = photoUrls;
+
+      await fetch("/api/airtable?table=재테크 커피팅", {
+        method: "POST",
+        headers: apiHeaders(),
+        body: JSON.stringify({ records: [{ fields }] })
+      });
+
+      toast("재테크 커피팅 신청자 등록 완료!");
+      closeRegModal();
+      loadCoffeeApplicants();
+    }
+
+  } catch(err){
+    console.error(err);
+    toast("등록 실패: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>등록하기';
+  }
+}
+
+// ===== 소팅 =====
+let matchingSort = "date-desc";
+let coffeeSortOrder = "date-desc";
+
+function sortMatching(order){
+  matchingSort = order;
+  sortApplicantsArray(applicants, order, "matching");
+  renderList();
+}
+
+function sortCoffee(order){
+  coffeeSortOrder = order;
+  sortApplicantsArray(coffeeApplicants, order, "coffee");
+  renderCoffeeList();
+}
+
+function sortApplicantsArray(arr, order, type){
+  const birthField = "출생연도";
+  const nameField = "이름";
+  const dateField = "신청일시";
+
+  arr.sort((a, b) => {
+    const fa = a.fields, fb = b.fields;
+    switch(order){
+      case "name":
+        return (fa[nameField] || "").localeCompare(fb[nameField] || "", "ko");
+      case "age-asc": // 나이 많은순 = 년생 작은순
+        return (parseInt(fa[birthField]) || 9999) - (parseInt(fb[birthField]) || 9999);
+      case "age-desc": // 나이 적은순 = 년생 큰순
+        return (parseInt(fb[birthField]) || 0) - (parseInt(fa[birthField]) || 0);
+      case "date-asc":
+        return (fa[dateField] || "").localeCompare(fb[dateField] || "");
+      case "date-desc":
+      default:
+        return (fb[dateField] || "").localeCompare(fa[dateField] || "");
+    }
+  });
+}
 </script>
 </body>
 </html>
