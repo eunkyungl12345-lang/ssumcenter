@@ -175,6 +175,25 @@
 
   /* Hidden utility (used by JS) */
   .hidden{display:none!important}
+
+  /* AI 자동입력 */
+  .ai-section{background:#16140f;border:1px solid #1e1c17;border-radius:1rem;padding:1.25rem;margin-bottom:0}
+  .ai-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+  .ai-header h3{font-size:15px;font-weight:900}
+  .ai-toggle{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#FF4D6D,#FF6B8A);color:#fff;border:none;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+  .ai-toggle:hover{transform:scale(1.03)}
+  .ai-toggle.active{box-shadow:0 0 14px rgba(255,77,109,.35)}
+  .ai-body{display:none;margin-top:12px}
+  .ai-body.show{display:block}
+  .ai-hint{background:rgba(255,77,109,.08);border:1.5px solid rgba(255,77,109,.25);border-radius:12px;padding:12px;margin-bottom:10px}
+  .ai-hint p{color:#FF6B8A;font-size:11px;line-height:1.5}
+  .ai-textarea{width:100%;background:#0e0c0a;border:1.5px solid rgba(255,77,109,.25);border-radius:12px;padding:12px;color:#F5F5F3;font-size:13px;resize:vertical;min-height:90px;font-family:inherit;line-height:1.6}
+  .ai-textarea:focus{outline:none;border-color:#FF4D6D}
+  .ai-textarea::placeholder{color:#6b6358}
+  .ai-fill-btn{background:linear-gradient(135deg,#FF4D6D,#FF6B8A);color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;float:right;margin-top:8px;font-family:inherit;display:flex;align-items:center;gap:5px}
+  .ai-fill-btn:hover{opacity:.9}
+  .ai-result{display:none;margin-top:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:10px 12px;font-size:11px;color:#22c55e}
+  .ai-result.show{display:block}
 </style>
 </head>
 <body>
@@ -218,6 +237,33 @@
 <section class="form-section">
   <div class="form-inner">
     <form id="apply-form" class="form-wrap" onsubmit="return handleSubmit(event)">
+
+      <!-- AI 자동입력 -->
+      <div class="ai-section" data-reveal>
+        <div class="ai-header">
+          <h3>매물 정보 추가</h3>
+          <button type="button" id="ai-toggle" class="ai-toggle" onclick="toggleAI()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> AI 자동입력
+          </button>
+        </div>
+        <p style="font-size:11px;color:#6b6358">사진은 최대 3장까지 등록할 수 있습니다.</p>
+        <div id="ai-body" class="ai-body">
+          <div class="ai-hint">
+            <p>텍스트를 붙여넣으면 AI가 폼을 자동으로 채워줍니다. 학력·특기 등 폼에 없는 내용은 기타에 입력됩니다.</p>
+          </div>
+          <textarea id="ai-text" class="ai-textarea" placeholder="예시:
+키 183
+나이 92년생
+거주지 서울 강서구
+직업 삼성전자 마케터
+자기관리 잘해요"></textarea>
+          <button type="button" class="ai-fill-btn" onclick="aiFillForm()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> 폼 채우기
+          </button>
+          <div style="clear:both"></div>
+          <div id="ai-result" class="ai-result"></div>
+        </div>
+      </div>
 
       <!-- 기본 정보 -->
       <div class="card card-spaced" data-reveal>
@@ -514,6 +560,107 @@
 </footer>
 
 <script>
+// ===== AI 자동입력 =====
+function toggleAI(){
+  const body = document.getElementById("ai-body");
+  const btn = document.getElementById("ai-toggle");
+  const isOpen = body.classList.toggle("show");
+  btn.classList.toggle("active", isOpen);
+}
+
+function aiFillForm(){
+  const text = document.getElementById("ai-text").value.trim();
+  if(!text){ alert("텍스트를 붙여넣어주세요"); return; }
+
+  const lines = text.split("\n").map(l => l.trim()).filter(l => l);
+  const filled = [];
+  const etcLines = [];
+
+  for(const line of lines){
+    // 나이/년생
+    const bm = line.match(/(나이|년생|생년|출생)\s*[:\s]?\s*(\d{2,4})/) || line.match(/(\d{2,4})\s*년?\s*생/);
+    if(bm){
+      let y = parseInt(bm[2] || bm[1]);
+      if(y < 100) y += 1900;
+      const sel = document.querySelector('select[name="birthYear"]');
+      if(sel.querySelector('option[value="'+y+'"]')){
+        sel.value = y;
+        filled.push("출생연도: " + y + "년생");
+      }
+      continue;
+    }
+
+    // 성별
+    if(/^성별\s*[:\s]?\s*(여|여성|여자)/.test(line) || /^(여성|여자)$/.test(line)){
+      const r = document.querySelector('input[name="gender"][value="여성"]');
+      if(r){ r.checked = true; r.dispatchEvent(new Event("change",{bubbles:true})); }
+      filled.push("성별: 여성");
+      continue;
+    }
+    if(/^성별\s*[:\s]?\s*(남|남성|남자)/.test(line) || /^(남성|남자)$/.test(line)){
+      const r = document.querySelector('input[name="gender"][value="남성"]');
+      if(r){ r.checked = true; r.dispatchEvent(new Event("change",{bubbles:true})); }
+      filled.push("성별: 남성");
+      continue;
+    }
+
+    // 직업/직장명
+    const jm = line.match(/(직업|직장|회사|업종)\s*[:\s]?\s*(.+)/);
+    if(jm){
+      document.querySelector('input[name="job"]').value = jm[2].trim();
+      filled.push("직업: " + jm[2].trim());
+      continue;
+    }
+
+    // 이름
+    const nm = line.match(/(이름|성명)\s*[:\s]?\s*(.+)/);
+    if(nm){
+      document.querySelector('input[name="name"]').value = nm[2].trim();
+      filled.push("이름: " + nm[2].trim());
+      continue;
+    }
+
+    // 연락처
+    const pm = line.match(/(연락처|전화|번호|핸드폰|휴대폰)\s*[:\s]?\s*([\d\-]+)/) || line.match(/(010[\-\s]?\d{3,4}[\-\s]?\d{3,4})/);
+    if(pm){
+      document.querySelector('input[name="phone"]').value = (pm[2] || pm[1]).trim();
+      filled.push("연락처: " + (pm[2] || pm[1]).trim());
+      continue;
+    }
+
+    // 닉네임
+    const nkm = line.match(/(닉네임|별명)\s*[:\s]?\s*(.+)/);
+    if(nkm){
+      document.querySelector('input[name="nickname"]').value = nkm[2].trim();
+      filled.push("닉네임: " + nkm[2].trim());
+      continue;
+    }
+
+    // 나머지 → 기타 (어필포인트에)
+    etcLines.push(line);
+  }
+
+  // 기타 → 어필포인트에 추가
+  if(etcLines.length > 0){
+    const appeal = document.getElementById("appeal");
+    appeal.value = (appeal.value ? appeal.value + "\n" : "") + etcLines.join("\n");
+    appeal.dispatchEvent(new Event("input"));
+    filled.push("어필포인트에 " + etcLines.length + "줄 추가");
+  }
+
+  // 결과 표시
+  const result = document.getElementById("ai-result");
+  if(filled.length > 0){
+    result.innerHTML = "✅ 자동 입력 완료: " + filled.join(" / ") + "<br><span style='color:#6b6358;font-size:10px'>나머지 필드를 확인하고 사진·서류를 첨부해주세요</span>";
+    result.classList.add("show");
+  } else {
+    result.innerHTML = "⚠️ 파싱할 수 있는 항목이 없었어요. '이름 홍길동' '직업 마케터' 형태로 작성해주세요.";
+    result.style.borderColor = "rgba(255,77,109,.3)";
+    result.style.color = "#FF6B8A";
+    result.classList.add("show");
+  }
+}
+
 // 사진
 const photoFiles = [null,null,null]; let activeSlot=0;
 function triggerPhoto(i){activeSlot=i;document.getElementById("photo-input").click();}
