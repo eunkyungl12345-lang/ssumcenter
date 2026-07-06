@@ -236,6 +236,11 @@
         <div id="drink-count" class="flex flex-wrap gap-2"></div>
       </div>
 
+      <!-- 신청자 검색 -->
+      <div class="mb-3">
+        <input type="text" id="coffeeSearch" oninput="coffeeSearchFilter()" placeholder="🔍 이름, 닉네임, 연락처로 검색" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+      </div>
+
       <!-- 커피팅 필터 -->
       <div class="flex flex-wrap gap-2 mb-4">
         <button onclick="coffeeFilterBy('all')" class="coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
@@ -760,16 +765,27 @@ function renderCoffeeCard(r){
 function renderCoffeeList(){
   const list = document.getElementById("coffee-list");
 
-  // 필터 적용
+  // 검색 + 필터 적용
   let pool = coffeeApplicants;
+
+  // 검색어 필터
+  if(coffeeSearchQuery){
+    pool = pool.filter(r => {
+      const f=r.fields;
+      const searchTarget=[(f["이름"]||''),(f["닉네임"]||''),(f["연락처"]||''),(f["직업_직장명"]||'')].join(' ').toLowerCase();
+      return searchTarget.includes(coffeeSearchQuery);
+    });
+  }
+
+  // 상태 필터
   if(coffeeFilter === "대기"){
-    pool = coffeeApplicants.filter(r => (r.fields["승인상태"] || "대기") === "대기");
+    pool = pool.filter(r => (r.fields["승인상태"] || "대기") === "대기");
   } else if(coffeeFilter === "승인"){
-    pool = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인");
+    pool = pool.filter(r => r.fields["승인상태"] === "승인");
   } else if(coffeeFilter === "입금완료"){
-    pool = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료");
+    pool = pool.filter(r => r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료");
   } else if(coffeeFilter === "남성" || coffeeFilter === "여성"){
-    pool = coffeeApplicants.filter(r => r.fields["성별"] === coffeeFilter);
+    pool = pool.filter(r => r.fields["성별"] === coffeeFilter);
   }
 
   if(pool.length === 0){
@@ -923,6 +939,12 @@ async function sendLocationSMS(){
   }
   if(success > 0) setSMSLog("location_" + S("회차키"), success);
   toast(`장소 안내 발송 완료! 성공 ${success}명${fail > 0 ? ` / 실패 ${fail}명` : ""}`);
+}
+
+let coffeeSearchQuery='';
+function coffeeSearchFilter(){
+  coffeeSearchQuery=(document.getElementById('coffeeSearch')?.value||'').trim().toLowerCase();
+  renderCoffeeList();
 }
 
 function coffeeFilterBy(f){
