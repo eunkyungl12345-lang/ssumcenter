@@ -628,6 +628,16 @@ function aiFillForm(){
       continue;
     }
 
+    // 어필포인트
+    const apm = line.match(/(어필|어필포인트|자기소개|소개|한줄소개)\s*[:\s]?\s*(.+)/);
+    if(apm){
+      const appeal = document.getElementById("appeal");
+      appeal.value = (appeal.value ? appeal.value + "\n" : "") + apm[2].trim();
+      appeal.dispatchEvent(new Event("input"));
+      filled.push("어필포인트: " + apm[2].trim());
+      continue;
+    }
+
     // 닉네임
     const nkm = line.match(/(닉네임|별명)\s*[:\s]?\s*(.+)/);
     if(nkm){
