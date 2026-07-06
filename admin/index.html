@@ -61,6 +61,28 @@
   .reg-type-tab.active{background:#FFD400;border-color:#FFD400;color:#000}
   .sort-select{background:#161615;border:1px solid #242422;color:#9E9E97;font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer}
   .sort-select:focus{outline:none;border-color:#FFD400}
+
+  /* 소트 탭 */
+  .sort-tab{background:#161615;border:1px solid #242422;color:#9E9E97;cursor:pointer}
+  .sort-tab:hover{border-color:#FFD400;color:#FFD400}
+  .sort-tab.active{background:#FFD400;border-color:#FFD400;color:#000}
+
+  /* 소개 풀 카드 */
+  .pool-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #242422;cursor:pointer;transition:background .15s}
+  .pool-row:hover{background:rgba(255,212,0,.03)}
+  .pool-row:first-child{border-top:1px solid #FFD400}
+  .pool-row.selected{background:rgba(255,212,0,.08)}
+  .pool-info{flex:1;min-width:0}
+  .pool-birth{font-size:17px;font-weight:900;line-height:1.2}
+  .pool-detail{font-size:12px;color:#9E9E97;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pool-status{font-size:10px;font-weight:700;margin-top:3px}
+  .pool-thumb{width:64px;height:64px;border-radius:12px;overflow:hidden;flex-shrink:0;background:#242422;display:flex;align-items:center;justify-content:center}
+  .pool-thumb img{width:100%;height:100%;object-fit:cover}
+  .pool-thumb i{color:#555;font-size:18px}
+
+  /* 아코디언 상세 */
+  .pool-expand{display:none;padding:0 0 14px;border-bottom:1px solid #242422}
+  .pool-expand.open{display:block}
 </style>
 </head>
 <body class="min-h-screen selection:bg-[#FFD400] selection:text-black">
@@ -176,26 +198,27 @@
     <i class="fa-solid fa-user-plus mr-2"></i>신청자 등록
   </button>
 
-  <!-- 필터 + 정렬 -->
-  <div class="flex items-center justify-between mb-4">
-    <div class="flex flex-wrap gap-2">
+  <!-- 소개 풀 헤더 -->
+  <div class="mb-4">
+    <h2 class="text-lg font-black mb-3">소개 풀 (<span id="pool-count">0</span>명)</h2>
+    <!-- 필터 -->
+    <div class="flex flex-wrap gap-2 mb-3">
       <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
       <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
       <button onclick="filterBy('매칭완료')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="매칭완료">매칭완료</button>
       <button onclick="filterBy('남성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
       <button onclick="filterBy('여성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
     </div>
-    <select id="matching-sort" onchange="sortMatching(this.value)" class="sort-select">
-      <option value="date-desc">최신순</option>
-      <option value="date-asc">오래된순</option>
-      <option value="name">이름순</option>
-      <option value="age-asc">나이 많은순</option>
-      <option value="age-desc">나이 적은순</option>
-    </select>
+    <!-- 정렬 탭 -->
+    <div class="flex gap-1.5">
+      <button onclick="sortMatching('age-asc')" class="sort-tab active text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="age-asc">나이순</button>
+      <button onclick="sortMatching('date-desc')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="date-desc">최신순</button>
+      <button onclick="sortMatching('name')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="name">이름순</button>
+    </div>
   </div>
 
-  <!-- 신청자 목록 -->
-  <div id="applicant-list" class="space-y-3">
+  <!-- 신청자 목록 (소개 풀) -->
+  <div id="applicant-list" class="space-y-0">
     <div class="text-center py-10 text-[#555]">
       <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
       <p class="text-sm">신청자 목록 불러오는 중...</p>
@@ -815,6 +838,9 @@ function renderList(){
     filtered = applicants.filter(r => r.fields["성별"] === currentFilter);
   }
 
+  // 풀 카운트 업데이트
+  document.getElementById("pool-count").textContent = filtered.length;
+
   if(filtered.length === 0){
     list.innerHTML = '<p class="text-center text-[#555] py-10">신청자가 없습니다</p>';
     return;
@@ -824,28 +850,35 @@ function renderList(){
     const f = r.fields;
     const isSelected = selected[0]?.id === r.id || selected[1]?.id === r.id;
     const status = f["매칭상태"] || "대기";
-    const statusColor = status === "대기" ? "text-[#FFD400]" : status === "매칭완료" ? "text-emerald-400" : "text-[#9E9E97]";
+    const statusColor = status === "대기" ? "color:#FFD400" : status === "매칭완료" ? "color:#22c55e" : "color:#9E9E97";
     const photoUrl = f["프로필사진"] && f["프로필사진"][0] ? f["프로필사진"][0].url : null;
+    const photos = f["프로필사진"] || [];
+    const gender = f["성별"] === "여성" ? "♀" : f["성별"] === "남성" ? "♂" : "";
+    const detail = [f["사는곳"], f["키"] ? f["키"]+"cm" : "", f["직업"]].filter(Boolean).join(" · ");
 
-    return `<div class="card bg-[#161615] border border-[#242422] rounded-2xl p-4 cursor-pointer ${isSelected ? 'selected' : ''}" onclick="toggleSelect('${r.id}')">
-      <div class="flex gap-3">
-        <div class="w-14 h-14 shrink-0 rounded-xl bg-[#242422] border border-[#242422] overflow-hidden flex items-center justify-center">
-          ${photoUrl ? `<img src="${photoUrl}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user text-[#555]"></i>`}
+    return `<div>
+      <div class="pool-row ${isSelected ? 'selected' : ''}" onclick="toggleSelect('${r.id}')">
+        <div class="pool-info">
+          <div class="pool-birth">${f["출생연도"] || "?"}년생 <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span></div>
+          <div class="pool-detail">${detail || "-"}</div>
+          <div class="pool-status" style="${statusColor}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · <span style="color:#FFD400">⚡슈퍼</span>' : ""}</div>
         </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-sm">${f["이름"] || "이름없음"}</span>
-            <span class="text-[10px] ${statusColor} font-bold">${status}</span>
-            <span class="text-[10px] text-[#555]">${f["성별"] || ""}</span>
+        <div class="pool-thumb" ${photoUrl ? `onclick="event.stopPropagation();openPhoto('${photoUrl}')"` : ""}>
+          ${photoUrl ? `<img src="${photoUrl}" alt="">` : `<i class="fa-solid fa-user"></i>`}
+        </div>
+      </div>
+      <div class="pool-expand" id="expand-${r.id}">
+        <div style="padding:10px 0 0;display:flex;flex-direction:column;gap:8px">
+          ${photos.length > 1 ? `<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">${photos.map(p => `<img src="${p.url}" onclick="openPhoto('${p.url}')" style="width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0">`).join("")}</div>` : ""}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">연락처</span><br><b>${f["연락처"] || "-"}</b></div>
+            <div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">종교</span><br><b>${f["종교"] || "-"}</b></div>
+            <div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">취미</span><br><b>${f["취미"] || "-"}</b></div>
+            <div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
           </div>
-          <div class="text-xs text-[#9E9E97] mt-0.5">${f["출생연도"] || ""}년생 · ${f["직업"] || ""} · ${f["키"] || ""}cm</div>
-          ${f["연락처"] ? `<div class="text-xs text-[#9E9E97] mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${f["연락처"]}</div>` : ""}
-          <div class="text-xs text-[#555] mt-1 truncate">${f["자기소개"] || ""}</div>
-          <div class="text-[10px] text-[#444] mt-0.5">${f["사는곳"] || ""} · ${f["종교"] || ""} · ${f["매칭유형"] || "일반매칭"}</div>
-          <div class="flex flex-wrap gap-1 mt-1.5">
-            ${(f["성격키워드"] || "").split(", ").map(kw => kw ? `<span class="text-[10px] bg-[#FFD400]/10 text-[#FFD400] px-1.5 py-0.5 rounded-full">${kw}</span>` : "").join("")}
-          </div>
-          <div class="text-[10px] text-[#444] mt-1.5">선호: ${f["선호나이대"] || ""} · ${f["선호직업군"] || ""}</div>
+          ${f["자기소개"] ? `<div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">자기소개</span><p style="color:#9E9E97;margin-top:4px;line-height:1.5">${f["자기소개"]}</p></div>` : ""}
+          ${f["성격키워드"] ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${f["성격키워드"].split(",").map(kw => kw.trim()).filter(Boolean).map(kw => `<span style="font-size:10px;background:rgba(255,212,0,.1);color:#FFD400;padding:3px 8px;border-radius:20px">${kw}</span>`).join("")}</div>` : ""}
+          <div style="font-size:10px;color:#555">선호: ${f["선호나이대"] || "-"} · ${f["선호직업군"] || "-"}</div>
         </div>
       </div>
     </div>`;
@@ -855,6 +888,10 @@ function renderList(){
 function toggleSelect(id){
   const record = applicants.find(r => r.id === id);
   if(!record) return;
+
+  // 아코디언 토글
+  const expand = document.getElementById("expand-" + id);
+  if(expand) expand.classList.toggle("open");
 
   if(selected[0]?.id === id){ selected[0] = null; }
   else if(selected[1]?.id === id){ selected[1] = null; }
@@ -1856,6 +1893,9 @@ let coffeeSortOrder = "date-desc";
 
 function sortMatching(order){
   matchingSort = order;
+  document.querySelectorAll(".sort-tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.sort === order);
+  });
   sortApplicantsArray(applicants, order, "matching");
   renderList();
 }
