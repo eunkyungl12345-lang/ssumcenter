@@ -257,6 +257,12 @@
 
     <!-- 뷰: 출석부 -->
     <div id="coffee-view-lineup" class="hidden">
+      <!-- 음료 카운트 (출석부용) -->
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mb-4">
+        <div class="text-xs font-bold text-[#9E9E97] mb-3">☕ 음료 주문 현황 <span class="text-[#555]">(입금완료 참가자 기준)</span></div>
+        <div id="lineup-drink-count" class="flex flex-wrap gap-2"></div>
+      </div>
+
       <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 mb-4">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-sm font-black"><i class="fa-solid fa-clipboard-check y mr-1.5"></i>출석부 (입금완료 참가자)</h3>
@@ -990,14 +996,17 @@ function renderLineup(){
   function renderRow(r, idx){
     const f = r.fields;
     const attended = isAttended(r);
+    const nickname = f["닉네임"] ? `(${f["닉네임"]})` : '';
+    const drink = f["음료선택"] || '';
     return `<div class="flex items-center gap-3 bg-[#0D0D0C] rounded-xl p-3 ${attended ? 'border border-emerald-500/30' : 'border border-[#242422]'}">
       <div class="text-xs font-bold text-[#555] w-5 text-center">${idx + 1}</div>
       <button onclick="toggleAttendance('${r.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition ${attended ? 'bg-emerald-500 text-white' : 'bg-[#242422] text-[#555]'}">
         <i class="fa-solid fa-check text-xs"></i>
       </button>
       <div class="flex-1 min-w-0">
-        <div class="text-sm font-bold">${f["이름"] || "이름없음"} <span class="text-[10px] text-[#555] font-normal">${f["출생연도"] || ""}년생</span></div>
+        <div class="text-sm font-bold">${f["이름"] || "이름없음"}${nickname} <span class="text-[10px] text-[#555] font-normal">${f["출생연도"] || ""}년생</span></div>
         <div class="text-[11px] text-[#9E9E97]">${f["직업_직장명"] || ""} · ${f["연락처"] || ""}</div>
+        ${drink ? `<div class="text-[10px] text-[#9E9E97] mt-0.5">☕ ${drink}</div>` : ''}
       </div>
       <div class="text-[10px] ${attended ? 'text-emerald-400' : 'text-[#555]'} font-bold">${attended ? '출석' : '미출석'}</div>
     </div>`;
@@ -1014,6 +1023,18 @@ function renderLineup(){
   const checkedAttend = confirmed.filter(r => isAttended(r)).length;
   document.getElementById("attend-count").textContent = checkedAttend;
   document.getElementById("attend-total").textContent = totalAttend;
+
+  // 출석부 음료 카운트 (입금완료 기준)
+  const lineupDrinks={};
+  confirmed.forEach(r=>{
+    const d=r.fields["음료선택"]||"미선택";
+    lineupDrinks[d]=(lineupDrinks[d]||0)+1;
+  });
+  const ldc=document.getElementById("lineup-drink-count");
+  if(ldc){
+    if(Object.keys(lineupDrinks).length===0){ldc.innerHTML='<span class="text-xs text-[#555]">입금완료된 참가자가 없습니다</span>';}
+    else{ldc.innerHTML=Object.entries(lineupDrinks).map(([k,v])=>`<span class="text-xs bg-[#242422] text-[#9E9E97] px-3 py-1.5 rounded-full">☕ ${k} <b class="y">${v}</b></span>`).join("");}
+  }
 }
 
 // 행사 후 전체 문자 발송
