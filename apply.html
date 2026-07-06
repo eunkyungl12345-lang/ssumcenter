@@ -636,6 +636,26 @@ function aiFillForm(){
       continue;
     }
 
+    // 관심 재테크
+    const ftm = line.match(/(재테크|관심\s*분야|투자)\s*[:\s]?\s*(.+)/);
+    if(ftm){
+      const interests = ftm[2].trim();
+      const chips = document.querySelectorAll("#fintech-chips .chip");
+      const fintechInput = document.getElementById("fintech-input");
+      const matched = [];
+      chips.forEach(chip => {
+        if(interests.includes(chip.dataset.val)){
+          chip.classList.add("selected");
+          matched.push(chip.dataset.val);
+        }
+      });
+      if(matched.length > 0){
+        fintechInput.value = matched.join(",");
+        filled.push("관심재테크: " + matched.join(", "));
+      }
+      continue;
+    }
+
     // 나머지 → 기타 (어필포인트에)
     etcLines.push(line);
   }
