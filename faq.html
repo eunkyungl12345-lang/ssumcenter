@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자주 묻는 질문 — FAQ | 썸류센터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"></noscript>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR',sans-serif;background:#0e0c0a;color:#f5f0ea;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  a{text-decoration:none;color:inherit}
+  .y{color:#FFBE2E}
+  ::selection{background:#FFBE2E;color:#000}
+
+  /* Nav */
+  nav.site-nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:rgba(14,12,10,.8);border-bottom:1px solid rgba(255,255,255,.04);padding:14px 20px}
+  .nav-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+  .nav-inner img{height:28px}
+  .nav-link{font-size:14px;font-weight:600;color:#9a9080;transition:color .2s}
+  .nav-link:hover{color:#fff}
+  .nav-link i{margin-right:4px}
+
+  /* Main */
+  main.content{max-width:600px;margin:0 auto;padding:40px 20px 60px}
+
+  /* Title */
+  .title-section{text-align:center;margin-bottom:48px}
+  .title-emoji{font-size:36px;margin-bottom:12px}
+  .title-section h1{font-size:24px;font-weight:900;line-height:1.25}
+  @media(min-width:768px){.title-section h1{font-size:32px}}
+  .title-desc{font-size:15px;color:#9a9080;margin-top:12px;line-height:1.6}
+
+  /* Category */
+  .faq-category{margin-bottom:40px}
+  .faq-category-title{font-size:14px;font-weight:700;color:#FFBE2E;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .faq-category-title i{font-size:12px}
+
+  /* Accordion */
+  .faq-item{border:1px solid rgba(255,255,255,.06);border-radius:14px;margin-bottom:10px;overflow:hidden;background:#16140f;transition:all .3s}
+  .faq-item.open{border-color:rgba(255,190,46,.15)}
+  .faq-q{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;cursor:pointer;font-size:15px;font-weight:600;line-height:1.5;gap:12px;-webkit-user-select:none;user-select:none}
+  .faq-q:hover{color:#FFBE2E}
+  .faq-q .q-label{color:#FFBE2E;font-weight:800;font-size:14px;flex-shrink:0}
+  .faq-q .arrow{font-size:12px;color:#6b6358;transition:transform .3s;flex-shrink:0}
+  .faq-item.open .arrow{transform:rotate(180deg);color:#FFBE2E}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease}
+  .faq-item.open .faq-a{max-height:500px;padding:0 20px 20px}
+  .faq-a-inner{font-size:14px;line-height:1.85;color:#b0a590;padding-top:16px;border-top:1px solid rgba(255,255,255,.04)}
+
+  /* CTA */
+  .bottom-cta{text-align:center;margin-top:56px}
+  .cta-btn{display:inline-block;background:#FFBE2E;color:#000;font-weight:800;padding:16px 40px;border-radius:16px;font-size:15px;transition:filter .2s}
+  .cta-btn:hover{filter:brightness(.9)}
+  .cta-btn i{margin-right:6px}
+  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,190,46,.3)}50%{box-shadow:0 0 24px 8px rgba(255,190,46,.12)}}
+  .cta-glow{animation:glow-pulse 2.5s infinite ease-in-out}
+  .contact-box{margin-top:28px;background:#16140f;border:1px solid rgba(255,200,100,.06);border-radius:14px;padding:20px;font-size:14px;color:#9a9080;line-height:1.7}
+  .contact-box a{color:#FFBE2E;font-weight:600}
+  .back-link{display:inline-block;margin-top:16px;font-size:14px;color:#9a9080;transition:color .2s}
+  .back-link:hover{color:#fff}
+  .back-link i{margin-right:4px}
+
+  /* Footer */
+  footer.site-footer{border-top:1px solid rgba(255,255,255,.04);padding:32px 20px;text-align:center}
+  footer.site-footer img{height:20px;margin:0 auto 12px;display:block;opacity:.4}
+  footer.site-footer p{font-size:11px;color:#5a5248}
+
+  /* Reveal */
+  [data-r]{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+  [data-r].in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html"><img src="logo.png" alt="썸류센터"></a>
+    <a href="index.html" class="nav-link"><i class="fa-solid fa-arrow-left"></i>홈으로</a>
+  </div>
+</nav>
+
+<main class="content">
+
+  <!-- 타이틀 -->
+  <div class="title-section" data-r>
+    <div class="title-emoji">💬</div>
+    <h1>자주 묻는 <span class="y">질문</span></h1>
+    <p class="title-desc">궁금한 점이 있으신가요?<br>자주 묻는 질문들을 모아봤어요.</p>
+  </div>
+
+  <!-- 신청 관련 -->
+  <div class="faq-category" data-r>
+    <div class="faq-category-title"><i class="fa-solid fa-clipboard-check"></i>신청 관련</div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 혼자 가도 되나요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">네, 대부분 혼자 오세요! 😊 오히려 혼자 오시는 분이 더 많아요. 센터장이 분위기를 편안하게 이끌어드리니까 걱정 마세요. 물론 친구와 함께 오시는 것도 환영합니다!</div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 신청하면 바로 확정인가요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">아니요, 신청 후 센터장이 프로필을 검토한 뒤 확정 문자를 별도로 보내드려요. 성별 비율과 연령대 밸런스를 맞추기 위해 선별 과정을 거칩니다.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 어떤 사람들이 참여하나요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">주로 20~30대 직장인분들이 참여하세요. 직장인 인증을 거치기 때문에 안심하고 참여하실 수 있어요. 다양한 직종과 스타일의 분들이 오시니 새로운 만남을 기대해주세요!</div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 나이/키 조건에 살짝 안 맞는데 신청 가능한가요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">매력 있는 분들은 1~2살 정도 넘어가더라도 승인드리고 있어요. 일단 신청해주시면 센터장이 검토 후 안내드리겠습니다!</div></div>
+    </div>
+  </div>
+
+  <!-- 진행 관련 -->
+  <div class="faq-category" data-r>
+    <div class="faq-category-title"><i class="fa-solid fa-mug-hot"></i>진행 관련</div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 썸배달(로테이션)은 어떻게 진행되나요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">여러 이성과 짧은 시간(5~7분) 동안 1:1 대화를 나누는 방식이에요. 라운드마다 자리를 이동하면서 다양한 분들을 만나보실 수 있어요. 마지막에 마음에 드는 분을 선택하시면 매칭 결과를 알려드립니다.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 재테크 미팅은 뭐가 다른가요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">재테크라는 공통 관심사를 가진 분들이 모여요. 자연스럽게 재테크 이야기를 나누면서 소개팅도 함께 하는 방식이에요. 주식, 부동산, 저축 등 돈 얘기를 편하게 하면서 설렘도 느낄 수 있답니다!</div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 1:1 매칭은 어떻게 진행되나요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">센터장이 회원님의 이상형 조건을 파악한 뒤, 조건에 맞는 분을 직접 찾아서 매칭해드려요. 온라인으로 진행되기 때문에 장소·시간 제약 없이 편하게 만나실 수 있습니다.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 소요 시간은 얼마나 되나요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">썸배달과 재테크 미팅은 약 2시간~2시간 반 정도 소요돼요. 1:1 매칭은 두 분이 자유롭게 시간을 정하시면 됩니다.</div></div>
+    </div>
+  </div>
+
+  <!-- 비용/취소 관련 -->
+  <div class="faq-category" data-r>
+    <div class="faq-category-title"><i class="fa-solid fa-wallet"></i>비용 · 취소</div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 참가비는 얼마인가요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">프로그램마다 다르며, 각 프로그램 안내 페이지에서 확인하실 수 있어요. 참가비에는 음료와 장소 이용료가 포함되어 있습니다.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 취소/환불은 가능한가요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">행사 3일 전까지는 전액 환불 가능해요. 그 이후에는 성별 비율 조정이 어렵기 때문에 환불이 어려울 수 있습니다. 부득이한 경우 센터장에게 미리 연락 주시면 최대한 도와드릴게요.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 결제는 언제 하나요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">신청 후 확정 문자를 받으신 뒤에 입금 안내를 드려요. 신청 단계에서는 비용이 발생하지 않으니 부담 없이 신청해주세요!</div></div>
+    </div>
+  </div>
+
+  <!-- 기타 -->
+  <div class="faq-category" data-r>
+    <div class="faq-category-title"><i class="fa-solid fa-circle-question"></i>기타</div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 재참여도 가능한가요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">물론이죠! 매번 새로운 분들이 참여하시기 때문에 재참여하셔도 새로운 만남을 기대하실 수 있어요. 실제로 재참여율이 높은 편입니다 😊</div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 개인정보는 안전한가요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">네, 수집된 개인정보는 매칭 목적으로만 사용하며 제3자에게 절대 제공하지 않아요. 행사 종료 후 일정 기간이 지나면 안전하게 폐기합니다.</div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div><span class="q-label">Q.</span> 매칭이 안 되면 어떡하나요?</div>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">아쉽게 매칭이 안 되는 경우도 있어요. 하지만 새로운 사람들과 대화하는 것 자체가 좋은 경험이 될 거예요. 다음 회차에 다시 도전해보시는 것도 추천드립니다!</div></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="bottom-cta" data-r>
+    <p style="font-size:15px;color:#9a9080;margin-bottom:20px">더 궁금한 게 있으신가요?</p>
+    <div class="contact-box">
+      <p>카카오톡 채널에서 편하게 물어보세요!</p>
+      <p style="margin-top:8px"><i class="fa-solid fa-comment" style="color:#FFBE2E;margin-right:4px"></i> <a href="https://pf.kakao.com/_xfxnxhxj" target="_blank">썸류센터 카카오채널</a></p>
+    </div>
+    <br>
+    <a href="index.html#apply" class="cta-btn cta-glow"><i class="fa-solid fa-heart"></i>신청하러 가기</a>
+    <br>
+    <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i>홈으로 돌아가기</a>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <img src="logo.png" alt="썸류센터">
+  <p>© 2025 썸류센터. All rights reserved.</p>
+</footer>
+
+<script>
+/* Reveal on scroll */
+var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in')})},{threshold:.15});
+document.querySelectorAll('[data-r]').forEach(function(el){obs.observe(el)});
+
+/* Accordion toggle */
+function toggleFaq(el){
+  var item=el.parentElement;
+  var wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(i){i.classList.remove('open')});
+  if(!wasOpen) item.classList.add('open');
+}
+</script>
+</body>
+</html>
