@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/eunkyungl12345-lang/ssumcenter#readme",
   "dependencies": {
-    "solapi": "^6.0.1"
+    "@tailwindcss/cli": "^4.3.2",
+    "solapi": "^6.0.1",
+    "tailwindcss": "^4.3.2"
   }
 }

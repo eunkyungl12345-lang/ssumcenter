@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>센터장 매칭 관리 | 썸류센터</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="/tailwind.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
@@ -1463,7 +1463,16 @@ async function sendCustomSMS(){
 }
 
 // 비밀번호 잠금
+var pwFailCount = 0;
+var pwLockUntil = 0;
 async function checkPw(){
+  var now = Date.now();
+  if(now < pwLockUntil){
+    var sec = Math.ceil((pwLockUntil - now) / 1000);
+    document.getElementById("pw-error").textContent = sec + "초 후에 다시 시도해주세요";
+    document.getElementById("pw-error").classList.remove("hidden");
+    return;
+  }
   const input = document.getElementById("pw-input").value;
   try {
     const res = await fetch("/api/admin-auth", {
@@ -1473,11 +1482,20 @@ async function checkPw(){
     });
     const data = await res.json();
     if(data.ok){
+      pwFailCount = 0;
       document.getElementById("lock-screen").classList.add("hidden");
       sessionStorage.setItem("admin_key", input);
       loadApplicants();
       loadSettings();
     } else {
+      pwFailCount++;
+      if(pwFailCount >= 5){
+        pwLockUntil = Date.now() + 30000;
+        document.getElementById("pw-error").textContent = "5회 실패! 30초 후에 다시 시도해주세요";
+        pwFailCount = 0;
+      } else {
+        document.getElementById("pw-error").textContent = "비밀번호가 틀렸습니다 (" + pwFailCount + "/5)";
+      }
       document.getElementById("pw-error").classList.remove("hidden");
       document.getElementById("pw-input").value = "";
       document.getElementById("pw-input").focus();
