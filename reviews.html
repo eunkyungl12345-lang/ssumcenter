@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>리얼 후기 — 참여자 생생 리뷰 | 썸류센터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"></noscript>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR',sans-serif;background:#0e0c0a;color:#f5f0ea;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  a{text-decoration:none;color:inherit}
+  .y{color:#FFBE2E}
+  ::selection{background:#FFBE2E;color:#000}
+
+  /* Nav */
+  nav.site-nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:rgba(14,12,10,.8);border-bottom:1px solid rgba(255,255,255,.04);padding:14px 20px}
+  .nav-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+  .nav-inner img{height:28px}
+  .nav-link{font-size:14px;font-weight:600;color:#9a9080;transition:color .2s}
+  .nav-link:hover{color:#fff}
+  .nav-link i{margin-right:4px}
+
+  /* Main */
+  main.content{max-width:600px;margin:0 auto;padding:40px 20px 60px}
+
+  /* Title */
+  .title-section{text-align:center;margin-bottom:48px}
+  .title-emoji{font-size:36px;margin-bottom:12px}
+  .title-section h1{font-size:24px;font-weight:900;line-height:1.25}
+  @media(min-width:768px){.title-section h1{font-size:32px}}
+  .title-desc{font-size:15px;color:#9a9080;margin-top:12px;line-height:1.6}
+
+  /* Stats */
+  .stats{display:flex;justify-content:center;gap:32px;margin-top:28px}
+  .stat{text-align:center}
+  .stat-num{font-size:28px;font-weight:900;color:#FFBE2E}
+  .stat-label{font-size:11px;color:#6b6358;margin-top:4px}
+
+  /* Tabs */
+  .tabs{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+  .tab{padding:8px 18px;border-radius:100px;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.08);background:transparent;color:#9a9080;cursor:pointer;transition:all .2s}
+  .tab.active{background:rgba(255,190,46,.1);border-color:rgba(255,190,46,.25);color:#FFBE2E}
+
+  /* Review cards */
+  .review-list{display:flex;flex-direction:column;gap:16px}
+  .review-card{background:#16140f;border:1px solid rgba(255,200,100,.06);border-radius:16px;padding:24px;transition:all .35s}
+  .review-card:hover{border-color:rgba(255,190,46,.15);box-shadow:0 8px 32px rgba(255,190,46,.04)}
+  .review-stars{color:#FFBE2E;font-size:11px;letter-spacing:3px;margin-bottom:12px}
+  .review-text{font-size:14px;line-height:1.85;font-weight:400}
+  .review-meta{font-size:12px;color:#6b6358;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:8px}
+  .review-tag{display:inline-block;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700}
+  .tag-rotation{background:rgba(255,190,46,.1);color:#FFBE2E}
+  .tag-fintech{background:rgba(76,175,80,.1);color:#66BB6A}
+  .tag-oneone{background:rgba(156,39,176,.1);color:#CE93D8}
+  .tag-couple{background:rgba(244,67,54,.1);color:#EF9A9A}
+
+  /* Couple story */
+  .couple-section{margin-top:56px}
+  .couple-section h2{font-size:20px;font-weight:900;margin-bottom:24px;text-align:center}
+  .couple-card{background:linear-gradient(135deg,rgba(255,190,46,.06),rgba(255,100,100,.04));border:1px solid rgba(255,190,46,.12);border-radius:20px;padding:28px;text-align:center}
+  .couple-emoji{font-size:40px;margin-bottom:16px}
+  .couple-text{font-size:15px;line-height:1.9;font-weight:400}
+  .couple-meta{font-size:12px;color:#9a9080;margin-top:16px}
+
+  /* CTA */
+  .bottom-cta{text-align:center;margin-top:56px}
+  .cta-btn{display:inline-block;background:#FFBE2E;color:#000;font-weight:800;padding:16px 40px;border-radius:16px;font-size:15px;transition:filter .2s}
+  .cta-btn:hover{filter:brightness(.9)}
+  .cta-btn i{margin-right:6px}
+  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,190,46,.3)}50%{box-shadow:0 0 24px 8px rgba(255,190,46,.12)}}
+  .cta-glow{animation:glow-pulse 2.5s infinite ease-in-out}
+  .back-link{display:inline-block;margin-top:16px;font-size:14px;color:#9a9080;transition:color .2s}
+  .back-link:hover{color:#fff}
+  .back-link i{margin-right:4px}
+
+  /* Footer */
+  footer.site-footer{border-top:1px solid rgba(255,255,255,.04);padding:32px 20px;text-align:center}
+  footer.site-footer img{height:20px;margin:0 auto 12px;display:block;opacity:.4}
+  footer.site-footer p{font-size:11px;color:#5a5248}
+
+  /* Reveal */
+  [data-r]{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+  [data-r].in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html"><img src="logo.png" alt="썸류센터"></a>
+    <a href="index.html" class="nav-link"><i class="fa-solid fa-arrow-left"></i>홈으로</a>
+  </div>
+</nav>
+
+<main class="content">
+
+  <!-- 타이틀 -->
+  <div class="title-section" data-r>
+    <div class="title-emoji">⭐</div>
+    <h1>참여자 <span class="y">리얼 후기</span></h1>
+    <p class="title-desc">실제 참여하신 분들의 생생한 이야기를 모았어요.</p>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">8</div>
+        <div class="stat-label">회 진행</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">120+</div>
+        <div class="stat-label">명 참여</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">42%</div>
+        <div class="stat-label">커플 매칭률</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 필터 탭 -->
+  <div class="tabs" data-r>
+    <button class="tab active" data-filter="all">전체</button>
+    <button class="tab" data-filter="rotation">썸배달</button>
+    <button class="tab" data-filter="fintech">재테크 미팅</button>
+    <button class="tab" data-filter="oneone">1:1 매칭</button>
+    <button class="tab" data-filter="couple">커플 성사</button>
+  </div>
+
+  <!-- 후기 목록 -->
+  <div class="review-list" id="review-list" data-r>
+
+    <div class="review-card" data-type="rotation">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"로테이션이라 자연스럽게 8명과 대화했어요. 1:1 소개팅이랑 다르게 부담 없어서 진짜 케미 맞는 분을 찾았습니다."</p>
+      <div class="review-meta"><span class="review-tag tag-rotation">썸배달</span> 20대 남성</div>
+    </div>
+
+    <div class="review-card" data-type="fintech">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"3회차 참여 중인데 매번 새로운 분들 만나서 좋아요. 편안하고 싱그러운 기운을 나눠주는 분을 만났어요."</p>
+      <div class="review-meta"><span class="review-tag tag-fintech">재테크 미팅</span> 30대 여성 · 3회 참여</div>
+    </div>
+
+    <div class="review-card" data-type="fintech">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"소개팅 앱은 지쳤는데, 오프라인이라 확실히 느낌이 달랐어요. 직장인 인증도 해서 안심되고요."</p>
+      <div class="review-meta"><span class="review-tag tag-fintech">재테크 미팅</span> 20대 여성</div>
+    </div>
+
+    <div class="review-card" data-type="rotation">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"혼자 갔는데 전혀 어색하지 않았어요. 센터장분들이 분위기 잘 이끌어주셔서 친구랑 다음에 같이 가기로 했어요."</p>
+      <div class="review-meta"><span class="review-tag tag-rotation">썸배달</span> 30대 남성 · 동반 재참여</div>
+    </div>
+
+    <div class="review-card" data-type="couple">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"커피팅에서 만난 분과 지금 3개월째 잘 만나고 있어요. 진짜 감사합니다!"</p>
+      <div class="review-meta"><span class="review-tag tag-couple">커플 성사</span> 30대 남성</div>
+    </div>
+
+    <div class="review-card" data-type="rotation">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"처음엔 긴장했는데 분위기가 너무 좋아서 금방 풀렸어요. 다른 소개팅이랑 차원이 다릅니다. 다음 달에도 갈게요!"</p>
+      <div class="review-meta"><span class="review-tag tag-rotation">썸배달</span> 20대 여성</div>
+    </div>
+
+    <div class="review-card" data-type="fintech">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"재테크라는 공통 관심사가 있으니까 대화가 자연스럽게 이어졌어요. 주식 얘기하다가 번호 교환까지 성공!"</p>
+      <div class="review-meta"><span class="review-tag tag-fintech">재테크 미팅</span> 20대 남성</div>
+    </div>
+
+    <div class="review-card" data-type="oneone">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"센터장님이 제 이상형을 정확히 파악하셔서 딱 맞는 분을 매칭해주셨어요. 온라인이라 시간 맞추기도 편했고요."</p>
+      <div class="review-meta"><span class="review-tag tag-oneone">1:1 매칭</span> 30대 여성</div>
+    </div>
+
+    <div class="review-card" data-type="couple">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"썸배달에서 만난 분과 지금 사귀고 있어요. 로테이션으로 다양한 분을 만나봤는데, 세 번째 분과 바로 통했어요. 썸류센터 아니었으면 못 만났을 분이에요."</p>
+      <div class="review-meta"><span class="review-tag tag-couple">커플 성사</span> 20대 여성 · 썸배달 → 연인</div>
+    </div>
+
+    <div class="review-card" data-type="rotation">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"친구가 추천해서 같이 갔는데, 둘 다 번호 따고 왔어요 ㅋㅋ 다음에 또 같이 가자고 난리입니다."</p>
+      <div class="review-meta"><span class="review-tag tag-rotation">썸배달</span> 20대 남성 · 동반 참여</div>
+    </div>
+
+    <div class="review-card" data-type="fintech">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"커피 한 잔 하면서 재테크 얘기도 하고, 새로운 사람도 만나고. 이런 자리가 더 많았으면 좋겠어요."</p>
+      <div class="review-meta"><span class="review-tag tag-fintech">재테크 미팅</span> 30대 남성</div>
+    </div>
+
+    <div class="review-card" data-type="oneone">
+      <div class="review-stars">♥ ♥ ♥ ♥ ♥</div>
+      <p class="review-text">"바빠서 오프라인은 힘든데, 1:1 온라인 매칭이라 딱 좋았어요. 프로필도 꼼꼼하게 확인해주시고 안심됐습니다."</p>
+      <div class="review-meta"><span class="review-tag tag-oneone">1:1 매칭</span> 30대 남성</div>
+    </div>
+
+  </div>
+
+  <!-- 커플 성사 스토리 -->
+  <div class="couple-section" data-r>
+    <h2>💕 <span class="y">커플 성사</span> 스토리</h2>
+    <div style="display:flex;flex-direction:column;gap:16px;margin-top:24px">
+      <div class="couple-card">
+        <div class="couple-emoji">💑</div>
+        <p class="couple-text">"재테크 커피팅에서 처음 만났어요. 서로 주식 얘기하다가 웃음 코드가 맞아서 연락처를 교환했고, 지금은 3개월째 행복하게 만나고 있어요!"</p>
+        <p class="couple-meta">30대 남성 × 20대 여성 · 재테크 커피팅에서 만남</p>
+      </div>
+      <div class="couple-card">
+        <div class="couple-emoji">💑</div>
+        <p class="couple-text">"썸배달 로테이션에서 세 번째로 만난 분이었어요. 5분 대화인데 시간이 너무 빨리 갔고, 끝나자마자 서로 1순위로 적었대요. 운명이었나 봐요."</p>
+        <p class="couple-meta">20대 여성 × 20대 남성 · 썸배달에서 만남</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="bottom-cta" data-r>
+    <p style="font-size:15px;color:#9a9080;margin-bottom:20px">나도 설렘을 받아볼까?</p>
+    <a href="index.html#apply" class="cta-btn cta-glow"><i class="fa-solid fa-heart"></i>신청하러 가기</a>
+    <br>
+    <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i>홈으로 돌아가기</a>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <img src="logo.png" alt="썸류센터">
+  <p>© 2025 썸류센터. All rights reserved.</p>
+</footer>
+
+<script>
+/* Reveal on scroll */
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')})},{threshold:.15});
+document.querySelectorAll('[data-r]').forEach(el=>obs.observe(el));
+
+/* Tab filter */
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    this.classList.add('active');
+    const f=this.dataset.filter;
+    document.querySelectorAll('.review-card').forEach(card=>{
+      card.style.display=(f==='all'||card.dataset.type===f)?'':'none';
+    });
+  });
+});
+</script>
+</body>
+</html>
