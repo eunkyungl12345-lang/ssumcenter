@@ -137,17 +137,21 @@
   <div id="section-matching">
 
   <!-- 통계 -->
-  <div class="grid grid-cols-3 gap-3 mb-8">
+  <div class="grid grid-cols-4 gap-3 mb-8">
     <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
       <div class="text-2xl font-black y" id="stat-total">-</div>
       <div class="text-[11px] text-[#9E9E97] mt-1">전체 신청</div>
     </div>
     <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
-      <div class="text-2xl font-black y" id="stat-waiting">-</div>
-      <div class="text-[11px] text-[#9E9E97] mt-1">대기 중</div>
+      <div class="text-2xl font-black text-[#FFD400]" id="stat-waiting">-</div>
+      <div class="text-[11px] text-[#9E9E97] mt-1">승인 대기</div>
     </div>
     <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
-      <div class="text-2xl font-black y" id="stat-matched">-</div>
+      <div class="text-2xl font-black text-emerald-400" id="stat-approved">-</div>
+      <div class="text-[11px] text-[#9E9E97] mt-1">승인</div>
+    </div>
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
+      <div class="text-2xl font-black text-emerald-400" id="stat-matched">-</div>
       <div class="text-[11px] text-[#9E9E97] mt-1">매칭 완료</div>
     </div>
   </div>
@@ -181,6 +185,9 @@
           <input type="text" id="url-for-1" readonly class="flex-1 bg-[#161615] border border-[#242422] rounded-lg px-3 py-2 text-xs text-white">
           <button onclick="copyUrl('url-for-1')" class="bg-[#242422] hover:bg-[#FFD400]/10 text-white text-xs font-bold px-3 py-2 rounded-lg transition">복사</button>
         </div>
+        <button onclick="sendMatchSms(0)" id="sms-btn-1" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition">
+          <i class="fa-solid fa-comment-sms mr-1"></i>문자로 보내기
+        </button>
       </div>
       <div class="bg-[#0D0D0C] border border-[#FFD400]/30 rounded-xl p-4">
         <div class="text-[10px] y font-bold uppercase tracking-wider mb-2"><span id="result-name-2"></span>에게 보낼 링크</div>
@@ -188,8 +195,14 @@
           <input type="text" id="url-for-2" readonly class="flex-1 bg-[#161615] border border-[#242422] rounded-lg px-3 py-2 text-xs text-white">
           <button onclick="copyUrl('url-for-2')" class="bg-[#242422] hover:bg-[#FFD400]/10 text-white text-xs font-bold px-3 py-2 rounded-lg transition">복사</button>
         </div>
+        <button onclick="sendMatchSms(1)" id="sms-btn-2" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition">
+          <i class="fa-solid fa-comment-sms mr-1"></i>문자로 보내기
+        </button>
       </div>
-      <p class="text-[11px] text-[#555] text-center">링크를 복사해서 카카오톡으로 각각 보내주세요</p>
+      <button onclick="sendMatchSmsAll()" id="sms-btn-all" class="w-full bg-[#FFD400] text-black text-sm font-extrabold px-4 py-3 rounded-xl transition hover:bg-[#E6BE00]">
+        <i class="fa-solid fa-paper-plane mr-1.5"></i>양쪽 모두에게 문자 보내기
+      </button>
+      <p class="text-[11px] text-[#555] text-center">문자 또는 링크 복사 후 카카오톡으로 보내주세요</p>
     </div>
   </div>
 
@@ -204,8 +217,10 @@
     <!-- 필터 -->
     <div class="flex flex-wrap gap-2 mb-3">
       <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
-      <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
+      <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">승인대기</button>
+      <button onclick="filterBy('승인')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
       <button onclick="filterBy('매칭완료')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="매칭완료">매칭완료</button>
+      <button onclick="filterBy('거절')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="거절">거절</button>
       <button onclick="filterBy('남성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
       <button onclick="filterBy('여성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
     </div>
@@ -822,9 +837,11 @@ async function loadApplicants(){
 function updateStats(){
   const total = applicants.length;
   const waiting = applicants.filter(r => (r.fields["매칭상태"] || "대기") === "대기").length;
+  const approved = applicants.filter(r => r.fields["매칭상태"] === "승인").length;
   const matched = applicants.filter(r => r.fields["매칭상태"] === "매칭완료").length;
   document.getElementById("stat-total").textContent = total;
   document.getElementById("stat-waiting").textContent = waiting;
+  document.getElementById("stat-approved").textContent = approved;
   document.getElementById("stat-matched").textContent = matched;
 }
 
@@ -832,7 +849,7 @@ function renderList(){
   const list = document.getElementById("applicant-list");
   let filtered = applicants;
 
-  if(currentFilter === "대기" || currentFilter === "매칭완료"){
+  if(currentFilter === "대기" || currentFilter === "승인" || currentFilter === "매칭완료" || currentFilter === "거절"){
     filtered = applicants.filter(r => (r.fields["매칭상태"] || "대기") === currentFilter);
   } else if(currentFilter === "남성" || currentFilter === "여성"){
     filtered = applicants.filter(r => r.fields["성별"] === currentFilter);
@@ -850,7 +867,7 @@ function renderList(){
     const f = r.fields;
     const isSelected = selected[0]?.id === r.id || selected[1]?.id === r.id;
     const status = f["매칭상태"] || "대기";
-    const statusColor = status === "대기" ? "color:#FFD400" : status === "매칭완료" ? "color:#22c55e" : "color:#9E9E97";
+    const statusColor = status === "대기" ? "color:#FFD400" : status === "승인" ? "color:#22c55e" : status === "매칭완료" ? "color:#3b82f6" : status === "거절" ? "color:#ef4444" : "color:#9E9E97";
     const photoUrl = f["프로필사진"] && f["프로필사진"][0] ? f["프로필사진"][0].url : null;
     const photos = f["프로필사진"] || [];
     const gender = f["성별"] === "여성" ? "♀" : f["성별"] === "남성" ? "♂" : "";
@@ -879,6 +896,11 @@ function renderList(){
           ${f["자기소개"] ? `<div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">자기소개</span><p style="color:#9E9E97;margin-top:4px;line-height:1.5">${f["자기소개"]}</p></div>` : ""}
           ${f["성격키워드"] ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${f["성격키워드"].split(",").map(kw => kw.trim()).filter(Boolean).map(kw => `<span style="font-size:10px;background:rgba(255,212,0,.1);color:#FFD400;padding:3px 8px;border-radius:20px">${kw}</span>`).join("")}</div>` : ""}
           <div style="font-size:10px;color:#555">선호: ${f["선호나이대"] || "-"} · ${f["선호직업군"] || "-"}</div>
+          ${status === "대기" ? `
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button onclick="event.stopPropagation();approveApplicant('${r.id}')" style="flex:1;background:#22c55e;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">✅ 승인</button>
+            <button onclick="event.stopPropagation();rejectApplicant('${r.id}')" style="flex:1;background:#ef4444;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">❌ 반려</button>
+          </div>` : ""}
         </div>
       </div>
     </div>`;
@@ -945,6 +967,115 @@ async function updateMatchStatus(recordId){
       body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "매칭완료" } }] })
     });
   } catch(err){ console.error(err); }
+}
+
+// 1:1 매칭 가입 승인
+async function approveApplicant(recordId){
+  const record = applicants.find(r => r.id === recordId);
+  if(!record) return;
+  const name = record.fields["이름"] || "";
+  if(!confirm(`${name}님을 승인하시겠습니까?\n승인 SMS가 자동 발송됩니다.`)) return;
+
+  try {
+    await fetch("/api/airtable?table=1:1 매칭 신청", {
+      method: "PATCH",
+      headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "승인" } }] })
+    });
+
+    // 승인 SMS 발송
+    const phone = record.fields["연락처"];
+    if(phone){
+      await fetch("/api/send-sms", {
+        method: "POST",
+        headers: apiHeaders(),
+        body: JSON.stringify({
+          to: phone,
+          text: `[썸류센터] ${name}님, 1:1 매칭 프로필이 승인되었습니다! 🎉\n\n센터장이 어울리는 분을 찾아 매칭해드릴게요. 매칭 상대가 정해지면 프로필 카드를 문자로 보내드립니다.\n\n궁금한 점은 카카오채널 @썸류센터로 문의해주세요.`
+        })
+      });
+    }
+
+    record.fields["매칭상태"] = "승인";
+    updateStats();
+    renderList();
+    alert(`${name}님 승인 완료! SMS 발송됨`);
+  } catch(err){
+    console.error(err);
+    alert("승인 처리 중 오류가 발생했습니다.");
+  }
+}
+
+// 1:1 매칭 가입 반려
+async function rejectApplicant(recordId){
+  const record = applicants.find(r => r.id === recordId);
+  if(!record) return;
+  const name = record.fields["이름"] || "";
+  if(!confirm(`${name}님을 반려하시겠습니까?`)) return;
+
+  try {
+    await fetch("/api/airtable?table=1:1 매칭 신청", {
+      method: "PATCH",
+      headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "거절" } }] })
+    });
+
+    record.fields["매칭상태"] = "거절";
+    updateStats();
+    renderList();
+    alert(`${name}님 반려 처리 완료`);
+  } catch(err){
+    console.error(err);
+    alert("반려 처리 중 오류가 발생했습니다.");
+  }
+}
+
+// 매칭 링크 SMS 발송
+async function sendMatchSms(idx){
+  const record = selected[idx];
+  if(!record) return;
+  const name = record.fields["이름"] || "";
+  const phone = record.fields["연락처"];
+  const urlInput = document.getElementById("url-for-" + (idx + 1));
+  const url = urlInput.value;
+  const btn = document.getElementById("sms-btn-" + (idx + 1));
+
+  if(!phone){ alert("연락처가 없습니다."); return; }
+  if(!confirm(`${name}님에게 매칭 프로필 링크를 문자로 보내시겠습니까?`)) return;
+
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>전송 중...';
+  btn.disabled = true;
+
+  try {
+    await fetch("/api/send-sms", {
+      method: "POST",
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        to: phone,
+        text: `[썸류센터] ${name}님, 센터장이 찾은 매칭 상대 프로필이 도착했어요! 💕\n\n아래 링크에서 프로필을 확인하고 수락/거절을 선택해주세요. (48시간 내 응답)\n\n${url}`
+      })
+    });
+    btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>전송 완료!';
+    btn.classList.remove("bg-emerald-600");
+    btn.classList.add("bg-[#242422]");
+  } catch(err){
+    console.error(err);
+    btn.innerHTML = '<i class="fa-solid fa-xmark mr-1"></i>전송 실패';
+    btn.disabled = false;
+  }
+}
+
+// 양쪽 모두에게 매칭 SMS 발송
+async function sendMatchSmsAll(){
+  if(!selected[0] || !selected[1]) return;
+  const btn = document.getElementById("sms-btn-all");
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>전송 중...';
+  btn.disabled = true;
+
+  await sendMatchSms(0);
+  await sendMatchSms(1);
+
+  btn.innerHTML = '<i class="fa-solid fa-check mr-1.5"></i>양쪽 모두 전송 완료!';
 }
 
 function copyUrl(inputId){
