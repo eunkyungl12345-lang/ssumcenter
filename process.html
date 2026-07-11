@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진행 과정 — 신청부터 매칭까지 | 썸류센터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"></noscript>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR',sans-serif;background:#0e0c0a;color:#f5f0ea;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  a{text-decoration:none;color:inherit}
+  .y{color:#FFBE2E}
+  ::selection{background:#FFBE2E;color:#000}
+
+  /* Nav */
+  nav.site-nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:rgba(14,12,10,.8);border-bottom:1px solid rgba(255,255,255,.04);padding:14px 20px}
+  .nav-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+  .nav-inner img{height:28px}
+  .nav-link{font-size:14px;font-weight:600;color:#9a9080;transition:color .2s}
+  .nav-link:hover{color:#fff}
+  .nav-link i{margin-right:4px}
+
+  /* Main */
+  main.content{max-width:600px;margin:0 auto;padding:40px 20px 60px}
+
+  /* Title */
+  .title-section{text-align:center;margin-bottom:56px}
+  .title-emoji{font-size:36px;margin-bottom:12px}
+  .title-section h1{font-size:24px;font-weight:900;line-height:1.25}
+  @media(min-width:768px){.title-section h1{font-size:32px}}
+  .title-desc{font-size:15px;color:#9a9080;margin-top:12px;line-height:1.6}
+
+  /* Timeline */
+  .timeline{position:relative;padding-left:40px}
+  .timeline::before{content:'';position:absolute;left:15px;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,#FFBE2E,rgba(255,190,46,.15))}
+  .tl-step{position:relative;margin-bottom:36px}
+  .tl-step:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-40px;top:2px;width:32px;height:32px;border-radius:50%;background:#1a1710;border:2px solid #FFBE2E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#FFBE2E;z-index:1}
+  .tl-dot.done{background:#FFBE2E;color:#000}
+  .tl-title{font-size:17px;font-weight:800;margin-bottom:6px;line-height:1.4}
+  .tl-desc{font-size:14px;color:#b0a590;line-height:1.85}
+  .tl-tip{margin-top:10px;padding:12px 16px;background:rgba(255,190,46,.04);border:1px solid rgba(255,190,46,.1);border-radius:12px;font-size:13px;color:#9a9080;line-height:1.7}
+  .tl-tip i{color:#FFBE2E;margin-right:6px}
+
+  /* Program compare */
+  .compare-section{margin-top:64px}
+  .compare-section h2{font-size:20px;font-weight:900;text-align:center;margin-bottom:28px}
+  .compare-grid{display:flex;flex-direction:column;gap:14px}
+  .compare-card{background:#16140f;border:1px solid rgba(255,200,100,.06);border-radius:16px;padding:22px;transition:all .35s}
+  .compare-card:hover{border-color:rgba(255,190,46,.15)}
+  .compare-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .compare-emoji{font-size:28px}
+  .compare-name{font-size:16px;font-weight:800}
+  .compare-tag{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;margin-left:8px}
+  .compare-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .compare-list li{font-size:13px;color:#b0a590;display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+  .compare-list li::before{content:'·';color:#FFBE2E;font-weight:800;flex-shrink:0}
+
+  /* CTA */
+  .bottom-cta{text-align:center;margin-top:56px}
+  .cta-btn{display:inline-block;background:#FFBE2E;color:#000;font-weight:800;padding:16px 40px;border-radius:16px;font-size:15px;transition:filter .2s}
+  .cta-btn:hover{filter:brightness(.9)}
+  .cta-btn i{margin-right:6px}
+  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,190,46,.3)}50%{box-shadow:0 0 24px 8px rgba(255,190,46,.12)}}
+  .cta-glow{animation:glow-pulse 2.5s infinite ease-in-out}
+  .back-link{display:inline-block;margin-top:16px;font-size:14px;color:#9a9080;transition:color .2s}
+  .back-link:hover{color:#fff}
+  .back-link i{margin-right:4px}
+
+  /* Footer */
+  footer.site-footer{border-top:1px solid rgba(255,255,255,.04);padding:32px 20px;text-align:center}
+  footer.site-footer img{height:20px;margin:0 auto 12px;display:block;opacity:.4}
+  footer.site-footer p{font-size:11px;color:#5a5248}
+
+  /* Reveal */
+  [data-r]{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+  [data-r].in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html"><img src="logo.png" alt="썸류센터"></a>
+    <a href="index.html" class="nav-link"><i class="fa-solid fa-arrow-left"></i>홈으로</a>
+  </div>
+</nav>
+
+<main class="content">
+
+  <!-- 타이틀 -->
+  <div class="title-section" data-r>
+    <div class="title-emoji">📋</div>
+    <h1>신청부터 매칭까지<br><span class="y">이렇게 진행돼요</span></h1>
+    <p class="title-desc">처음이라 걱정되시죠?<br>전체 흐름을 한눈에 알려드릴게요.</p>
+  </div>
+
+  <!-- 타임라인 -->
+  <div class="timeline" data-r>
+
+    <div class="tl-step">
+      <div class="tl-dot">1</div>
+      <div class="tl-title">📝 신청하기</div>
+      <div class="tl-desc">원하는 프로그램을 선택하고 간단한 정보를 입력해주세요. 이름, 나이, 직업, 이상형 등 기본적인 내용만 작성하면 돼요.</div>
+      <div class="tl-tip"><i class="fa-solid fa-lightbulb"></i>신청 = 결제가 아니에요! 부담 없이 신청해주세요.</div>
+    </div>
+
+    <div class="tl-step">
+      <div class="tl-dot">2</div>
+      <div class="tl-title">🔍 프로필 검토</div>
+      <div class="tl-desc">센터장이 신청 내용을 확인하고, 성별 비율과 연령대 밸런스를 맞춰요. 매력 있는 분들로 구성하기 위해 선별 과정을 거칩니다.</div>
+      <div class="tl-tip"><i class="fa-solid fa-lightbulb"></i>보통 1~2일 내로 결과를 알려드려요.</div>
+    </div>
+
+    <div class="tl-step">
+      <div class="tl-dot">3</div>
+      <div class="tl-title">✅ 확정 문자 수신</div>
+      <div class="tl-desc">참여가 확정되면 문자로 안내를 드려요. 참가비 입금 안내와 함께 당일 준비사항도 함께 알려드립니다.</div>
+      <div class="tl-tip"><i class="fa-solid fa-lightbulb"></i>확정 문자를 받은 뒤에 입금하시면 됩니다.</div>
+    </div>
+
+    <div class="tl-step">
+      <div class="tl-dot">4</div>
+      <div class="tl-title">💰 참가비 입금</div>
+      <div class="tl-desc">안내된 계좌로 참가비를 입금해주세요. 입금 확인 후 최종 참여가 확정됩니다.</div>
+    </div>
+
+    <div class="tl-step">
+      <div class="tl-dot">5</div>
+      <div class="tl-title">📍 장소 안내</div>
+      <div class="tl-desc">행사 1~2일 전, 정확한 장소와 시간을 문자로 알려드려요. 강남역 도보 7분 거리의 아늑한 카페에서 진행됩니다.</div>
+      <div class="tl-tip"><i class="fa-solid fa-lightbulb"></i>장소는 참여 확정된 분들에게만 공개해요.</div>
+    </div>
+
+    <div class="tl-step">
+      <div class="tl-dot">6</div>
+      <div class="tl-title">☕ 당일! 설렘 시작</div>
+      <div class="tl-desc">시간에 맞춰 장소에 오시면 센터장이 반갑게 맞이해드려요. 편안한 분위기에서 자연스럽게 대화를 나누시면 됩니다. 대화 주제 종이도 드려요!</div>
+    </div>
+
+    <div class="tl-step">
+      <div class="tl-dot">7</div>
+      <div class="tl-title">💕 매칭 결과 발표</div>
+      <div class="tl-desc">행사가 끝나면 마음에 드는 분을 선택해주세요. 서로 선택이 일치하면 매칭 성사! 연락처를 교환해드립니다.</div>
+      <div class="tl-tip"><i class="fa-solid fa-lightbulb"></i>매칭 결과는 당일 또는 다음날 문자로 안내드려요.</div>
+    </div>
+
+  </div>
+
+  <!-- 프로그램 비교 -->
+  <div class="compare-section" data-r>
+    <h2>🎯 어떤 프로그램이 <span class="y">나에게 맞을까?</span></h2>
+    <div class="compare-grid">
+      <a href="rotation.html" class="compare-card">
+        <div class="compare-header">
+          <span class="compare-emoji">📦</span>
+          <span class="compare-name">썸배달</span>
+          <span class="compare-tag" style="background:rgba(255,190,46,.1);color:#FFBE2E">로테이션</span>
+        </div>
+        <ul class="compare-list">
+          <li>여러 이성과 짧은 대화 (5~7분씩)</li>
+          <li>한 번에 다양한 사람을 만나보고 싶을 때</li>
+          <li>오프라인 · 강남 · 약 2시간 반</li>
+          <li>부담 없이 가볍게 시작하고 싶은 분 추천</li>
+        </ul>
+      </a>
+      <a href="fintech.html" class="compare-card">
+        <div class="compare-header">
+          <span class="compare-emoji">💰</span>
+          <span class="compare-name">재테크 미팅</span>
+          <span class="compare-tag" style="background:rgba(76,175,80,.1);color:#66BB6A">관심사</span>
+        </div>
+        <ul class="compare-list">
+          <li>재테크 관심사 기반으로 자연스러운 대화</li>
+          <li>주식·부동산·저축 등 공통 주제가 있어 편안함</li>
+          <li>오프라인 · 강남 · 약 2시간 반</li>
+          <li>대화 소재 걱정 없이 만나고 싶은 분 추천</li>
+        </ul>
+      </a>
+      <a href="oneone.html" class="compare-card">
+        <div class="compare-header">
+          <span class="compare-emoji">🎁</span>
+          <span class="compare-name">특급 배송</span>
+          <span class="compare-tag" style="background:rgba(156,39,176,.1);color:#CE93D8">1:1 매칭</span>
+        </div>
+        <ul class="compare-list">
+          <li>센터장이 직접 이상형에 맞는 분을 매칭</li>
+          <li>온라인이라 시간·장소 제약 없음</li>
+          <li>딱 한 사람에게 집중하고 싶을 때</li>
+          <li>바쁜 직장인, 신중한 만남을 원하는 분 추천</li>
+        </ul>
+      </a>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="bottom-cta" data-r>
+    <p style="font-size:15px;color:#9a9080;margin-bottom:20px">준비 됐다면, 설렘을 시작해볼까요?</p>
+    <a href="index.html#apply" class="cta-btn cta-glow"><i class="fa-solid fa-heart"></i>신청하러 가기</a>
+    <br>
+    <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i>홈으로 돌아가기</a>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <img src="logo.png" alt="썸류센터">
+  <p>© 2025 썸류센터. All rights reserved.</p>
+</footer>
+
+<script>
+var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in')})},{threshold:.15});
+document.querySelectorAll('[data-r]').forEach(function(el){obs.observe(el)});
+</script>
+</body>
+</html>
