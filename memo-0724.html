@@ -40,6 +40,10 @@
   .note-count{font-size:12px;font-weight:700;color:#0e0c0a;background:#FFBE2E;padding:4px 11px;border-radius:999px;display:none}
   .note-count.show{display:inline-block}
 
+  .head-right{display:flex;align-items:center;gap:8px}
+  .priv-btn{display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#9a9080;background:#17140f;border:1px solid #2a2620;padding:7px 12px;border-radius:999px;transition:.15s}
+  .priv-btn.active{background:#2a2415;border-color:#FFBE2E;color:#FFBE2E}
+
   .controls{display:flex;gap:8px;margin-top:12px}
   .add-btn{flex:1;background:#FFBE2E;color:#000;font-weight:800;font-size:15px;padding:13px;border-radius:14px;transition:filter .15s}
   .add-btn:active{filter:brightness(.88)}
@@ -66,15 +70,26 @@
   .card .kw::placeholder{color:#5a5248}
   .card .kw:focus{border-bottom-color:#FFBE2E}
 
-  .card .bottom{display:flex;align-items:center;justify-content:space-between;margin-top:11px}
-  .hearts{display:flex;gap:3px}
-  .hearts button{font-size:21px;color:#3a352c;padding:3px;line-height:1;transition:transform .1s,color .1s}
+  /* 자주 쓰는 키워드 칩 */
+  .card .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chip{font-size:12px;font-weight:600;color:#9a9080;background:#211d16;border:1px solid #2f2a22;padding:6px 11px;border-radius:999px;transition:.12s}
+  .chip.on{background:#2a2415;border-color:#FFBE2E;color:#FFBE2E}
+  .chip:active{transform:scale(.94)}
+
+  .card .bottom{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+  .hearts{display:flex;gap:2px}
+  .hearts button{font-size:24px;color:#3a352c;padding:6px 7px;line-height:1;transition:transform .1s,color .1s}
   .hearts button.on{color:#FFBE2E}
   .hearts button:active{transform:scale(1.25)}
 
-  .note-toggle{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#8a8172;background:#211d16;border:1px solid #2f2a22;padding:8px 13px;border-radius:999px;transition:.15s}
+  .note-toggle{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#8a8172;background:#211d16;border:1px solid #2f2a22;padding:9px 13px;border-radius:999px;transition:.15s;white-space:nowrap}
   .note-toggle.on{background:#FFBE2E;border-color:#FFBE2E;color:#000}
   .note-toggle i{font-size:12px}
+
+  /* 시선 가리기(블러) — 켜면 카드가 흐려지고, 카드를 탭하면 그 카드만 잠깐 선명 */
+  .cards.blur .cbody{filter:blur(7px);pointer-events:none;transition:filter .15s}
+  .cards.blur .card{cursor:pointer}
+  .cards.blur .card.peek .cbody{filter:none}
 
   /* 하단 고정 */
   .foot{position:fixed;left:0;right:0;bottom:0;z-index:20;background:linear-gradient(to top,#0e0c0a 60%,transparent);padding:14px 14px calc(14px + env(safe-area-inset-bottom));text-align:center}
@@ -84,6 +99,13 @@
   .reset-btn i{margin-right:6px}
   .privacy{font-size:11.5px;color:#5a5248;margin-top:10px}
   .privacy i{margin-right:4px;color:#6b6358}
+
+  /* 삭제 되돌리기 토스트 */
+  #toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(16px);z-index:40;display:flex;align-items:center;gap:14px;background:#26221b;border:1px solid #3a352c;border-radius:14px;padding:11px 12px 11px 16px;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100% - 28px)}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+  #toast .msg{font-size:13.5px;font-weight:600;color:#e6ddce;white-space:nowrap}
+  #toast .undo{flex-shrink:0;font-size:13.5px;font-weight:800;color:#FFBE2E;background:rgba(255,190,46,.12);padding:7px 13px;border-radius:10px}
+  #toast .undo i{margin-right:5px}
 
   /* 초기화 확인 모달 */
   #confirm{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:28px}
@@ -112,7 +134,10 @@
   <header class="bar">
     <div class="row1">
       <h1>📝 메모</h1>
-      <span class="note-count" id="noteCount"></span>
+      <div class="head-right">
+        <span class="note-count" id="noteCount"></span>
+        <button class="priv-btn" id="privBtn"><i class="fa-solid fa-eye-slash"></i>가리기</button>
+      </div>
     </div>
     <div class="controls">
       <button class="add-btn" id="addBtn"><i class="fa-solid fa-plus"></i>참가자 추가</button>
@@ -129,6 +154,12 @@
     <button class="reset-btn" id="resetBtn"><i class="fa-solid fa-trash-can"></i>행사 끝 · 전체 초기화</button>
     <p class="privacy"><i class="fa-solid fa-shield-halved"></i>메모는 본인 폰에만 저장돼요</p>
   </div>
+</div>
+
+<!-- 삭제 되돌리기 토스트 -->
+<div id="toast">
+  <span class="msg" id="toastMsg">메모를 지웠어요</span>
+  <button class="undo" id="undoBtn"><i class="fa-solid fa-rotate-left"></i>되돌리기</button>
 </div>
 
 <!-- 초기화 확인 -->
@@ -150,6 +181,9 @@
   var AUTH_KEY = 'memo0724_auth';
   var DATA_KEY = 'memo0724_data';
   var SORT_KEY = 'memo0724_sort';
+
+  // 자주 쓰는 키워드 (탭하면 키워드 칸에 추가/제거)
+  var PRESET_TAGS = ['대화 잘됨','훈훈','재밌음','매너 좋음','애프터','노잼'];
 
   /* ---------- 저장/불러오기 ---------- */
   function load(){
@@ -209,6 +243,15 @@
 
   function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+  function kwTokens(s){ return (s||'').split(',').map(function(x){ return x.trim(); }).filter(Boolean); }
+  // 키워드 칸에서 태그를 넣거나 뺌
+  function toggleTag(c, tag){
+    var toks = kwTokens(c.keyword);
+    var i = toks.indexOf(tag);
+    if(i >= 0) toks.splice(i,1); else toks.push(tag);
+    c.keyword = toks.join(', ');
+  }
+
   function displayOrder(){
     if(!sortByRating) return cards;
     return cards.slice().sort(function(a,b){
@@ -242,16 +285,26 @@
       for(var h=1;h<=5;h++){
         hearts += '<button data-id="'+c.id+'" data-r="'+h+'" class="hb '+(h<=(c.rating||0)?'on':'')+'"><i class="fa-solid fa-heart"></i></button>';
       }
+      var toks = kwTokens(c.keyword);
+      var chips = '';
+      for(var t=0;t<PRESET_TAGS.length;t++){
+        var tag = PRESET_TAGS[t];
+        var on = toks.indexOf(tag) >= 0;
+        chips += '<button class="chip'+(on?' on':'')+'" data-id="'+c.id+'" data-tag="'+esc(tag)+'">'+esc(tag)+'</button>';
+      }
       html +=
         '<div class="card'+(c.note?' noted':'')+'">'
+        + '<div class="cbody">'
         + '<div class="top">'
         +   '<input class="name" data-id="'+c.id+'" data-f="name" value="'+esc(c.name)+'" placeholder="이름 / 번호표" enterkeyhint="next">'
         +   '<button class="del" data-id="'+c.id+'" aria-label="삭제"><i class="fa-solid fa-xmark"></i></button>'
         + '</div>'
         + '<input class="kw" data-id="'+c.id+'" data-f="keyword" value="'+esc(c.keyword)+'" placeholder="대화 키워드 (짧게)" enterkeyhint="done">'
+        + '<div class="chips">'+chips+'</div>'
         + '<div class="bottom">'
         +   '<div class="hearts">'+hearts+'</div>'
         +   '<button class="note-toggle'+(c.note?' on':'')+'" data-id="'+c.id+'"><i class="fa-solid fa-envelope'+(c.note?'':'-open')+'"></i>쪽지 줄 사람</button>'
+        + '</div>'
         + '</div>'
         + '</div>';
     }
@@ -291,11 +344,23 @@
   });
 
   cardsEl.addEventListener('click', function(e){
+    // 시선 가리기 ON: 카드를 탭하면 그 카드만 잠깐 선명해짐 (편집은 막힘)
+    if(privacyOn){
+      var pc = e.target.closest('.card');
+      if(pc) pc.classList.toggle('peek');
+      return;
+    }
     var hb = e.target.closest('.hb');
     if(hb){
       var c = find(hb.getAttribute('data-id'));
       var r = parseInt(hb.getAttribute('data-r'),10);
       if(c){ c.rating = (c.rating === r ? r-1 : r); save(); render(); }
+      return;
+    }
+    var chip = e.target.closest('.chip');
+    if(chip){
+      var cc = find(chip.getAttribute('data-id'));
+      if(cc){ toggleTag(cc, chip.getAttribute('data-tag')); save(); render(); }
       return;
     }
     var nt = e.target.closest('.note-toggle');
@@ -306,9 +371,7 @@
     }
     var del = e.target.closest('.del');
     if(del){
-      var id = del.getAttribute('data-id');
-      cards = cards.filter(function(c){ return c.id != id; });
-      save(); render();
+      deleteCard(del.getAttribute('data-id'));
       return;
     }
   });
@@ -324,6 +387,53 @@
     } else if(t.classList.contains('kw')){
       e.preventDefault();
       t.blur();
+    }
+  });
+
+  /* ---------- 삭제 되돌리기 ---------- */
+  var toastEl = document.getElementById('toast');
+  var toastMsg = document.getElementById('toastMsg');
+  var undoBtn = document.getElementById('undoBtn');
+  var undoState = null;
+  var undoTimer = null;
+
+  function hideToast(){
+    toastEl.classList.remove('show');
+    undoState = null;
+    if(undoTimer){ clearTimeout(undoTimer); undoTimer = null; }
+  }
+  function deleteCard(id){
+    var idx = -1;
+    for(var i=0;i<cards.length;i++){ if(cards[i].id == id){ idx = i; break; } }
+    if(idx < 0) return;
+    var removed = cards[idx];
+    cards.splice(idx, 1);
+    save(); render();
+    undoState = { card: removed, index: idx };
+    toastMsg.textContent = (removed.name ? '"' + removed.name + '" ' : '') + '메모를 지웠어요';
+    toastEl.classList.add('show');
+    if(undoTimer) clearTimeout(undoTimer);
+    undoTimer = setTimeout(hideToast, 6000);
+  }
+  undoBtn.addEventListener('click', function(){
+    if(undoState){
+      var idx = Math.min(undoState.index, cards.length);
+      cards.splice(idx, 0, undoState.card);
+      save(); render();
+    }
+    hideToast();
+  });
+
+  /* ---------- 시선 가리기 ---------- */
+  var privacyOn = false;
+  var privBtn = document.getElementById('privBtn');
+  privBtn.addEventListener('click', function(){
+    privacyOn = !privacyOn;
+    privBtn.classList.toggle('active', privacyOn);
+    cardsEl.classList.toggle('blur', privacyOn);
+    if(!privacyOn){
+      var pk = cardsEl.querySelectorAll('.card.peek');
+      for(var i=0;i<pk.length;i++) pk[i].classList.remove('peek');
     }
   });
 
