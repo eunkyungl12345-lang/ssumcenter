@@ -71,9 +71,13 @@
   .card .kw:focus{border-bottom-color:#FFBE2E}
 
   /* 자주 쓰는 키워드 칩 */
-  .card .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .card .cg{display:flex;align-items:flex-start;gap:8px;margin-top:10px}
+  .card .cg-lb{flex-shrink:0;font-size:10.5px;font-weight:700;color:#6b6358;background:#211d16;border:1px solid #2f2a22;padding:6px 9px;border-radius:8px;margin-top:1px}
+  .card .cg .chips{flex:1;display:flex;flex-wrap:wrap;gap:6px}
   .chip{font-size:12px;font-weight:600;color:#9a9080;background:#211d16;border:1px solid #2f2a22;padding:6px 11px;border-radius:999px;transition:.12s}
   .chip.on{background:#2a2415;border-color:#FFBE2E;color:#FFBE2E}
+  .chip.money{color:#e0b64a;border-color:#4a3f1e}
+  .chip.money.on{background:#FFBE2E;color:#000;border-color:#FFBE2E}
   .chip:active{transform:scale(.94)}
 
   .card .bottom{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
@@ -183,7 +187,22 @@
   var SORT_KEY = 'memo0724_sort';
 
   // 자주 쓰는 키워드 (탭하면 키워드 칸에 추가/제거)
-  var PRESET_TAGS = ['대화 잘됨','훈훈','재밌음','매너 좋음','애프터','노잼'];
+  // 인상(소개팅) 태그
+  var IMPRESSION_TAGS = ['대화 잘됨','재밌음','훈훈','스타일 좋음','매너 좋음','또 보고싶음','애프터','애매'];
+  // 재테크 성향 태그 (첫 칩은 '머니 궁합')
+  var FINTECH_TAGS = [{t:'궁합 좋음',l:'💰 궁합 좋음',money:true},'부동산','주식','코인','사업','공격형','안정형'];
+
+  function tagT(x){ return (typeof x === 'string') ? x : x.t; }   // 저장용 토큰
+  function tagL(x){ return (typeof x === 'string') ? x : x.l; }   // 화면 표시
+  function tagMoney(x){ return (typeof x === 'object') && x.money; }
+  function chipRow(group, cid, toks){
+    var s = '';
+    for(var i=0;i<group.length;i++){
+      var g = group[i], t = tagT(g), on = toks.indexOf(t) >= 0;
+      s += '<button class="chip'+(tagMoney(g)?' money':'')+(on?' on':'')+'" data-id="'+cid+'" data-tag="'+esc(t)+'">'+esc(tagL(g))+'</button>';
+    }
+    return s;
+  }
 
   /* ---------- 저장/불러오기 ---------- */
   function load(){
@@ -286,12 +305,6 @@
         hearts += '<button data-id="'+c.id+'" data-r="'+h+'" class="hb '+(h<=(c.rating||0)?'on':'')+'"><i class="fa-solid fa-heart"></i></button>';
       }
       var toks = kwTokens(c.keyword);
-      var chips = '';
-      for(var t=0;t<PRESET_TAGS.length;t++){
-        var tag = PRESET_TAGS[t];
-        var on = toks.indexOf(tag) >= 0;
-        chips += '<button class="chip'+(on?' on':'')+'" data-id="'+c.id+'" data-tag="'+esc(tag)+'">'+esc(tag)+'</button>';
-      }
       html +=
         '<div class="card'+(c.note?' noted':'')+'">'
         + '<div class="cbody">'
@@ -300,7 +313,8 @@
         +   '<button class="del" data-id="'+c.id+'" aria-label="삭제"><i class="fa-solid fa-xmark"></i></button>'
         + '</div>'
         + '<input class="kw" data-id="'+c.id+'" data-f="keyword" value="'+esc(c.keyword)+'" placeholder="대화 키워드 (짧게)" enterkeyhint="done">'
-        + '<div class="chips">'+chips+'</div>'
+        + '<div class="cg"><span class="cg-lb">인상</span><div class="chips">'+chipRow(IMPRESSION_TAGS, c.id, toks)+'</div></div>'
+        + '<div class="cg"><span class="cg-lb">재테크</span><div class="chips">'+chipRow(FINTECH_TAGS, c.id, toks)+'</div></div>'
         + '<div class="bottom">'
         +   '<div class="hearts">'+hearts+'</div>'
         +   '<button class="note-toggle'+(c.note?' on':'')+'" data-id="'+c.id+'"><i class="fa-solid fa-envelope'+(c.note?'':'-open')+'"></i>쪽지 줄 사람</button>'
