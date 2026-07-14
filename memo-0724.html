@@ -37,8 +37,9 @@
   header.bar{position:sticky;top:0;z-index:20;background:rgba(14,12,10,.92);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:16px 2px 12px;border-bottom:1px solid rgba(255,255,255,.05)}
   header.bar .row1{display:flex;align-items:center;justify-content:space-between}
   header.bar h1{font-size:19px;font-weight:900}
-  .note-count{font-size:12px;font-weight:700;color:#0e0c0a;background:#FFBE2E;padding:4px 11px;border-radius:999px;display:none}
+  .note-count{font-size:12px;font-weight:700;color:#0e0c0a;background:#FFBE2E;padding:5px 11px;border-radius:999px;display:none;transition:filter .15s}
   .note-count.show{display:inline-block}
+  .note-count:active{filter:brightness(.9)}
 
   .head-right{display:flex;align-items:center;gap:8px}
   .priv-btn{display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#9a9080;background:#17140f;border:1px solid #2a2620;padding:7px 12px;border-radius:999px;transition:.15s}
@@ -104,6 +105,29 @@
   .privacy{font-size:11.5px;color:#5a5248;margin-top:10px}
   .privacy i{margin-right:4px;color:#6b6358}
 
+  /* 쪽지 줄 사람 요약 시트 */
+  #summary{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center}
+  #summary .sheet{background:#17140f;border:1px solid #2f2a22;border-bottom:none;border-radius:22px 22px 0 0;width:100%;max-width:600px;max-height:88vh;display:flex;flex-direction:column}
+  .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 13px;border-bottom:1px solid #26221b}
+  .sheet-head h3{font-size:17px;font-weight:900}
+  .sheet-head .cnt{color:#FFBE2E;margin-left:4px}
+  .sheet-close{flex-shrink:0;width:34px;height:34px;border-radius:9px;color:#9a9080;font-size:18px}
+  .sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 16px}
+  .s-empty{text-align:center;color:#6b6358;font-size:14px;padding:44px 20px;line-height:1.7}
+  .s-row{display:flex;gap:12px;padding:13px 2px;border-bottom:1px solid #201c16}
+  .s-row:last-child{border-bottom:none}
+  .s-rank{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:#2a2415;color:#FFBE2E;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .s-main{flex:1;min-width:0}
+  .s-name{font-size:16px;font-weight:800}
+  .s-hearts{color:#FFBE2E;font-size:13px;margin-left:7px;letter-spacing:1px}
+  .s-kw{font-size:13px;color:#9a9080;margin-top:3px;line-height:1.5;word-break:break-word}
+  .sheet-foot{display:flex;gap:10px;padding:12px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid #26221b}
+  .sheet-foot button{flex:1;padding:13px;border-radius:13px;font-weight:800;font-size:14px;transition:.15s}
+  .s-copy{background:#2a2415;color:#FFBE2E;border:1px solid #4a3f1e}
+  .s-copy i{margin-right:6px}
+  .s-copy.done{background:#FFBE2E;color:#000;border-color:#FFBE2E}
+  .s-close2{background:#26221b;color:#c9c0b2}
+
   /* 삭제 되돌리기 토스트 */
   #toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(16px);z-index:40;display:flex;align-items:center;gap:14px;background:#26221b;border:1px solid #3a352c;border-radius:14px;padding:11px 12px 11px 16px;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100% - 28px)}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
@@ -139,7 +163,7 @@
     <div class="row1">
       <h1>📝 메모</h1>
       <div class="head-right">
-        <span class="note-count" id="noteCount"></span>
+        <button class="note-count" id="noteCount"></button>
         <button class="priv-btn" id="privBtn"><i class="fa-solid fa-eye-slash"></i>가리기</button>
       </div>
     </div>
@@ -157,6 +181,21 @@
   <div class="inner">
     <button class="reset-btn" id="resetBtn"><i class="fa-solid fa-trash-can"></i>행사 끝 · 전체 초기화</button>
     <p class="privacy"><i class="fa-solid fa-shield-halved"></i>메모는 본인 폰에만 저장돼요</p>
+  </div>
+</div>
+
+<!-- 쪽지 줄 사람 요약 시트 -->
+<div id="summary">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3 id="summaryTitle">💌 쪽지 줄 사람</h3>
+      <button class="sheet-close" id="summaryClose" aria-label="닫기"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body" id="summaryBody"></div>
+    <div class="sheet-foot">
+      <button class="s-copy" id="summaryCopy"><i class="fa-solid fa-copy"></i>목록 복사</button>
+      <button class="s-close2" id="summaryCloseBtn">닫기</button>
+    </div>
   </div>
 </div>
 
@@ -283,7 +322,7 @@
   function render(){
     // 쪽지 카운트
     var noteN = cards.filter(function(c){ return c.note; }).length;
-    if(noteN > 0){ noteCountEl.textContent = '💌 쪽지 ' + noteN + '명'; noteCountEl.classList.add('show'); }
+    if(noteN > 0){ noteCountEl.textContent = '💌 쪽지 ' + noteN + '명 ›'; noteCountEl.classList.add('show'); }
     else { noteCountEl.classList.remove('show'); }
 
     sortBtn.classList.toggle('active', sortByRating);
@@ -450,6 +489,74 @@
       for(var i=0;i<pk.length;i++) pk[i].classList.remove('peek');
     }
   });
+
+  /* ---------- 쪽지 줄 사람 요약 ---------- */
+  var summaryEl = document.getElementById('summary');
+  var summaryBody = document.getElementById('summaryBody');
+  var summaryTitle = document.getElementById('summaryTitle');
+  var summaryCopyBtn = document.getElementById('summaryCopy');
+
+  function notedSorted(){
+    return cards.filter(function(c){ return c.note; }).slice().sort(function(a,b){
+      return (b.rating||0) - (a.rating||0);
+    });
+  }
+  function openSummary(){
+    var list = notedSorted();
+    summaryTitle.innerHTML = '💌 쪽지 줄 사람 <span class="cnt">' + list.length + '명</span>';
+    if(list.length === 0){
+      summaryBody.innerHTML = '<div class="s-empty">아직 \'쪽지 줄 사람\'으로<br>표시한 참가자가 없어요</div>';
+    } else {
+      var html = '';
+      for(var i=0;i<list.length;i++){
+        var c = list[i], r = c.rating||0, hearts = '';
+        for(var h=0;h<5;h++) hearts += (h < r ? '♥' : '♡');
+        html += '<div class="s-row"><div class="s-rank">' + (i+1) + '</div><div class="s-main">'
+          + '<div class="s-name">' + esc(c.name || '(이름 없음)') + '<span class="s-hearts">' + hearts + '</span></div>'
+          + (c.keyword ? '<div class="s-kw">' + esc(c.keyword) + '</div>' : '')
+          + '</div></div>';
+      }
+      summaryBody.innerHTML = html;
+    }
+    summaryCopyBtn.classList.remove('done');
+    summaryCopyBtn.innerHTML = '<i class="fa-solid fa-copy"></i>목록 복사';
+    summaryEl.style.display = 'flex';
+  }
+  function closeSummary(){ summaryEl.style.display = 'none'; }
+  function summaryText(){
+    var list = notedSorted();
+    var lines = ['💌 쪽지 줄 사람 (' + list.length + '명)'];
+    for(var i=0;i<list.length;i++){
+      var c = list[i], r = c.rating||0, hh = '';
+      for(var h=0;h<r;h++) hh += '♥';
+      lines.push((i+1) + '. ' + (c.name || '(이름 없음)') + (hh ? ' ' + hh : '') + (c.keyword ? ' — ' + c.keyword : ''));
+    }
+    return lines.join('\n');
+  }
+  function copyDone(){
+    summaryCopyBtn.classList.add('done');
+    summaryCopyBtn.innerHTML = '<i class="fa-solid fa-check"></i>복사됐어요';
+  }
+  function doCopy(){
+    var text = summaryText();
+    function fallback(){
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta); copyDone();
+      } catch(e){}
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(copyDone, fallback);
+    } else { fallback(); }
+  }
+
+  noteCountEl.addEventListener('click', openSummary);
+  summaryCopyBtn.addEventListener('click', doCopy);
+  document.getElementById('summaryClose').addEventListener('click', closeSummary);
+  document.getElementById('summaryCloseBtn').addEventListener('click', closeSummary);
+  summaryEl.addEventListener('click', function(e){ if(e.target === summaryEl) closeSummary(); });
 
   /* ---------- 초기화 ---------- */
   var confirmEl = document.getElementById('confirm');
