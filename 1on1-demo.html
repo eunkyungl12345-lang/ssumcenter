@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1:1 매칭 여정 · 데모 | 썸류센터</title>
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#0c0a08; --surface:#161310; --surface-2:#1e1811; --ink:#EDE0CC; --ink-2:#C9B896;
+    --muted:#998870; --faint:#6a5c4c; --line:#2a2117; --line-strong:#3a2e1f;
+    --rose:#E8B050; --rose-soft:rgba(212,149,42,.12);
+    --plum:#C99A5A; --plum-soft:rgba(201,154,90,.12);
+    --gold:#E8B050; --gold-soft:rgba(232,176,80,.12);
+    --ok:#6FBE97; --ok-soft:rgba(111,190,151,.13);
+    --ink-on-amber:#171208;
+    --g1a:#E8B050; --g1b:#B06A2E; --g2a:#D4952A; --g2b:#7A5A2E; --g3a:#C9A15E; --g3b:#8A6A38; --g4a:#A9986A; --g4b:#6a5c3c; --g5a:#E0A860; --g5b:#9A5A2E;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 34px -16px rgba(0,0,0,.7);
+    --shadow-lg:0 3px 8px rgba(0,0,0,.5),0 34px 70px -28px rgba(0,0,0,.85);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg); color:var(--ink);
+    font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.55; letter-spacing:-.01em;}
+  .tnum{font-variant-numeric:tabular-nums;}
+  .page{max-width:520px; margin:0 auto; padding:20px 16px 28px;}
+
+  .steps{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:0 0 18px;}
+  .steps button{border:1px solid var(--line-strong); background:var(--surface); color:var(--muted); font-size:12px; font-weight:700;
+    padding:8px 13px; border-radius:100px; cursor:pointer; box-shadow:var(--shadow); transition:.15s; font-family:inherit;}
+  .steps button.on{background:var(--rose); color:var(--ink-on-amber); border-color:transparent;}
+  .steps button b{opacity:.55; margin-right:4px;}
+
+  .stage{display:flex; justify-content:center;}
+  .phone{width:370px; max-width:100%; background:#000; border-radius:44px; padding:11px; box-shadow:var(--shadow-lg); border:1px solid var(--line);}
+  .screen{background:var(--bg); border-radius:34px; overflow:hidden; min-height:660px;}
+  .notch{height:26px; display:flex; align-items:center; justify-content:center;}
+  .notch::after{content:""; width:94px; height:7px; border-radius:100px; background:#000;}
+  .sp{padding:4px 16px 24px;}
+  .scr{display:none;} .scr.on{display:block; animation:fade .28s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+
+  .apphead{display:flex; align-items:center; gap:10px; padding:8px 2px 12px;}
+  .apphead .back{font-size:20px; color:var(--muted); width:24px; cursor:pointer;}
+  .apphead .ttl{font-weight:750; font-size:15.5px; flex:1; text-align:center;}
+  .apphead .me{font-size:11px; font-weight:700; color:var(--rose); background:var(--rose-soft); padding:5px 10px; border-radius:100px;}
+
+  .av{border-radius:14px; display:grid; place-items:center; color:#fff; font-weight:800; position:relative; flex-shrink:0; overflow:hidden;}
+  .av .em{position:absolute; font-size:1.5em; opacity:.92;}
+
+  .riskbar{display:flex; align-items:center; gap:9px; background:var(--ok-soft); border:1px solid rgba(111,190,151,.28); border-radius:12px; padding:10px 13px; margin-bottom:13px;}
+  .riskbar .ic{font-size:17px;}
+  .riskbar .tx{font-size:12.5px; color:var(--ink-2); font-weight:650;}
+  .riskbar .tx b{color:var(--ok);}
+
+  /* ① 소개 */
+  .hero{border-radius:20px; overflow:hidden; box-shadow:var(--shadow); margin-bottom:14px; border:1px solid var(--line);}
+  .hero .cover{background:linear-gradient(150deg,#4a3413 0%,#2a1d0b 55%,#1a1207 100%); padding:22px 20px 20px; color:#F3E7CE; position:relative;}
+  .hero .cover::after{content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 80% 0%,rgba(232,176,80,.22),transparent 60%); pointer-events:none;}
+  .hero .cover .kk{font-size:11.5px; font-weight:750; letter-spacing:.04em; color:var(--rose); position:relative;}
+  .hero .cover h2{margin:6px 0 4px; font-size:23px; font-weight:800; letter-spacing:-.02em; line-height:1.22; position:relative;}
+  .hero .cover .when{font-size:13px; opacity:.85; font-weight:600; position:relative;}
+  .hero .body{background:var(--surface); padding:15px 16px;}
+  .trust{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:13px;}
+  .ti{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:10px 12px;}
+  .ti .k{font-size:11px; color:var(--muted); font-weight:650;}
+  .ti .v{font-size:15px; font-weight:750; margin-top:2px; display:flex; align-items:center; gap:5px;}
+  .ti .v .ok{color:var(--ok);}
+  .how{display:grid; gap:8px; margin-bottom:13px;}
+  .how .hrow{display:flex; gap:10px; align-items:flex-start; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:10px 12px;}
+  .how .n{width:20px;height:20px;border-radius:50%;background:var(--rose);color:var(--ink-on-amber);font-size:11px;font-weight:800;display:grid;place-items:center;flex-shrink:0;margin-top:1px;}
+  .how .ht{font-size:12.5px;color:var(--ink-2);font-weight:600;}
+  .how .ht b{color:var(--ink);font-weight:750;}
+  .tags{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;}
+  .tags span{font-size:11.5px; font-weight:650; color:var(--rose); background:var(--rose-soft); border-radius:100px; padding:5px 11px;}
+  .review{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:11px 13px;}
+  .review .stars{font-size:12.5px; font-weight:700; color:var(--gold);}
+  .review .q{font-size:13px; color:var(--ink-2); margin-top:4px; line-height:1.5;}
+  .cta{margin-top:14px;}
+  .cta .apply{width:100%; border:none; background:var(--rose); color:var(--ink-on-amber); font-weight:800; font-size:15px; padding:15px; border-radius:13px; cursor:pointer; box-shadow:0 8px 24px rgba(212,149,42,.22); font-family:inherit;}
+  .cta .price{text-align:center; font-size:11.5px; color:var(--faint); margin-top:8px;}
+
+  /* ② 신청 */
+  .field{background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:12px 13px; margin-top:10px;}
+  .field .k{font-size:11px; color:var(--muted); font-weight:650;}
+  .field .v{font-size:14.5px; font-weight:750; color:var(--ink); margin-top:3px;}
+  .lead{text-align:center; padding:4px 0 2px;}
+  .lead .ky{font-size:11.5px; font-weight:750; color:var(--rose); letter-spacing:.04em;}
+  .lead h2{font-size:19px; font-weight:800; margin:5px 0 3px;}
+  .lead .sub{font-size:12.5px; color:var(--muted);}
+
+  /* ③ 승인 심사 */
+  .waitwrap{text-align:center; padding:6px 4px 0;}
+  .pulse{width:92px;height:92px;margin:8px auto 4px;border-radius:50%;display:grid;place-items:center;font-size:36px;
+    background:radial-gradient(circle at 50% 40%, rgba(212,149,42,.28), rgba(212,149,42,.05));
+    animation:pulse 2.2s ease-out infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(212,149,42,.34);} 70%{box-shadow:0 0 0 20px rgba(212,149,42,0);} 100%{box-shadow:0 0 0 0 rgba(212,149,42,0);}}
+  @media (prefers-reduced-motion:reduce){.pulse{animation:none;}}
+  .waitwrap h2{font-size:19px;font-weight:800;margin:6px 0 4px;}
+  .waitwrap .sub{font-size:13px;color:var(--muted);max-width:30ch;margin:0 auto 4px;}
+  .track{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px 15px;margin:14px 0 12px;text-align:left;box-shadow:var(--shadow);}
+  .trow{display:flex;gap:12px;padding:11px 0;}
+  .trow+.trow{border-top:1px solid var(--line);}
+  .trow .dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-size:12px;font-weight:800;margin-top:1px;}
+  .trow.done .dot{background:var(--ok);color:var(--ink-on-amber);}
+  .trow.now .dot{background:var(--rose);color:var(--ink-on-amber);animation:blink 1.4s ease-in-out infinite;}
+  .trow.todo .dot{background:var(--surface-2);color:var(--faint);border:1px solid var(--line-strong);}
+  @keyframes blink{50%{opacity:.5;}}
+  @media (prefers-reduced-motion:reduce){.trow.now .dot{animation:none;}}
+  .trow .tt{font-size:13.5px;font-weight:750;}
+  .trow.todo .tt{color:var(--faint);}
+  .trow .td{font-size:12px;color:var(--muted);margin-top:1px;}
+  .trow .badge{margin-left:auto;font-size:10.5px;font-weight:750;color:var(--rose);background:var(--rose-soft);padding:3px 9px;border-radius:100px;align-self:center;}
+  .notpaid{display:flex;gap:9px;align-items:center;background:var(--ok-soft);border:1px solid rgba(111,190,151,.2);border-radius:12px;padding:11px 13px;text-align:left;}
+  .notpaid .ic{font-size:16px;} .notpaid .tx{font-size:12px;color:var(--ink-2);font-weight:600;} .notpaid .tx b{color:var(--ok);}
+  .demohint{margin-top:14px;}
+  .demohint button{width:100%;border:1px dashed var(--line-strong);background:transparent;color:var(--muted);font-size:12px;font-weight:700;padding:11px 16px;border-radius:100px;cursor:pointer;font-family:inherit;}
+
+  /* ④ 상대 소개 */
+  .arrive{text-align:center;margin-bottom:10px;}
+  .arrive .kk{font-size:11.5px;font-weight:750;letter-spacing:.05em;color:var(--rose);}
+  .arrive h2{font-size:19px;font-weight:800;margin:4px 0 0;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;}
+  .card .ph{height:150px;position:relative;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--g2a),var(--g2b));}
+  .card .ph .big{font-size:56px;}
+  .card .ph .vb{position:absolute;top:11px;right:11px;font-size:10.5px;font-weight:750;color:#F3E7CE;background:rgba(0,0,0,.42);backdrop-filter:blur(4px);padding:4px 10px;border-radius:100px;}
+  .card .cbody{padding:14px 15px 15px;}
+  .card .nm{font-size:18px;font-weight:800;}
+  .card .meta{font-size:13px;color:var(--muted);margin-top:2px;}
+  .card .common{display:flex;flex-wrap:wrap;gap:6px;margin:11px 0;}
+  .card .common span{font-size:11.5px;font-weight:700;color:var(--ok);background:var(--ok-soft);border-radius:100px;padding:4px 10px;}
+  .rec{background:linear-gradient(135deg,rgba(212,149,42,.14),rgba(201,154,90,.06));border:1px solid var(--line-strong);border-radius:13px;padding:12px 13px;margin-top:4px;}
+  .rec .rt{font-size:11.5px;font-weight:750;color:var(--rose);}
+  .rec .rq{font-size:12.5px;color:var(--ink-2);margin-top:5px;line-height:1.5;}
+  .consent{display:flex;gap:8px;align-items:center;font-size:11.5px;color:var(--muted);font-weight:600;justify-content:center;margin:12px 2px 0;}
+  .actions{display:grid;grid-template-columns:1fr 1.6fr;gap:9px;margin-top:12px;}
+  .actions .pass{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);font-weight:750;font-size:13.5px;padding:14px;border-radius:13px;cursor:pointer;font-family:inherit;}
+  .actions .accept{border:none;background:var(--rose);color:var(--ink-on-amber);font-weight:800;font-size:14.5px;padding:14px;border-radius:13px;cursor:pointer;box-shadow:0 8px 24px rgba(212,149,42,.22);font-family:inherit;}
+  .passnote{text-align:center;font-size:11px;color:var(--faint);margin-top:9px;}
+
+  /* ⑤ 성사·연락처 */
+  .celebrate{text-align:center;padding:4px 0 2px;}
+  .celebrate .em{font-size:44px;}
+  .celebrate h2{font-size:20px;font-weight:800;margin:4px 0 3px;}
+  .celebrate .sub{font-size:12.5px;color:var(--muted);}
+  .paycard{background:var(--surface);border:1.5px solid var(--rose);border-radius:16px;padding:15px;margin:15px 0 12px;box-shadow:var(--shadow);}
+  .paycard .row{display:flex;justify-content:space-between;align-items:baseline;}
+  .paycard .row .lbl{font-size:12.5px;color:var(--muted);font-weight:650;}
+  .paycard .row .val{font-size:20px;font-weight:800;color:var(--ink);}
+  .paycard .acct{background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:11px;padding:10px 13px;margin-top:11px;font-size:12.5px;color:var(--ink-2);}
+  .paycard .acct b{color:var(--ink);}
+  .paycard .paybtn{width:100%;border:none;background:var(--rose);color:var(--ink-on-amber);font-weight:800;font-size:14.5px;padding:14px;border-radius:12px;cursor:pointer;margin-top:12px;font-family:inherit;}
+  .contact{background:var(--ok-soft);border:1.5px solid var(--ok);border-radius:16px;padding:16px;text-align:center;}
+  .contact .lock{font-size:30px;}
+  .contact .nm{font-size:16px;font-weight:800;margin-top:4px;}
+  .contact .num{font-size:22px;font-weight:800;letter-spacing:.02em;margin:6px 0 3px;color:var(--ok);}
+  .contact .kk{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ink-2);background:var(--surface);border:1px solid var(--line-strong);padding:8px 15px;border-radius:100px;margin-top:8px;cursor:pointer;}
+  .second{background:linear-gradient(135deg,rgba(232,176,80,.1),rgba(201,154,90,.04));border:1px solid var(--line-strong);border-radius:16px;padding:16px;text-align:center;margin-top:13px;}
+  .second .ic{font-size:24px;} .second h3{margin:6px 0 4px;font-size:15.5px;font-weight:800;} .second p{margin:0 0 12px;font-size:12.5px;color:var(--ink-2);}
+  .second button{border:none;background:var(--rose);color:var(--ink-on-amber);font-weight:800;font-size:13.5px;padding:11px 22px;border-radius:100px;cursor:pointer;font-family:inherit;}
+
+  .navdots{display:flex;justify-content:center;gap:14px;padding:14px 0 4px;border-top:1px solid var(--line);margin-top:14px;}
+  .navdots .nd{font-size:10px;font-weight:700;color:var(--faint);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;}
+  .navdots .nd .i{font-size:16px;} .navdots .nd.on{color:var(--rose);}
+
+  .cap{max-width:420px;margin:18px auto 0;text-align:center;font-size:12px;color:var(--faint);line-height:1.7;}
+  .cap b{color:var(--muted);}
+  button:focus-visible{outline:2px solid var(--rose); outline-offset:2px;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="steps" id="steps">
+    <button data-s="0" class="on"><b>①</b>소개</button>
+    <button data-s="1"><b>②</b>신청</button>
+    <button data-s="2"><b>③</b>승인 심사</button>
+    <button data-s="3"><b>④</b>상대 소개</button>
+    <button data-s="4"><b>⑤</b>성사·연락처</button>
+  </div>
+
+  <div class="stage"><div class="phone"><div class="screen"><div class="sp">
+    <div class="notch"></div>
+
+    <!-- ① 소개 -->
+    <div class="scr on" id="s0">
+      <div class="apphead"><span class="ttl">1:1 맞춤 매칭</span></div>
+      <div class="riskbar"><span class="ic">📦</span><span class="tx">매칭이 <b>성사될 때만</b> 19,900원. 안 되면 <b>0원</b>이에요.</span></div>
+      <div class="hero">
+        <div class="cover">
+          <div class="kk">💘 센터장이 직접 골라주는 단 한 사람</div>
+          <h2>여러 명 말고,<br>딱 맞는 한 명</h2>
+          <div class="when">앱이 아니라 사람이 이어드려요</div>
+        </div>
+        <div class="body">
+          <div class="trust">
+            <div class="ti"><div class="k">누적 매칭</div><div class="v tnum">4,000<span style="font-size:12px;color:var(--muted);font-weight:600">+</span></div></div>
+            <div class="ti"><div class="k">상대방</div><div class="v"><span class="ok">✓</span> 전원 검증</div></div>
+          </div>
+          <div class="how">
+            <div class="hrow"><span class="n">1</span><span class="ht"><b>신청</b> — 이상형·조건을 알려주세요</span></div>
+            <div class="hrow"><span class="n">2</span><span class="ht"><b>센터장 승인 심사</b> — 검증된 분만 매칭에 올려요</span></div>
+            <div class="hrow"><span class="n">3</span><span class="ht"><b>성사되면 연락처</b> — 둘 다 좋다고 하면 그때 결제·번호 공개</span></div>
+          </div>
+          <div class="tags"><span># 진지한 만남</span><span># 강남</span><span># 27~35세</span><span># 검증된 싱글</span></div>
+          <div class="review"><div class="stars">★★★★★ 4.9 · 후기 96</div><div class="q">“앱은 지쳤는데, 딱 한 명 소개받으니까 오히려 집중돼서 좋았어요.”</div></div>
+          <div class="cta">
+            <button class="apply" onclick="go(1)">신청하고 매칭 받기</button>
+            <div class="price tnum">지금은 0원 · 성사 시에만 19,900원 (계좌이체)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 신청 -->
+    <div class="scr" id="s1">
+      <div class="apphead"><span class="back" onclick="go(0)">‹</span><span class="ttl">신청서 작성</span><span class="me">STEP 2</span></div>
+      <div class="lead"><div class="ky">📝 이상형·조건</div><h2>어떤 분을 찾으세요?</h2><div class="sub">받은 정보로 센터장이 상대를 찾아드려요.</div></div>
+      <div class="field"><div class="k">원하는 나이대</div><div class="v">30 ~ 37세</div></div>
+      <div class="field"><div class="k">중요하게 보는 것</div><div class="v">가치관 · 대화 코드 · 경제관념</div></div>
+      <div class="field"><div class="k">간단 자기소개</div><div class="v">차분하고 재테크 대화 좋아해요</div></div>
+      <div class="cta">
+        <button class="apply" onclick="go(2)">신청서 제출하기</button>
+        <div class="price">제출해도 아직 0원이에요</div>
+      </div>
+    </div>
+
+    <!-- ③ 승인 심사 -->
+    <div class="scr" id="s2">
+      <div class="apphead"><span class="back" onclick="go(1)">‹</span><span class="ttl">승인 심사</span><span class="me">신청 완료</span></div>
+      <div class="waitwrap">
+        <div class="pulse">🔎</div>
+        <h2>센터장이 심사하고 있어요</h2>
+        <p class="sub">아무나 받지 않아요. 승인된 분만 매칭을 시작해요.</p>
+      </div>
+      <div class="track">
+        <div class="trow done"><span class="dot">✓</span><div><div class="tt">신청서 접수 완료</div><div class="td">이상형·조건 확인했어요</div></div></div>
+        <div class="trow now"><span class="dot">2</span><div><div class="tt">프로필 승인 심사 중</div><div class="td">본인·직업 확인, 진성 회원인지 검토</div></div><span class="badge">진행 중</span></div>
+        <div class="trow todo"><span class="dot">3</span><div><div class="tt">조건 맞는 상대 찾기</div><div class="td">승인되면 바로 이어져요</div></div></div>
+        <div class="trow todo"><span class="dot">4</span><div><div class="tt">상대 소개 도착</div><div class="td">확정되면 문자로 알려드려요 💌</div></div></div>
+      </div>
+      <div class="notpaid"><span class="ic">📦</span><span class="tx"><b>아직 결제 전이에요.</b> 승인·소개까지 0원이에요.</span></div>
+      <div class="demohint"><button onclick="go(3)">▶︎ (데모) 승인 완료 → 상대 소개 보기</button></div>
+    </div>
+
+    <!-- ④ 상대 소개 -->
+    <div class="scr" id="s3">
+      <div class="apphead"><span class="back" onclick="go(2)">‹</span><span class="ttl">상대 소개</span><span class="me">나 · 여성</span></div>
+      <div class="arrive"><div class="kk">💌 센터장의 소개가 도착했어요</div><h2>이 분, 어떠세요?</h2></div>
+      <div class="card">
+        <div class="ph"><span class="big">🧑🏻‍💼</span><span class="vb">✓ 검증 완료</span></div>
+        <div class="cbody">
+          <div class="nm">준호 · 34</div>
+          <div class="meta">직장인 (금융권) · 강남 거주 · 183cm</div>
+          <div class="common"><span># 배당주 관심</span><span># 등산</span><span># 결혼 생각 있음</span></div>
+          <div class="rec">
+            <div class="rt">🕯 센터장이 이 분을 고른 이유</div>
+            <div class="rq">"재테크 대화 통하는 분 찾으셨죠? 배당주 꾸준히 모으는 분이고, 대화 차분하고 예의 발라요. 결혼 가치관도 잘 맞을 것 같아 골랐어요."</div>
+          </div>
+          <div class="consent">🔒 수락해도 <b style="color:var(--ink-2);margin:0 3px">둘 다 좋다고</b> 해야 연락처가 열려요</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="pass" onclick="go(2)">다시 볼게요</button>
+        <button class="accept" onclick="go(4)">좋아요, 연결할래요</button>
+      </div>
+      <div class="passnote">패스해도 비용 0원 · 다음 상대를 다시 찾아드려요</div>
+    </div>
+
+    <!-- ⑤ 성사·연락처 -->
+    <div class="scr" id="s4">
+      <div class="apphead"><span class="back" onclick="go(3)">‹</span><span class="ttl">매칭 성사</span><span class="me">나 · 여성</span></div>
+      <div class="celebrate">
+        <div class="em">🎉</div>
+        <h2>둘 다 좋다고 했어요!</h2>
+        <div class="sub">이제 연락처를 열 수 있어요. 성사됐으니 결제해 주세요.</div>
+      </div>
+
+      <div id="pay-stage">
+        <div class="paycard">
+          <div class="row"><span class="lbl">매칭 성사 비용</span><span class="val tnum">19,900원</span></div>
+          <div class="acct">입금계좌 <b>카카오뱅크 3333-01-234567</b> (예금주 썸류센터)<br>입금자명을 <b>신청자 성함</b>으로 보내주세요.</div>
+          <button class="paybtn" onclick="pay()">입금 완료 → 연락처 열기</button>
+        </div>
+        <div class="notpaid" style="justify-content:center"><span class="ic">📦</span><span class="tx">성사됐을 때만 내는 비용이에요. 여기까지 <b>0원</b>이었어요.</span></div>
+      </div>
+
+      <div id="unlock-stage" style="display:none">
+        <div class="contact">
+          <div class="lock">🔓</div>
+          <div class="nm">준호 · 34</div>
+          <div class="num tnum">010-2345-6789</div>
+          <div style="font-size:11.5px;color:var(--muted)">연락처는 성사된 두 분에게만 열려요</div>
+          <div class="kk">💬 카카오톡으로 인사 보내기</div>
+        </div>
+        <div class="second">
+          <div class="ic">💫</div><h3>혹시 이번에 잘 안 맞아도</h3>
+          <p>괜찮아요. 조건 맞는 다음 분을 다시 찾아 이어드릴게요.</p>
+          <button onclick="go(2)">다음 매칭 받아보기</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="navdots" id="navdots">
+      <div class="nd on" data-s="0"><span class="i">🏠</span>소개</div>
+      <div class="nd" data-s="1"><span class="i">📝</span>신청</div>
+      <div class="nd" data-s="2"><span class="i">🔎</span>승인</div>
+      <div class="nd" data-s="3"><span class="i">👀</span>소개</div>
+      <div class="nd" data-s="4"><span class="i">🎉</span>성사</div>
+    </div>
+
+  </div></div></div></div>
+
+  <div class="cap">1:1은 "많이 보여주기"가 아니라 <b>"믿고 맡긴다 + 실패해도 0원"</b>이 파는 힘이에요.</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  window.go=function(n){
+    for(var i=0;i<5;i++){ document.getElementById("s"+i).classList.toggle("on", i===n); }
+    [].forEach.call(document.querySelectorAll("#steps button"), function(b){ b.classList.toggle("on", +b.dataset.s===n); });
+    [].forEach.call(document.querySelectorAll(".nd"), function(b){ b.classList.toggle("on", +b.dataset.s===n); });
+    if(n!==4){ document.getElementById("pay-stage").style.display="block"; document.getElementById("unlock-stage").style.display="none"; }
+    window.scrollTo({top:0, behavior:"smooth"});
+  };
+  window.pay=function(){
+    document.getElementById("pay-stage").style.display="none";
+    document.getElementById("unlock-stage").style.display="block";
+  };
+  document.getElementById("steps").addEventListener("click", function(e){ var b=e.target.closest("button"); if(b) go(+b.dataset.s); });
+  document.getElementById("navdots").addEventListener("click", function(e){ var b=e.target.closest(".nd"); if(b) go(+b.dataset.s); });
+})();
+</script>
+</body>
+</html>
