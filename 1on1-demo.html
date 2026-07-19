@@ -90,6 +90,20 @@
   .lead .sub{font-size:12.5px; color:var(--muted);}
   .fsec{font-size:12px;font-weight:750;color:var(--rose);margin:15px 2px 6px;display:flex;align-items:center;gap:6px;}
   .fbadge{font-size:10px;font-weight:750;color:var(--ok);background:var(--ok-soft);padding:2px 8px;border-radius:100px;}
+  .flabel{display:block;font-size:11.5px;font-weight:700;color:var(--muted);margin-top:13px;}
+  .finput,.ftext{width:100%;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:11px;padding:11px 12px;color:var(--ink);font-size:14px;font-family:inherit;outline:none;margin-top:6px;-webkit-appearance:none;appearance:none;}
+  .finput::placeholder,.ftext::placeholder{color:var(--faint);}
+  .finput:focus,.ftext:focus,.fselect:focus{border-color:var(--rose);}
+  .ftext{resize:none;line-height:1.5;}
+  .fselect{width:100%;border:1px solid var(--line-strong);border-radius:11px;padding:11px 34px 11px 12px;color:var(--ink);font-size:14px;font-family:inherit;outline:none;margin-top:6px;-webkit-appearance:none;appearance:none;background:var(--surface-2) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%23998870' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 12px center;}
+  .frow{display:flex;gap:9px;} .frow>div{flex:1;min-width:0;}
+  .fphoto{display:flex;align-items:center;justify-content:center;width:100%;height:104px;border:1.5px dashed var(--line-strong);border-radius:14px;cursor:pointer;color:var(--muted);margin-top:6px;background-color:var(--surface-2);background-size:cover;background-position:center;overflow:hidden;}
+  .fphoto-in{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:650;}
+  .fupload{display:flex;align-items:center;gap:8px;width:100%;border:1.5px dashed var(--line-strong);border-radius:12px;padding:13px;cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:650;margin-top:8px;background:var(--surface-2);}
+  .fupload.done{border-style:solid;border-color:var(--ok);color:var(--ok);}
+  .fseg{display:flex;gap:8px;margin-top:6px;}
+  .fseg-b{flex:1;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:11px;padding:11px;color:var(--muted);font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;}
+  .fseg-b.on{background:var(--rose);color:var(--ink-on-amber);border-color:transparent;}
 
   /* ③ 승인 심사 */
   .waitwrap{text-align:center; padding:6px 4px 0;}
@@ -213,24 +227,43 @@
       </div>
     </div>
 
-    <!-- ② 신청 (실제 신청서 matching.html 구조와 동일) -->
+    <!-- ② 신청 (실제 신청서 matching.html 구조와 동일 · 직접 입력 가능) -->
     <div class="scr" id="s1">
       <div class="apphead"><span class="back" onclick="go(0)">‹</span><span class="ttl">신청 정보 입력</span><span class="me">STEP 2</span></div>
-      <div class="lead"><div class="ky">📝 실제 신청서</div><h2>이렇게 작성해요</h2><div class="sub">기본 정보 · 신분 인증 · 이상형 조건</div></div>
+      <div class="lead"><div class="ky">📝 실제 신청서</div><h2>직접 작성해보세요</h2><div class="sub">칸을 눌러 입력하고, 사진도 올려볼 수 있어요</div></div>
 
       <div class="fsec">📋 기본 정보</div>
-      <div class="field"><div class="k">이름 · 연락처</div><div class="v">김○○ · 010-0000-0000</div></div>
-      <div class="field"><div class="k">성별 · 출생 연도</div><div class="v">여성 · 1994년생</div></div>
-      <div class="field"><div class="k">직업 · 키 · 사는 곳</div><div class="v">간호사 · 165 · 서울 강남구</div></div>
-      <div class="field"><div class="k">취미 · 종교</div><div class="v">카페투어 · 무교</div></div>
+      <label class="fphoto"><input type="file" accept="image/*" hidden onchange="ojPhoto(event)"><span class="fphoto-in" id="ojPhotoIn"><span style="font-size:26px">📷</span>프로필 사진 추가</span></label>
+      <label class="flabel">이름</label>
+      <input class="finput" placeholder="실명을 입력해주세요">
+      <label class="flabel">연락처</label>
+      <input class="finput" placeholder="010-0000-0000" inputmode="tel">
+      <label class="flabel">성별</label>
+      <div class="fseg"><button type="button" class="fseg-b" onclick="ojSeg(this)">남성</button><button type="button" class="fseg-b" onclick="ojSeg(this)">여성</button></div>
+      <div class="frow">
+        <div><label class="flabel">출생 연도</label><select class="fselect"><option value="" disabled selected>선택</option><option>2000년생</option><option>1998년생</option><option>1996년생</option><option>1994년생</option><option>1992년생</option><option>1990년생</option><option>1988년생</option><option>1986년생</option></select></div>
+        <div><label class="flabel">키</label><input class="finput" placeholder="예: 165"></div>
+      </div>
+      <label class="flabel">직업</label>
+      <input class="finput" placeholder="예: 마케터, 개발자, 간호사">
+      <label class="flabel">사는 곳</label>
+      <input class="finput" placeholder="예: 서울 강남구, 경기 성남시">
+      <label class="flabel">취미</label>
+      <input class="finput" placeholder="예: 러닝, 카페투어, 넷플릭스">
+      <label class="flabel">종교</label>
+      <select class="fselect"><option value="" disabled selected>선택</option><option>무교</option><option>기독교</option><option>천주교</option><option>불교</option><option>기타</option></select>
 
       <div class="fsec">🪪 신분 인증 <span class="fbadge">검증</span></div>
-      <div class="field"><div class="k">재직증명서 / 사업자등록증</div><div class="v" style="color:var(--ok)">✓ 첨부됨</div></div>
-      <div class="field"><div class="k">신분증 사본</div><div class="v" style="color:var(--ok)">✓ 첨부됨</div></div>
+      <label class="fupload"><input type="file" hidden onchange="ojFile(this)"><span>📄 재직증명서 / 사업자등록증 첨부</span></label>
+      <label class="fupload"><input type="file" hidden onchange="ojFile(this)"><span>🪪 신분증 사본 첨부</span></label>
 
       <div class="fsec">💘 이상형 조건</div>
-      <div class="field"><div class="k">선호 나이대 · 직업군</div><div class="v">30 ~ 37세 · 전문직 / 직장인</div></div>
-      <div class="field"><div class="k">간단한 자기소개</div><div class="v">차분하고 재테크 대화 좋아해요</div></div>
+      <label class="flabel">선호 나이대</label>
+      <input class="finput" placeholder="예: 30 ~ 37세">
+      <label class="flabel">선호 직업군</label>
+      <input class="finput" placeholder="예: 전문직, 직장인">
+      <label class="flabel">간단한 자기소개</label>
+      <textarea class="ftext" rows="3" placeholder="상대방에게 보여질 자기소개를 작성해주세요 (100자 이내)"></textarea>
 
       <div class="cta">
         <button class="apply" onclick="go(2)">신청서 제출하기</button>
@@ -340,6 +373,21 @@
   window.pay=function(){
     document.getElementById("pay-stage").style.display="none";
     document.getElementById("unlock-stage").style.display="block";
+  };
+  window.ojPhoto=function(e){
+    var f=e.target.files&&e.target.files[0]; if(!f) return;
+    var box=e.target.closest(".fphoto"), r=new FileReader();
+    r.onload=function(ev){ box.style.backgroundImage="url('"+ev.target.result+"')"; var inner=document.getElementById("ojPhotoIn"); if(inner) inner.style.display="none"; };
+    r.readAsDataURL(f);
+  };
+  window.ojFile=function(input){
+    var f=input.files&&input.files[0], box=input.closest(".fupload");
+    if(f&&box){ box.classList.add("done"); box.querySelector("span").textContent="✓ "+f.name; }
+  };
+  window.ojSeg=function(btn){
+    var p=btn.parentNode;
+    [].forEach.call(p.querySelectorAll(".fseg-b"), function(b){ b.classList.remove("on"); });
+    btn.classList.add("on");
   };
   document.getElementById("steps").addEventListener("click", function(e){ var b=e.target.closest("button"); if(b) go(+b.dataset.s); });
   document.getElementById("navdots").addEventListener("click", function(e){ var b=e.target.closest(".nd"); if(b) go(+b.dataset.s); });
