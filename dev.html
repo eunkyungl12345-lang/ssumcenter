@@ -202,6 +202,176 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
+<!-- 1:1 Journey Preview (dev 전용 미리보기) -->
+<style>
+  #oj-journey .oj-inner{max-width:820px;margin:0 auto;text-align:center;}
+  .oj-risk{display:inline-flex;align-items:center;gap:8px;background:rgba(31,158,107,.08);border:1px solid rgba(31,158,107,.22);color:#1f7a54;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:100px;margin-top:14px;}
+  .oj-steps{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:26px 0 20px;}
+  .oj-steps button{border:1px solid var(--faint);background:var(--surface);color:var(--muted);font-size:12px;font-weight:700;padding:9px 15px;border-radius:100px;cursor:pointer;font-family:inherit;transition:.15s;}
+  .oj-steps button.on{background:var(--brown);color:#fff;border-color:transparent;}
+  .oj-steps button b{opacity:.55;margin-right:4px;}
+  .oj-stage{display:flex;justify-content:center;}
+  .oj-phone{width:360px;max-width:100%;background:var(--cream);border-radius:40px;padding:10px;box-shadow:0 30px 70px -28px rgba(139,105,20,.4);border:1px solid var(--faint);}
+  .oj-screen{background:var(--bg);border-radius:32px;overflow:hidden;min-height:600px;padding:22px 18px 26px;text-align:left;}
+  .oj-scr{display:none;} .oj-scr.on{display:block;animation:ojf .28s ease;}
+  @keyframes ojf{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .oj-eyebrow{font-size:11px;font-weight:750;letter-spacing:.05em;color:var(--warm);}
+  .oj-h{font-size:20px;font-weight:800;margin:5px 0 4px;color:var(--text);line-height:1.25;}
+  .oj-sub{font-size:13px;color:var(--muted);}
+  .oj-box{background:var(--surface);border:1px solid var(--faint);border-radius:14px;padding:13px 14px;margin-top:13px;}
+  .oj-box .k{font-size:11px;color:var(--dim);font-weight:650;}
+  .oj-box .v{font-size:14.5px;font-weight:750;color:var(--text);margin-top:2px;}
+  .oj-list{display:grid;gap:8px;margin-top:13px;}
+  .oj-row{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--faint);border-radius:12px;padding:11px 13px;}
+  .oj-row .n{width:20px;height:20px;border-radius:50%;background:var(--brown);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;flex-shrink:0;margin-top:1px;}
+  .oj-row .t{font-size:12.5px;color:var(--muted);font-weight:600;} .oj-row .t b{color:var(--text);}
+  .oj-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px;}
+  .oj-tags span{font-size:11.5px;font-weight:650;color:var(--brown);background:rgba(139,105,20,.07);border-radius:100px;padding:5px 11px;}
+  .oj-btn{width:100%;border:none;background:var(--brown);color:#fff;font-weight:800;font-size:14.5px;padding:14px;border-radius:12px;cursor:pointer;font-family:inherit;margin-top:15px;box-shadow:0 8px 22px rgba(139,105,20,.18);}
+  .oj-price{text-align:center;font-size:11px;color:var(--dim);margin-top:8px;}
+  .oj-pulse{width:88px;height:88px;margin:10px auto 6px;border-radius:50%;display:grid;place-items:center;font-size:34px;background:radial-gradient(circle at 50% 40%,rgba(212,149,42,.22),rgba(212,149,42,.04));animation:ojp 2.2s ease-out infinite;}
+  @keyframes ojp{0%{box-shadow:0 0 0 0 rgba(212,149,42,.3);}70%{box-shadow:0 0 0 20px rgba(212,149,42,0);}100%{box-shadow:0 0 0 0 rgba(212,149,42,0);}}
+  .oj-center{text-align:center;}
+  .oj-track{background:var(--surface);border:1px solid var(--faint);border-radius:14px;padding:4px 14px;margin-top:14px;}
+  .oj-trow{display:flex;gap:11px;padding:11px 0;align-items:flex-start;}
+  .oj-trow+.oj-trow{border-top:1px solid var(--faint);}
+  .oj-dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-size:11px;font-weight:800;margin-top:1px;}
+  .oj-trow.done .oj-dot{background:#1f9e6b;color:#fff;} .oj-trow.now .oj-dot{background:var(--brown);color:#fff;} .oj-trow.todo .oj-dot{background:var(--cream);color:var(--dim);border:1px solid var(--faint);}
+  .oj-tt{font-size:13px;font-weight:750;color:var(--text);} .oj-trow.todo .oj-tt{color:var(--dim);}
+  .oj-td{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .oj-badge{margin-left:auto;font-size:10px;font-weight:750;color:var(--brown);background:rgba(139,105,20,.08);padding:3px 9px;border-radius:100px;align-self:center;}
+  .oj-note{display:flex;gap:8px;align-items:center;background:rgba(31,158,107,.07);border:1px solid rgba(31,158,107,.16);border-radius:12px;padding:10px 13px;margin-top:13px;font-size:11.5px;color:#1f7a54;font-weight:600;}
+  .oj-card{background:var(--surface);border:1px solid var(--faint);border-radius:16px;overflow:hidden;margin-top:6px;}
+  .oj-ph{height:130px;display:grid;place-items:center;font-size:52px;color:#fff;background:linear-gradient(135deg,var(--warm),var(--pink));position:relative;}
+  .oj-ph .vb{position:absolute;top:10px;right:10px;font-size:10px;font-weight:750;color:#fff;background:rgba(0,0,0,.25);padding:4px 10px;border-radius:100px;}
+  .oj-cbody{padding:13px 14px;} .oj-nm{font-size:17px;font-weight:800;color:var(--text);} .oj-meta{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .oj-rec{background:rgba(212,149,42,.08);border:1px solid rgba(212,149,42,.2);border-radius:12px;padding:11px 12px;margin-top:11px;}
+  .oj-rec .rt{font-size:11px;font-weight:750;color:var(--brown);} .oj-rec .rq{font-size:12px;color:var(--text);margin-top:5px;line-height:1.5;opacity:.85;}
+  .oj-acts{display:grid;grid-template-columns:1fr 1.6fr;gap:9px;margin-top:12px;}
+  .oj-pass{border:1px solid var(--faint);background:var(--surface);color:var(--muted);font-weight:750;font-size:13px;padding:13px;border-radius:12px;cursor:pointer;font-family:inherit;}
+  .oj-accept{border:none;background:var(--brown);color:#fff;font-weight:800;font-size:14px;padding:13px;border-radius:12px;cursor:pointer;font-family:inherit;}
+  .oj-contact{background:rgba(31,158,107,.07);border:1.5px solid #1f9e6b;border-radius:16px;padding:16px;text-align:center;margin-top:6px;}
+  .oj-num{font-size:21px;font-weight:800;color:#1f7a54;margin:5px 0 2px;font-variant-numeric:tabular-nums;}
+  .oj-caption{max-width:640px;margin:22px auto 0;font-size:12px;color:var(--dim);line-height:1.7;text-align:center;}
+  .oj-caption b{color:var(--muted);}
+</style>
+<section class="sec" id="oj-journey" style="background:rgba(139,105,20,.02)">
+  <div class="oj-inner">
+    <span class="pill pill-brown" data-r><i class="fa-solid fa-heart"></i>1:1 매칭 여정</span>
+    <h2 class="gm" style="font-size:clamp(22px,5vw,32px);font-weight:700;margin-top:16px" data-r>센터장이 <span class="ac">직접 골라주는</span> 단 한 사람</h2>
+    <p style="font-size:14px;color:var(--dim);margin-top:8px" data-r>신청 → 승인 심사 → 상대 소개 → 성사. 실패하면 0원이에요.</p>
+    <div data-r><span class="oj-risk">📦 성사될 때만 19,900원 · 안 되면 0원 · 센터장 승인제</span></div>
+
+    <div class="oj-steps" id="oj-steps" data-r>
+      <button data-s="0" class="on"><b>①</b>소개</button>
+      <button data-s="1"><b>②</b>신청</button>
+      <button data-s="2"><b>③</b>승인 심사</button>
+      <button data-s="3"><b>④</b>상대 소개</button>
+      <button data-s="4"><b>⑤</b>성사·연락처</button>
+    </div>
+
+    <div class="oj-stage" data-r><div class="oj-phone"><div class="oj-screen">
+
+      <!-- ① 소개 -->
+      <div class="oj-scr on" id="oj0">
+        <div class="oj-eyebrow">💘 1:1 맞춤 매칭</div>
+        <div class="oj-h">여러 명 말고,<br>딱 맞는 한 명</div>
+        <div class="oj-sub">앱이 아니라 사람이 이어드려요.</div>
+        <div class="oj-list">
+          <div class="oj-row"><span class="n">1</span><span class="t"><b>신청</b> — 이상형·조건을 알려주세요</span></div>
+          <div class="oj-row"><span class="n">2</span><span class="t"><b>센터장 승인 심사</b> — 검증된 분만 매칭에 올려요</span></div>
+          <div class="oj-row"><span class="n">3</span><span class="t"><b>성사되면 연락처</b> — 둘 다 좋을 때만 결제·번호 공개</span></div>
+        </div>
+        <div class="oj-tags"><span># 진지한 만남</span><span># 강남</span><span># 27~35세</span><span># 검증된 싱글</span></div>
+        <button class="oj-btn" onclick="ojGo(1)">신청하고 매칭 받기</button>
+        <div class="oj-price">지금은 0원 · 성사 시에만 19,900원</div>
+      </div>
+
+      <!-- ② 신청 -->
+      <div class="oj-scr" id="oj1">
+        <div class="oj-eyebrow">📝 STEP 2</div>
+        <div class="oj-h">이상형·조건을<br>알려주세요</div>
+        <div class="oj-sub">받은 정보로 센터장이 상대를 찾아요.</div>
+        <div class="oj-box"><div class="k">원하는 나이대</div><div class="v">30 ~ 37세</div></div>
+        <div class="oj-box"><div class="k">중요하게 보는 것</div><div class="v">가치관 · 대화 코드 · 경제관념</div></div>
+        <div class="oj-box"><div class="k">간단 자기소개</div><div class="v">차분하고 재테크 대화 좋아해요</div></div>
+        <button class="oj-btn" onclick="ojGo(2)">신청서 제출하기</button>
+        <div class="oj-price">제출해도 아직 0원이에요</div>
+      </div>
+
+      <!-- ③ 승인 심사 -->
+      <div class="oj-scr" id="oj2">
+        <div class="oj-center">
+          <div class="oj-pulse">🔎</div>
+          <div class="oj-h">센터장이 심사하고 있어요</div>
+          <div class="oj-sub">아무나 받지 않아요. 승인된 분만 매칭을 시작해요.</div>
+        </div>
+        <div class="oj-track">
+          <div class="oj-trow done"><span class="oj-dot">✓</span><div><div class="oj-tt">신청서 접수 완료</div><div class="oj-td">이상형·조건 확인했어요</div></div></div>
+          <div class="oj-trow now"><span class="oj-dot">2</span><div><div class="oj-tt">프로필 승인 심사 중</div><div class="oj-td">본인·직업 확인, 진성 회원인지 검토</div></div><span class="oj-badge">진행 중</span></div>
+          <div class="oj-trow todo"><span class="oj-dot">3</span><div><div class="oj-tt">조건 맞는 상대 찾기</div><div class="oj-td">승인되면 바로 이어져요</div></div></div>
+          <div class="oj-trow todo"><span class="oj-dot">4</span><div><div class="oj-tt">상대 소개 도착</div><div class="oj-td">문자로 알려드려요 💌</div></div></div>
+        </div>
+        <div class="oj-note">📦 아직 결제 전이에요 · 승인·소개까지 0원</div>
+        <button class="oj-btn" onclick="ojGo(3)" style="background:var(--warm)">▶︎ (데모) 승인 완료 → 상대 소개 보기</button>
+      </div>
+
+      <!-- ④ 상대 소개 -->
+      <div class="oj-scr" id="oj3">
+        <div class="oj-eyebrow oj-center">💌 센터장의 소개가 도착했어요</div>
+        <div class="oj-h oj-center" style="margin-bottom:10px">이 분, 어떠세요?</div>
+        <div class="oj-card">
+          <div class="oj-ph">🧑🏻‍💼<span class="vb">✓ 검증 완료</span></div>
+          <div class="oj-cbody">
+            <div class="oj-nm">준호 · 34</div>
+            <div class="oj-meta">직장인(금융권) · 강남 거주 · 183cm</div>
+            <div class="oj-tags"><span># 배당주 관심</span><span># 등산</span><span># 결혼 생각</span></div>
+            <div class="oj-rec"><div class="rt">🕯 센터장이 이 분을 고른 이유</div><div class="rq">"재테크 대화 통하는 분 찾으셨죠? 차분하고 예의 바른 분이라 잘 맞을 것 같아 골랐어요."</div></div>
+          </div>
+        </div>
+        <div class="oj-acts">
+          <button class="oj-pass" onclick="ojGo(2)">다시 볼게요</button>
+          <button class="oj-accept" onclick="ojGo(4)">좋아요, 연결할래요</button>
+        </div>
+        <div class="oj-price">패스해도 0원 · 다음 상대를 다시 찾아드려요</div>
+      </div>
+
+      <!-- ⑤ 성사·연락처 -->
+      <div class="oj-scr" id="oj4">
+        <div class="oj-center">
+          <div style="font-size:40px">🎉</div>
+          <div class="oj-h">둘 다 좋다고 했어요!</div>
+          <div class="oj-sub">성사됐으니 이제 연락처를 열 수 있어요.</div>
+        </div>
+        <div class="oj-box" style="border-color:var(--brown)"><div class="k">매칭 성사 비용</div><div class="v" style="font-size:19px">19,900원 · 계좌이체</div></div>
+        <div class="oj-contact">
+          <div style="font-size:26px">🔓</div>
+          <div class="oj-nm">준호 · 34</div>
+          <div class="oj-num">010-2345-6789</div>
+          <div style="font-size:11px;color:var(--muted)">연락처는 성사된 두 분에게만 열려요</div>
+        </div>
+        <div class="oj-note">📦 여기까지 0원 · 성사됐을 때만 내는 비용이에요</div>
+        <button class="oj-btn" onclick="ojGo(0)" style="background:var(--surface);color:var(--brown);border:1px solid var(--faint);box-shadow:none">처음부터 다시 보기</button>
+      </div>
+
+    </div></div></div>
+
+    <div class="oj-caption" data-r>1:1은 "많이 보여주기"가 아니라 <b>"믿고 맡긴다 + 실패해도 0원"</b>이 파는 힘이에요. 그래서 ① 성사 시에만 비용, ③ 센터장 승인제로 신뢰, ④ 고른 이유로 큐레이션 값 체감, ⑤ 양쪽 수락 후에만 번호 공개를 넣었어요.</div>
+  </div>
+</section>
+<script>
+(function(){
+  "use strict";
+  window.ojGo=function(n){
+    for(var i=0;i<5;i++){ var s=document.getElementById("oj"+i); if(s) s.classList.toggle("on", i===n); }
+    var btns=document.querySelectorAll("#oj-steps button");
+    [].forEach.call(btns, function(b){ b.classList.toggle("on", +b.dataset.s===n); });
+  };
+  var steps=document.getElementById("oj-steps");
+  if(steps){ steps.addEventListener("click", function(e){ var b=e.target.closest("button"); if(b) ojGo(+b.dataset.s); }); }
+})();
+</script>
+
 <!-- Reviews -->
 <section class="sec" id="reviews" style="background:rgba(139,105,20,.015)">
   <div class="wrap" style="text-align:center">
