@@ -395,8 +395,10 @@ if(cntEl) cntObserver.observe(cntEl.parentElement.parentElement);
 /* Auth guard */
 function goMatching(){
   closeModal();
-  if(localStorage.getItem('ssumUser'))window.location.href='matching.html';
-  else window.location.href='login.html?redirect=matching.html';
+  // 로그인 벽 제거 — 바로 신청서로 (멤버십 런칭 시 로그인 되살리려면 아래 주석 복원)
+  window.location.href='matching.html';
+  // if(localStorage.getItem('ssumUser'))window.location.href='matching.html';
+  // else window.location.href='login.html?redirect=matching.html';
 }
 
 /* Reveal */

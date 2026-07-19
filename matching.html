@@ -810,10 +810,11 @@ function aiFillForm(){
   }
 }
 
-// 로그인 체크 — 비로그인 시 로그인 페이지로 이동
-if(!localStorage.getItem('ssumUser')){
-  window.location.href='login.html?redirect=matching.html';
-}
+// 로그인 체크 — (비활성화) 신청 벽 제거: 로그인 없이 바로 신청서 작성 가능
+// 멤버십 런칭 시 회원 관리용으로 되살리려면 아래 주석 복원
+// if(!localStorage.getItem('ssumUser')){
+//   window.location.href='login.html?redirect=matching.html';
+// }
 
 // URL 파라미터에서 테스트 결과 읽기 (테스트 페이지에서 넘어온 경우 자동 채움)
 (function loadTestResult(){
