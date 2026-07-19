@@ -181,6 +181,19 @@
 
   .cap{max-width:420px;margin:18px auto 0;text-align:center;font-size:12px;color:var(--faint);line-height:1.7;}
   .cap b{color:var(--muted);}
+  .freebar{font-size:11.5px;font-weight:700;color:var(--rose);background:var(--rose-soft);border:1px solid var(--line-strong);border-radius:100px;padding:7px 13px;text-align:center;margin-bottom:12px;}
+  .mor{font-size:11.5px;color:var(--muted);text-align:center;margin:15px 0 8px;}
+  .mor b{color:var(--ink-2);}
+  .mcard{background:var(--surface);border:1.5px solid var(--rose);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-top:6px;}
+  .mtop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .mname{font-size:17px;font-weight:800;}
+  .mprice{text-align:right;} .mprice b{font-size:18px;color:var(--rose);display:block;} .mprice span{font-size:10px;color:var(--faint);}
+  .mfeat{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--ink-2);padding:8px 0;border-top:1px solid var(--line);} .mfeat b{color:var(--ink);}
+  .mfeat .mi{color:var(--ok);font-weight:800;}
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px;}
+  .cmp-col{background:var(--surface-2);border:1px solid var(--line);border-radius:13px;padding:12px;font-size:11.5px;color:var(--muted);text-align:center;display:grid;gap:5px;}
+  .cmp-col.on{border-color:var(--rose);background:var(--rose-soft);color:var(--ink-2);}
+  .cmp-h{font-weight:800;font-size:12.5px;color:var(--ink);margin-bottom:3px;}
   button:focus-visible{outline:2px solid var(--rose); outline-offset:2px;}
 </style>
 </head>
@@ -192,6 +205,7 @@
     <button data-s="2"><b>③</b>승인 심사</button>
     <button data-s="3"><b>④</b>상대 소개</button>
     <button data-s="4"><b>⑤</b>성사·연락처</button>
+    <button data-s="5"><b>⑥</b>멤버십</button>
   </div>
 
   <div class="stage"><div class="phone"><div class="screen"><div class="sp">
@@ -288,28 +302,47 @@
       <div class="demohint"><button onclick="go(3)">▶︎ (데모) 승인 완료 → 상대 소개 보기</button></div>
     </div>
 
-    <!-- ④ 상대 소개 -->
+    <!-- ④ 상대 소개 (무료 3회 · 이후 상담) -->
     <div class="scr" id="s3">
       <div class="apphead"><span class="back" onclick="go(2)">‹</span><span class="ttl">상대 소개</span><span class="me">나 · 여성</span></div>
-      <div class="arrive"><div class="kk">💌 센터장의 소개가 도착했어요</div><h2>이 분, 어떠세요?</h2></div>
-      <div class="card">
-        <div class="ph"><span class="big">🧑🏻‍💼</span><span class="vb">✓ 검증 완료</span></div>
-        <div class="cbody">
-          <div class="nm">준호 · 34</div>
-          <div class="meta">직장인 (금융권) · 강남 거주 · 183cm</div>
-          <div class="common"><span># 배당주 관심</span><span># 등산</span><span># 결혼 생각 있음</span></div>
-          <div class="rec">
-            <div class="rt">🕯 센터장이 이 분을 고른 이유</div>
-            <div class="rq">"재테크 대화 통하는 분 찾으셨죠? 배당주 꾸준히 모으는 분이고, 대화 차분하고 예의 발라요. 결혼 가치관도 잘 맞을 것 같아 골랐어요."</div>
+
+      <div id="intro-stage">
+        <div class="arrive"><div class="kk">💌 센터장의 소개가 도착했어요</div><h2>이 분, 어떠세요?</h2></div>
+        <div class="freebar">📦 무료 소개 <span id="freeNo">1</span>/3 · 성사될 때만 결제</div>
+        <div class="card">
+          <div class="ph"><span class="big" id="cAv">🧑🏻‍💼</span><span class="vb">✓ 검증 완료</span></div>
+          <div class="cbody">
+            <div class="nm" id="cName">준호 · 34</div>
+            <div class="meta" id="cMeta">직장인 (금융권) · 강남 거주 · 183cm</div>
+            <div class="common" id="cTags"><span># 배당주 관심</span><span># 등산</span><span># 결혼 생각 있음</span></div>
+            <div class="rec">
+              <div class="rt">🕯 센터장이 이 분을 고른 이유</div>
+              <div class="rq" id="cReason">"재테크 대화 통하는 분 찾으셨죠? 배당주 꾸준히 모으는 분이고, 대화 차분하고 예의 발라요. 결혼 가치관도 잘 맞을 것 같아 골랐어요."</div>
+            </div>
+            <div class="consent">🔒 수락해도 <b style="color:var(--ink-2);margin:0 3px">둘 다 좋다고</b> 해야 연락처가 열려요</div>
           </div>
-          <div class="consent">🔒 수락해도 <b style="color:var(--ink-2);margin:0 3px">둘 다 좋다고</b> 해야 연락처가 열려요</div>
         </div>
+        <div class="actions">
+          <button class="pass" onclick="ojPass()">다시 볼게요</button>
+          <button class="accept" onclick="go(4)">좋아요, 연결할래요</button>
+        </div>
+        <div class="passnote">패스해도 비용 0원 · 무료 소개는 3회까지예요</div>
       </div>
-      <div class="actions">
-        <button class="pass" onclick="go(2)">다시 볼게요</button>
-        <button class="accept" onclick="go(4)">좋아요, 연결할래요</button>
+
+      <div id="limit-stage" style="display:none">
+        <div class="waitwrap" style="padding-top:14px">
+          <div class="pulse" style="animation:none">🧭</div>
+          <h2>잠시 소개를 멈출게요</h2>
+          <p class="sub">무료 소개 3회를 다 보셨어요. 조건을 다시 맞춰볼까요?</p>
+        </div>
+        <div class="rec" style="margin-top:14px">
+          <div class="rt">💬 센터장 상담</div>
+          <div class="rq">"3번 다 아쉬우셨다면 이상형 조건을 함께 다듬어드릴게요. 오픈카톡으로 편하게 말 걸어주세요 :)"</div>
+        </div>
+        <button class="apply" style="margin-top:13px">오픈카톡으로 상담하기</button>
+        <div class="mor">또는 <b>기다리지 않고</b> 계속 소개받고 싶다면</div>
+        <button class="apply" style="background:var(--surface);color:var(--rose);border:1px solid var(--rose);box-shadow:none" onclick="go(5)">💳 멤버십 보기 →</button>
       </div>
-      <div class="passnote">패스해도 비용 0원 · 다음 상대를 다시 찾아드려요</div>
     </div>
 
     <!-- ⑤ 성사·연락처 -->
@@ -346,12 +379,32 @@
       </div>
     </div>
 
+    <!-- ⑥ 멤버십 (성사비 면제형) -->
+    <div class="scr" id="s5">
+      <div class="apphead"><span class="back" onclick="go(3)">‹</span><span class="ttl">썸류 멤버십</span><span class="me">선택</span></div>
+      <div class="lead"><div class="ky">💳 무료 3회를 다 써봤다면</div><h2>더 적극적으로 찾아드려요</h2><div class="sub">건당 결제 대신, 정액으로 마음껏.</div></div>
+      <div class="mcard">
+        <div class="mtop"><div class="mname">썸류 멤버십</div><div class="mprice"><b class="tnum">월 49,000원</b><span>예시 가격</span></div></div>
+        <div class="mfeat"><span class="mi">✓</span><div><b>성사비 면제</b> — 건당 19,900원 → 0원</div></div>
+        <div class="mfeat"><span class="mi">✓</span><div><b>소개 횟수 제한 없음</b> — 3회 넘어도 계속 소개</div></div>
+        <div class="mfeat"><span class="mi">✓</span><div><b>우선 매칭</b> — 조건 맞는 분 먼저 소개받아요</div></div>
+        <div class="mfeat"><span class="mi">✓</span><div><b>전담 관리</b> — 센터장이 더 신경 써서 큐레이션</div></div>
+        <button class="apply" style="margin-top:15px">멤버십 시작하기</button>
+        <div class="price">자주 만나는 분일수록 이득이에요</div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-col"><div class="cmp-h">무료 체험</div><div>소개 3회</div><div>성사 시 19,900원</div><div>3회 후 상담</div></div>
+        <div class="cmp-col on"><div class="cmp-h">멤버십</div><div>소개 무제한</div><div>성사비 0원</div><div>우선·전담 관리</div></div>
+      </div>
+    </div>
+
     <div class="navdots" id="navdots">
       <div class="nd on" data-s="0"><span class="i">🏠</span>소개</div>
       <div class="nd" data-s="1"><span class="i">📝</span>신청</div>
       <div class="nd" data-s="2"><span class="i">🔎</span>승인</div>
       <div class="nd" data-s="3"><span class="i">👀</span>소개</div>
       <div class="nd" data-s="4"><span class="i">🎉</span>성사</div>
+      <div class="nd" data-s="5"><span class="i">💳</span>멤버십</div>
     </div>
 
   </div></div></div></div>
@@ -362,11 +415,35 @@
 <script>
 (function(){
   "use strict";
+  var INTROS=[
+    {av:"🧑🏻‍💼",name:"준호 · 34",meta:"직장인 (금융권) · 강남 거주 · 183cm",tags:["# 배당주 관심","# 등산","# 결혼 생각 있음"],reason:"\"재테크 대화 통하는 분 찾으셨죠? 배당주 꾸준히 모으는 분이고, 대화 차분하고 예의 발라요. 결혼 가치관도 잘 맞을 것 같아 골랐어요.\""},
+    {av:"🧑🏻",name:"민재 · 33",meta:"자영업 · 서초 거주 · 178cm",tags:["# 부동산 임장","# 러닝","# 유머러스"],reason:"\"활동적인 분 좋아하셨죠? 주말마다 임장 다니는 부지런한 분이에요. 대화도 편하게 잘 이끌어요.\""},
+    {av:"👨🏻‍💻",name:"지훈 · 35",meta:"개발자 · 판교 거주 · 180cm",tags:["# 절약·저축","# 카페투어","# 다정함"],reason:"\"안정적인 분 원하셨죠? 무지출 챌린지도 하는 알뜰한 분이고, 다정하다는 후기가 많아요.\""}
+  ];
+  window.freeIdx=0;
+  window.ojRender=function(i){
+    var p=INTROS[i]; if(!p) return;
+    document.getElementById("cAv").textContent=p.av;
+    document.getElementById("cName").textContent=p.name;
+    document.getElementById("cMeta").textContent=p.meta;
+    document.getElementById("cReason").textContent=p.reason;
+    document.getElementById("cTags").innerHTML=p.tags.map(function(t){return "<span>"+t+"</span>";}).join("");
+    document.getElementById("freeNo").textContent=(i+1);
+  };
+  window.ojPass=function(){
+    window.freeIdx=(window.freeIdx||0)+1;
+    if(window.freeIdx>=3){
+      document.getElementById("intro-stage").style.display="none";
+      document.getElementById("limit-stage").style.display="block";
+      window.scrollTo({top:0, behavior:"smooth"});
+    } else { window.ojRender(window.freeIdx); }
+  };
   window.go=function(n){
-    for(var i=0;i<5;i++){ document.getElementById("s"+i).classList.toggle("on", i===n); }
+    for(var i=0;i<6;i++){ var s=document.getElementById("s"+i); if(s) s.classList.toggle("on", i===n); }
     [].forEach.call(document.querySelectorAll("#steps button"), function(b){ b.classList.toggle("on", +b.dataset.s===n); });
     [].forEach.call(document.querySelectorAll(".nd"), function(b){ b.classList.toggle("on", +b.dataset.s===n); });
     if(n!==4){ document.getElementById("pay-stage").style.display="block"; document.getElementById("unlock-stage").style.display="none"; }
+    if(n===3){ window.freeIdx=0; document.getElementById("intro-stage").style.display="block"; document.getElementById("limit-stage").style.display="none"; window.ojRender(0); }
     window.scrollTo({top:0, behavior:"smooth"});
   };
   window.pay=function(){
