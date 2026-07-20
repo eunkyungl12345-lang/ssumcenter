@@ -226,7 +226,7 @@
         <!-- 연락처 -->
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">연락처 <span class="y">*</span></label>
-          <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="01[0-9]{1}[0-9\-]{7,9}"
+          <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="01[0-9]-?[0-9]{3,4}-?[0-9]{4}"
             class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#FFBE2E] focus:outline-none transition">
         </div>
 
@@ -435,7 +435,7 @@
             <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="낙천적">낙천적</button>
             <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="성실한">성실한</button>
           </div>
-          <input type="hidden" name="keywords" id="keywords-input" required>
+          <input type="hidden" name="keywords" id="keywords-input">
           <p id="keyword-count" class="text-[11px] text-[#6b6358] mt-2">0 / 3개 선택됨</p>
         </div>
 
@@ -1092,13 +1092,27 @@ async function handleSubmit(e){
     if(docJobUrl) fields["재직증명서"] = [{url: docJobUrl}];
     if(docIdUrl) fields["신분증"] = [{url: docIdUrl}];
 
-    const res = await fetch("/api/airtable?table=1:1 매칭 신청", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ records: [{ fields }] })
-    });
-
-    if(!res.ok) throw new Error("전송 실패");
+    // Airtable에 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)
+    let attempt = { ...fields };
+    let ok = false, lastErr = "";
+    for(let i = 0; i < 8; i++){
+      const res = await fetch("/api/airtable?table=1:1 매칭 신청", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ records: [{ fields: attempt }] })
+      });
+      if(res.ok){ ok = true; break; }
+      let msg = "";
+      try { const j = await res.json(); msg = (j.error && j.error.message) || JSON.stringify(j); } catch(_) { msg = "HTTP " + res.status; }
+      lastErr = msg;
+      const m = msg.match(/Unknown field name:\s*"([^"]+)"/);
+      if(m && Object.prototype.hasOwnProperty.call(attempt, m[1])){
+        delete attempt[m[1]];  // 없는 필드 제거 후 재시도
+        continue;
+      }
+      break;  // 다른 종류의 에러면 중단
+    }
+    if(!ok) throw new Error("전송 실패: " + lastErr);
 
     // 성공 화면 표시
     form.closest("section").classList.add("hidden");
