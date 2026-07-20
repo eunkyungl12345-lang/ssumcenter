@@ -361,7 +361,7 @@
       <div class="celebrate">
         <div class="em">🎉</div>
         <h2>둘 다 좋다고 했어요!</h2>
-        <div class="sub">이제 연락처를 열 수 있어요. 성사됐으니 결제해 주세요.</div>
+        <div class="sub" id="celebSub">성사됐어요! 아래 계좌로 입금하시면, 센터장이 확인 후 연락처를 열어드려요.</div>
       </div>
 
       <div id="pay-stage">
@@ -369,13 +369,15 @@
           <div class="row"><span class="lbl" id="payLbl">매칭 성사 비용</span><span class="val tnum" id="payVal">19,900원</span></div>
           <div id="superNote" style="display:none;font-size:11.5px;color:var(--rose);font-weight:700;margin-top:8px">💛 슈퍼매칭 — 상대방 비용까지 포함이에요. 상대에겐 '슈퍼매칭이 왔어요!'로 표시돼요.</div>
           <div class="acct">입금계좌 <b>카카오뱅크 3333-01-234567</b> (예금주 썸류센터)<br>입금자명을 <b>신청자 성함</b>으로 보내주세요.</div>
-          <button class="paybtn" onclick="pay()">입금 완료 → 연락처 열기</button>
+          <button class="paybtn" onclick="pay()">입금했어요</button>
+          <div style="text-align:center;font-size:11px;color:var(--faint);margin-top:8px">센터장이 입금을 확인하면 연락처가 열려요 · 보통 몇 시간 내 문자 안내</div>
         </div>
         <div class="notpaid" style="justify-content:center"><span class="ic">📦</span><span class="tx">성사됐을 때만 내는 비용이에요. 여기까지 <b>0원</b>이었어요.</span></div>
       </div>
 
       <div id="unlock-stage" style="display:none">
         <div class="contact">
+          <div style="font-size:11px;font-weight:750;color:var(--ok);margin-bottom:6px">✓ 입금 확인 완료</div>
           <div class="lock">🔓</div>
           <div class="nm">준호 · 34</div>
           <div class="num tnum">010-2345-6789</div>
@@ -458,12 +460,14 @@
     if(n===4){ var sup=window.isSuper, pv=document.getElementById("payVal"), pl=document.getElementById("payLbl"), sn=document.getElementById("superNote");
       if(pv) pv.textContent=sup?"39,800원":"19,900원";
       if(pl) pl.textContent=sup?"슈퍼매칭 비용":"매칭 성사 비용";
-      if(sn) sn.style.display=sup?"block":"none"; }
+      if(sn) sn.style.display=sup?"block":"none";
+      var cs=document.getElementById("celebSub"); if(cs) cs.textContent="성사됐어요! 아래 계좌로 입금하시면, 센터장이 확인 후 연락처를 열어드려요."; }
     window.scrollTo({top:0, behavior:"smooth"});
   };
   window.pay=function(){
     document.getElementById("pay-stage").style.display="none";
     document.getElementById("unlock-stage").style.display="block";
+    var cs=document.getElementById("celebSub"); if(cs) cs.textContent="✓ 입금이 확인됐어요 · 연락처가 열렸어요";
   };
   window.ojPhoto=function(e){
     var f=e.target.files&&e.target.files[0]; if(!f) return;
