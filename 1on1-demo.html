@@ -194,6 +194,10 @@
   .cmp-col{background:var(--surface-2);border:1px solid var(--line);border-radius:13px;padding:12px;font-size:11.5px;color:var(--muted);text-align:center;display:grid;gap:5px;}
   .cmp-col.on{border-color:var(--rose);background:var(--rose-soft);color:var(--ink-2);}
   .cmp-h{font-weight:800;font-size:12.5px;color:var(--ink);margin-bottom:3px;}
+  .super{width:100%;border:none;border-radius:13px;padding:13px;margin-top:9px;font-family:inherit;font-weight:800;font-size:13.5px;cursor:pointer;color:var(--ink-on-amber);background:linear-gradient(135deg,#F0C060,#D4952A);box-shadow:0 8px 22px rgba(212,149,42,.25);}
+  .fphoto-row{display:flex;gap:8px;margin-top:6px;}
+  .fphoto3{flex:1;height:86px;border:1.5px dashed var(--line-strong);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);background-color:var(--surface-2);background-size:cover;background-position:center;overflow:hidden;}
+  .fphoto3 .fphoto-in{flex-direction:column;gap:3px;font-size:11px;font-weight:650;}
   button:focus-visible{outline:2px solid var(--rose); outline-offset:2px;}
 </style>
 </head>
@@ -267,7 +271,12 @@
       <select class="fselect"><option value="" disabled selected>선택</option><option>무교</option><option>기독교</option><option>천주교</option><option>불교</option><option>기타</option></select>
 
       <div class="fsec">🪪 신분 인증 <span class="fbadge">검증</span></div>
-      <label class="fphoto"><input type="file" accept="image/*" hidden onchange="ojPhoto(event)"><span class="fphoto-in" id="ojPhotoIn"><span style="font-size:26px">📷</span>프로필 사진 추가</span></label>
+      <label class="flabel">프로필 사진 <span style="color:var(--faint);font-weight:600">· 최소 1장, 최대 3장</span></label>
+      <div class="fphoto-row">
+        <label class="fphoto3"><input type="file" accept="image/*" hidden onchange="ojPhoto3(event)"><span class="fphoto-in"><span style="font-size:22px">📷</span>대표 사진</span></label>
+        <label class="fphoto3"><input type="file" accept="image/*" hidden onchange="ojPhoto3(event)"><span class="fphoto-in"><span style="font-size:20px">＋</span>추가</span></label>
+        <label class="fphoto3"><input type="file" accept="image/*" hidden onchange="ojPhoto3(event)"><span class="fphoto-in"><span style="font-size:20px">＋</span>추가</span></label>
+      </div>
       <label class="fupload"><input type="file" hidden onchange="ojFile(this)"><span>📄 재직증명서 / 사업자등록증 첨부</span></label>
 
       <div class="fsec">💘 이상형 조건</div>
@@ -324,9 +333,10 @@
         </div>
         <div class="actions">
           <button class="pass" onclick="ojPass()">다시 볼게요</button>
-          <button class="accept" onclick="go(4)">좋아요, 연결할래요</button>
+          <button class="accept" onclick="ojAccept(false)">좋아요, 연결할래요</button>
         </div>
-        <div class="passnote">패스해도 비용 0원 · 무료 소개는 3회까지예요</div>
+        <button class="super" onclick="ojAccept(true)">💛 슈퍼매칭 — 상대 비용까지 내고 강하게 어필</button>
+        <div class="passnote">슈퍼매칭 39,800원 · 상대에게 '슈퍼매칭이 왔어요!' 표시 → 수락률 ↑ · 패스는 0원</div>
       </div>
 
       <div id="limit-stage" style="display:none">
@@ -356,7 +366,8 @@
 
       <div id="pay-stage">
         <div class="paycard">
-          <div class="row"><span class="lbl">매칭 성사 비용</span><span class="val tnum">19,900원</span></div>
+          <div class="row"><span class="lbl" id="payLbl">매칭 성사 비용</span><span class="val tnum" id="payVal">19,900원</span></div>
+          <div id="superNote" style="display:none;font-size:11.5px;color:var(--rose);font-weight:700;margin-top:8px">💛 슈퍼매칭 — 상대방 비용까지 포함이에요. 상대에겐 '슈퍼매칭이 왔어요!'로 표시돼요.</div>
           <div class="acct">입금계좌 <b>카카오뱅크 3333-01-234567</b> (예금주 썸류센터)<br>입금자명을 <b>신청자 성함</b>으로 보내주세요.</div>
           <button class="paybtn" onclick="pay()">입금 완료 → 연락처 열기</button>
         </div>
@@ -444,6 +455,10 @@
     [].forEach.call(document.querySelectorAll(".nd"), function(b){ b.classList.toggle("on", +b.dataset.s===n); });
     if(n!==4){ document.getElementById("pay-stage").style.display="block"; document.getElementById("unlock-stage").style.display="none"; }
     if(n===3){ window.freeIdx=0; document.getElementById("intro-stage").style.display="block"; document.getElementById("limit-stage").style.display="none"; window.ojRender(0); }
+    if(n===4){ var sup=window.isSuper, pv=document.getElementById("payVal"), pl=document.getElementById("payLbl"), sn=document.getElementById("superNote");
+      if(pv) pv.textContent=sup?"39,800원":"19,900원";
+      if(pl) pl.textContent=sup?"슈퍼매칭 비용":"매칭 성사 비용";
+      if(sn) sn.style.display=sup?"block":"none"; }
     window.scrollTo({top:0, behavior:"smooth"});
   };
   window.pay=function(){
@@ -465,6 +480,13 @@
     [].forEach.call(p.querySelectorAll(".fseg-b"), function(b){ b.classList.remove("on"); });
     btn.classList.add("on");
   };
+  window.ojPhoto3=function(e){
+    var f=e.target.files&&e.target.files[0]; if(!f) return;
+    var box=e.target.closest(".fphoto3"), r=new FileReader();
+    r.onload=function(ev){ box.style.backgroundImage="url('"+ev.target.result+"')"; var inner=box.querySelector(".fphoto-in"); if(inner) inner.style.display="none"; };
+    r.readAsDataURL(f);
+  };
+  window.ojAccept=function(sup){ window.isSuper=!!sup; window.go(4); };
   document.getElementById("steps").addEventListener("click", function(e){ var b=e.target.closest("button"); if(b) go(+b.dataset.s); });
   document.getElementById("navdots").addEventListener("click", function(e){ var b=e.target.closest(".nd"); if(b) go(+b.dataset.s); });
 })();
