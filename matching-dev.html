@@ -85,6 +85,16 @@
   .mkphone{max-width:434px;margin:22px auto 32px;background:#000;border-radius:46px;padding:12px;border:1px solid #2e2214;box-shadow:0 3px 8px rgba(0,0,0,.5),0 44px 90px -34px rgba(0,0,0,.92)}
   .mkscreen{background:#0b0906;border-radius:36px;overflow:hidden}
   @media(max-width:640px){.mkphone{max-width:none;margin:0;background:transparent;border:none;border-radius:0;padding:0;box-shadow:none}.mkscreen{border-radius:0}}
+  /* 스텝 위저드 */
+  .fsteps{display:flex;gap:6px;margin-bottom:8px}
+  .fchip{flex:1;text-align:center;font-size:11px;font-weight:700;color:#9c8f78;background:#17120b;border:1px solid #2e2214;border-radius:100px;padding:7px 4px}
+  .fchip.on{background:#E8B050;color:#0b0906;border-color:transparent}
+  .fchip b{opacity:.55;margin-right:2px}
+  .fstep{display:none;flex-direction:column;gap:1.4rem}
+  .fstep.on{display:flex;animation:fadeUp .35s ease both}
+  .fnav{display:flex;gap:10px;margin-top:2px}
+  .fnext{flex:1;background:#E8B050;color:#0b0906;border:none;font-weight:800;font-size:15px;padding:15px;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px -8px rgba(232,176,80,.4)}
+  .fprev{background:transparent;border:1px solid #2e2214;color:#CBB994;font-weight:700;font-size:14px;padding:15px 20px;border-radius:14px;cursor:pointer;font-family:inherit}
 </style>
 </head>
 <body class="min-h-screen selection:bg-[#E8B050] selection:text-black">
@@ -167,7 +177,14 @@
 <!-- 신청 폼 -->
 <section class="px-5 pb-16">
   <div class="max-w-lg mx-auto">
-    <form id="matching-form" class="space-y-6" onsubmit="return handleSubmit(event)">
+    <form id="matching-form" class="space-y-6" novalidate onsubmit="return handleSubmit(event)">
+      <div class="fsteps" id="fsteps">
+        <div class="fchip on" data-s="1"><b>1</b> 기본정보</div>
+        <div class="fchip" data-s="2"><b>2</b> 인증</div>
+        <div class="fchip" data-s="3"><b>3</b> 이상형</div>
+        <div class="fchip" data-s="4"><b>4</b> 제출</div>
+      </div>
+      <div class="fstep on" data-step="1">
 
       <!-- AI 자동입력 -->
       <div class="ai-section" data-reveal>
@@ -363,6 +380,11 @@
         </div>
       </div>
 
+      <div class="fnav">
+        <button type="button" class="fnext" onclick="nextStep(1)">다음 <i class="fa-solid fa-arrow-right ml-1"></i></button>
+      </div>
+      </div>
+      <div class="fstep" data-step="2">
       <!-- 신분 인증 서류 -->
       <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-5" data-reveal>
         <div class="flex items-center gap-2 mb-1">
@@ -397,6 +419,12 @@
         </div>
       </div>
 
+      <div class="fnav">
+        <button type="button" class="fprev" onclick="goStep(1)"><i class="fa-solid fa-arrow-left mr-1"></i>이전</button>
+        <button type="button" class="fnext" onclick="nextStep(2)">다음 <i class="fa-solid fa-arrow-right ml-1"></i></button>
+      </div>
+      </div>
+      <div class="fstep" data-step="3">
       <!-- 이상형 조건 -->
       <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-5" data-reveal>
         <div class="flex items-center gap-2 mb-1">
@@ -472,6 +500,12 @@
         </div>
       </div>
 
+      <div class="fnav">
+        <button type="button" class="fprev" onclick="goStep(2)"><i class="fa-solid fa-arrow-left mr-1"></i>이전</button>
+        <button type="button" class="fnext" onclick="nextStep(3)">다음 <i class="fa-solid fa-arrow-right ml-1"></i></button>
+      </div>
+      </div>
+      <div class="fstep" data-step="4">
       <!-- 연애 테스트 결과 (선택) -->
       <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5" data-reveal>
         <div class="flex items-center gap-2 mb-3">
@@ -576,6 +610,9 @@
         </label>
       </div>
 
+      <div class="fnav" style="margin-bottom:2px">
+        <button type="button" class="fprev" onclick="goStep(3)"><i class="fa-solid fa-arrow-left mr-1"></i>이전</button>
+      </div>
       <!-- 제출 -->
       <div data-reveal>
         <button type="submit" id="submit-btn"
@@ -585,6 +622,7 @@
         <p class="text-center text-[11px] text-[#6b6358] mt-3">신청 무료 · 매칭 성사 시 결제 후 연락처 전달</p>
       </div>
 
+      </div>
     </form>
   </div>
 </section>
@@ -973,8 +1011,42 @@ document.getElementById("agree").addEventListener("change", function(){
 });
 
 // 폼 제출
+function stepFieldsValid(n){
+  if(n===1){
+    if(!photoFiles[0]&&!photoFiles[1]&&!photoFiles[2]){ alert("프로필 사진을 최소 1장 올려주세요."); return false; }
+    var req=[["name","이름"],["phone","연락처"],["job","직업"],["height","키"],["location","사는 곳"],["hobby","취미"]];
+    for(var i=0;i<req.length;i++){ var el=document.querySelector("[name=\""+req[i][0]+"\"]"); if(!el||!el.value.trim()){ alert(req[i][1]+"을(를) 입력해주세요."); if(el) el.focus(); return false; } }
+    if(!document.querySelector("[name=\"gender\"]:checked")){ alert("성별을 선택해주세요."); return false; }
+    if(!document.querySelector("[name=\"birthYear\"]").value){ alert("출생 연도를 선택해주세요."); return false; }
+    if(!document.querySelector("[name=\"religion\"]").value){ alert("종교를 선택해주세요."); return false; }
+    var ph=document.querySelector("[name=\"phone\"]").value;
+    if(!/^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/.test(ph)){ alert("연락처 형식을 확인해주세요. (예: 010-1234-5678)"); return false; }
+    return true;
+  }
+  if(n===2){ if(!docFiles.job){ alert("재직증명서 또는 사업자등록증을 제출해주세요."); return false; } return true; }
+  if(n===3){
+    if(selectedAges.size===0){ alert("선호 나이대를 1개 이상 선택해주세요."); return false; }
+    if(selectedJobs.size===0){ alert("선호 직업군을 1개 이상 선택해주세요."); return false; }
+    if(selectedKeywords.size!==3){ alert("성격 키워드를 3개 선택해주세요."); return false; }
+    if(!document.getElementById("intro").value.trim()){ alert("자기소개를 입력해주세요."); return false; }
+    return true;
+  }
+  return true;
+}
+function goStep(n){
+  var steps=document.querySelectorAll(".fstep");
+  for(var i=0;i<steps.length;i++){ var on=(+steps[i].getAttribute("data-step")===n); steps[i].classList.toggle("on",on); if(on){ var rv=steps[i].querySelectorAll("[data-reveal]"); for(var j=0;j<rv.length;j++) rv[j].classList.add("in"); } }
+  var chips=document.querySelectorAll("#fsteps .fchip");
+  for(var k=0;k<chips.length;k++){ chips[k].classList.toggle("on", +chips[k].getAttribute("data-s")===n); }
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function nextStep(n){ if(stepFieldsValid(n)) goStep(n+1); }
 async function handleSubmit(e){
   e.preventDefault();
+  if(!stepFieldsValid(1)){ goStep(1); return false; }
+  if(!stepFieldsValid(2)){ goStep(2); return false; }
+  if(!stepFieldsValid(3)){ goStep(3); return false; }
+  if(!document.getElementById("agree").checked){ alert("개인정보 수집·이용에 동의해주세요."); return false; }
 
   // 사진 최소 1장 검증
   if(!photoFiles[0] && !photoFiles[1] && !photoFiles[2]){
