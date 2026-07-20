@@ -199,6 +199,25 @@
           <i class="fa-solid fa-comment-sms mr-1"></i>문자로 보내기
         </button>
       </div>
+      <!-- AI 추천 이유 초안 -->
+      <div class="bg-[#0D0D0C] border border-[#8B5CF6]/40 rounded-xl p-4">
+        <button onclick="genAiReason()" id="ai-reason-btn" class="w-full bg-[#8B5CF6] hover:bg-[#7C4DEF] text-white text-sm font-extrabold px-4 py-3 rounded-xl transition">
+          <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>AI로 추천 이유 초안 만들기
+        </button>
+        <div id="ai-reason-box" class="hidden mt-3 space-y-3">
+          <div>
+            <div class="text-[10px] font-bold uppercase tracking-wider mb-1 text-[#B69CF7]"><span id="ai-name-1"></span>에게 보낼 추천 이유</div>
+            <textarea id="ai-reason-1" rows="3" class="w-full bg-[#161615] border border-[#242422] rounded-lg px-3 py-2 text-xs text-white leading-relaxed"></textarea>
+            <button onclick="copyText('ai-reason-1')" class="mt-1 text-[11px] text-[#9E9E97] hover:text-white">📋 복사</button>
+          </div>
+          <div>
+            <div class="text-[10px] font-bold uppercase tracking-wider mb-1 text-[#B69CF7]"><span id="ai-name-2"></span>에게 보낼 추천 이유</div>
+            <textarea id="ai-reason-2" rows="3" class="w-full bg-[#161615] border border-[#242422] rounded-lg px-3 py-2 text-xs text-white leading-relaxed"></textarea>
+            <button onclick="copyText('ai-reason-2')" class="mt-1 text-[11px] text-[#9E9E97] hover:text-white">📋 복사</button>
+          </div>
+          <p class="text-[11px] text-[#555]">AI 초안이에요. 확인·수정 후 문자/카톡으로 보내주세요.</p>
+        </div>
+      </div>
       <button onclick="sendMatchSmsAll()" id="sms-btn-all" class="w-full bg-[#FFD400] text-black text-sm font-extrabold px-4 py-3 rounded-xl transition hover:bg-[#E6BE00]">
         <i class="fa-solid fa-paper-plane mr-1.5"></i>양쪽 모두에게 문자 보내기
       </button>
@@ -957,6 +976,61 @@ function generateMatch(){
   // Airtable 매칭상태 업데이트
   updateMatchStatus(selected[0].id);
   updateMatchStatus(selected[1].id);
+
+  // AI 추천 이유 영역 초기화
+  const aiBox = document.getElementById("ai-reason-box");
+  if (aiBox) aiBox.classList.add("hidden");
+}
+
+// AI로 "센터장이 고른 이유" 초안 생성
+async function genAiReason(){
+  if(!selected[0] || !selected[1]) return;
+  const btn = document.getElementById("ai-reason-btn");
+  const a = selected[0].fields, b = selected[1].fields;
+  const mk = (p) => ({
+    name: p["이름"] || "",
+    age: p["출생연도"] ? (p["출생연도"] + "년생") : "",
+    job: p["직업"] || "",
+    hobby: p["취미"] || "",
+    keywords: p["성격키워드"] || "",
+    pref: [p["선호나이대"], p["선호직업군"]].filter(Boolean).join(" · "),
+    intro: p["자기소개"] || ""
+  });
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>AI가 작성 중...';
+  try{
+    const r = await fetch("/api/ai-reason", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": sessionStorage.getItem("admin_key") || "" },
+      body: JSON.stringify({ a: mk(a), b: mk(b) })
+    });
+    const data = await r.json();
+    if(!r.ok) throw new Error(data.error || "생성 실패");
+    document.getElementById("ai-name-1").textContent = a["이름"] || "A";
+    document.getElementById("ai-name-2").textContent = b["이름"] || "B";
+    document.getElementById("ai-reason-1").value = data.reason_for_a || "";
+    document.getElementById("ai-reason-2").value = data.reason_for_b || "";
+    document.getElementById("ai-reason-box").classList.remove("hidden");
+  }catch(e){
+    document.getElementById("ai-name-1").textContent = "";
+    document.getElementById("ai-name-2").textContent = "";
+    document.getElementById("ai-reason-1").value = "⚠️ " + e.message;
+    document.getElementById("ai-reason-2").value = "";
+    document.getElementById("ai-reason-box").classList.remove("hidden");
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+
+function copyText(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const done = () => { el.classList.add("ring-2","ring-[#8B5CF6]"); setTimeout(()=>el.classList.remove("ring-2","ring-[#8B5CF6]"), 600); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(el.value).then(done, ()=>{ el.select(); document.execCommand("copy"); done(); });
+  } else { el.select(); document.execCommand("copy"); done(); }
 }
 
 async function updateMatchStatus(recordId){
