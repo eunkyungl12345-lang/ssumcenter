@@ -328,7 +328,7 @@
       <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-5" data-reveal>
         <div class="flex items-center gap-2 mb-1">
           <div class="w-7 h-7 rounded-lg bg-[#FFBE2E]/10 border border-[#FFBE2E]/30 flex items-center justify-center">
-            <i class="fa-solid fa-shield-check y text-xs"></i>
+            <i class="fa-solid fa-id-badge y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">신분 인증</h2>
           <span class="text-[10px] text-[#6b6358] ml-auto">센터장만 확인하며, 매칭 상대에게 공개되지 않아요</span>
@@ -350,24 +350,6 @@
             </div>
           </div>
           <input type="file" id="doc-job-input" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
-        </div>
-
-        <!-- 신분증 -->
-        <div>
-          <label class="block text-xs font-bold text-[#9a9080] mb-2">신분증 사본 <span class="y">*</span> <span class="text-[#6b6358] font-normal ml-1">주민번호 뒷자리는 가려주세요</span></label>
-          <div id="doc-id-upload" onclick="document.getElementById('doc-id-input').click()"
-            class="w-full bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl p-4 text-center cursor-pointer hover:border-[#FFBE2E] transition group">
-            <div id="doc-id-done" class="hidden flex items-center justify-center gap-2">
-              <i class="fa-solid fa-file-circle-check y"></i>
-              <span id="doc-id-name" class="text-xs text-white truncate max-w-[200px]"></span>
-              <button type="button" class="text-[#6b6358] hover:text-red-400 text-xs ml-1" onclick="event.stopPropagation();removeDoc('id')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="doc-id-placeholder" class="flex flex-col items-center">
-              <i class="fa-solid fa-cloud-arrow-up text-[#6b6358] text-lg mb-1 group-hover:text-[#FFBE2E] transition"></i>
-              <span class="text-[10px] text-[#6b6358]">파일 선택 (PDF, JPG, PNG / 최대 10MB)</span>
-            </div>
-          </div>
-          <input type="file" id="doc-id-input" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
         </div>
 
         <div class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 flex gap-2 items-start">
@@ -538,48 +520,7 @@
         </div>
       </div>
 
-      <!-- 매칭 유형 선택 -->
-      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-4" data-reveal>
-        <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#FFBE2E]/10 border border-[#FFBE2E]/30 flex items-center justify-center">
-            <i class="fa-solid fa-crown y text-xs"></i>
-          </div>
-          <h2 class="font-bold text-sm">매칭 유형 선택 <span class="y">*</span></h2>
-        </div>
-
-        <label>
-          <input type="radio" name="matchType" value="일반매칭" required>
-          <div class="radio-card bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-5 py-4">
-            <div class="flex items-center gap-3">
-              <div class="dot w-3 h-3 rounded-full border-2 border-[#6b6358] shrink-0"></div>
-              <div class="flex-1">
-                <div class="font-bold text-sm">일반 매칭</div>
-                <div class="text-[11px] text-[#9a9080] mt-0.5">매칭 성사 시 본인 비용만 결제</div>
-              </div>
-              <div class="text-sm font-black y">19,900원</div>
-            </div>
-          </div>
-        </label>
-
-        <label>
-          <input type="radio" name="matchType" value="슈퍼매칭">
-          <div class="radio-card bg-[#0e0c0a] border border-[#FFBE2E]/30 rounded-xl px-5 py-4 relative overflow-hidden">
-            <span class="absolute top-0 right-0 text-[9px] bg-y text-black font-bold px-2.5 py-1 rounded-bl-lg">추천</span>
-            <div class="flex items-center gap-3">
-              <div class="dot w-3 h-3 rounded-full border-2 border-[#6b6358] shrink-0"></div>
-              <div class="flex-1">
-                <div class="font-bold text-sm flex items-center gap-1.5"><i class="fa-solid fa-crown y text-xs"></i>슈퍼매칭</div>
-                <div class="text-[11px] text-[#9a9080] mt-0.5">상대방 비용까지 내가 부담 → 수락률 UP!</div>
-              </div>
-              <div class="text-sm font-black y">39,800원</div>
-            </div>
-            <div class="mt-3 bg-[#FFBE2E]/5 border border-[#FFBE2E]/20 rounded-lg p-2.5 flex gap-2 items-start">
-              <i class="fa-solid fa-bolt y text-[10px] mt-0.5 shrink-0"></i>
-              <p class="text-[10px] text-[#9a9080] leading-relaxed">상대방에게 <b class="text-white">"슈퍼매칭이 왔어요!"</b> 표시가 돼요. 진심이 전달되어 매칭 수락률이 높아집니다.</p>
-            </div>
-          </div>
-        </label>
-      </div>
+      <!-- 매칭 유형 "선택"은 성사(response.html) 단계로 이동. 신청서에는 안내만 유지 -->
 
       <!-- 동의 -->
       <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5" data-reveal>
@@ -602,7 +543,7 @@
           class="bg-y text-black font-extrabold w-full px-6 py-4 rounded-2xl text-base transition hover:bg-[#e0a820] disabled:opacity-50 disabled:cursor-not-allowed">
           <i class="fa-solid fa-paper-plane mr-1.5"></i>신청서 제출하기
         </button>
-        <p class="text-center text-[11px] text-[#6b6358] mt-3">신청 무료 · 매칭 성사 시 선택한 유형에 따라 결제 후 연락처 전달</p>
+        <p class="text-center text-[11px] text-[#6b6358] mt-3">신청 무료 · 매칭 성사 시 결제 후 연락처 전달</p>
       </div>
 
     </form>
@@ -922,9 +863,9 @@ document.getElementById("photo-input").addEventListener("change", function(){
 });
 
 // 서류 업로드
-const docFiles = { job: null, id: null };
+const docFiles = { job: null };
 
-["job","id"].forEach(type => {
+["job"].forEach(type => {
   document.getElementById(`doc-${type}-input`).addEventListener("change", function(){
     const file = this.files[0];
     if(!file) return;
@@ -1006,10 +947,6 @@ async function handleSubmit(e){
     alert("재직증명서 또는 사업자등록증을 제출해주세요.");
     return false;
   }
-  if(!docFiles.id){
-    alert("신분증 사본을 제출해주세요.");
-    return false;
-  }
 
   // 선호 나이대 검증
   if(selectedAges.size === 0){
@@ -1069,12 +1006,11 @@ async function handleSubmit(e){
       return (await r.json()).secure_url;
     }
 
-    const photoUrls = [];
-    for(const file of photoFiles){ if(file){ const compressed = await compressImage(file); photoUrls.push({url: await uploadToCloudinary(compressed, "ssumcenter/photos")}); } }
-
-    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>서류 업로드 중...';
-    const docJobUrl = docFiles.job ? await uploadToCloudinary(docFiles.job, "ssumcenter/docs") : null;
-    const docIdUrl = docFiles.id ? await uploadToCloudinary(docFiles.id, "ssumcenter/docs") : null;
+    // 사진·서류 업로드를 동시에 진행 (속도 ↑)
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>사진·서류 업로드 중...';
+    const photoTasks = photoFiles.filter(Boolean).map(async (file) => ({ url: await uploadToCloudinary(await compressImage(file), "ssumcenter/photos") }));
+    const docJobTask = docFiles.job ? uploadToCloudinary(docFiles.job, "ssumcenter/docs") : Promise.resolve(null);
+    const [photoUrls, docJobUrl] = await Promise.all([ Promise.all(photoTasks), docJobTask ]);
 
     submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>신청서 제출 중...';
 
@@ -1090,7 +1026,6 @@ async function handleSubmit(e){
     };
     if(photoUrls.length > 0) fields["프로필사진"] = photoUrls;
     if(docJobUrl) fields["재직증명서"] = [{url: docJobUrl}];
-    if(docIdUrl) fields["신분증"] = [{url: docIdUrl}];
 
     // Airtable에 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)
     let attempt = { ...fields };
