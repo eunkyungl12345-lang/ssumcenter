@@ -81,6 +81,10 @@
   .bg-y{box-shadow:0 10px 26px -8px rgba(232,176,80,.4)}
   /* 스크롤바 */
   ::-webkit-scrollbar-thumb{background:#3a2c18}
+  /* 데모 폰 목업 프레임 (넓은 화면에서만, 모바일은 풀폭) */
+  .mkphone{max-width:434px;margin:22px auto 32px;background:#000;border-radius:46px;padding:12px;border:1px solid #2e2214;box-shadow:0 3px 8px rgba(0,0,0,.5),0 44px 90px -34px rgba(0,0,0,.92)}
+  .mkscreen{background:#0b0906;border-radius:36px;overflow:hidden}
+  @media(max-width:640px){.mkphone{max-width:none;margin:0;background:transparent;border:none;border-radius:0;padding:0;box-shadow:none}.mkscreen{border-radius:0}}
 </style>
 </head>
 <body class="min-h-screen selection:bg-[#E8B050] selection:text-black">
@@ -98,6 +102,7 @@
   </div>
 </nav>
 
+<div class="mkphone"><div class="mkscreen">
 <!-- 헤더 -->
 <header class="pt-10 pb-8 px-5 glow">
   <div class="max-w-lg mx-auto text-center fade">
@@ -613,6 +618,7 @@
     </a>
   </div>
 </section>
+</div></div>
 
 <!-- 푸터 -->
 <footer class="border-t border-[#1e1c17] px-5 py-8 text-center text-xs text-[#8a7f70]">
