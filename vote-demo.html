@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR 투표 · 결과 공개 데모 | 썸류센터</title>
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#0c0a08; --surface:#161310; --surface-2:#1e1811; --ink:#EDE0CC; --ink-2:#C9B896;
+    --muted:#998870; --faint:#6a5c4c; --line:#2a2117; --line-strong:#3a2e1f;
+    --amber:#E8B050; --amber-2:#D4952A; --amber-soft:rgba(212,149,42,.12);
+    --ok:#6FBE97; --ok-soft:rgba(111,190,151,.13); --rose:#E8828A;
+    --ink-on-amber:#171208;
+    --g1:linear-gradient(135deg,#E8B050,#B06A2E); --g2:linear-gradient(135deg,#D4952A,#7A5A2E);
+    --g3:linear-gradient(135deg,#C9A15E,#8A6A38); --g4:linear-gradient(135deg,#A9986A,#6a5c3c);
+    --g5:linear-gradient(135deg,#E0A860,#9A5A2E); --g6:linear-gradient(135deg,#C0A060,#6a5230);
+    --shadow-lg:0 3px 8px rgba(0,0,0,.5),0 34px 70px -28px rgba(0,0,0,.85);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55;letter-spacing:-.01em}
+  .tnum{font-variant-numeric:tabular-nums}
+  .page{max-width:520px;margin:0 auto;padding:16px 16px 28px}
+  .demolabel{max-width:420px;margin:0 auto 14px;text-align:center;font-size:11.5px;font-weight:700;color:var(--muted);background:var(--surface);border:1px solid var(--line-strong);border-radius:100px;padding:7px 14px}
+  .steps{display:flex;justify-content:center;gap:7px;margin-bottom:16px}
+  .steps button{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);font-size:12.5px;font-weight:700;padding:8px 15px;border-radius:100px;cursor:pointer;font-family:inherit;transition:.15s}
+  .steps button.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
+  .steps button b{opacity:.55;margin-right:4px}
+  .stage{display:flex;justify-content:center}
+  .phone{width:372px;max-width:100%;background:#000;border-radius:44px;padding:11px;box-shadow:var(--shadow-lg);border:1px solid var(--line)}
+  .screen{background:var(--bg);border-radius:34px;overflow:hidden;min-height:660px}
+  .notch{height:26px;display:flex;align-items:center;justify-content:center}
+  .notch::after{content:"";width:94px;height:7px;border-radius:100px;background:#000}
+  .sp{padding:6px 16px 24px}
+  .scr{display:none}.scr.on{display:block;animation:fade .28s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .apphead{display:flex;align-items:center;gap:10px;padding:6px 2px 10px}
+  .apphead .ttl{font-weight:750;font-size:15.5px;flex:1;text-align:center}
+  .apphead .me{font-size:11px;font-weight:700;color:var(--amber);background:var(--amber-soft);padding:5px 10px;border-radius:100px}
+  .lead{text-align:center;padding:2px 0 4px}
+  .lead .ky{font-size:11.5px;font-weight:750;color:var(--amber);letter-spacing:.03em}
+  .lead h2{font-size:19px;font-weight:800;margin:5px 0 3px}
+  .lead .sub{font-size:12.5px;color:var(--muted)}
+  .cntbar{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:var(--muted);margin:12px 2px 8px}
+  .cntbar b{color:var(--amber)}
+  .vlist{display:grid;gap:10px}
+  .vc{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:11px 12px;display:flex;align-items:center;gap:12px;transition:.15s}
+  .vc.on{border-color:var(--amber);background:var(--amber-soft)}
+  .av{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:22px;color:#fff;flex-shrink:0;position:relative;overflow:hidden}
+  .av .no{position:absolute;bottom:2px;right:3px;font-size:9px;font-weight:800;background:rgba(0,0,0,.45);padding:1px 5px;border-radius:100px;color:#fff}
+  .vc .info{flex:1;min-width:0}
+  .vc .nm{font-size:14.5px;font-weight:750}
+  .vc .bio{font-size:12px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .heart{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;font-size:16px;color:var(--faint);cursor:pointer;transition:.15s;flex-shrink:0}
+  .vc.on .heart{background:var(--amber);border-color:var(--amber);color:var(--ink-on-amber)}
+  .submit{margin-top:15px}
+  .submit button{width:100%;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);box-shadow:0 8px 24px rgba(232,176,80,.22);cursor:pointer;font-family:inherit}
+  .submit button:disabled{opacity:.4;box-shadow:none}
+  .note{font-size:11px;color:var(--faint);text-align:center;margin-top:9px}
+  /* 완료 */
+  .center{text-align:center}
+  .pulse{width:92px;height:92px;margin:16px auto 6px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:radial-gradient(circle at 50% 40%,rgba(232,176,80,.28),rgba(232,176,80,.05));animation:pl 2.2s ease-out infinite}
+  @keyframes pl{0%{box-shadow:0 0 0 0 rgba(232,176,80,.32)}70%{box-shadow:0 0 0 20px rgba(232,176,80,0)}100%{box-shadow:0 0 0 0 rgba(232,176,80,0)}}
+  .whenbar{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--amber);background:var(--amber-soft);border:1px solid var(--line-strong);padding:8px 15px;border-radius:100px;margin-top:8px}
+  .demobtn{width:100%;border:1px dashed var(--line-strong);background:transparent;color:var(--muted);font-size:12px;font-weight:700;padding:12px;border-radius:100px;cursor:pointer;font-family:inherit;margin-top:22px}
+  /* 결과 */
+  .grp{margin-bottom:16px}
+  .grp .gt{font-size:13.5px;font-weight:800;margin:0 2px 8px;display:flex;align-items:center;gap:6px}
+  .grp .gt .free{font-size:10.5px;font-weight:750;color:var(--ok);background:var(--ok-soft);padding:2px 8px;border-radius:100px}
+  .grp .gt .paid{font-size:10.5px;font-weight:750;color:var(--amber);background:var(--amber-soft);padding:2px 8px;border-radius:100px}
+  .rc{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px 12px;margin-bottom:8px}
+  .rc.match{border-color:var(--ok);background:var(--ok-soft)}
+  .rc .av{width:44px;height:44px;font-size:17px}
+  .rc .info{flex:1;min-width:0}.rc .nm{font-size:14px;font-weight:750}.rc .st{font-size:11.5px;color:var(--muted);margin-top:1px}
+  .rc .num{font-size:13px;font-weight:800;color:var(--ok)}
+  .rc .kk{font-size:11px;font-weight:750;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line-strong);padding:6px 10px;border-radius:100px}
+  .safe{font-size:11px;color:var(--ok);font-weight:650;text-align:center;margin:-2px 0 8px}
+  /* 유료 잠금 */
+  .lock{background:linear-gradient(135deg,rgba(232,176,80,.14),rgba(201,154,90,.05));border:1.5px solid var(--amber);border-radius:16px;padding:15px;text-align:center}
+  .lock .big{font-size:15px;font-weight:800}
+  .lock .big b{color:var(--amber)}
+  .lock .sub{font-size:12px;color:var(--ink-2);margin:4px 0 11px}
+  .lock .row{display:flex;gap:8px;justify-content:center;margin-bottom:11px}
+  .lock .blur{width:44px;height:44px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line-strong);display:grid;place-items:center;font-size:18px;filter:blur(1px);color:var(--faint)}
+  .lock button{border:none;background:var(--amber);color:var(--ink-on-amber);font-weight:800;font-size:14px;padding:12px 22px;border-radius:100px;cursor:pointer;font-family:inherit}
+  .lock .price{font-size:11px;color:var(--faint);margin-top:8px}
+  /* 잠금 해제 후 */
+  .stat{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+  .stat .box{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px;text-align:center}
+  .stat .box .k{font-size:11px;color:var(--muted);font-weight:650}
+  .stat .box .v{font-size:19px;font-weight:800;color:var(--amber);margin-top:2px}
+  .cap{max-width:440px;margin:18px auto 0;text-align:center;font-size:12px;color:var(--faint);line-height:1.7}
+  .cap b{color:var(--muted)}
+  button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="demolabel">🗳️ QR 투표 · 결과 공개 데모 · 실제 서비스 아님</div>
+  <div class="steps" id="steps">
+    <button data-s="0" class="on"><b>①</b>투표</button>
+    <button data-s="1"><b>②</b>완료</button>
+    <button data-s="2"><b>③</b>결과 (11:30)</button>
+  </div>
+
+  <div class="stage"><div class="phone"><div class="screen"><div class="sp">
+    <div class="notch"></div>
+
+    <!-- ① 투표 -->
+    <div class="scr on" id="s0">
+      <div class="apphead"><span class="ttl">7/24 재테크팅 투표</span><span class="me">여성 3호 · 나</span></div>
+      <div class="lead"><div class="ky">💘 QR로 접속했어요</div><h2>오늘 마음에 든 분은?</h2><div class="sub">최대 2명까지 · 센터장만 확인해요</div></div>
+      <div class="cntbar"><span>남성 참가자 6명</span><span><b id="pickN">0</b>/2 선택</span></div>
+      <div class="vlist" id="vlist"></div>
+      <div class="submit"><button id="submitBtn" disabled onclick="go(1)">투표 제출하기</button></div>
+      <div class="note">제출 후엔 못 바꿔요 · 투표 내용은 상대에게 안 보여요</div>
+    </div>
+
+    <!-- ② 완료 -->
+    <div class="scr" id="s1">
+      <div class="apphead"><span class="ttl">투표 완료</span><span class="me">여성 3호</span></div>
+      <div class="center">
+        <div class="pulse">✅</div>
+        <h2 style="font-size:20px;font-weight:800;margin:4px 0 4px">투표가 접수됐어요!</h2>
+        <p class="sub" style="font-size:13px;color:var(--muted);max-width:28ch;margin:0 auto">두근두근 🤍 결과는 오늘 밤에 공개돼요.</p>
+        <div class="whenbar">🌙 오늘 <b class="tnum" style="margin:0 3px">23:30</b> 마이페이지에서 공개</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-top:18px">
+        <div style="font-size:12.5px;color:var(--ink-2);font-weight:600;line-height:1.6">
+          🟢 <b style="color:var(--ok)">서로 뽑은 분</b>이 있으면 → <b>연락처 무료</b>로 공유돼요<br>
+          🔒 <b style="color:var(--amber)">누가 날 뽑았는지 · 득표수</b>는 → 유료로 확인
+        </div>
+      </div>
+      <button class="demobtn" onclick="go(2)">▶︎ (데모) 23:30 결과 화면 보기</button>
+    </div>
+
+    <!-- ③ 결과 -->
+    <div class="scr" id="s2">
+      <div class="apphead"><span class="ttl">오늘의 결과 🎉</span><span class="me">여성 3호</span></div>
+
+      <!-- 무료: 서로 통한 인연 -->
+      <div class="grp">
+        <div class="gt">💗 서로 통한 인연 <span class="free">무료 · 자동</span></div>
+        <div class="safe">🔒 서로 뽑은 두 분에게만 연락처가 열려요</div>
+        <div class="rc match">
+          <div class="av g1">🧑🏻‍💼<span class="no">1호</span></div>
+          <div class="info"><div class="nm">남성 1호 · 34</div><div class="st">서로 뽑았어요 ✓ · 금융권/배당주</div></div>
+          <div class="num tnum">010-2345-6789</div>
+        </div>
+        <div class="rc match">
+          <div class="av g3">🧑🏻<span class="no">3호</span></div>
+          <div class="info"><div class="nm">남성 3호 · 29</div><div class="st">서로 뽑았어요 ✓ · 자영업/부동산</div></div>
+          <button class="kk">💬 카톡</button>
+        </div>
+      </div>
+
+      <!-- 유료: 받은 표 공개 -->
+      <div class="grp" id="paid-grp">
+        <div class="gt">💌 받은 표 공개 <span class="paid">유료</span></div>
+
+        <div id="lock-stage">
+          <div class="lock">
+            <div class="big">오늘 <b>3명</b>이 당신을 뽑았어요 💛</div>
+            <div class="sub">누가 뽑았는지 · 내 득표수 · 추가 매칭 연락처</div>
+            <div class="row">
+              <div class="blur">❔</div><div class="blur">❔</div><div class="blur">❔</div>
+            </div>
+            <button onclick="unlock()">받은 표 확인하기</button>
+            <div class="price">9,900원 · 계좌이체 (확인 후 열림)</div>
+          </div>
+        </div>
+
+        <div id="unlock-stage" style="display:none">
+          <div class="stat">
+            <div class="box"><div class="k">내 득표수</div><div class="v tnum">3표</div></div>
+            <div class="box"><div class="k">서로 통한 매칭</div><div class="v tnum">2명</div></div>
+          </div>
+          <div class="safe" style="color:var(--amber)">✓ 결제 확인 완료 · 나를 뽑은 3명</div>
+          <div class="rc">
+            <div class="av g1">🧑🏻‍💼<span class="no">1호</span></div>
+            <div class="info"><div class="nm">남성 1호 · 34</div><div class="st">이미 매칭됐어요 💗</div></div>
+          </div>
+          <div class="rc">
+            <div class="av g4">👨🏻<span class="no">4호</span></div>
+            <div class="info"><div class="nm">남성 4호 · 33</div><div class="st">회계사 · 나를 뽑았어요</div></div>
+            <button class="kk" style="color:var(--amber);border-color:var(--amber)">연결</button>
+          </div>
+          <div class="rc">
+            <div class="av g5">🧑🏻‍🦱<span class="no">5호</span></div>
+            <div class="info"><div class="nm">남성 5호 · 30</div><div class="st">마케터 · 나를 뽑았어요</div></div>
+            <button class="kk" style="color:var(--amber);border-color:var(--amber)">연결</button>
+          </div>
+          <div class="note" style="margin-top:12px">추가 매칭(4·5호)은 상대도 좋으면 연락처가 열려요</div>
+        </div>
+      </div>
+    </div>
+
+  </div></div></div></div>
+
+  <div class="cap">MORA의 "받은 표 공개"처럼 — <b>서로 뽑으면 무료 자동 연결</b>, <b>득표수·누가 뽑았는지는 유료</b>. 지금 센터장님이 문자로 수동으로 하시는 걸 QR + 자동으로 옮긴 거예요.</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var MEN=[
+    {g:"g1",em:"🧑🏻‍💼",no:"1호",age:34,bio:"금융권 · 배당주 모으는 중"},
+    {g:"g2",em:"🧑🏻‍💻",no:"2호",age:31,bio:"개발자 · 무지출 챌린지"},
+    {g:"g3",em:"🧑🏻",no:"3호",age:29,bio:"자영업 · 주말마다 임장"},
+    {g:"g4",em:"👨🏻",no:"4호",age:33,bio:"회계사 · 숫자에 진심"},
+    {g:"g5",em:"🧑🏻‍🦱",no:"5호",age:30,bio:"마케터 · 새벽에 차트"},
+    {g:"g6",em:"👨🏻‍🦰",no:"6호",age:35,bio:"교사 · 주말 등산러"}
+  ];
+  var picked={};
+  var vl=document.getElementById("vlist");
+  MEN.forEach(function(m,i){
+    var el=document.createElement("div");el.className="vc";
+    el.innerHTML='<div class="av '+m.g+'">'+m.em+'<span class="no">'+m.no+'</span></div>'+
+      '<div class="info"><div class="nm">남성 '+m.no+' · '+m.age+'</div><div class="bio">'+m.bio+'</div></div>'+
+      '<div class="heart">♥</div>';
+    el.addEventListener("click",function(){
+      if(picked[i]){ picked[i]=false; el.classList.remove("on"); }
+      else { if(cnt()>=2){ return; } picked[i]=true; el.classList.add("on"); }
+      upd();
+    });
+    vl.appendChild(el);
+  });
+  function cnt(){ return Object.keys(picked).filter(function(k){return picked[k];}).length; }
+  function upd(){ var n=cnt(); document.getElementById("pickN").textContent=n; document.getElementById("submitBtn").disabled=n===0; }
+
+  window.go=function(n){
+    for(var i=0;i<3;i++){ document.getElementById("s"+i).classList.toggle("on",i===n); }
+    [].forEach.call(document.querySelectorAll("#steps button"),function(b){ b.classList.toggle("on",+b.dataset.s===n); });
+    if(n!==2){ document.getElementById("lock-stage").style.display="block"; document.getElementById("unlock-stage").style.display="none"; }
+    window.scrollTo({top:0,behavior:"smooth"});
+  };
+  window.unlock=function(){
+    document.getElementById("lock-stage").style.display="none";
+    document.getElementById("unlock-stage").style.display="block";
+  };
+  document.getElementById("steps").addEventListener("click",function(e){ var b=e.target.closest("button"); if(b) go(+b.dataset.s); });
+})();
+</script>
+</body>
+</html>
