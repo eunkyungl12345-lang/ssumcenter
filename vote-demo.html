@@ -57,6 +57,14 @@
   .submit button{width:100%;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);box-shadow:0 8px 24px rgba(232,176,80,.22);cursor:pointer;font-family:inherit}
   .submit button:disabled{opacity:.4;box-shadow:none}
   .note{font-size:11px;color:var(--faint);text-align:center;margin-top:9px}
+  /* 입장 */
+  .qrbox{text-align:center;margin:16px 0 4px}
+  .qrimg{width:118px;height:118px;margin:0 auto;border-radius:16px;background:#fff;color:#000;display:grid;place-items:center;font-size:62px;line-height:1}
+  .qrcap{font-size:11px;color:var(--faint);margin-top:9px}
+  .fld{display:block;margin-top:16px}
+  .fld span{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:0 2px 6px}
+  .fld input{width:100%;background:var(--surface);border:1.5px solid var(--line-strong);border-radius:13px;padding:14px;font-size:16px;color:var(--ink);font-family:inherit;text-align:center}
+  .fld input:focus{outline:none;border-color:var(--amber)}
   /* 완료 */
   .center{text-align:center}
   .pulse{width:92px;height:92px;margin:16px auto 6px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:radial-gradient(circle at 50% 40%,rgba(232,176,80,.28),rgba(232,176,80,.05));animation:pl 2.2s ease-out infinite}
@@ -98,26 +106,43 @@
 <div class="page">
   <div class="demolabel">🗳️ QR 투표 · 결과 공개 데모 · 실제 서비스 아님</div>
   <div class="steps" id="steps">
-    <button data-s="0" class="on"><b>①</b>투표</button>
-    <button data-s="1"><b>②</b>완료</button>
-    <button data-s="2"><b>③</b>결과 (11:30)</button>
+    <button data-s="0" class="on"><b>①</b>입장</button>
+    <button data-s="1"><b>②</b>투표</button>
+    <button data-s="2"><b>③</b>완료</button>
+    <button data-s="3"><b>④</b>결과</button>
   </div>
 
   <div class="stage"><div class="phone"><div class="screen"><div class="sp">
     <div class="notch"></div>
 
-    <!-- ① 투표 -->
+    <!-- ① 입장 (QR + 번호) -->
     <div class="scr on" id="s0">
+      <div class="apphead"><span class="ttl">7/24 재테크팅</span></div>
+      <div class="lead" style="padding-top:4px"><div class="ky">📷 QR로 접속했어요</div><h2>본인 확인</h2><div class="sub">입력한 번호로 오늘 밤 결과를 보내드려요</div></div>
+      <div class="qrbox">
+        <div class="qrimg">▦</div>
+        <div class="qrcap">행사장에 붙은 QR을 찍으면 이 화면이 열려요</div>
+      </div>
+      <label class="fld">
+        <span>휴대폰 번호</span>
+        <input id="phone" inputmode="numeric" placeholder="010-1234-5678" maxlength="13" autocomplete="off">
+      </label>
+      <div class="submit"><button id="entryBtn" disabled onclick="go(1)">입장하기</button></div>
+      <div class="note">명단에 있는 번호만 입장돼요 · 회원가입/로그인 없음</div>
+    </div>
+
+    <!-- ② 투표 -->
+    <div class="scr" id="s1">
       <div class="apphead"><span class="ttl">7/24 재테크팅 투표</span><span class="me">절약토끼 · 나</span></div>
       <div class="lead"><div class="ky">💘 QR로 접속했어요</div><h2>오늘 마음에 든 분은?</h2><div class="sub">최대 2명까지 · 센터장만 확인해요</div></div>
       <div class="cntbar"><span>남성 참가자 6명</span><span><b id="pickN">0</b>/2 선택</span></div>
       <div class="vlist" id="vlist"></div>
-      <div class="submit"><button id="submitBtn" disabled onclick="go(1)">투표 제출하기</button></div>
+      <div class="submit"><button id="submitBtn" disabled onclick="go(2)">투표 제출하기</button></div>
       <div class="note">제출 후엔 못 바꿔요 · 투표 내용은 상대에게 안 보여요</div>
     </div>
 
-    <!-- ② 완료 -->
-    <div class="scr" id="s1">
+    <!-- ③ 완료 -->
+    <div class="scr" id="s2">
       <div class="apphead"><span class="ttl">투표 완료</span><span class="me">절약토끼</span></div>
       <div class="center">
         <div class="pulse">✅</div>
@@ -131,11 +156,11 @@
           🔒 <b style="color:var(--amber)">누가 날 뽑았는지 · 득표수</b>는 → 유료로 확인
         </div>
       </div>
-      <button class="demobtn" onclick="go(2)">▶︎ (데모) 23:30 결과 화면 보기</button>
+      <button class="demobtn" onclick="go(3)">▶︎ (데모) 23:30 결과 화면 보기</button>
     </div>
 
-    <!-- ③ 결과 -->
-    <div class="scr" id="s2">
+    <!-- ④ 결과 -->
+    <div class="scr" id="s3">
       <div class="apphead"><span class="ttl">오늘의 결과 🎉</span><span class="me">절약토끼</span></div>
 
       <!-- 무료: 서로 통한 인연 -->
@@ -229,11 +254,19 @@
   function upd(){ var n=cnt(); document.getElementById("pickN").textContent=n; document.getElementById("submitBtn").disabled=n===0; }
 
   window.go=function(n){
-    for(var i=0;i<3;i++){ document.getElementById("s"+i).classList.toggle("on",i===n); }
+    for(var i=0;i<4;i++){ document.getElementById("s"+i).classList.toggle("on",i===n); }
     [].forEach.call(document.querySelectorAll("#steps button"),function(b){ b.classList.toggle("on",+b.dataset.s===n); });
-    if(n!==2){ document.getElementById("lock-stage").style.display="block"; document.getElementById("unlock-stage").style.display="none"; }
+    if(n!==3){ document.getElementById("lock-stage").style.display="block"; document.getElementById("unlock-stage").style.display="none"; }
     window.scrollTo({top:0,behavior:"smooth"});
   };
+  var phone=document.getElementById("phone"), entryBtn=document.getElementById("entryBtn");
+  phone.addEventListener("input",function(){
+    var d=phone.value.replace(/[^0-9]/g,"").slice(0,11), out=d;
+    if(d.length>7){ out=d.slice(0,3)+"-"+d.slice(3,7)+"-"+d.slice(7); }
+    else if(d.length>3){ out=d.slice(0,3)+"-"+d.slice(3); }
+    phone.value=out;
+    entryBtn.disabled=d.length<10;
+  });
   window.unlock=function(){
     document.getElementById("lock-stage").style.display="none";
     document.getElementById("unlock-stage").style.display="block";
