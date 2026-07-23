@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>투표 관리 | 썸류센터</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--amber-soft:rgba(212,149,42,.12);--ok:#6FBE97;--ok-soft:rgba(111,190,151,.13);--rose:#E8828A;--ink-on-amber:#171208;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.55;letter-spacing:-.01em}
+  .wrap{max-width:540px;margin:0 auto;padding:22px 18px 60px}
+  h1{font-size:19px;font-weight:800;margin-bottom:4px}
+  .sub{font-size:12.5px;color:var(--muted);margin-bottom:20px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+  .card h2{font-size:14.5px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:7px}
+  .card .desc{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .step{width:22px;height:22px;border-radius:50%;background:var(--amber);color:var(--ink-on-amber);display:grid;place-items:center;font-size:12px;font-weight:800;flex-shrink:0}
+  label.f{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:0 2px 6px}
+  input,textarea{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
+  input:focus,textarea:focus{outline:none;border-color:var(--amber)}
+  textarea{resize:vertical;min-height:110px;line-height:1.6;font-size:13px}
+  .btn{border:none;border-radius:11px;padding:13px 18px;font-size:14px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;width:100%}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn.g{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong)}
+  .btn.sm{width:auto;padding:8px 13px;font-size:12px}
+  .btn.on{background:var(--ok);color:#062}
+  .msg{font-size:12.5px;margin-top:10px;min-height:16px}
+  .msg.ok{color:var(--ok)}.msg.err{color:var(--rose)}
+  .row{display:flex;gap:8px;align-items:center}
+  .link{background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:10px;padding:11px;font-size:13px;color:var(--amber);word-break:break-all;margin-bottom:8px}
+  .plist{margin-top:12px}
+  .pitem{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+  .pitem .nm{font-size:13.5px;font-weight:700}
+  .pitem .meta{font-size:11.5px;color:var(--muted)}
+  .pitem .g-badge{font-size:10.5px;padding:2px 7px;border-radius:100px;background:var(--surface-2);color:var(--muted)}
+  .pill{font-size:11px;font-weight:750;padding:3px 9px;border-radius:100px;margin-left:auto}
+  .pill.paid{background:var(--ok-soft);color:var(--ok)}.pill.no{background:var(--surface-2);color:var(--faint)}
+  .stat{display:flex;gap:10px;margin-bottom:14px}
+  .stat .b{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:13px;text-align:center}
+  .stat .b .k{font-size:11px;color:var(--muted)}.stat .b .v{font-size:19px;font-weight:800;color:var(--amber);margin-top:2px}
+  .hide{display:none}
+  a.home{font-size:12px;color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 로그인 -->
+  <div id="login">
+    <h1>투표 관리</h1>
+    <div class="sub">센터장 전용 · 관리자 비밀번호를 입력하세요</div>
+    <div class="card">
+      <label class="f">관리자 비밀번호</label>
+      <input id="pw" type="password" placeholder="admin 비밀번호">
+      <div style="margin-top:12px"><button class="btn" id="loginBtn">로그인</button></div>
+      <div class="msg err" id="login-msg"></div>
+    </div>
+  </div>
+
+  <!-- 콘솔 -->
+  <div id="console" class="hide">
+    <h1>🗳️ 투표 관리</h1>
+    <div class="sub">QR 투표 · 결과 공개를 여기서 운영해요 · <a class="home" href="/admin">일반 admin →</a></div>
+
+    <div class="card">
+      <label class="f">행사 이름 (모든 작업의 기준)</label>
+      <input id="event" placeholder="예: 2026-08 재테크팅" value="2026-08 재테크팅">
+      <div class="desc" style="margin:8px 0 0">참가자·투표·공개가 이 이름으로 묶여요. 행사마다 다르게.</div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step">1</span> 테이블 준비</h2>
+      <div class="desc">투표용 에어테이블 3개(투표참가자·투표·투표설정)를 자동으로 만들어요. 이미 있으면 건너뛰어요. <b>딱 한 번만</b> 누르면 돼요.</div>
+      <button class="btn g" id="setupBtn">테이블 자동 생성</button>
+      <div class="msg" id="setup-msg"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step">2</span> 참가자 등록</h2>
+      <div class="desc">한 줄에 한 명씩. 순서: <b>닉네임, 성별, 년생, 한줄소개, 전화번호</b> (쉼표로 구분)</div>
+      <textarea id="ptext" placeholder="배당곰, 남성, 92년생, 금융권 배당주, 010-1111-2222
+절약토끼, 여성, 95년생, 무지출 챌린지, 010-3333-5678
+임장왕, 남성, 97년생, 자영업 임장러, 010-2222-3333"></textarea>
+      <div style="margin-top:10px"><button class="btn" id="addBtn">참가자 등록하기</button></div>
+      <div class="msg" id="add-msg"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step">3</span> 투표 링크 (QR 1개)</h2>
+      <div class="desc">이 주소 하나로 QR을 만들어 행사장에 붙이세요. 참가자는 QR 찍고 번호만 입력하면 돼요.</div>
+      <div class="link" id="voteLink">https://ssumcenter.vercel.app/vote</div>
+      <button class="btn g sm" id="copyBtn">링크 복사</button>
+    </div>
+
+    <div class="card">
+      <h2><span class="step">4</span> 현황 & 공개</h2>
+      <div class="stat">
+        <div class="b"><div class="k">등록 참가자</div><div class="v" id="st-people">–</div></div>
+        <div class="b"><div class="k">투표 완료</div><div class="v" id="st-votes">–</div></div>
+      </div>
+      <div class="row" style="gap:10px">
+        <button class="btn" id="revealBtn" style="flex:1">지금 결과 공개</button>
+        <button class="btn g sm" id="refreshBtn">새로고침</button>
+      </div>
+      <div class="desc" style="margin:10px 0 0" id="reveal-state"></div>
+      <div class="msg" id="reveal-msg"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step">5</span> 결제 확인 → 받은 표 공개</h2>
+      <div class="desc">입금 확인되면 그 사람 <b>공개</b>를 켜세요. 켜면 그 사람 링크에서 받은 표가 열려요.</div>
+      <div class="plist" id="plist"><div class="desc">새로고침을 누르면 참가자가 떠요.</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var API="/api/vote", KEY="admin_key";
+  function key(){ return sessionStorage.getItem(KEY)||""; }
+  function post(action,data){
+    return fetch(API,{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},
+      body:JSON.stringify(Object.assign({action:action},data||{}))}).then(function(r){return r.json();});
+  }
+  function ev(){ return document.getElementById("event").value.trim(); }
+  function setMsg(id,txt,cls){ var e=document.getElementById(id); e.textContent=txt; e.className="msg "+(cls||""); }
+
+  // ---- 로그인 ----
+  function showConsole(){ document.getElementById("login").classList.add("hide"); document.getElementById("console").classList.remove("hide"); }
+  if(key()) showConsole();
+  document.getElementById("loginBtn").addEventListener("click",doLogin);
+  document.getElementById("pw").addEventListener("keydown",function(e){ if(e.key==="Enter") doLogin(); });
+  function doLogin(){
+    var pw=document.getElementById("pw").value;
+    if(!pw){ return; }
+    sessionStorage.setItem(KEY,pw);
+    // 검증: adminData 호출
+    post("adminData",{event:ev()||"__test__"}).then(function(r){
+      if(r.error && /관리자/.test(r.error)){ sessionStorage.removeItem(KEY); document.getElementById("login-msg").textContent="비밀번호가 틀렸어요."; }
+      else { showConsole(); refresh(); }
+    });
+  }
+
+  // ---- 1. 테이블 생성 ----
+  document.getElementById("setupBtn").addEventListener("click",function(){
+    var b=this; b.disabled=true; setMsg("setup-msg","테이블 만드는 중…","");
+    post("setup",{}).then(function(r){
+      b.disabled=false;
+      if(r.error){ setMsg("setup-msg","❌ "+r.error,"err"); return; }
+      var parts=[];
+      if(r.created&&r.created.length) parts.push("생성: "+r.created.join(", "));
+      if(r.skipped&&r.skipped.length) parts.push("이미 있음: "+r.skipped.join(", "));
+      setMsg("setup-msg","✅ 완료! "+parts.join(" · "),"ok");
+    });
+  });
+
+  // ---- 2. 참가자 등록 ----
+  document.getElementById("addBtn").addEventListener("click",function(){
+    if(!ev()){ setMsg("add-msg","행사 이름을 먼저 입력하세요.","err"); return; }
+    var lines=document.getElementById("ptext").value.split("\n").map(function(l){return l.trim();}).filter(Boolean);
+    var rows=lines.map(function(l,i){
+      var c=l.split(/[,\t]/).map(function(x){return x.trim();});
+      return {순번:i+1,닉네임:c[0]||"",성별:c[1]||"",년생:c[2]||"",한줄소개:c[3]||"",전화번호:c[4]||""};
+    }).filter(function(r){return r.닉네임&&r.전화번호;});
+    if(!rows.length){ setMsg("add-msg","형식을 확인하세요 (닉네임,성별,년생,한줄,번호)","err"); return; }
+    var b=this; b.disabled=true; setMsg("add-msg","등록 중…","");
+    post("addParticipants",{event:ev(),rows:rows}).then(function(r){
+      b.disabled=false;
+      if(r.error){ setMsg("add-msg","❌ "+r.error,"err"); return; }
+      setMsg("add-msg","✅ "+r.count+"명 등록 완료!","ok"); refresh();
+    });
+  });
+
+  // ---- 3. 링크 복사 ----
+  document.getElementById("copyBtn").addEventListener("click",function(){
+    var t=document.getElementById("voteLink").textContent;
+    navigator.clipboard.writeText(t).then(function(){ var b=document.getElementById("copyBtn"); b.textContent="복사됨 ✓"; setTimeout(function(){b.textContent="링크 복사";},1500); });
+  });
+
+  // ---- 4. 공개 스위치 ----
+  document.getElementById("revealBtn").addEventListener("click",function(){
+    if(!ev()) return;
+    var on=this.dataset.on!=="1"; var b=this; b.disabled=true;
+    post("reveal",{event:ev(),on:on}).then(function(r){
+      b.disabled=false;
+      if(r.error){ setMsg("reveal-msg","❌ "+r.error,"err"); return; }
+      setReveal(r.revealed); setMsg("reveal-msg",r.revealed?"✅ 결과가 공개됐어요! 참가자들이 링크에서 볼 수 있어요.":"공개를 껐어요.","ok");
+    });
+  });
+  function setReveal(on){
+    var b=document.getElementById("revealBtn");
+    b.dataset.on=on?"1":"0"; b.textContent=on?"공개 중 (끄기)":"지금 결과 공개"; b.classList.toggle("on",on);
+    document.getElementById("reveal-state").textContent=on?"🟢 현재: 공개 중":"⚪ 현재: 비공개 (투표만 받는 중)";
+  }
+  document.getElementById("refreshBtn").addEventListener("click",refresh);
+
+  // ---- 5. 현황 + 결제 확인 ----
+  function refresh(){
+    if(!ev()) return;
+    post("adminData",{event:ev()}).then(function(r){
+      if(r.error){ return; }
+      document.getElementById("st-people").textContent=(r.participants||[]).length;
+      document.getElementById("st-votes").textContent=r.voteCount||0;
+      setReveal(r.revealed);
+      var pl=document.getElementById("plist"); pl.innerHTML="";
+      if(!r.participants||!r.participants.length){ pl.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>'; return; }
+      r.participants.forEach(function(p){
+        var it=document.createElement("div"); it.className="pitem";
+        it.innerHTML='<span class="g-badge">'+(p.성별||"?")+'</span>'
+          +'<div><div class="nm">'+p.닉네임+'</div><div class="meta">'+p.전화번호+'</div></div>'
+          +'<button class="btn sm '+(p.공개상태?"on":"g")+'" style="margin-left:auto">'+(p.공개상태?"공개됨 ✓":"공개하기")+'</button>';
+        var btn=it.querySelector("button");
+        btn.addEventListener("click",function(){
+          btn.disabled=true; var next=!p.공개상태;
+          post("setPaid",{phone:p.전화번호,on:next}).then(function(rr){
+            btn.disabled=false;
+            if(rr.error){ alert(rr.error); return; }
+            p.공개상태=next; btn.textContent=next?"공개됨 ✓":"공개하기"; btn.className="btn sm "+(next?"on":"g");
+          });
+        });
+        pl.appendChild(it);
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

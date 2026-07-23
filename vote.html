@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>재테크팅 투표 | 썸류센터</title>
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#0c0a08; --surface:#161310; --surface-2:#1e1811; --ink:#EDE0CC; --ink-2:#C9B896;
+    --muted:#998870; --faint:#6a5c4c; --line:#2a2117; --line-strong:#3a2e1f;
+    --amber:#E8B050; --amber-2:#D4952A; --amber-soft:rgba(212,149,42,.12);
+    --ok:#6FBE97; --ok-soft:rgba(111,190,151,.13);
+    --ink-on-amber:#171208;
+    --g1:linear-gradient(135deg,#E8B050,#B06A2E); --g2:linear-gradient(135deg,#C9A15E,#8A6A38);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55;letter-spacing:-.01em;min-height:100vh}
+  .tnum{font-variant-numeric:tabular-nums}
+  .wrap{max-width:440px;margin:0 auto;padding:22px 18px 40px;min-height:100vh}
+  .scr{display:none;animation:fade .28s ease}.scr.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .apphead{display:flex;align-items:center;gap:10px;padding:2px 2px 12px}
+  .apphead .ttl{font-weight:750;font-size:16px;flex:1}
+  .apphead .me{font-size:11.5px;font-weight:700;color:var(--amber);background:var(--amber-soft);padding:5px 11px;border-radius:100px}
+  .lead{text-align:center;padding:4px 0}
+  .lead .ky{font-size:12px;font-weight:750;color:var(--amber);letter-spacing:.03em}
+  .lead h2{font-size:20px;font-weight:800;margin:6px 0 4px}
+  .lead .sub{font-size:13px;color:var(--muted)}
+  /* 입장 */
+  .qrbox{text-align:center;margin:20px 0 6px}
+  .qrimg{width:118px;height:118px;margin:0 auto;border-radius:16px;background:#fff;color:#000;display:grid;place-items:center;font-size:62px}
+  .qrcap{font-size:11.5px;color:var(--faint);margin-top:10px}
+  .fld{display:block;margin-top:18px}
+  .fld span{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:0 2px 7px}
+  .fld input{width:100%;background:var(--surface);border:1.5px solid var(--line-strong);border-radius:13px;padding:15px;font-size:17px;color:var(--ink);font-family:inherit;text-align:center}
+  .fld input:focus{outline:none;border-color:var(--amber)}
+  .btn{width:100%;border:none;border-radius:14px;padding:16px;font-size:15.5px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;box-shadow:0 8px 24px rgba(232,176,80,.2)}
+  .btn:disabled{opacity:.4;box-shadow:none}
+  .btn.ghost{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong);box-shadow:none;font-weight:700;font-size:13px;padding:13px}
+  .note{font-size:11.5px;color:var(--faint);text-align:center;margin-top:11px}
+  .err{font-size:12.5px;color:#E8828A;text-align:center;margin-top:10px;min-height:16px}
+  /* 투표 */
+  .cntbar{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700;color:var(--muted);margin:14px 2px 9px}
+  .cntbar b{color:var(--amber)}
+  .vlist{display:grid;gap:11px}
+  .vc{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:12px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:.12s}
+  .vc.on{border-color:var(--amber);background:var(--amber-soft)}
+  .av{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;font-size:22px;color:#fff;flex-shrink:0;overflow:hidden;background:var(--g2)}
+  .av img{width:100%;height:100%;object-fit:cover}
+  .vc .nm{font-size:15px;font-weight:750}
+  .vc .bio{font-size:12.5px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
+  .heart{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;font-size:17px;color:var(--faint);flex-shrink:0;margin-left:auto}
+  .vc.on .heart{background:var(--amber);border-color:var(--amber);color:var(--ink-on-amber)}
+  .sticky{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 22%);padding-top:18px;margin-top:16px}
+  /* 완료 */
+  .center{text-align:center}
+  .pulse{width:92px;height:92px;margin:26px auto 8px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:radial-gradient(circle at 50% 40%,rgba(232,176,80,.28),rgba(232,176,80,.05))}
+  .whenbar{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--amber);background:var(--amber-soft);border:1px solid var(--line-strong);padding:9px 16px;border-radius:100px;margin-top:10px}
+  .infocard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:20px;font-size:13px;color:var(--ink-2);line-height:1.7}
+  /* 결과 */
+  .grp{margin-bottom:18px}
+  .grp .gt{font-size:14px;font-weight:800;margin:0 2px 9px;display:flex;align-items:center;gap:7px}
+  .grp .gt .free{font-size:11px;font-weight:750;color:var(--ok);background:var(--ok-soft);padding:2px 9px;border-radius:100px}
+  .grp .gt .paid{font-size:11px;font-weight:750;color:var(--amber);background:var(--amber-soft);padding:2px 9px;border-radius:100px}
+  .rc{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:9px}
+  .rc.match{border-color:var(--ok);background:var(--ok-soft)}
+  .rc .av{width:46px;height:46px;font-size:18px}
+  .rc .nm{font-size:14.5px;font-weight:750}.rc .st{font-size:12px;color:var(--muted);margin-top:1px}
+  .rc .num{font-size:13.5px;font-weight:800;color:var(--ok)}
+  .rc .kk{font-size:11.5px;font-weight:750;color:var(--amber);background:var(--surface-2);border:1px solid var(--amber);padding:7px 11px;border-radius:100px;margin-left:auto}
+  .safe{font-size:11.5px;color:var(--ok);font-weight:650;text-align:center;margin:-2px 0 9px}
+  .lock{background:linear-gradient(135deg,rgba(232,176,80,.14),rgba(201,154,90,.05));border:1.5px solid var(--amber);border-radius:16px;padding:16px;text-align:center}
+  .lock .big{font-size:15.5px;font-weight:800}.lock .big b{color:var(--amber)}
+  .lock .sub{font-size:12.5px;color:var(--ink-2);margin:5px 0 12px}
+  .lock .row{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
+  .lock .blur{width:46px;height:46px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line-strong);display:grid;place-items:center;font-size:19px;filter:blur(1px);color:var(--faint)}
+  .lock button{border:none;background:var(--amber);color:var(--ink-on-amber);font-weight:800;font-size:14.5px;padding:13px 24px;border-radius:100px;cursor:pointer;font-family:inherit}
+  .lock .price{font-size:11.5px;color:var(--faint);margin-top:9px}
+  .paybox{background:var(--surface-2);border:1px solid var(--line-strong);border-radius:12px;padding:12px 15px;margin:14px 0 11px;text-align:left}
+  .payrow{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:6px 0}
+  .payrow span{color:var(--muted)}.payrow b{color:var(--ink);font-weight:750}.payrow b.copy{color:var(--amber)}
+  .paynote{font-size:12px;color:var(--faint);margin-bottom:13px}
+  .stat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+  .stat .box{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:13px;text-align:center}
+  .stat .box .k{font-size:11.5px;color:var(--muted);font-weight:650}
+  .stat .box .v{font-size:20px;font-weight:800;color:var(--amber);margin-top:3px}
+  .loading{text-align:center;padding:60px 0;color:var(--muted);font-size:13.5px}
+  .spin{width:30px;height:30px;border:3px solid var(--line-strong);border-top-color:var(--amber);border-radius:50%;margin:0 auto 14px;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 로딩 -->
+  <div class="scr on" id="s-load">
+    <div class="loading"><div class="spin"></div>불러오는 중…</div>
+  </div>
+
+  <!-- 입장 -->
+  <div class="scr" id="s-entry">
+    <div class="apphead"><span class="ttl" id="ev-title">재테크팅 투표</span></div>
+    <div class="lead"><div class="ky">📷 QR로 접속했어요</div><h2>본인 확인</h2><div class="sub">입력한 번호로 오늘 밤 결과를 보내드려요</div></div>
+    <div class="qrbox"><div class="qrimg">▦</div><div class="qrcap">행사장 QR로 접속하셨어요</div></div>
+    <label class="fld"><span>휴대폰 번호</span>
+      <input id="phone" inputmode="numeric" placeholder="010-1234-5678" maxlength="13" autocomplete="off">
+    </label>
+    <div class="err" id="entry-err"></div>
+    <div style="margin-top:6px"><button class="btn" id="entryBtn" disabled>입장하기</button></div>
+    <div class="note">명단에 있는 번호만 입장돼요 · 회원가입 없음</div>
+  </div>
+
+  <!-- 투표 -->
+  <div class="scr" id="s-vote">
+    <div class="apphead"><span class="ttl" id="vote-title">투표</span><span class="me" id="vote-me"></span></div>
+    <div class="lead"><h2>오늘 마음에 든 분은?</h2><div class="sub">최대 2명까지 · 센터장만 확인해요</div></div>
+    <div class="cntbar"><span id="vote-count-label">참가자</span><span><b id="pickN">0</b>/2 선택</span></div>
+    <div class="vlist" id="vlist"></div>
+    <div class="sticky">
+      <button class="btn" id="submitBtn" disabled>투표 제출하기</button>
+      <div class="note">제출 후엔 못 바꿔요 · 투표 내용은 상대에게 안 보여요</div>
+    </div>
+  </div>
+
+  <!-- 완료(대기) -->
+  <div class="scr" id="s-done">
+    <div class="apphead"><span class="ttl">투표 완료</span><span class="me" id="done-me"></span></div>
+    <div class="center">
+      <div class="pulse">✅</div>
+      <h2 style="font-size:21px;font-weight:800;margin:6px 0 4px">투표가 접수됐어요!</h2>
+      <p class="sub" style="font-size:13.5px;color:var(--muted);max-width:28ch;margin:0 auto">두근두근 🤍 결과는 오늘 밤에 공개돼요.</p>
+      <div class="whenbar">🌙 오늘 <b class="tnum" style="margin:0 3px">23:30</b> 이 링크에서 공개</div>
+    </div>
+    <div class="infocard">
+      🟢 <b style="color:var(--ok)">서로 뽑은 분</b>이 있으면 → <b>연락처 무료</b>로 공유돼요<br>
+      🔒 <b style="color:var(--amber)">누가 날 뽑았는지 · 득표수</b>는 → 유료로 확인
+    </div>
+    <div style="margin-top:22px"><button class="btn ghost" id="refreshBtn">결과 열렸는지 확인하기</button></div>
+  </div>
+
+  <!-- 결과 -->
+  <div class="scr" id="s-result">
+    <div class="apphead"><span class="ttl">오늘의 결과 🎉</span><span class="me" id="res-me"></span></div>
+    <div id="result-body"></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var API="/api/vote";
+  var ACCOUNT={bank:"카카오뱅크",no:"3333-01-234567",price:"9,900원"}; // TODO: 실제 계좌로 변경
+  var state={phone:"",me:null,list:[],picks:[]};
+
+  function post(action,data){
+    return fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(Object.assign({action:action},data||{}))})
+      .then(function(r){return r.json();});
+  }
+  function show(id){
+    ["s-load","s-entry","s-vote","s-done","s-result"].forEach(function(s){
+      document.getElementById(s).classList.toggle("on",s===id);
+    });
+    window.scrollTo(0,0);
+  }
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function avatar(p){ return p.사진 ? '<div class="av"><img src="'+esc(p.사진)+'" alt=""></div>' : '<div class="av">🙂</div>'; }
+
+  // ---- 시작: 저장된 번호 있으면 자동 라우팅 ----
+  var saved=localStorage.getItem("vote_phone");
+  if(saved){ state.phone=saved; route(saved); }
+  else show("s-entry");
+
+  // ---- 입장 ----
+  var phone=document.getElementById("phone"), entryBtn=document.getElementById("entryBtn"), entryErr=document.getElementById("entry-err");
+  phone.addEventListener("input",function(){
+    var d=phone.value.replace(/[^0-9]/g,"").slice(0,11),out=d;
+    if(d.length>7){out=d.slice(0,3)+"-"+d.slice(3,7)+"-"+d.slice(7);}
+    else if(d.length>3){out=d.slice(0,3)+"-"+d.slice(3);}
+    phone.value=out; entryBtn.disabled=d.length<10; entryErr.textContent="";
+  });
+  entryBtn.addEventListener("click",function(){
+    var p=phone.value.replace(/[^0-9]/g,"");
+    entryBtn.disabled=true; entryBtn.textContent="확인 중…";
+    route(p).catch(function(){ entryErr.textContent="오류가 났어요. 다시 시도해주세요."; })
+      .finally(function(){ entryBtn.textContent="입장하기"; entryBtn.disabled=false; });
+  });
+
+  function route(p){
+    return post("verify",{phone:p}).then(function(r){
+      if(!r.found){ entryErr.textContent="명단에 없는 번호예요. 센터장에게 문의해주세요."; show("s-entry"); return; }
+      state.phone=p; state.me=r.me; localStorage.setItem("vote_phone",p);
+      document.getElementById("vote-me").textContent=r.me.닉네임;
+      document.getElementById("done-me").textContent=r.me.닉네임;
+      document.getElementById("res-me").textContent=r.me.닉네임;
+      if(r.me.행사){
+        document.getElementById("ev-title").textContent=r.me.행사+" 투표";
+        document.getElementById("vote-title").textContent=r.me.행사;
+      }
+      if(r.revealed){ return loadResult(); }
+      if(r.voted){ show("s-done"); return; }
+      return loadList();
+    });
+  }
+
+  // ---- 투표 목록 ----
+  function loadList(){
+    show("s-load");
+    return post("list",{event:state.me.행사,gender:state.me.성별}).then(function(r){
+      state.list=r.list||[]; state.picks=[];
+      var vl=document.getElementById("vlist"); vl.innerHTML="";
+      document.getElementById("vote-count-label").textContent="참가자 "+state.list.length+"명";
+      if(state.list.length===0){ vl.innerHTML='<div class="note">아직 등록된 상대 참가자가 없어요.</div>'; }
+      state.list.forEach(function(p){
+        var el=document.createElement("div"); el.className="vc";
+        var bio=[p.년생,p.한줄소개].filter(Boolean).join(" · ");
+        el.innerHTML=avatar(p)+'<div><div class="nm">'+esc(p.닉네임)+'</div><div class="bio">'+esc(bio)+'</div></div><div class="heart">♥</div>';
+        el.addEventListener("click",function(){ toggle(p.닉네임,el); });
+        vl.appendChild(el);
+      });
+      updateCount(); show("s-vote");
+    });
+  }
+  function toggle(nick,el){
+    var i=state.picks.indexOf(nick);
+    if(i>=0){ state.picks.splice(i,1); el.classList.remove("on"); }
+    else { if(state.picks.length>=2) return; state.picks.push(nick); el.classList.add("on"); }
+    updateCount();
+  }
+  function updateCount(){
+    document.getElementById("pickN").textContent=state.picks.length;
+    document.getElementById("submitBtn").disabled=state.picks.length===0;
+  }
+  var submitBtn=document.getElementById("submitBtn");
+  submitBtn.addEventListener("click",function(){
+    submitBtn.disabled=true; submitBtn.textContent="제출 중…";
+    post("vote",{phone:state.phone,picks:state.picks}).then(function(r){
+      if(r.ok||r.already){ show("s-done"); }
+      else { alert(r.error||"제출 실패"); submitBtn.disabled=false; submitBtn.textContent="투표 제출하기"; }
+    }).catch(function(){ alert("오류가 났어요."); submitBtn.disabled=false; submitBtn.textContent="투표 제출하기"; });
+  });
+
+  // ---- 완료 화면: 결과 열렸는지 확인 ----
+  document.getElementById("refreshBtn").addEventListener("click",function(){
+    var b=this; b.disabled=true; b.textContent="확인 중…";
+    post("verify",{phone:state.phone}).then(function(r){
+      if(r.revealed){ loadResult(); }
+      else { b.textContent="아직이에요 · 다시 확인"; setTimeout(function(){ b.disabled=false; b.textContent="결과 열렸는지 확인하기"; },1500); }
+    });
+  });
+
+  // ---- 결과 ----
+  function loadResult(){
+    show("s-load");
+    return post("result",{phone:state.phone}).then(function(r){
+      if(!r.revealed){ show("s-done"); return; }
+      renderResult(r); show("s-result");
+    });
+  }
+  function renderResult(r){
+    var h="";
+    // 무료: 상호 매칭
+    h+='<div class="grp"><div class="gt">💗 서로 통한 인연 <span class="free">무료 · 자동</span></div>';
+    if(r.free && r.free.length){
+      h+='<div class="safe">🔒 서로 뽑은 두 분에게만 연락처가 열려요</div>';
+      r.free.forEach(function(p){
+        var bio=[p.년생,p.한줄소개].filter(Boolean).join(" · ");
+        h+='<div class="rc match">'+avatar(p)+'<div><div class="nm">'+esc(p.닉네임)+'</div><div class="st">서로 뽑았어요 ✓ · '+esc(bio)+'</div></div>'
+          +(p.연락처?'<div class="num tnum">'+esc(p.연락처)+'</div>':'')+'</div>';
+      });
+    } else {
+      h+='<div class="infocard" style="margin-top:0">이번엔 서로 뽑은 인연이 없었어요. 아래 <b style="color:var(--amber)">받은 표 공개</b>로 나를 뽑은 분을 확인할 수 있어요 🙂</div>';
+    }
+    h+='</div>';
+
+    // 유료: 받은 표 공개
+    h+='<div class="grp"><div class="gt">💌 받은 표 공개 <span class="paid">유료</span></div>';
+    if(r.paid && r.paid.unlocked){
+      h+='<div class="stat"><div class="box"><div class="k">내 득표수</div><div class="v tnum">'+r.paid.득표수+'표</div></div>'
+        +'<div class="box"><div class="k">서로 통한 매칭</div><div class="v tnum">'+r.paid.상호수+'명</div></div></div>';
+      h+='<div class="safe" style="color:var(--amber)">✓ 결제 확인 완료 · 나를 뽑은 '+r.paid.득표수+'명</div>';
+      (r.paid.나를뽑은사람||[]).forEach(function(p){
+        var bio=[p.년생,p.한줄소개].filter(Boolean).join(" · ");
+        h+='<div class="rc">'+avatar(p)+'<div><div class="nm">'+esc(p.닉네임)+'</div><div class="st">'
+          +(p.상호매칭?'이미 매칭됐어요 💗':esc(bio||"나를 뽑았어요"))+'</div></div>'
+          +(p.상호매칭?'':'<button class="kk">연결</button>')+'</div>';
+      });
+      h+='<div class="note" style="margin-top:12px">추가 매칭은 상대도 좋으면 연락처가 열려요</div>';
+    } else {
+      h+='<div class="lock" id="lockcard">'
+        +'<div class="big">💛 당신을 뽑은 사람이 있어요</div>'
+        +'<div class="sub">몇 명인지 · 누가 뽑았는지 · 추가 매칭 연락처</div>'
+        +'<div class="row"><div class="blur">❔</div><div class="blur">❔</div><div class="blur">❔</div></div>'
+        +'<button id="payBtn">받은 표 확인하기</button>'
+        +'<div class="price">'+ACCOUNT.price+' · 계좌이체 (확인 후 열림)</div></div>';
+    }
+    h+='</div>';
+    document.getElementById("result-body").innerHTML=h;
+
+    var payBtn=document.getElementById("payBtn");
+    if(payBtn) payBtn.addEventListener("click",showPay);
+  }
+  function showPay(){
+    document.getElementById("lockcard").innerHTML=
+      '<div class="big">받은 표 공개 · <b>'+ACCOUNT.price+'</b></div>'
+      +'<div class="paybox">'
+      +'<div class="payrow"><span>은행</span><b>'+ACCOUNT.bank+'</b></div>'
+      +'<div class="payrow"><span>계좌번호</span><b class="copy">'+ACCOUNT.no+'</b></div>'
+      +'<div class="payrow"><span>금액</span><b>'+ACCOUNT.price+'</b></div>'
+      +'<div class="payrow"><span>입금자명</span><b>'+esc(state.me.닉네임)+'</b></div>'
+      +'</div>'
+      +'<div class="paynote">위 계좌로 입금 후, 아래 버튼을 눌러주세요</div>'
+      +'<button id="paidBtn">입금했어요</button>';
+    document.getElementById("paidBtn").addEventListener("click",showWait);
+  }
+  function showWait(){
+    document.getElementById("lockcard").innerHTML=
+      '<div class="big">⏳ 입금 확인 중이에요</div>'
+      +'<div class="sub" style="margin-bottom:12px">확인되면 문자로 바로 열어드려요 (보통 몇 분 안)</div>'
+      +'<button id="checkBtn">결제 확인됐는지 새로고침</button>';
+    document.getElementById("checkBtn").addEventListener("click",function(){
+      var b=this; b.disabled=true; b.textContent="확인 중…"; loadResult();
+    });
+  }
+})();
+</script>
+</body>
+</html>
