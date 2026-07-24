@@ -109,6 +109,50 @@
           </div>
         </div>
 
+        <!-- 키 -->
+        <div class="flex items-start gap-3 hidden" id="row-height">
+          <div class="w-8 h-8 shrink-0 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-ruler-vertical y text-xs"></i>
+          </div>
+          <div>
+            <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider">키</div>
+            <div class="text-sm font-bold mt-0.5" id="profile-height">—</div>
+          </div>
+        </div>
+
+        <!-- 사는 곳 -->
+        <div class="flex items-start gap-3 hidden" id="row-location">
+          <div class="w-8 h-8 shrink-0 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-location-dot y text-xs"></i>
+          </div>
+          <div>
+            <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider">사는 곳</div>
+            <div class="text-sm font-bold mt-0.5" id="profile-location">—</div>
+          </div>
+        </div>
+
+        <!-- 취미 -->
+        <div class="flex items-start gap-3 hidden" id="row-hobby">
+          <div class="w-8 h-8 shrink-0 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-heart y text-xs"></i>
+          </div>
+          <div>
+            <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider">취미</div>
+            <div class="text-sm font-bold mt-0.5" id="profile-hobby">—</div>
+          </div>
+        </div>
+
+        <!-- 종교 -->
+        <div class="flex items-start gap-3 hidden" id="row-religion">
+          <div class="w-8 h-8 shrink-0 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
+            <i class="fa-solid fa-hands-praying y text-xs"></i>
+          </div>
+          <div>
+            <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider">종교</div>
+            <div class="text-sm font-bold mt-0.5" id="profile-religion">—</div>
+          </div>
+        </div>
+
         <!-- 성격 키워드 -->
         <div class="flex items-start gap-3">
           <div class="w-8 h-8 shrink-0 rounded-lg bg-[#FFD400]/10 border border-[#FFD400]/30 flex items-center justify-center">
@@ -359,6 +403,17 @@ function loadProfile(data){
   ).join("");
 
   document.getElementById("profile-intro").textContent = profileIntro;
+
+  // 추가 프로필 (값 있을 때만 표시)
+  function setRow(rowId, valId, val){
+    if(val && String(val).trim()){ document.getElementById(valId).textContent = val; document.getElementById(rowId).classList.remove("hidden"); }
+  }
+  var h = data.height ? String(data.height).trim() : "";
+  if(h && /^\d+$/.test(h)) h = h + "cm";
+  setRow("row-height","profile-height", h);
+  setRow("row-location","profile-location", data.location || "");
+  setRow("row-hobby","profile-hobby", data.hobby || "");
+  setRow("row-religion","profile-religion", data.religion || "");
 
   // 마감 시간
   if(deadline){

@@ -27,6 +27,10 @@ module.exports = async function handler(req, res) {
       job: f["직업"] || "",
       keywords: f["성격키워드"] || "",
       intro: f["자기소개"] || "",
+      height: f["키"] || "",
+      location: f["사는곳"] || "",
+      hobby: f["취미"] || "",
+      religion: f["종교"] || "",
       photos,
     });
   }
