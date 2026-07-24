@@ -152,7 +152,7 @@
 (function(){
   "use strict";
   var API="/api/vote";
-  var ACCOUNT={bank:"카카오뱅크",no:"3333-01-234567",price:"9,900원"}; // TODO: 실제 계좌로 변경
+  var ACCOUNT={bank:"카카오뱅크",no:"3333-34-1009531",holder:"장민",price:"9,900원"};
   var state={phone:"",me:null,list:[],picks:[]};
 
   function post(action,data){
@@ -309,6 +309,7 @@
       +'<div class="paybox">'
       +'<div class="payrow"><span>은행</span><b>'+ACCOUNT.bank+'</b></div>'
       +'<div class="payrow"><span>계좌번호</span><b class="copy">'+ACCOUNT.no+'</b></div>'
+      +'<div class="payrow"><span>예금주</span><b>'+ACCOUNT.holder+'</b></div>'
       +'<div class="payrow"><span>금액</span><b>'+ACCOUNT.price+'</b></div>'
       +'<div class="payrow"><span>입금자명</span><b>'+esc(state.me.닉네임)+'</b></div>'
       +'</div>'
