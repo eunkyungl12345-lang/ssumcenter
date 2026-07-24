@@ -12,8 +12,7 @@ module.exports = async function handler(req, res) {
   if (!TOKEN || !BASE_ID) return res.status(500).json({ error: "서버 환경변수 미설정" });
 
   const body = req.body || {};
-  const SETUP_KEY = "ssum-tmp-setup-7Xk92Qp4vR"; // 임시 조회용 (확인 후 제거)
-  const isSetup = req.headers["x-setup-key"] === SETUP_KEY;
+  if (body.action !== "preview") return res.status(400).json({ error: "알 수 없는 action" });
 
   async function getAll(table, filter) {
     let records = [], offset;
@@ -30,25 +29,6 @@ module.exports = async function handler(req, res) {
     } while (offset);
     return records;
   }
-
-  // 임시: 이름으로 신청자가 어느 테이블에 있는지 찾기
-  if (body.action === "find") {
-    if (!isSetup) return res.status(401).json({ error: "권한 없음" });
-    const q = String(body.name || "").trim();
-    const out = [];
-    for (const t of ["로테이션 신청", "1:1 매칭 신청", "재테크 커피팅"]) {
-      try {
-        const rows = await getAll(t);
-        rows.forEach(r => {
-          const hit = q && Object.values(r.fields).some(v => typeof v === "string" && v.indexOf(q) >= 0);
-          if (hit) out.push({ table: t, 회차: r.fields["회차"] || r.fields["매칭유형"] || "", 상태: r.fields["승인상태"] || r.fields["매칭상태"] || "", 신청일시: r.fields["신청일시"] || "" });
-        });
-      } catch (e) {}
-    }
-    return res.status(200).json({ found: out });
-  }
-
-  if (body.action !== "preview") return res.status(400).json({ error: "알 수 없는 action" });
 
   // 출생연도(1993) → "93년생"
   const toBirth = y => { const s = String(y || "").replace(/[^0-9]/g, ""); return s.length >= 2 ? s.slice(-2) + "년생" : ""; };
