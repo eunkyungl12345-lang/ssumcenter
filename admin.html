@@ -843,6 +843,12 @@ let currentFilter = "all";
 async function loadApplicants(){
   try {
     const res = await fetch("/api/airtable?table=1:1 매칭 신청&sort=신청일시", {headers: apiHeaders()});
+    if(!res.ok){
+      const list = document.getElementById("applicant-list");
+      if(res.status === 401){ list.innerHTML = '<p class="text-center text-red-400 py-10">비밀번호가 맞지 않아요.<br>새로고침(F5) 후 올바른 비밀번호로 다시 로그인해주세요.</p>'; }
+      else { list.innerHTML = '<p class="text-center text-red-400 py-10">데이터를 불러올 수 없습니다 (오류 '+res.status+')</p>'; }
+      return;
+    }
     const data = await res.json();
     applicants = data.records || [];
     updateStats();
