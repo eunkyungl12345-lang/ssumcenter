@@ -35,6 +35,11 @@
   .pitem .g-badge{font-size:10.5px;padding:2px 7px;border-radius:100px;background:var(--surface-2);color:var(--muted)}
   .pill{font-size:11px;font-weight:750;padding:3px 9px;border-radius:100px;margin-left:auto}
   .pill.paid{background:var(--ok-soft);color:var(--ok)}.pill.no{background:var(--surface-2);color:var(--faint)}
+  .pitem.att{border:1.5px solid var(--line-strong);border-radius:12px;padding:14px 13px;margin-top:8px;cursor:pointer;transition:.12s;-webkit-tap-highlight-color:transparent}
+  .pitem.att:active{transform:scale(.98)}
+  .pitem.att.on{background:var(--ok-soft);border-color:var(--ok)}
+  .attmark{margin-left:auto;font-size:12px;font-weight:750;color:var(--muted)}
+  .pitem.att.on .attmark{color:var(--ok)}
   .stat{display:flex;gap:10px;margin-bottom:14px}
   .stat .b{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:13px;text-align:center}
   .stat .b .k{font-size:11px;color:var(--muted)}.stat .b .v{font-size:19px;font-weight:800;color:var(--amber);margin-top:2px}
@@ -107,7 +112,14 @@
     </div>
 
     <div class="card">
-      <h2><span class="step">5</span> 결제 확인 → 받은 표 공개</h2>
+      <h2><span class="step">5</span> 📚 출석 체크 <span style="font-size:11px;color:var(--muted);font-weight:650;margin-left:auto">구글 출석부 대신</span></h2>
+      <div class="desc">행사 당일, 온 사람 이름을 <b>탭</b>하면 출석돼요. 초록불이 들어와요.</div>
+      <div class="stat"><div class="b"><div class="k">출석</div><div class="v" id="st-attend">–</div></div><div class="b"><div class="k">전체</div><div class="v" id="st-total">–</div></div></div>
+      <div class="plist" id="attlist"><div class="desc">새로고침을 누르면 명단이 떠요.</div></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step">6</span> 결제 확인 → 받은 표 공개</h2>
       <div class="desc">입금 확인되면 그 사람 <b>공개</b>를 켜세요. 켜면 그 사람 링크에서 받은 표가 열려요.</div>
       <div class="plist" id="plist"><div class="desc">새로고침을 누르면 참가자가 떠요.</div></div>
     </div>
@@ -205,8 +217,28 @@
       document.getElementById("st-votes").textContent=r.voteCount||0;
       setReveal(r.revealed);
       var pl=document.getElementById("plist"); pl.innerHTML="";
-      if(!r.participants||!r.participants.length){ pl.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>'; return; }
+      var al=document.getElementById("attlist"); al.innerHTML="";
+      document.getElementById("st-total").textContent=(r.participants||[]).length;
+      document.getElementById("st-attend").textContent=r.attendCount||0;
+      if(!r.participants||!r.participants.length){
+        pl.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>';
+        al.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>'; return;
+      }
+      function attCount(){ return document.querySelectorAll(".pitem.att.on").length; }
       r.participants.forEach(function(p){
+        // 출석 (탭하면 토글)
+        var at=document.createElement("div"); at.className="pitem att"+(p.출석?" on":"");
+        at.innerHTML='<span class="g-badge">'+(p.성별||"?")+'</span><div class="nm">'+p.닉네임+'</div><span class="attmark">'+(p.출석?"출석 ✓":"탭하면 출석")+'</span>';
+        at.addEventListener("click",function(){
+          var next=!p.출석;
+          post("setAttend",{phone:p.전화번호,on:next}).then(function(rr){
+            if(rr.error){ alert(rr.error); return; }
+            p.출석=next; at.className="pitem att"+(next?" on":""); at.querySelector(".attmark").textContent=next?"출석 ✓":"탭하면 출석";
+            document.getElementById("st-attend").textContent=attCount();
+          });
+        });
+        al.appendChild(at);
+        // 결제 공개
         var it=document.createElement("div"); it.className="pitem";
         it.innerHTML='<span class="g-badge">'+(p.성별||"?")+'</span>'
           +'<div><div class="nm">'+p.닉네임+'</div><div class="meta">'+p.전화번호+'</div></div>'

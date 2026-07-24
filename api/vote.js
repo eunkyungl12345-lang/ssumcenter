@@ -236,6 +236,7 @@ module.exports = async function handler(req, res) {
           { name: "사진", type: "multipleAttachments" },
           { name: "공개상태", type: "checkbox", options: { icon: "check", color: "greenBright" } },
           { name: "결제상태", type: "singleLineText" },
+          { name: "출석", type: "checkbox", options: { icon: "check", color: "greenBright" } },
         ]},
         { name: "투표", fields: [
           { name: "행사", type: "singleLineText" },
@@ -292,6 +293,17 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, count: n });
     }
 
+    // ============ (관리자) 출석 체크 ============
+    if (action === "setAttend") {
+      if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
+      const phone = norm(body.phone);
+      const people = await getAll("투표참가자");
+      const target = people.find(p => norm(p.fields["전화번호"]) === phone);
+      if (!target) return res.status(404).json({ error: "참가자 없음" });
+      await api("투표참가자", { method: "PATCH", body: { records: [{ id: target.id, fields: { 출석: body.on !== false } }] } });
+      return res.status(200).json({ ok: true });
+    }
+
     // ============ (관리자) 참가자 목록 + 투표현황 ============
     if (action === "adminData") {
       if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
@@ -305,8 +317,10 @@ module.exports = async function handler(req, res) {
         participants: people.map(p => ({
           닉네임: p.fields["닉네임"] || "", 성별: p.fields["성별"] || "", 전화번호: p.fields["전화번호"] || "",
           공개상태: p.fields["공개상태"] === true, 결제상태: p.fields["결제상태"] || "",
+          출석: p.fields["출석"] === true, 순번: p.fields["순번"] || 0,
         })),
         voteCount: votes.length,
+        attendCount: people.filter(p => p.fields["출석"] === true).length,
       });
     }
 
