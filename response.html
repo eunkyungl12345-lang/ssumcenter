@@ -304,11 +304,12 @@
 const params = new URLSearchParams(location.search);
 const matchId = params.get("id");
 
-function loadProfile(){
-  const age = params.get("age");
-  const job = params.get("job");
-  const keywords = params.get("keywords");
-  const intro = params.get("intro");
+function loadProfile(data){
+  data = data || {};
+  const age = data.age || params.get("age");
+  const job = data.job || params.get("job");
+  const keywords = data.keywords || params.get("keywords");
+  const intro = data.intro || params.get("intro");
   const deadline = params.get("deadline");
 
   // 파라미터가 없으면 데모 데이터
@@ -318,12 +319,13 @@ function loadProfile(){
   const profileIntro = intro || "커피 좋아하고 주말엔 러닝해요. 편하게 대화 나눌 수 있는 사람을 만나고 싶어요.";
 
   // 사진 슬라이더
-  const photos = [];
-  if(params.get("photo1")) photos.push(params.get("photo1"));
-  if(params.get("photo2")) photos.push(params.get("photo2"));
-  if(params.get("photo3")) photos.push(params.get("photo3"));
-  // 하위호환: photo 파라미터도 지원
-  if(photos.length === 0 && params.get("photo")) photos.push(params.get("photo"));
+  let photos = (data.photos && data.photos.length) ? data.photos.slice() : [];
+  if(photos.length === 0){
+    if(params.get("photo1")) photos.push(params.get("photo1"));
+    if(params.get("photo2")) photos.push(params.get("photo2"));
+    if(params.get("photo3")) photos.push(params.get("photo3"));
+    if(params.get("photo")) photos.push(params.get("photo"));
+  }
 
   if(photos.length > 0){
     document.getElementById("slider-img").src = photos[0];
@@ -516,7 +518,16 @@ function slidePhoto(dir){
   });
 }
 
-loadProfile();
+(async function(){
+  let data = null;
+  if(matchId){
+    try{
+      const r = await fetch("/api/roster",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"profile",id:matchId})});
+      if(r.ok) data = await r.json();
+    }catch(e){}
+  }
+  loadProfile(data);
+})();
 
 // 캡쳐 방지: 화면 전환 시 블러
 document.addEventListener("visibilitychange", function(){

@@ -12,6 +12,25 @@ module.exports = async function handler(req, res) {
   if (!TOKEN || !BASE_ID) return res.status(500).json({ error: "서버 환경변수 미설정" });
 
   const body = req.body || {};
+
+  // 매칭 프로필 조회 (response 페이지용) — 이름·연락처 제외, 안전 정보만
+  if (body.action === "profile") {
+    if (!body.id) return res.status(400).json({ error: "id 필요" });
+    const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}/${encodeURIComponent(body.id)}`,
+      { headers: { Authorization: `Bearer ${TOKEN}` } });
+    if (!r.ok) return res.status(404).json({ error: "프로필을 찾을 수 없어요" });
+    const d = await r.json();
+    const f = d.fields || {};
+    const photos = (f["프로필사진"] || []).map(p => p.url).filter(Boolean);
+    return res.status(200).json({
+      age: f["출생연도"] ? (f["출생연도"] + "년생") : "",
+      job: f["직업"] || "",
+      keywords: f["성격키워드"] || "",
+      intro: f["자기소개"] || "",
+      photos,
+    });
+  }
+
   if (body.action !== "preview") return res.status(400).json({ error: "알 수 없는 action" });
 
   async function getAll(table, filter) {
