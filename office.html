@@ -32,6 +32,10 @@
   .chip .bar i{display:block;height:100%;background:var(--amber);border-radius:100px}
   .tbtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;font-size:12px;font-weight:750;color:var(--ink-2);cursor:pointer;font-family:inherit}
   .tbtn.dark{background:var(--brown);color:#F4EEE0;border-color:var(--brown)}
+  /* 대표진 */
+  .reps{max-width:1080px;margin:16px auto 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 18px}
+  .reps-label{font-size:12px;font-weight:800;color:var(--amber-2);background:rgba(224,166,60,.12);border:1px solid rgba(224,166,60,.3);padding:6px 13px;border-radius:100px}
+  .rep{font-size:12.5px;font-weight:700;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:100px;padding:6px 13px;box-shadow:0 3px 8px -4px rgba(80,66,40,.4)}
 
   /* ---- 무대 ---- */
   .stage-wrap{padding:26px 18px 60px;overflow-x:auto}
@@ -116,12 +120,19 @@
   <div class="topbar">
     <div class="logo"><span class="dot"></span>썸류센터 <b>AI 오피스</b></div>
     <div class="usage">
-      <div class="chip">🤖 <span>일하는 AI</span> <b>4</b>/7</div>
+      <div class="chip">🤖 <span>일하는 AI</span> <b>4</b>/8</div>
       <div class="chip">📊 <span>오늘 사용량</span> <b>연결 예정</b></div>
       <div class="chip">⚡ <span>이번주</span> <div class="bar"><i style="width:22%"></i></div></div>
     </div>
     <button class="tbtn" id="meetBtn">🗓️ 회의 시작</button>
     <button class="tbtn dark" id="hireTop">＋ AI 채용</button>
+  </div>
+
+  <div class="reps">
+    <span class="reps-label">👑 대표진</span>
+    <span class="rep">🧑‍💼 성수센터장</span>
+    <span class="rep">🧑‍💼 강남센터장</span>
+    <span class="rep">🧑‍💼 판교센터장</span>
   </div>
 
   <div class="stage-wrap">
@@ -207,6 +218,22 @@
           <div class="roomtag">🗂️ 운영실 <span class="hire">＋채용</span></div>
         </div>
 
+        <!-- 방 5: 홍보실 -->
+        <div class="room">
+          <div class="slab">
+            <div class="mboard"><div class="mt">MEETING BOARD</div><div class="mb">회의 시작</div></div>
+            <div class="plant" style="right:16px;top:14px"></div>
+            <div class="desks">
+              <div class="person" data-bot="promo">
+                <div class="nametag">홍보봇<span class="role">SNS 홍보·이벤트</span></div>
+                <div class="avatar">📣</div><div class="desk"></div>
+                <div class="status soon"><span class="d"></span>준비중</div>
+              </div>
+            </div>
+          </div>
+          <div class="roomtag">📣 홍보실 <span class="hire">＋채용</span></div>
+        </div>
+
       </div>
     </div>
 
@@ -253,7 +280,10 @@
       desc:"만든 걸 하나하나 눌러보며 안 되는 부분·이상한 부분을 찾아줘요. 지금은 클로드(저)가 대신 하고 있어요 🙂"},
     roster:{emoji:"📚",name:"총무봇",role:"명단·출석·투표",live:true,
       desc:"참가자 명단·출석 체크·QR 투표·결과 공개를 한 곳에서 관리해요. 네이버폼·노션·구글 출석부를 에어테이블 하나로 합쳤어요! (관리는 admin 비번 필요)",
-      go:{label:"운영 콘솔 열기",href:"/vote-admin"}}
+      go:{label:"운영 콘솔 열기",href:"/vote-admin"}},
+    promo:{emoji:"📣",name:"홍보봇",role:"SNS 홍보·이벤트",live:false,
+      desc:"인스타·스레드 홍보 기획, 이벤트 모집 카피, 홍보 문구를 짜줘요. 콘텐츠봇이랑 세트예요 — AI 키 넣으면 켜져요 🔑",
+      go:{label:"콘텐츠봇 열기",href:"/content-bot"}}
   };
   var sheet=document.getElementById("sheet"), panel=document.getElementById("panel");
   function open(key){
@@ -288,6 +318,8 @@
     {bot:"plan",text:"그리고 8월 두 회차(8/13·27)를 홈 상단에서 더 눈에 띄게 배치하면 좋겠어요. 재테크 카드는 이미 숨김 처리돼 있고요 👍"},
     {bot:"roster",text:"신청·투표·출석은 다 연결됐어요. 문자봇만 붙으면 8월 운영이 완전 자동이에요 📚"},
     {bot:"match",text:"저는 잘 돌아갑니다. 이상 무! 🐻"},
+    {bot:"promo",text:"홍보실 새로 합류했어요! 8월 로테이션 인스타 홍보부터 준비할게요 📣"},
+    {sys:"👑 대표진(성수·강남·판교 센터장)께 보고 완료"},
     {sys:"결론 — 급한 순서: ① 카톡 링크 ② 계좌번호 ③ 미리보기 링크 걸기. 센터장님이 정해주세요 🙂"}
   ];
   var meet=document.getElementById("meet"), meetlog=document.getElementById("meetlog"), meetTimer=null;
