@@ -99,7 +99,7 @@
   <div class="topbar">
     <div class="logo"><span class="dot"></span>썸류센터 <b>AI 오피스</b></div>
     <div class="usage">
-      <div class="chip">🤖 <span>일하는 AI</span> <b>1</b>/4</div>
+      <div class="chip">🤖 <span>일하는 AI</span> <b>1</b>/6</div>
       <div class="chip">📊 <span>오늘 사용량</span> <b>연결 예정</b></div>
       <div class="chip">⚡ <span>이번주</span> <div class="bar"><i style="width:22%"></i></div></div>
     </div>
@@ -153,6 +153,27 @@
           <div class="roomtag">🎬 콘텐츠·CS실 <span class="hire">＋채용</span></div>
         </div>
 
+        <!-- 방 3: 개발·기획실 -->
+        <div class="room">
+          <div class="slab">
+            <div class="mboard"><div class="mt">MEETING BOARD</div><div class="mb">회의 시작</div></div>
+            <div class="plant" style="right:16px;top:14px"></div>
+            <div class="desks">
+              <div class="person" data-bot="plan">
+                <div class="nametag">기획자봇<span class="role">기능 기획·정리</span></div>
+                <div class="avatar">🦉</div><div class="desk"></div>
+                <div class="status soon"><span class="d"></span>준비중</div>
+              </div>
+              <div class="person" data-bot="qa">
+                <div class="nametag">QA봇<span class="role">이슈·버그 찾기</span></div>
+                <div class="avatar">🐧</div><div class="desk"></div>
+                <div class="status soon"><span class="d"></span>준비중</div>
+              </div>
+            </div>
+          </div>
+          <div class="roomtag">🛠️ 개발·기획실 <span class="hire">＋채용</span></div>
+        </div>
+
       </div>
     </div>
 
@@ -180,7 +201,11 @@
     cs:{emoji:"🐱",name:"문의 응대봇",role:"카톡·DM 1차응대",live:false,
       desc:"'일정 언제예요?' 같은 반복 문의에 AI가 1차로 답해줘요. 자주 오는 질문부터 학습시킬 예정이에요."},
     content:{emoji:"🦊",name:"콘텐츠 생성봇",role:"릴스·스레드 소재",live:false,
-      desc:"릴스 소재·스레드 글을 뽑아줘요. 이미 하시는 릴스 스튜디오랑 연결할 예정이에요."}
+      desc:"릴스 소재·스레드 글을 뽑아줘요. 이미 하시는 릴스 스튜디오랑 연결할 예정이에요."},
+    plan:{emoji:"🦉",name:"기획자봇",role:"기능 기획·정리",live:false,
+      desc:"'이거 만들어줘' 하면 어떻게 만들지 기획하고 순서를 정리해줘요. 지금은 클로드(저)가 대신 하고 있어요 🙂"},
+    qa:{emoji:"🐧",name:"QA봇",role:"이슈·버그 찾기",live:false,
+      desc:"만든 걸 하나하나 눌러보며 안 되는 부분·이상한 부분을 찾아줘요. 지금은 클로드(저)가 대신 하고 있어요 🙂"}
   };
   var sheet=document.getElementById("sheet"), panel=document.getElementById("panel");
   function open(key){
