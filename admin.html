@@ -68,10 +68,11 @@
   .sort-tab.active{background:#FFD400;border-color:#FFD400;color:#000}
 
   /* 소개 풀 카드 */
-  .pool-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #242422;cursor:pointer;transition:background .15s}
-  .pool-row:hover{background:rgba(255,212,0,.03)}
-  .pool-row:first-child{border-top:1px solid #FFD400}
-  .pool-row.selected{background:rgba(255,212,0,.08)}
+  .appcard{background:#161615;border:1px solid #242422;border-radius:16px;padding:4px 15px 14px;margin-bottom:12px;transition:border-color .15s}
+  .appcard.sel{border-color:#FFD400;background:rgba(255,212,0,.05)}
+  .pool-row{display:flex;align-items:center;gap:12px;padding:13px 0 11px;cursor:pointer}
+  .pool-row:hover{background:transparent}
+  .pool-row.selected{background:transparent}
   .pool-info{flex:1;min-width:0}
   .pool-birth{font-size:17px;font-weight:900;line-height:1.2}
   .pool-detail{font-size:12px;color:#9E9E97;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -81,8 +82,11 @@
   .pool-thumb i{color:#555;font-size:18px}
 
   /* 아코디언 상세 */
-  .pool-expand{display:block;padding:0 0 14px;border-bottom:1px solid #242422}
+  .pool-expand{display:block;padding:0}
   .pool-expand.open{display:block}
+  .pool-birth{font-size:15px;font-weight:800}
+  .pool-detail{font-size:12.5px;color:#9E9E97;margin-top:2px}
+  .pool-status{font-size:11px;font-weight:750;margin-top:5px}
 </style>
 </head>
 <body class="min-h-screen selection:bg-[#FFD400] selection:text-black">
@@ -898,8 +902,8 @@ function renderList(){
     const gender = f["성별"] === "여성" ? "♀" : f["성별"] === "남성" ? "♂" : "";
     const detail = [f["사는곳"], f["키"] ? f["키"]+"cm" : "", f["직업"]].filter(Boolean).join(" · ");
 
-    return `<div>
-      <div class="pool-row ${isSelected ? 'selected' : ''}" onclick="toggleSelect('${r.id}')">
+    return `<div class="appcard ${isSelected ? 'sel' : ''}">
+      <div class="pool-row" onclick="toggleSelect('${r.id}')">
         <div class="pool-info">
           <div class="pool-birth">${f["출생연도"] || "?"}년생 <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span></div>
           <div class="pool-detail">${detail || "-"}</div>
@@ -913,14 +917,14 @@ function renderList(){
         <div style="padding:10px 0 0;display:flex;flex-direction:column;gap:8px">
           ${photos.length > 1 ? `<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">${photos.map(p => `<img src="${p.url}" onclick="openPhoto('${p.url}')" style="width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0">`).join("")}</div>` : ""}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-            <div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">연락처</span><br><b>${f["연락처"] || "-"}</b></div>
-            <div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">종교</span><br><b>${f["종교"] || "-"}</b></div>
-            <div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">취미</span><br><b>${f["취미"] || "-"}</b></div>
-            <div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
+            <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">연락처</span><br><b>${f["연락처"] || "-"}</b></div>
+            <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">종교</span><br><b>${f["종교"] || "-"}</b></div>
+            <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">취미</span><br><b>${f["취미"] || "-"}</b></div>
+            <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
           </div>
-          ${f["자기소개"] ? `<div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">자기소개</span><p style="color:#9E9E97;margin-top:4px;line-height:1.5">${f["자기소개"]}</p></div>` : ""}
+          ${f["자기소개"] ? `<div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">자기소개</span><p style="color:#9E9E97;margin-top:4px;line-height:1.5">${f["자기소개"]}</p></div>` : ""}
           ${f["성격키워드"] ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${f["성격키워드"].split(",").map(kw => kw.trim()).filter(Boolean).map(kw => `<span style="font-size:10px;background:rgba(255,212,0,.1);color:#FFD400;padding:3px 8px;border-radius:20px">${kw}</span>`).join("")}</div>` : ""}
-          <div style="font-size:10px;color:#555">선호: ${f["선호나이대"] || "-"} · ${f["선호직업군"] || "-"}</div>
+          <div style="font-size:11.5px;color:#8a8070;margin-top:2px">💛 선호: ${f["선호나이대"] || "-"} · ${f["선호직업군"] || "-"}</div>
           <button onclick="event.stopPropagation();sendIntakeSMS('${r.id}')" style="background:#161615;border:1px solid #FFD400;color:#FFD400;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;margin-top:4px;width:100%">📨 접수 안내 문자 보내기</button>
           ${status === "대기" ? `
           <div style="display:flex;gap:6px;margin-top:8px">
@@ -940,7 +944,7 @@ async function sendIntakeSMS(id){
   const name = f["이름"] || "";
   const to = f["연락처"];
   if(!to){ alert("연락처가 없어요."); return; }
-  const text = `${name}님, 안녕하세요 😊 썸류센터예요!\n1:1 매칭 신청이 잘 접수됐어요 💛\n센터장이 ${name}님께 어울리는 분을 신중하게 찾고 있어요. 좋은 인연이 준비되면 상대 프로필과 함께 문자로 안내드릴게요!\n설레는 마음으로 준비할게요, 조금만 기다려주세요 ✨`;
+  const text = `${name}님, 안녕하세요. 썸류센터입니당\n1:1 매칭 신청이 잘 접수됐어요 💛\n센터장이 ${name}님께 어울리는 분을 신중하게 찾고 있어요.\n좋은 인연이 준비되면 상대 프로필과 함께 문자로 안내드릴게요!\n설레는 마음으로 준비할게요. 조금만 기다려주세요 ✨`;
   if(!confirm(`${name}님에게 접수 안내 문자를 보낼까요?\n\n${text}`)) return;
   try {
     const r = await fetch("/api/send-sms", {
