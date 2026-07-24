@@ -33,8 +33,8 @@
   </div>
 </nav>
 
-<!-- 메인: 프로필 + 수락/거절 -->
-<section id="match-screen" class="px-5 pt-10 pb-16 glow">
+<!-- 메인: 프로필 + 수락/거절 (응답 확인 전까진 숨김 → 거절자 프로필 노출 방지) -->
+<section id="match-screen" class="px-5 pt-10 pb-16 glow hidden">
   <div class="max-w-lg mx-auto fade">
 
     <!-- 안내 -->
@@ -607,18 +607,19 @@ async function checkMyResponse(){
     }catch(e){}
   }
   loadProfile(data);
-  // 이미 응답한 사람이면 다시 못 누르게 → 결과 화면으로 바로
-  try {
-    const mine = await checkMyResponse();
-    if(mine === "수락"){
-      const other = await checkOtherResponse();
-      if(other === true) showContact();
-      else if(other === false) showScreen("unmatched");
-      else showScreen("accept");
-    } else if(mine === "거절"){
-      showScreen("reject");
-    }
-  } catch(e){}
+  // 먼저 이미 응답했는지 확인 → 응답한 사람은 프로필 다시 안 보여줌
+  let mine = null;
+  try { mine = await checkMyResponse(); } catch(e){}
+  if(mine === "거절"){
+    showScreen("reject");          // 거절한 사람 → 프로필 X, 거절 화면만
+  } else if(mine === "수락"){
+    const other = await checkOtherResponse();
+    if(other === true) showContact();
+    else if(other === false) showScreen("unmatched");
+    else showScreen("accept");     // 수락자는 결과 화면
+  } else {
+    showScreen("match");           // 처음 보는 사람만 프로필 + 수락/거절 공개
+  }
 })();
 
 // 캡쳐 방지: 화면 전환 시 블러
