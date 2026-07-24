@@ -12,7 +12,8 @@ module.exports = async function handler(req, res) {
   if (!TOKEN || !BASE_ID) return res.status(500).json({ error: "서버 환경변수 미설정" });
 
   const body = req.body || {};
-  if (body.action !== "preview") return res.status(400).json({ error: "알 수 없는 action" });
+  const SETUP_KEY = "ssum-tmp-setup-7Xk92Qp4vR"; // 임시 진단용 (확인 후 제거)
+  const isSetup = req.headers["x-setup-key"] === SETUP_KEY;
 
   async function getAll(table, filter) {
     let records = [], offset;
@@ -29,6 +30,20 @@ module.exports = async function handler(req, res) {
     } while (offset);
     return records;
   }
+
+  // 임시: 1:1 매칭 신청 진단 (레코드 수 + 특정인 필드 존재여부)
+  if (body.action === "diag") {
+    if (!isSetup) return res.status(401).json({ error: "권한 없음" });
+    const rows = await getAll("1:1 매칭 신청");
+    const q = String(body.name || "").trim();
+    const t = rows.find(r => q && Object.values(r.fields).some(v => typeof v === "string" && v.indexOf(q) >= 0));
+    const wanted = ["이름","출생연도","성별","연락처","키","사는곳","직업","취미","종교","프로필사진","매칭상태","신청일시"];
+    const has = {};
+    if (t) wanted.forEach(k => { const v = t.fields[k]; has[k] = Array.isArray(v) ? `첨부${v.length}` : (v === undefined || v === "" ? false : (typeof v === "string" && v.length > 12 ? "채움" : v)); });
+    return res.status(200).json({ 전체건수: rows.length, 찾음: !!t, allKeys: t ? Object.keys(t.fields) : [], has });
+  }
+
+  if (body.action !== "preview") return res.status(400).json({ error: "알 수 없는 action" });
 
   // 출생연도(1993) → "93년생"
   const toBirth = y => { const s = String(y || "").replace(/[^0-9]/g, ""); return s.length >= 2 ? s.slice(-2) + "년생" : ""; };
