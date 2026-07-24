@@ -586,6 +586,18 @@ function slidePhoto(dir){
   });
 }
 
+async function checkMyResponse(){
+  const myId = params.get("myId");
+  if(!myId || !matchId) return null;
+  try {
+    const filter = `AND({응답자ID}="${myId}",{매칭ID}="${matchId}")`;
+    const res = await fetch("/api/airtable?table=매칭 응답&filter=" + encodeURIComponent(filter));
+    const d = await res.json();
+    if(d.records && d.records.length){ return d.records[0].fields["응답"]; }
+  } catch(e){}
+  return null;
+}
+
 (async function(){
   let data = null;
   if(matchId){
@@ -595,6 +607,18 @@ function slidePhoto(dir){
     }catch(e){}
   }
   loadProfile(data);
+  // 이미 응답한 사람이면 다시 못 누르게 → 결과 화면으로 바로
+  try {
+    const mine = await checkMyResponse();
+    if(mine === "수락"){
+      const other = await checkOtherResponse();
+      if(other === true) showContact();
+      else if(other === false) showScreen("unmatched");
+      else showScreen("accept");
+    } else if(mine === "거절"){
+      showScreen("reject");
+    }
+  } catch(e){}
 })();
 
 // 캡쳐 방지: 화면 전환 시 블러
