@@ -12,25 +12,6 @@ module.exports = async function handler(req, res) {
   if (!TOKEN || !BASE_ID) return res.status(500).json({ error: "서버 환경변수 미설정" });
 
   const body = req.body || {};
-  const SETUP_KEY = "ssum-tmp-setup-7Xk92Qp4vR"; // 임시 (정리 후 제거)
-
-  // 임시: 특정 테이블에서 keepId만 남기고 전부 삭제
-  if (body.action === "purge") {
-    if (req.headers["x-setup-key"] !== SETUP_KEY) return res.status(401).json({ error: "권한 없음" });
-    const table = body.table;
-    const keep = body.keepId || "__none__";
-    const rows = await getAll(table);
-    const del = rows.filter(r => r.id !== keep);
-    const names = del.map(r => r.fields["이름"] || r.fields["닉네임"] || "(이름없음)");
-    let n = 0;
-    for (let i = 0; i < del.length; i += 10) {
-      const batch = del.slice(i, i + 10);
-      const qs = batch.map(r => `records[]=${encodeURIComponent(r.id)}`).join("&");
-      const rr = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}?${qs}`, { method: "DELETE", headers: { Authorization: `Bearer ${TOKEN}` } });
-      if (rr.ok) n += batch.length;
-    }
-    return res.status(200).json({ ok: true, table, deleted: n, names });
-  }
 
   // 매칭 프로필 조회 (response 페이지용) — 이름·연락처 제외, 안전 정보만
   if (body.action === "profile") {
