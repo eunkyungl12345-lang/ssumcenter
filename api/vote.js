@@ -236,6 +236,8 @@ module.exports = async function handler(req, res) {
           { name: "사진", type: "multipleAttachments" },
           { name: "공개상태", type: "checkbox", options: { icon: "check", color: "greenBright" } },
           { name: "결제상태", type: "singleLineText" },
+          { name: "음료", type: "singleLineText" },
+          { name: "피드백", type: "multilineText" },
           { name: "출석", type: "checkbox", options: { icon: "check", color: "greenBright" } },
         ]},
         { name: "투표", fields: [
@@ -285,6 +287,7 @@ module.exports = async function handler(req, res) {
             년생: r.년생 || "",
             한줄소개: r.한줄소개 || "",
             전화번호: r.전화번호 || "",
+            음료: r.음료 || "",
           },
         }));
         await api("투표참가자", { method: "POST", body: { records: chunk } });
@@ -312,16 +315,36 @@ module.exports = async function handler(req, res) {
       const votes = await getAll("투표", event ? `{행사}='${event}'` : null);
       const settings = await getAll("투표설정", event ? `{행사}='${event}'` : null);
       const revealed = settings.some(s => s.fields["공개"] === true);
+      const drinks = {};
+      people.forEach(p => {
+        const d = String(p.fields["음료"] || "").trim(); if (!d) return;
+        if (!drinks[d]) drinks[d] = { 남: 0, 여: 0, 계: 0 };
+        const g = p.fields["성별"];
+        if (g === "남성") drinks[d].남++; else if (g === "여성") drinks[d].여++;
+        drinks[d].계++;
+      });
       return res.status(200).json({
         revealed,
         participants: people.map(p => ({
           닉네임: p.fields["닉네임"] || "", 성별: p.fields["성별"] || "", 전화번호: p.fields["전화번호"] || "",
           공개상태: p.fields["공개상태"] === true, 결제상태: p.fields["결제상태"] || "",
           출석: p.fields["출석"] === true, 순번: p.fields["순번"] || 0,
+          음료: p.fields["음료"] || "", 피드백: p.fields["피드백"] || "",
         })),
         voteCount: votes.length,
         attendCount: people.filter(p => p.fields["출석"] === true).length,
+        drinks,
       });
+    }
+
+    if (action === "setFeedback") {
+      if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
+      const phone = norm(body.phone);
+      const people = await getAll("투표참가자");
+      const target = people.find(p => norm(p.fields["전화번호"]) === phone);
+      if (!target) return res.status(404).json({ error: "참가자 없음" });
+      await api("투표참가자", { method: "PATCH", body: { records: [{ id: target.id, fields: { 피드백: body.text || "" } }] } });
+      return res.status(200).json({ ok: true });
     }
 
     return res.status(400).json({ error: "알 수 없는 action" });
