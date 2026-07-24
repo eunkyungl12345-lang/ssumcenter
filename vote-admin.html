@@ -86,12 +86,18 @@
 
     <div class="card">
       <h2><span class="step">2</span> 참가자 등록</h2>
-      <div class="desc">한 줄에 한 명씩. 순서: <b>닉네임, 성별, 년생, 한줄소개, 전화번호</b> (쉼표로 구분)</div>
-      <textarea id="ptext" placeholder="배당곰, 남성, 92년생, 금융권 배당주, 010-1111-2222
-절약토끼, 여성, 95년생, 무지출 챌린지, 010-3333-5678
-임장왕, 남성, 97년생, 자영업 임장러, 010-2222-3333"></textarea>
+      <div class="desc">한 줄에 한 명씩. 순서: <b>닉네임, 성별, 년생, 한줄소개, 전화번호, 음료</b> (쉼표로 구분)</div>
+      <textarea id="ptext" placeholder="배당곰, 남성, 92년생, 금융권 배당주, 010-1111-2222, 아이스아메리카노
+절약토끼, 여성, 95년생, 무지출 챌린지, 010-3333-5678, 아이스티
+임장왕, 남성, 97년생, 자영업 임장러, 010-2222-3333, 아이스아메리카노"></textarea>
       <div style="margin-top:10px"><button class="btn" id="addBtn">참가자 등록하기</button></div>
       <div class="msg" id="add-msg"></div>
+    </div>
+
+    <div class="card" id="drink-card" style="display:none">
+      <h2>🥤 음료 집계</h2>
+      <div class="desc">등록된 음료를 자동 집계해요 — 이대로 주문하시면 돼요!</div>
+      <div id="drink-summary"></div>
     </div>
 
     <div class="card">
@@ -185,7 +191,7 @@
     var lines=document.getElementById("ptext").value.split("\n").map(function(l){return l.trim();}).filter(Boolean);
     var rows=lines.map(function(l,i){
       var c=l.split(/[,\t]/).map(function(x){return x.trim();});
-      return {순번:i+1,닉네임:c[0]||"",성별:c[1]||"",년생:c[2]||"",한줄소개:c[3]||"",전화번호:c[4]||""};
+      return {순번:i+1,닉네임:c[0]||"",성별:c[1]||"",년생:c[2]||"",한줄소개:c[3]||"",전화번호:c[4]||"",음료:c[5]||""};
     }).filter(function(r){return r.닉네임&&r.전화번호;});
     if(!rows.length){ setMsg("add-msg","형식을 확인하세요 (닉네임,성별,년생,한줄,번호)","err"); return; }
     var b=this; b.disabled=true; setMsg("add-msg","등록 중…","");
@@ -231,6 +237,15 @@
       var al=document.getElementById("attlist"); al.innerHTML="";
       document.getElementById("st-total").textContent=(r.participants||[]).length;
       document.getElementById("st-attend").textContent=r.attendCount||0;
+      // 🥤 음료 집계
+      var drinks=r.drinks||{}, dnames=Object.keys(drinks);
+      var dcard=document.getElementById("drink-card"), dsum=document.getElementById("drink-summary");
+      if(dnames.length){
+        dcard.style.display="block";
+        dsum.innerHTML='<div class="stat" style="flex-wrap:wrap">'+dnames.map(function(d){
+          return '<div class="b"><div class="k">'+d+'</div><div class="v">'+drinks[d].계+'</div><div style="font-size:10px;color:var(--muted);margin-top:2px">남 '+drinks[d].남+' · 여 '+drinks[d].여+'</div></div>';
+        }).join("")+'</div>';
+      } else { dcard.style.display="none"; }
       if(!r.participants||!r.participants.length){
         pl.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>';
         al.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>'; return;
@@ -250,10 +265,12 @@
         });
         al.appendChild(at);
         // 결제 공개
-        var it=document.createElement("div"); it.className="pitem";
+        var it=document.createElement("div"); it.className="pitem"; it.style.flexWrap="wrap";
         it.innerHTML='<span class="g-badge">'+(p.성별||"?")+'</span>'
-          +'<div><div class="nm">'+p.닉네임+'</div><div class="meta">'+p.전화번호+'</div></div>'
-          +'<button class="btn sm '+(p.공개상태?"on":"g")+'" style="margin-left:auto">'+(p.공개상태?"공개됨 ✓":"공개하기")+'</button>';
+          +'<div style="flex:1;min-width:0"><div class="nm">'+p.닉네임+'</div><div class="meta">'+p.전화번호+(p.음료?' · 🥤'+p.음료:'')+'</div></div>'
+          +'<button class="btn sm '+(p.공개상태?"on":"g")+'">'+(p.공개상태?"공개됨 ✓":"공개하기")+'</button>'
+          +'<input class="fbinput" placeholder="✍️ 피드백 메모 (엔터/포커스 아웃 시 저장)" style="width:100%;margin-top:8px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px;padding:9px 11px;font-size:12.5px;color:var(--ink);font-family:inherit">';
+        it.querySelector(".fbinput").value=p.피드백||"";
         var btn=it.querySelector("button");
         btn.addEventListener("click",function(){
           btn.disabled=true; var next=!p.공개상태;
@@ -261,6 +278,13 @@
             btn.disabled=false;
             if(rr.error){ alert(rr.error); return; }
             p.공개상태=next; btn.textContent=next?"공개됨 ✓":"공개하기"; btn.className="btn sm "+(next?"on":"g");
+          });
+        });
+        var fb=it.querySelector(".fbinput");
+        fb.addEventListener("change",function(){
+          post("setFeedback",{phone:p.전화번호,text:fb.value}).then(function(rr){
+            if(rr.error){ alert(rr.error); return; }
+            fb.style.borderColor="var(--ok)"; setTimeout(function(){ fb.style.borderColor="var(--line-strong)"; },1000);
           });
         });
         pl.appendChild(it);
