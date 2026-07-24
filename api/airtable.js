@@ -1,3 +1,5 @@
+const { upsertMember } = require("./member.js");
+
 module.exports = async function handler(req, res) {
   // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -91,6 +93,14 @@ module.exports = async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) return res.status(response.status).json(data);
+
+    // 신청서 제출 성공 → 회원 통합 명부에 자동 적립 (실패해도 신청은 성공 처리)
+    if (req.method === "POST" && ["1:1 매칭 신청", "로테이션 신청", "재테크 커피팅"].includes(table)) {
+      try {
+        const recs = (req.body && req.body.records) || [];
+        for (const rc of recs) { await upsertMember({ table, fields: (rc && rc.fields) || {}, TOKEN, BASE_ID }); }
+      } catch (e) { /* 명부 적립 실패는 무시 */ }
+    }
     return res.status(200).json(data);
   } catch (err) {
     return res.status(500).json({ error: err.message });
