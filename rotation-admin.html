@@ -55,6 +55,24 @@
   .spin{width:26px;height:26px;border:3px solid var(--line-strong);border-top-color:var(--amber);border-radius:50%;margin:30px auto;animation:sp .8s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
   a.home{font-size:12px;color:var(--muted);text-decoration:none}
+  .feecard{display:flex;align-items:center;gap:10px;padding:12px 14px}
+  .feecard label{margin:0;flex-shrink:0}
+  /* 문자봇 시트 */
+  .sheet{position:fixed;inset:0;z-index:40;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55)}
+  .sheet.on{display:flex}
+  .sheetbox{background:var(--surface);width:100%;max-width:620px;border-radius:20px 20px 0 0;padding:20px 18px 26px;border-top:1px solid var(--line-strong);animation:up .25s ease}
+  @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+  .sheetbox h3{font-size:15.5px;font-weight:800}
+  .sheetbox .who{font-size:12.5px;color:var(--muted);margin:2px 0 13px}
+  .tpls{display:flex;gap:7px;margin-bottom:11px;flex-wrap:wrap}
+  .tpl{border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink-2);font-size:12px;font-weight:700;padding:8px 13px;border-radius:100px;cursor:pointer;font-family:inherit}
+  .tpl.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
+  .sheetbox textarea{width:100%;min-height:158px;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:12px;padding:13px;font-size:13.5px;color:var(--ink);font-family:inherit;line-height:1.7;resize:vertical}
+  .sheetbox textarea:focus{outline:none;border-color:var(--amber)}
+  .sheet-acts{display:flex;gap:8px;margin-top:12px}
+  .sheet-acts button{flex:1;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer}
+  .sheet-acts .cancel{background:var(--surface-2);color:var(--muted);border:1px solid var(--line-strong)}
+  .sheet-acts .send{background:var(--amber);color:var(--ink-on-amber)}
 </style>
 </head>
 <body>
@@ -76,6 +94,11 @@
     <h1>📋 로테이션 신청 관리</h1>
     <div class="sub">회차별로 신청자를 보고 승인해요 · <a class="home" href="/admin">일반 admin →</a></div>
 
+    <div class="card feecard">
+      <label class="f">참가비</label>
+      <input id="fee" placeholder="예: 39,900원 (입금안내 문자에 들어가요)">
+    </div>
+
     <div class="tabs" id="tabs"></div>
     <div class="stat">
       <div class="b"><div class="k">전체</div><div class="v" id="st-all">–</div></div>
@@ -87,6 +110,21 @@
       <span class="cnt" id="cnt"></span>
     </div>
     <div id="list"></div>
+  </div>
+</div>
+
+<!-- 문자봇 시트 -->
+<div class="sheet" id="sms-sheet">
+  <div class="sheetbox">
+    <h3>📨 문자 보내기</h3>
+    <div class="who" id="sms-who"></div>
+    <div class="tpls" id="sms-tpls"></div>
+    <textarea id="sms-text"></textarea>
+    <div class="sheet-acts">
+      <button class="cancel" id="sms-cancel">닫기</button>
+      <button class="send" id="sms-send">문자 보내기</button>
+    </div>
+    <div class="msg" id="sms-msg" style="text-align:center"></div>
   </div>
 </div>
 
@@ -175,7 +213,9 @@
       + '<button class="a-wait'+(st==="대기"?" on":"")+'" data-s="대기">대기</button>'
       + '<button class="a-ok'+(st==="승인"?" on":"")+'" data-s="승인">승인</button>'
       + '<button class="a-no'+(st==="거절"?" on":"")+'" data-s="거절">거절</button>'
-      + '</div>';
+      + '</div>'
+      + '<button class="btn g sm smsbtn" style="width:100%;margin-top:8px">📨 문자 보내기</button>';
+    el.querySelector(".smsbtn").addEventListener("click",function(){ openSms(f); });
     el.querySelectorAll(".acts button").forEach(function(btn){
       btn.addEventListener("click",function(){
         var ns=btn.dataset.s;
@@ -191,6 +231,47 @@
     });
     return el;
   }
+
+  // ---- 문자봇 ----
+  var fee=document.getElementById("fee");
+  fee.value=localStorage.getItem("rot_fee")||"";
+  fee.addEventListener("input",function(){ localStorage.setItem("rot_fee",fee.value); });
+  function feeVal(){ return fee.value.trim()||"참가비"; }
+  var TPLS={
+    "입금안내":function(f){ return (f["닉네임"]||f["이름"]||"")+"님 안녕하세요, 썸류센터입니다 💛\n로테이션 소개팅("+(f["회차"]||"")+") 신청이 승인됐어요!\n아래 계좌로 "+feeVal()+" 입금해주시면 참가가 확정됩니다.\n\n▪️카카오뱅크 3333-34-1009531 (장민)\n▪️입금자명: "+(f["닉네임"]||f["이름"]||"")+"\n\n입금 확인되면 확정 문자 보내드릴게요 :)"; },
+    "확정":function(f){ return (f["닉네임"]||f["이름"]||"")+"님, 입금 확인됐습니다! ✅\n로테이션 소개팅("+(f["회차"]||"")+") 참가가 확정됐어요 🎉\n장소·시간 상세 안내는 행사 전에 다시 보내드릴게요. 곧 만나요 💛"; },
+    "전날 리마인드":function(f){ return (f["닉네임"]||f["이름"]||"")+"님, 내일이 바로 그날이에요! 😊\n썸류센터 로테이션 소개팅("+(f["회차"]||"")+")\n▪️시간: 19:45\n▪️장소: 강남역 인근 (상세 안내 확인 부탁드려요)\n설레는 마음으로 기다릴게요 💛"; }
+  };
+  var smsSheet=document.getElementById("sms-sheet"), smsText=document.getElementById("sms-text"),
+      smsWho=document.getElementById("sms-who"), smsTpls=document.getElementById("sms-tpls"), smsTarget=null;
+  window.openSms=function(f){
+    smsTarget=f;
+    smsWho.textContent=(f["닉네임"]||f["이름"]||"")+" · "+(f["연락처"]||"번호없음");
+    smsTpls.innerHTML=""; document.getElementById("sms-msg").textContent="";
+    var keys=Object.keys(TPLS);
+    keys.forEach(function(k,i){
+      var b=document.createElement("button"); b.className="tpl"+(i===0?" on":""); b.textContent=k;
+      b.addEventListener("click",function(){ [].forEach.call(smsTpls.children,function(c){c.classList.remove("on");}); b.classList.add("on"); smsText.value=TPLS[k](f); });
+      smsTpls.appendChild(b);
+    });
+    smsText.value=TPLS[keys[0]](f);
+    smsSheet.classList.add("on");
+  };
+  document.getElementById("sms-cancel").addEventListener("click",function(){ smsSheet.classList.remove("on"); });
+  smsSheet.addEventListener("click",function(e){ if(e.target===smsSheet) smsSheet.classList.remove("on"); });
+  document.getElementById("sms-send").addEventListener("click",function(){
+    if(!smsTarget){ return; }
+    var to=smsTarget["연락처"]; if(!to){ alert("연락처가 없어요."); return; }
+    var btn=this, msgEl=document.getElementById("sms-msg");
+    btn.disabled=true; msgEl.textContent="보내는 중…"; msgEl.style.color="var(--muted)";
+    fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},
+      body:JSON.stringify({to:to,text:smsText.value})})
+      .then(function(r){return r.json();}).then(function(r){
+        btn.disabled=false;
+        if(r.ok){ msgEl.textContent="✅ 문자 보냈어요!"; msgEl.style.color="var(--ok)"; setTimeout(function(){ smsSheet.classList.remove("on"); },1200); }
+        else { msgEl.textContent="❌ "+(r.error||"발송 실패"); msgEl.style.color="var(--rose)"; }
+      }).catch(function(){ btn.disabled=false; msgEl.textContent="❌ 오류가 났어요."; msgEl.style.color="var(--rose)"; });
+  });
 })();
 </script>
 </body>
