@@ -93,6 +93,23 @@
   .pbtn.go{background:var(--amber);color:#3a2a10}
   .pbtn.dis{background:var(--cream-2);color:var(--muted);cursor:default}
   .panel .close{display:block;width:100%;text-align:center;margin-top:12px;font-size:12.5px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit}
+
+  /* 회의 */
+  .meet{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(46,36,20,.45);backdrop-filter:blur(3px);padding:16px}
+  .meet.on{display:flex}
+  .meetbox{background:var(--board);width:100%;max-width:470px;max-height:84vh;border-radius:20px;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4);overflow:hidden;animation:up .25s ease}
+  .meethead{display:flex;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line);font-size:15px}
+  .meethead b{flex:1}
+  .meethead button{background:none;border:none;font-size:17px;color:var(--muted);cursor:pointer;line-height:1}
+  .meetlog{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--cream)}
+  .mmsg{display:flex;gap:9px;align-items:flex-start;animation:up .22s ease}
+  .mmsg .mav{width:36px;height:36px;border-radius:11px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-size:19px;flex-shrink:0}
+  .mmsg .mn{font-size:11.5px;font-weight:800;color:var(--ink-2);margin-bottom:3px}
+  .mmsg .mbubble{background:#fff;border:1px solid var(--line);border-radius:4px 13px 13px 13px;padding:9px 12px;font-size:13px;color:var(--ink);line-height:1.55}
+  .msys{align-self:center;text-align:center;font-size:11.5px;font-weight:750;color:var(--muted);background:var(--cream-2);padding:6px 14px;border-radius:100px;animation:up .22s ease}
+  .meetfoot{padding:13px 16px;border-top:1px solid var(--line);display:flex;gap:8px}
+  .meetfoot button{flex:1;border:none;border-radius:11px;padding:12px;font-size:12.5px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--cream-2);color:var(--ink-2)}
+  .meetfoot button.primary{background:var(--amber);color:#3a2a10}
 </style>
 </head>
 <body>
@@ -103,7 +120,7 @@
       <div class="chip">📊 <span>오늘 사용량</span> <b>연결 예정</b></div>
       <div class="chip">⚡ <span>이번주</span> <div class="bar"><i style="width:22%"></i></div></div>
     </div>
-    <button class="tbtn">＋ 방 만들기</button>
+    <button class="tbtn" id="meetBtn">🗓️ 회의 시작</button>
     <button class="tbtn dark" id="hireTop">＋ AI 채용</button>
   </div>
 
@@ -205,6 +222,15 @@
     <div class="panel" id="panel"></div>
   </div>
 
+  <!-- 회의 -->
+  <div class="meet" id="meet">
+    <div class="meetbox">
+      <div class="meethead"><b>🗓️ 주간 회의</b><button id="meetClose">✕</button></div>
+      <div class="meetlog" id="meetlog"></div>
+      <div class="meetfoot"><button id="meetReplay">🔁 다시 보기</button><button class="primary" id="meetClose2">닫기</button></div>
+    </div>
+  </div>
+
 <script>
 (function(){
   "use strict";
@@ -247,6 +273,38 @@
   document.getElementById("hireTop").addEventListener("click",function(){
     alert("다음에 채용할 AI 직원을 여기서 고르게 만들 거예요 🙂 (지금은 데모)");
   });
+
+  // ---- 회의 ----
+  var MEETING=[
+    {sys:"🗓️ 이번 주 회의를 시작합니다"},
+    {bot:"roster",text:"투표·출석 시스템 오늘 가동 시작했어요! 테이블 만들고 전체 흐름(투표→상호매칭→결과) 테스트 다 통과했습니다 ✅"},
+    {bot:"qa",text:"굿. 근데 이슈 3개요 — ① 센터장님 실제 투표 테스트 아직 ② 결제 계좌번호가 아직 가짜 ③ 재테크팅 제출 느림. 이건 잡아야 해요."},
+    {bot:"plan",text:"다음은 문자봇 추천합니다. 8월 운영 문자(입금안내·확정·리마인드) 자동화하면 센터장님 손 제일 많이 덜어요."},
+    {bot:"match",text:"저는 잘 돌아갑니다. 이상 무! 🐻"},
+    {bot:"content",text:"저랑 문의봇은 대기 중이에요. 순서 오면 바로 출근할게요 🦊"},
+    {sys:"결론 — 다음 할 일은 센터장님이 정합니다 🙂"}
+  ];
+  var meet=document.getElementById("meet"), meetlog=document.getElementById("meetlog"), meetTimer=null;
+  function openMeeting(){
+    meet.classList.add("on"); meetlog.innerHTML=""; if(meetTimer) clearTimeout(meetTimer);
+    var i=0;
+    (function step(){
+      if(i>=MEETING.length) return;
+      var m=MEETING[i++], el=document.createElement("div");
+      if(m.sys){ el.className="msys"; el.textContent=m.sys; }
+      else { var b=BOTS[m.bot]||{emoji:"🤖",name:m.bot}; el.className="mmsg";
+        el.innerHTML='<div class="mav">'+b.emoji+'</div><div><div class="mn">'+b.name+'</div><div class="mbubble">'+m.text+'</div></div>'; }
+      meetlog.appendChild(el); meetlog.scrollTop=meetlog.scrollHeight;
+      meetTimer=setTimeout(step, m.sys?650:950);
+    })();
+  }
+  function closeMeeting(){ meet.classList.remove("on"); if(meetTimer) clearTimeout(meetTimer); }
+  document.getElementById("meetBtn").addEventListener("click",openMeeting);
+  document.getElementById("meetReplay").addEventListener("click",openMeeting);
+  document.getElementById("meetClose").addEventListener("click",closeMeeting);
+  document.getElementById("meetClose2").addEventListener("click",closeMeeting);
+  meet.addEventListener("click",function(e){ if(e.target===meet) closeMeeting(); });
+  document.querySelectorAll(".mboard").forEach(function(mb){ mb.style.cursor="pointer"; mb.addEventListener("click",openMeeting); });
 })();
 </script>
 </body>
