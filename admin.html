@@ -921,6 +921,7 @@ function renderList(){
           ${f["자기소개"] ? `<div style="background:#0D0D0C;border-radius:10px;padding:8px 10px;font-size:11px"><span style="color:#555">자기소개</span><p style="color:#9E9E97;margin-top:4px;line-height:1.5">${f["자기소개"]}</p></div>` : ""}
           ${f["성격키워드"] ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${f["성격키워드"].split(",").map(kw => kw.trim()).filter(Boolean).map(kw => `<span style="font-size:10px;background:rgba(255,212,0,.1);color:#FFD400;padding:3px 8px;border-radius:20px">${kw}</span>`).join("")}</div>` : ""}
           <div style="font-size:10px;color:#555">선호: ${f["선호나이대"] || "-"} · ${f["선호직업군"] || "-"}</div>
+          <button onclick="event.stopPropagation();sendIntakeSMS('${r.id}')" style="background:#161615;border:1px solid #FFD400;color:#FFD400;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;margin-top:4px;width:100%">📨 접수 안내 문자 보내기</button>
           ${status === "대기" ? `
           <div style="display:flex;gap:6px;margin-top:8px">
             <button onclick="event.stopPropagation();approveApplicant('${r.id}')" style="flex:1;background:#22c55e;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">✅ 승인</button>
@@ -930,6 +931,27 @@ function renderList(){
       </div>
     </div>`;
   }).join("");
+}
+
+async function sendIntakeSMS(id){
+  const rec = applicants.find(r => r.id === id);
+  if(!rec) return;
+  const f = rec.fields;
+  const name = f["이름"] || "";
+  const to = f["연락처"];
+  if(!to){ alert("연락처가 없어요."); return; }
+  const text = `${name}님, 안녕하세요 😊 썸류센터예요!\n1:1 매칭 신청이 잘 접수됐어요 💛\n센터장이 ${name}님께 어울리는 분을 신중하게 찾고 있어요. 좋은 인연이 준비되면 상대 프로필과 함께 문자로 안내드릴게요!\n설레는 마음으로 준비할게요, 조금만 기다려주세요 ✨`;
+  if(!confirm(`${name}님에게 접수 안내 문자를 보낼까요?\n\n${text}`)) return;
+  try {
+    const r = await fetch("/api/send-sms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": sessionStorage.getItem("admin_key") || "" },
+      body: JSON.stringify({ to: to, text: text })
+    });
+    const d = await r.json();
+    if(d.ok){ toast("접수 안내 문자를 보냈어요! 💌"); }
+    else { alert("발송 실패: " + (d.error || "")); }
+  } catch(e){ alert("오류가 났어요. 다시 시도해주세요."); }
 }
 
 function toggleSelect(id){
