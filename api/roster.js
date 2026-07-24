@@ -12,6 +12,25 @@ module.exports = async function handler(req, res) {
   if (!TOKEN || !BASE_ID) return res.status(500).json({ error: "서버 환경변수 미설정" });
 
   const body = req.body || {};
+  const SETUP_KEY = "ssum-tmp-setup-7Xk92Qp4vR";
+  if (body.action === "addfields") {
+    if (req.headers["x-setup-key"] !== SETUP_KEY) return res.status(401).json({ error: "권한 없음" });
+    const metaRes = await fetch(`https://api.airtable.com/v0/meta/bases/${BASE_ID}/tables`, { headers: { Authorization: `Bearer ${TOKEN}` } });
+    const meta = await metaRes.json();
+    const tbl = (meta.tables || []).find(t => t.name === body.table);
+    if (!tbl) return res.status(404).json({ error: "테이블 없음" });
+    const existing = tbl.fields.map(f => f.name);
+    const added = [], skipped = [];
+    for (const name of (body.fields || [])) {
+      if (existing.includes(name)) { skipped.push(name); continue; }
+      const r = await fetch(`https://api.airtable.com/v0/meta/bases/${BASE_ID}/tables/${tbl.id}/fields`,
+        { method: "POST", headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify({ name, type: "singleLineText" }) });
+      const d = await r.json();
+      if (!r.ok) return res.status(r.status).json({ error: name + ": " + (d.error?.message || ""), added });
+      added.push(name);
+    }
+    return res.status(200).json({ ok: true, added, skipped });
+  }
 
   // 매칭 프로필 조회 (response 페이지용) — 이름·연락처 제외, 안전 정보만
   if (body.action === "profile") {

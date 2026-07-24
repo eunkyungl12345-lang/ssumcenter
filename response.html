@@ -447,6 +447,7 @@ async function respond(action, isSuper){
 
   var fields = {
     "매칭ID": matchId || "demo",
+    "응답자ID": params.get("myId") || "",
     "응답": action === "accept" ? "수락" : "거절",
     "응답일시": new Date().toLocaleString("ko-KR")
   };
