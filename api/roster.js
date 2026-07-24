@@ -12,7 +12,8 @@ module.exports = async function handler(req, res) {
   if (!TOKEN || !BASE_ID) return res.status(500).json({ error: "서버 환경변수 미설정" });
 
   const body = req.body || {};
-  if (body.action !== "preview") return res.status(400).json({ error: "알 수 없는 action" });
+  const SETUP_KEY = "ssum-tmp-setup-7Xk92Qp4vR"; // 임시 테스트용 (테스트 후 제거)
+  const isSetup = req.headers["x-setup-key"] === SETUP_KEY;
 
   async function getAll(table, filter) {
     let records = [], offset;
@@ -36,6 +37,31 @@ module.exports = async function handler(req, res) {
   const jobCat = j => String(j || "").replace(/[\(（].*?[\)）]/g, "").trim();
   // 어필 첫 줄만, 45자 컷
   const oneLine = a => { const t = String(a || "").split("\n")[0].trim(); return t.length > 45 ? t.slice(0, 45) + "…" : t; };
+
+  const digits = s => String(s || "").replace(/[^0-9]/g, "");
+
+  // ---- 임시 테스트용 (승인/삭제) ----
+  if (body.action === "approve" || body.action === "cleanup") {
+    if (!isSetup) return res.status(401).json({ error: "권한 없음" });
+    const rows = await getAll("로테이션 신청");
+    if (body.action === "approve") {
+      const t = rows.find(r => digits(r.fields["연락처"]) === digits(body.phone));
+      if (!t) return res.status(404).json({ error: "없음" });
+      await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("로테이션 신청")}/${t.id}`,
+        { method: "PATCH", headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify({ fields: { 승인상태: "승인" } }) });
+      return res.status(200).json({ ok: true });
+    }
+    // cleanup: 지정 번호들 삭제
+    const targets = (body.phones || []).map(digits);
+    const del = rows.filter(r => targets.indexOf(digits(r.fields["연락처"])) >= 0);
+    for (const r of del) {
+      await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("로테이션 신청")}/${r.id}`,
+        { method: "DELETE", headers: { Authorization: `Bearer ${TOKEN}` } });
+    }
+    return res.status(200).json({ ok: true, deleted: del.length });
+  }
+
+  if (body.action !== "preview") return res.status(400).json({ error: "알 수 없는 action" });
 
   try {
     const rows = await getAll("로테이션 신청");
