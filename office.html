@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>썸류센터 AI 오피스</title>
+<style>
+  :root{
+    --cream:#EFE7D6; --cream-2:#E6DCC6; --board:#F4EEE0;
+    --sage:#D8DEC7; --sage-2:#C9D1B4; --sage-edge:#B4BE9A;
+    --floor:#E4DDC8; --floor-edge:#CFC5A8;
+    --ink:#4A3F30; --ink-2:#7A6C55; --muted:#9A8C72;
+    --amber:#E0A63C; --amber-2:#C98A28;
+    --brown:#5C4A34; --brown-2:#6E5A40;
+    --green:#7FA766; --green-2:#6B9152; --live:#5FA85C;
+    --line:#D8CDB4;
+    --wall:#2E3A2A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-.01em;min-height:100vh}
+  .tnum{font-variant-numeric:tabular-nums}
+
+  /* ---- 상단 바 ---- */
+  .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:11px 18px;background:rgba(244,238,224,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+  .logo .dot{width:8px;height:8px;border-radius:50%;background:var(--live);box-shadow:0 0 0 3px rgba(95,168,92,.2)}
+  .logo b{color:var(--amber-2)}
+  .usage{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+  .chip{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:100px;padding:6px 12px;font-size:11.5px;font-weight:650;color:var(--ink-2)}
+  .chip b{color:var(--ink);font-weight:800}
+  .chip .bar{width:46px;height:6px;border-radius:100px;background:var(--cream-2);overflow:hidden}
+  .chip .bar i{display:block;height:100%;background:var(--amber);border-radius:100px}
+  .tbtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;font-size:12px;font-weight:750;color:var(--ink-2);cursor:pointer;font-family:inherit}
+  .tbtn.dark{background:var(--brown);color:#F4EEE0;border-color:var(--brown)}
+
+  /* ---- 무대 ---- */
+  .stage-wrap{padding:26px 18px 60px;overflow-x:auto}
+  .stage{max-width:1080px;margin:0 auto;transform:perspective(1600px) rotateX(11deg);transform-origin:top center}
+  .rooms{display:grid;grid-template-columns:1fr 1fr;gap:52px}
+  @media(max-width:860px){.rooms{grid-template-columns:1fr;gap:44px}}
+
+  /* 방(플랫폼) */
+  .room{position:relative;min-height:300px}
+  .slab{position:relative;background:var(--floor);border-radius:26px;padding:26px 24px 30px;
+    box-shadow:0 22px 0 -2px var(--floor-edge), 0 40px 44px -18px rgba(80,66,40,.35);
+    border:1px solid rgba(255,255,255,.4)}
+  .slab.sage{background:var(--sage);box-shadow:0 22px 0 -2px var(--sage-edge), 0 40px 44px -18px rgba(80,66,40,.35)}
+  .roomtag{position:absolute;left:16px;bottom:-14px;z-index:5;display:inline-flex;align-items:center;gap:9px;background:var(--brown);color:#F4EEE0;font-weight:800;font-size:14px;padding:10px 16px;border-radius:13px;box-shadow:0 8px 18px -8px rgba(0,0,0,.5)}
+  .roomtag .hire{background:var(--green);color:#22331a;font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:100px;cursor:pointer}
+
+  /* 회의보드 */
+  .mboard{position:absolute;top:16px;left:20px;width:104px;height:70px;background:var(--wall);border-radius:8px;border:3px solid #6E5A40;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#CBBE9A;transform:rotate(-1deg)}
+  .mboard .mt{font-size:8px;letter-spacing:2px;opacity:.7}
+  .mboard .mb{font-size:12px;font-weight:800;color:#E9DFC4;margin-top:3px}
+  .mboard::after{content:"";position:absolute;bottom:-12px;width:3px;height:12px;background:#6E5A40}
+
+  /* 식물 */
+  .plant{position:absolute;width:34px;height:38px}
+  .plant::before{content:"🪴";font-size:30px}
+
+  /* 책상 */
+  .desks{display:flex;flex-wrap:wrap;gap:26px 30px;justify-content:center;margin-top:78px;padding:0 8px 8px}
+
+  /* 캐릭터 */
+  .person{position:relative;width:118px;display:flex;flex-direction:column;align-items:center}
+  .nametag{background:#fff;border:1px solid var(--line);border-radius:100px;padding:4px 12px;font-size:12.5px;font-weight:800;color:var(--ink);white-space:nowrap;box-shadow:0 4px 10px -6px rgba(0,0,0,.3);position:relative;z-index:3}
+  .nametag .role{color:var(--muted);font-weight:650;font-size:10.5px;display:block;text-align:center;margin-top:1px}
+  .avatar{width:74px;height:74px;border-radius:22px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-size:38px;margin-top:9px;box-shadow:0 10px 20px -10px rgba(80,66,40,.5);cursor:pointer;transition:transform .15s}
+  .avatar:hover{transform:translateY(-3px)}
+  .desk{width:86px;height:16px;border-radius:6px;background:var(--cream-2);box-shadow:0 8px 0 -2px var(--floor-edge);margin-top:-6px}
+  .status{margin-top:12px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:750;padding:4px 11px;border-radius:100px}
+  .status .d{width:7px;height:7px;border-radius:50%}
+  .status.live{background:rgba(95,168,92,.16);color:var(--green-2)} .status.live .d{background:var(--live);box-shadow:0 0 0 3px rgba(95,168,92,.22)}
+  .status.soon{background:rgba(224,166,60,.16);color:var(--amber-2)} .status.soon .d{background:var(--amber)}
+
+  /* 하단 설명 */
+  .legend{max-width:1080px;margin:36px auto 0;display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-size:12px;color:var(--ink-2);font-weight:600}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend .d{width:8px;height:8px;border-radius:50%}
+  .note{max-width:640px;margin:18px auto 0;text-align:center;font-size:12.5px;color:var(--muted);line-height:1.7}
+
+  /* 봇 패널 */
+  .sheet{position:fixed;inset:0;z-index:40;display:none;align-items:flex-end;justify-content:center;background:rgba(46,36,20,.4);backdrop-filter:blur(2px)}
+  .sheet.on{display:flex}
+  .panel{background:var(--board);width:100%;max-width:460px;border-radius:22px 22px 0 0;padding:22px 20px 30px;box-shadow:0 -10px 40px rgba(0,0,0,.3);animation:up .25s ease}
+  @keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+  .panel .ph{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+  .panel .pav{width:56px;height:56px;border-radius:16px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-size:30px}
+  .panel .pn{font-size:17px;font-weight:800}
+  .panel .pr{font-size:12.5px;color:var(--muted)}
+  .panel .pdesc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;font-size:13px;color:var(--ink-2);line-height:1.7;margin-bottom:14px}
+  .panel .pbtn{width:100%;border:none;border-radius:13px;padding:14px;font-size:14.5px;font-weight:800;font-family:inherit;cursor:pointer}
+  .pbtn.go{background:var(--amber);color:#3a2a10}
+  .pbtn.dis{background:var(--cream-2);color:var(--muted);cursor:default}
+  .panel .close{display:block;width:100%;text-align:center;margin-top:12px;font-size:12.5px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo"><span class="dot"></span>썸류센터 <b>AI 오피스</b></div>
+    <div class="usage">
+      <div class="chip">🤖 <span>일하는 AI</span> <b>1</b>/4</div>
+      <div class="chip">📊 <span>오늘 사용량</span> <b>연결 예정</b></div>
+      <div class="chip">⚡ <span>이번주</span> <div class="bar"><i style="width:22%"></i></div></div>
+    </div>
+    <button class="tbtn">＋ 방 만들기</button>
+    <button class="tbtn dark" id="hireTop">＋ AI 채용</button>
+  </div>
+
+  <div class="stage-wrap">
+    <div class="stage">
+      <div class="rooms">
+
+        <!-- 방 1: 매칭실 -->
+        <div class="room">
+          <div class="slab">
+            <div class="mboard"><div class="mt">MEETING BOARD</div><div class="mb">회의 시작</div></div>
+            <div class="plant" style="right:16px;top:14px"></div>
+            <div class="desks">
+              <div class="person" data-bot="match">
+                <div class="nametag">매칭 추천봇<span class="role">매칭 이유 작성</span></div>
+                <div class="avatar">🐻</div><div class="desk"></div>
+                <div class="status live"><span class="d"></span>작업중</div>
+              </div>
+              <div class="person" data-bot="sms">
+                <div class="nametag">문자 작성봇<span class="role">안내 문자 작성</span></div>
+                <div class="avatar">🐰</div><div class="desk"></div>
+                <div class="status soon"><span class="d"></span>준비중</div>
+              </div>
+            </div>
+          </div>
+          <div class="roomtag">💛 매칭실 <span class="hire">＋채용</span></div>
+        </div>
+
+        <!-- 방 2: 콘텐츠·CS실 -->
+        <div class="room">
+          <div class="slab sage">
+            <div class="mboard"><div class="mt">MEETING BOARD</div><div class="mb">회의 시작</div></div>
+            <div class="plant" style="right:16px;top:14px"></div>
+            <div class="desks">
+              <div class="person" data-bot="cs">
+                <div class="nametag">문의 응대봇<span class="role">카톡·DM 1차응대</span></div>
+                <div class="avatar">🐱</div><div class="desk"></div>
+                <div class="status soon"><span class="d"></span>준비중</div>
+              </div>
+              <div class="person" data-bot="content">
+                <div class="nametag">콘텐츠 생성봇<span class="role">릴스·스레드 소재</span></div>
+                <div class="avatar">🦊</div><div class="desk"></div>
+                <div class="status soon"><span class="d"></span>준비중</div>
+              </div>
+            </div>
+          </div>
+          <div class="roomtag">🎬 콘텐츠·CS실 <span class="hire">＋채용</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><span class="d" style="background:var(--live)"></span>🟢 작업중 — 진짜 일하는 중</span>
+      <span><span class="d" style="background:var(--amber)"></span>🟡 준비중 — 만드는 중 (곧 채용)</span>
+    </div>
+    <div class="note">각 AI를 눌러보세요. 지금은 <b>매칭 추천봇</b>만 진짜로 일해요. 투표·문자·문의·콘텐츠를 하나씩 만들면 🟡준비중이 🟢작업중으로 바뀌어요. <br>이 오피스가 곧 진짜로 돌아가는 거예요.</div>
+  </div>
+
+  <!-- 봇 패널 -->
+  <div class="sheet" id="sheet">
+    <div class="panel" id="panel"></div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+  var BOTS={
+    match:{emoji:"🐻",name:"매칭 추천봇",role:"매칭 이유 작성",live:true,
+      desc:"두 신청자의 프로필을 읽고 '왜 잘 맞는지' 추천 이유를 자동으로 써줘요. admin에서 매칭할 때 이미 쓰고 있어요.",
+      go:{label:"admin에서 써보기",href:"/admin"}},
+    sms:{emoji:"🐰",name:"문자 작성봇",role:"안내 문자 작성",live:false,
+      desc:"입금안내·확정·리마인드·매칭안내 문자를 상황에 맞게 써줘요. 8월 운영 자동화랑 같이 만들 예정이에요."},
+    cs:{emoji:"🐱",name:"문의 응대봇",role:"카톡·DM 1차응대",live:false,
+      desc:"'일정 언제예요?' 같은 반복 문의에 AI가 1차로 답해줘요. 자주 오는 질문부터 학습시킬 예정이에요."},
+    content:{emoji:"🦊",name:"콘텐츠 생성봇",role:"릴스·스레드 소재",live:false,
+      desc:"릴스 소재·스레드 글을 뽑아줘요. 이미 하시는 릴스 스튜디오랑 연결할 예정이에요."}
+  };
+  var sheet=document.getElementById("sheet"), panel=document.getElementById("panel");
+  function open(key){
+    var b=BOTS[key]; if(!b) return;
+    var btn = b.live
+      ? '<a class="pbtn go" href="'+b.go.href+'" style="display:block;text-align:center;text-decoration:none">'+b.go.label+' →</a>'
+      : '<button class="pbtn dis">아직 준비중이에요</button>';
+    panel.innerHTML='<div class="ph"><div class="pav">'+b.emoji+'</div><div><div class="pn">'+b.name
+      +' '+(b.live?'🟢':'🟡')+'</div><div class="pr">'+b.role+'</div></div></div>'
+      +'<div class="pdesc">'+b.desc+'</div>'+btn
+      +'<button class="close" id="closeBtn">닫기</button>';
+    document.getElementById("closeBtn").addEventListener("click",close);
+    sheet.classList.add("on");
+  }
+  function close(){ sheet.classList.remove("on"); }
+  document.querySelectorAll(".person").forEach(function(p){
+    p.querySelector(".avatar").addEventListener("click",function(){ open(p.dataset.bot); });
+  });
+  sheet.addEventListener("click",function(e){ if(e.target===sheet) close(); });
+  document.getElementById("hireTop").addEventListener("click",function(){
+    alert("다음에 채용할 AI 직원을 여기서 고르게 만들 거예요 🙂 (지금은 데모)");
+  });
+})();
+</script>
+</body>
+</html>
