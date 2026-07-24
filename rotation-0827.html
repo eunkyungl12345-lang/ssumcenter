@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>로테이션 소개팅 신청 | 썸류센터</title>
+<title>로테이션 소개팅 (8/27 목) 신청 | 썸류센터</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css" media="print" onload="this.media='all'">
@@ -224,7 +224,7 @@
     </p>
     <div class="header-tags">
       <span class="tag-dark">
-        <i class="fa-solid fa-calendar-day y"></i> 8/13 (목) · 8/27 (목)
+        <i class="fa-solid fa-calendar-day y"></i> 8월 27일 (목) 19:45
       </span>
     </div>
   </div>
@@ -234,6 +234,25 @@
 <section class="form-section">
   <div class="form-inner">
     <form id="apply-form" class="form-wrap" onsubmit="return handleSubmit(event)">
+
+      <!-- 신청 전 안내 -->
+      <div class="card" data-reveal style="border-color:rgba(255,190,46,0.3)">
+        <div class="card-header-mb3">
+          <div class="icon-box"><i class="fa-solid fa-circle-info"></i></div>
+          <h2 class="card-title">신청 전 꼭 확인해주세요</h2>
+        </div>
+        <div style="font-size:12.5px;color:#c9bfae;line-height:1.9">
+          <p>📅 <b class="y">일정</b> · 8월 27일 (목) 19:45 · 약 2시간 반</p>
+          <p>📍 <b class="y">장소</b> · 강남역 도보 7분 (확정자에게만 공개)</p>
+          <p>💰 <b class="y">참가비</b> · 29,900원 (음료 1잔 포함)</p>
+          <p>💗 <b class="y">진행</b> · 로테이션 소개팅 (최소 10:10 보장)</p>
+          <p style="margin-top:8px">🙋 <b class="y">신청 대상</b><br>· 남성 91~01년생 · 키 174 이상<br>· 여성 93~03년생<br><span style="color:#8a8070">매력 있으면 1~2살 넘어도 승인드려요</span></p>
+          <p style="margin-top:6px;color:#e8918a">🚫 돌싱 · 무직은 이번엔 어려워요</p>
+          <p style="margin-top:8px">✅ <b class="y">승인제</b> · 선착순 아니에요. 프로필 검토 후 <b>확정 문자</b> 받으신 분만 참여 (일주일 내 안내). 문자 못 받으면 확정 아니에요!</p>
+          <p style="color:#8a8070;margin-top:6px">당일 노쇼·지각 시 환불 불가 · 지인 동반/재방문 시 최대 5,000원 할인</p>
+          <p style="margin-top:8px">❓ 문의 · <a href="https://open.kakao.com/o/ghZ5uywh" target="_blank" rel="noopener" class="y" style="text-decoration:underline">오픈카톡 바로가기</a></p>
+        </div>
+      </div>
 
       <!-- AI 자동입력 -->
       <div class="ai-section" data-reveal>
@@ -274,12 +293,9 @@
         </div>
 
         <div>
-          <label class="field-label">참여 회차 <span class="y">*</span></label>
-          <select name="round" required class="text-input">
-            <option value="" disabled selected>회차를 선택해주세요</option>
-            <option value="8/13 (목)">8월 13일 (목)</option>
-            <option value="8/27 (목)">8월 27일 (목)</option>
-          </select>
+          <label class="field-label">참여 회차</label>
+          <div class="text-input" style="display:flex;align-items:center;gap:8px;color:#FFBE2E;font-weight:700"><i class="fa-solid fa-calendar-day"></i> 8월 27일 (목) 19:45</div>
+          <input type="hidden" name="round" value="8/27 (목)">
         </div>
 
         <div>
@@ -543,11 +559,19 @@
       <p>신청 = 참가 확정이 아니에요. 센터장 검토 후 <b>별도 확정 문자</b>를 받으셔야 참가가 가능합니다.</p>
     </div>
 
-    <!-- 썸배달 홍보 -->
+    <!-- 8월 일정 안내 -->
     <div class="success-promo">
-      <p class="success-promo-title">💛 강남에서 열리는<br>훈남, 훈녀 로테이션 소개팅도 있어요!</p>
+      <p class="success-promo-title">📅 8월 로테이션 일정 안내</p>
       <div class="success-promo-actions">
-        <a href="rotation.html" class="success-promo-btn">일정 보러가기 →</a>
+        <a href="/rotation" class="success-promo-btn">일정 자세히 보기 →</a>
+      </div>
+    </div>
+
+    <!-- 1:1 소개팅 -->
+    <div class="success-promo">
+      <p class="success-promo-title">🎁 상시 접수 · 1:1 맞춤 소개팅도 있어요</p>
+      <div class="success-promo-actions">
+        <a href="/oneone" class="success-promo-btn">1:1 소개팅 보기 →</a>
       </div>
     </div>
 

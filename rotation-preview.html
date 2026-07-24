@@ -67,7 +67,7 @@
 
   <div class="privacy">🔒 닉네임·나이대·직업만 공개돼요. 실명·연락처·사진·상세지역은 비공개입니다.</div>
 
-  <div class="cta"><a href="/rotation-apply">나도 신청하기 →</a></div>
+  <div class="cta"><a id="cta-link" href="/rotation-0813">나도 신청하기 →</a></div>
 </div>
 
 <script>
@@ -87,6 +87,7 @@
   });
 
   function load(){
+    document.getElementById("cta-link").href = cur.indexOf("8/13")>=0 ? "/rotation-0813" : "/rotation-0827";
     document.getElementById("body").innerHTML='<div class="loading"><div class="spin"></div>불러오는 중…</div>';
     document.getElementById("cnt-m").textContent="–"; document.getElementById("cnt-f").textContent="–";
     fetch("/api/roster",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"preview",round:cur})})
