@@ -527,18 +527,7 @@ async function showContact(){
       ]})
     });
 
-    // 뷰어(나) 성별 확인 → 여성만 결제, 남성은 무료(여성 입금 후 연락처)
-    var myGender = "";
-    try {
-      var pr = await fetch("/api/roster", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"profile",id:params.get("myId")})});
-      if(pr.ok){ var pd = await pr.json(); myGender = pd["성별"] || ""; }
-    } catch(e){}
-    if(myGender === "남성"){
-      var sub=document.getElementById("matched-sub");
-      if(sub) sub.innerHTML='🎉 축하해요! <b class="text-white">무료</b>로 매칭됐어요.<br>상대방이 확정하면 <b class="text-white">연락처를 카톡으로</b> 보내드릴게요!';
-      var box=document.getElementById("matched-pay-box"); if(box) box.style.display="none";
-      var foot=document.getElementById("matched-foot"); if(foot) foot.textContent="상대방 확정 후 카카오톡으로 상대 연락처를 전달해드려요 :)";
-    }
+    // 남녀 모두 성사비 결제 (매칭 성사 시 양쪽 다 2만원)
     // 결제 안내 화면 표시 (연락처는 아직 안 보여줌)
     showScreen("matched");
   } catch(err){
