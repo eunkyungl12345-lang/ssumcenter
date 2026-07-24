@@ -116,7 +116,7 @@
   <div class="topbar">
     <div class="logo"><span class="dot"></span>썸류센터 <b>AI 오피스</b></div>
     <div class="usage">
-      <div class="chip">🤖 <span>일하는 AI</span> <b>2</b>/7</div>
+      <div class="chip">🤖 <span>일하는 AI</span> <b>3</b>/7</div>
       <div class="chip">📊 <span>오늘 사용량</span> <b>연결 예정</b></div>
       <div class="chip">⚡ <span>이번주</span> <div class="bar"><i style="width:22%"></i></div></div>
     </div>
@@ -142,7 +142,7 @@
               <div class="person" data-bot="sms">
                 <div class="nametag">문자 작성봇<span class="role">안내 문자 작성</span></div>
                 <div class="avatar">🐰</div><div class="desk"></div>
-                <div class="status soon"><span class="d"></span>준비중</div>
+                <div class="status live"><span class="d"></span>작업중</div>
               </div>
             </div>
           </div>
@@ -238,8 +238,9 @@
     match:{emoji:"🐻",name:"매칭 추천봇",role:"매칭 이유 작성",live:true,
       desc:"두 신청자의 프로필을 읽고 '왜 잘 맞는지' 추천 이유를 자동으로 써줘요. admin에서 매칭할 때 이미 쓰고 있어요.",
       go:{label:"admin에서 써보기",href:"/admin"}},
-    sms:{emoji:"🐰",name:"문자 작성봇",role:"안내 문자 작성",live:false,
-      desc:"입금안내·확정·리마인드·매칭안내 문자를 상황에 맞게 써줘요. 8월 운영 자동화랑 같이 만들 예정이에요."},
+    sms:{emoji:"🐰",name:"문자 작성봇",role:"안내 문자 작성",live:true,
+      desc:"입금안내·확정·전날 리마인드 문자를 상황에 맞게 자동으로 써줘요. 회차별 관리 화면에서 참가자 골라 '문자 보내기' 누르면 돼요! (관리는 admin 비번 필요)",
+      go:{label:"관리 화면 열기",href:"/rotation-admin"}},
     cs:{emoji:"🐱",name:"문의 응대봇",role:"카톡·DM 1차응대",live:false,
       desc:"'일정 언제예요?' 같은 반복 문의에 AI가 1차로 답해줘요. 자주 오는 질문부터 학습시킬 예정이에요."},
     content:{emoji:"🦊",name:"콘텐츠 생성봇",role:"릴스·스레드 소재",live:false,
