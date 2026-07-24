@@ -109,7 +109,7 @@
       var cls=p.성별==="여성"?"f":"m";
       h+='<div class="p '+cls+'"><div class="av">'+emoji(p.성별)+'</div>'
         +'<div class="nm">'+esc(p.닉네임||"익명")+'</div>'
-        +'<div class="age">'+esc(p.년생||"")+'</div>'
+        +'<div class="age">'+esc(p.나이대||"")+'</div>'
         +(p.직업?'<div class="job">'+esc(p.직업)+'</div>':'')
         +(p.한줄?'<div class="line">"'+esc(p.한줄)+'"</div>':'<div class="line"></div>')
         +'</div>';

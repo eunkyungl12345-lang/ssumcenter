@@ -53,8 +53,16 @@ module.exports = async function handler(req, res) {
     return records;
   }
 
-  // 출생연도(1993) → "93년생"
-  const toBirth = y => { const s = String(y || "").replace(/[^0-9]/g, ""); return s.length >= 2 ? s.slice(-2) + "년생" : ""; };
+  // 출생연도(1993) → "30대 초반" 식 나이대
+  const ageBracket = y => {
+    const n = parseInt(String(y || "").replace(/[^0-9]/g, ""), 10);
+    if (!n) return "";
+    const full = n >= 1000 ? n : (n > 30 ? 1900 + n : 2000 + n);
+    const age = new Date().getFullYear() - full;
+    if (age < 15 || age > 99) return "";
+    const dec = Math.floor(age / 10) * 10;
+    return dec + "대 " + ((age % 10) < 5 ? "초반" : "후반");
+  };
   // 직업에서 괄호(지역/기관 상세) 제거: "경찰공무원(성동구)" → "경찰공무원"
   const jobCat = j => String(j || "").replace(/[\(（].*?[\)）]/g, "").trim();
   // 어필 첫 줄만, 45자 컷
@@ -67,7 +75,7 @@ module.exports = async function handler(req, res) {
       .map(r => ({
         성별: r.fields["성별"] || "",
         닉네임: r.fields["닉네임"] || "",
-        년생: toBirth(r.fields["출생연도"]),
+        나이대: ageBracket(r.fields["출생연도"]),
         직업: jobCat(r.fields["직업_직장명"]),
         한줄: oneLine(r.fields["어필포인트"]),
         회차: r.fields["회차"] || "",
