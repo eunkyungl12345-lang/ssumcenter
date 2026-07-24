@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로테이션 신청 관리 | 썸류센터</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--amber-soft:rgba(212,149,42,.12);--ok:#6FBE97;--ok-soft:rgba(111,190,151,.13);--rose:#E8828A;--rose-soft:rgba(232,130,138,.13);--ink-on-amber:#171208;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em}
+  .wrap{max-width:620px;margin:0 auto;padding:20px 16px 60px}
+  h1{font-size:19px;font-weight:800}
+  .sub{font-size:12.5px;color:var(--muted);margin:2px 0 18px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px}
+  label.f{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:0 2px 6px}
+  input{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
+  input:focus{outline:none;border-color:var(--amber)}
+  .btn{border:none;border-radius:11px;padding:12px 16px;font-size:14px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;width:100%}
+  .btn.sm{width:auto;padding:8px 13px;font-size:12px}
+  .btn.g{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong)}
+  .msg{font-size:12.5px;margin-top:10px;color:var(--rose)}
+  .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .tab{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);font-size:13px;font-weight:750;padding:8px 15px;border-radius:100px;cursor:pointer;font-family:inherit}
+  .tab.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
+  .stat{display:flex;gap:9px;margin-bottom:14px}
+  .stat .b{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px;text-align:center}
+  .stat .b .k{font-size:11px;color:var(--muted)}.stat .b .v{font-size:19px;font-weight:800;margin-top:2px}
+  .stat .b.wait .v{color:var(--amber)}.stat .b.ok .v{color:var(--ok)}
+  .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .toolbar .cnt{font-size:12.5px;color:var(--muted);font-weight:650;margin-left:auto}
+  .p{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:11px}
+  .p .top{display:flex;gap:12px}
+  .p .ph{width:64px;height:64px;border-radius:13px;object-fit:cover;background:var(--surface-2);border:1px solid var(--line-strong);flex-shrink:0}
+  .p .ph.none{display:grid;place-items:center;font-size:26px;color:var(--faint)}
+  .p .hd{flex:1;min-width:0}
+  .p .nm{font-size:15.5px;font-weight:800}
+  .p .nm .nick{font-size:12.5px;color:var(--amber);font-weight:700;margin-left:6px}
+  .p .meta{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .p .badge{font-size:10.5px;font-weight:750;padding:3px 9px;border-radius:100px}
+  .b-wait{background:var(--amber-soft);color:var(--amber)}
+  .b-ok{background:var(--ok-soft);color:var(--ok)}
+  .b-no{background:var(--rose-soft);color:var(--rose)}
+  .p .rows{margin-top:11px;border-top:1px solid var(--line);padding-top:11px;display:grid;gap:5px}
+  .p .r{display:flex;font-size:12.5px}
+  .p .r .rk{color:var(--muted);width:66px;flex-shrink:0}
+  .p .r .rv{color:var(--ink);flex:1}
+  .p .r .rv a{color:var(--amber)}
+  .p .acts{display:flex;gap:7px;margin-top:12px}
+  .p .acts button{flex:1;border-radius:10px;padding:9px;font-size:12.5px;font-weight:750;font-family:inherit;cursor:pointer;border:1.5px solid var(--line-strong);background:transparent;color:var(--muted)}
+  .p .acts button.a-ok.on{background:var(--ok);color:#062;border-color:transparent}
+  .p .acts button.a-wait.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
+  .p .acts button.a-no.on{background:var(--rose);color:#3a1013;border-color:transparent}
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:40px 0}
+  .hide{display:none}
+  .spin{width:26px;height:26px;border:3px solid var(--line-strong);border-top-color:var(--amber);border-radius:50%;margin:30px auto;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  a.home{font-size:12px;color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- 로그인 -->
+  <div id="login">
+    <h1>로테이션 신청 관리</h1>
+    <div class="sub">센터장 전용 · 관리자 비밀번호</div>
+    <div class="card">
+      <label class="f">관리자 비밀번호</label>
+      <input id="pw" type="password" placeholder="admin 비밀번호">
+      <div style="margin-top:12px"><button class="btn" id="loginBtn">로그인</button></div>
+      <div class="msg" id="login-msg"></div>
+    </div>
+  </div>
+
+  <!-- 콘솔 -->
+  <div id="console" class="hide">
+    <h1>📋 로테이션 신청 관리</h1>
+    <div class="sub">회차별로 신청자를 보고 승인해요 · <a class="home" href="/admin">일반 admin →</a></div>
+
+    <div class="tabs" id="tabs"></div>
+    <div class="stat">
+      <div class="b"><div class="k">전체</div><div class="v" id="st-all">–</div></div>
+      <div class="b wait"><div class="k">대기</div><div class="v" id="st-wait">–</div></div>
+      <div class="b ok"><div class="k">승인</div><div class="v" id="st-ok">–</div></div>
+    </div>
+    <div class="toolbar">
+      <button class="btn g sm" id="refreshBtn">새로고침</button>
+      <span class="cnt" id="cnt"></span>
+    </div>
+    <div id="list"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var TABLE="로테이션 신청", KEY="admin_key";
+  var records=[], curRound="전체";
+  function key(){ return sessionStorage.getItem(KEY)||""; }
+  function api(method,body){
+    return fetch("/api/airtable?table="+encodeURIComponent(TABLE)+(method==="GET"?"&sort=신청일시":""),{
+      method:method,headers:{"Content-Type":"application/json","x-admin-key":key()},
+      body:body?JSON.stringify(body):undefined
+    }).then(function(r){return r.json();});
+  }
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+  function showConsole(){ document.getElementById("login").classList.add("hide"); document.getElementById("console").classList.remove("hide"); }
+  if(key()) { showConsole(); load(); }
+  document.getElementById("loginBtn").addEventListener("click",doLogin);
+  document.getElementById("pw").addEventListener("keydown",function(e){ if(e.key==="Enter") doLogin(); });
+  function doLogin(){
+    var pw=document.getElementById("pw").value; if(!pw) return;
+    sessionStorage.setItem(KEY,pw);
+    api("GET").then(function(r){
+      if(r.error){ sessionStorage.removeItem(KEY); document.getElementById("login-msg").textContent="비밀번호가 틀렸어요."; }
+      else { records=r.records||[]; showConsole(); render(); }
+    });
+  }
+  document.getElementById("refreshBtn").addEventListener("click",load);
+  function load(){
+    document.getElementById("list").innerHTML='<div class="spin"></div>';
+    api("GET").then(function(r){ if(r.error){ alert(r.error); return; } records=r.records||[]; render(); });
+  }
+
+  function render(){
+    // 회차 탭
+    var rounds=["전체"];
+    records.forEach(function(x){ var rd=x.fields["회차"]; if(rd && rounds.indexOf(rd)<0) rounds.push(rd); });
+    if(rounds.indexOf("8/13 (목)")<0) rounds.push("8/13 (목)");
+    if(rounds.indexOf("8/27 (목)")<0) rounds.push("8/27 (목)");
+    var tabs=document.getElementById("tabs"); tabs.innerHTML="";
+    rounds.forEach(function(rd){
+      var b=document.createElement("button"); b.className="tab"+(rd===curRound?" on":""); b.textContent=rd;
+      b.addEventListener("click",function(){ curRound=rd; render(); });
+      tabs.appendChild(b);
+    });
+
+    var filtered=records.filter(function(x){ return curRound==="전체" || x.fields["회차"]===curRound; });
+    // 통계 (현재 탭 기준)
+    document.getElementById("st-all").textContent=filtered.length;
+    document.getElementById("st-wait").textContent=filtered.filter(function(x){return (x.fields["승인상태"]||"대기")==="대기";}).length;
+    document.getElementById("st-ok").textContent=filtered.filter(function(x){return x.fields["승인상태"]==="승인";}).length;
+    document.getElementById("cnt").textContent=curRound+" · "+filtered.length+"명";
+
+    var list=document.getElementById("list"); list.innerHTML="";
+    if(!filtered.length){ list.innerHTML='<div class="empty">아직 신청자가 없어요.</div>'; return; }
+    filtered.forEach(function(x){ list.appendChild(cardEl(x)); });
+  }
+
+  function cardEl(x){
+    var f=x.fields, st=f["승인상태"]||"대기";
+    var photo=(f["프로필사진"]&&f["프로필사진"][0]&&f["프로필사진"][0].url)||"";
+    var doc=(f["재직증명서"]&&f["재직증명서"][0]&&f["재직증명서"][0].url)||"";
+    var badge = st==="승인"?'<span class="badge b-ok">승인</span>':st==="거절"?'<span class="badge b-no">거절</span>':'<span class="badge b-wait">대기</span>';
+    var el=document.createElement("div"); el.className="p";
+    var meta=[f["성별"],f["출생연도"]?f["출생연도"]+"년생":"",f["키"]].filter(Boolean).join(" · ");
+    function row(k,v){ return v?'<div class="r"><div class="rk">'+k+'</div><div class="rv">'+v+'</div></div>':""; }
+    el.innerHTML=
+      '<div class="top">'
+      + (photo?'<img class="ph" src="'+esc(photo)+'">':'<div class="ph none">🙂</div>')
+      + '<div class="hd"><div class="nm">'+esc(f["이름"]||"이름없음")+'<span class="nick">'+esc(f["닉네임"]||"")+'</span></div>'
+      + '<div class="meta">'+esc(meta)+'</div>'
+      + '<div style="margin-top:7px">'+badge+' <span class="badge" style="background:var(--surface-2);color:var(--muted)">'+esc(f["회차"]||"회차?")+'</span></div>'
+      + '</div></div>'
+      + '<div class="rows">'
+      + row("직업",esc(f["직업_직장명"]))
+      + row("어필",esc(f["어필포인트"]))
+      + row("연락처",esc(f["연락처"]))
+      + row("음료",esc(f["음료선택"]))
+      + row("할인",[f["할인혜택"],f["할인상세"]].filter(Boolean).map(esc).join(" · "))
+      + row("유입",[f["유입경로"],f["추천인이름"]].filter(Boolean).map(esc).join(" · "))
+      + row("서류",doc?'<a href="'+esc(doc)+'" target="_blank">재직증명서 보기 →</a>':"—")
+      + '</div>'
+      + '<div class="acts">'
+      + '<button class="a-wait'+(st==="대기"?" on":"")+'" data-s="대기">대기</button>'
+      + '<button class="a-ok'+(st==="승인"?" on":"")+'" data-s="승인">승인</button>'
+      + '<button class="a-no'+(st==="거절"?" on":"")+'" data-s="거절">거절</button>'
+      + '</div>';
+    el.querySelectorAll(".acts button").forEach(function(btn){
+      btn.addEventListener("click",function(){
+        var ns=btn.dataset.s;
+        el.querySelectorAll(".acts button").forEach(function(b){ b.classList.remove("on"); });
+        btn.classList.add("on");
+        api("PATCH",{records:[{id:x.id,fields:{승인상태:ns}}]}).then(function(r){
+          if(r.error){ alert(r.error); return; }
+          f["승인상태"]=ns;
+          // 상태 뱃지/통계 갱신
+          render();
+        });
+      });
+    });
+    return el;
+  }
+})();
+</script>
+</body>
+</html>
