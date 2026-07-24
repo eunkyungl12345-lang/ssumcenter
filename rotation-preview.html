@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이런 분들이 참여해요 | 썸류센터 로테이션</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--ink-2:#C9B896;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--amber-2:#D4952A;--amber-soft:rgba(212,149,42,.12);--pink:#E89AA8;--pink-soft:rgba(232,154,168,.12);--blue:#8FB3D9;--blue-soft:rgba(143,179,217,.12);--ink-on-amber:#171208;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.55;letter-spacing:-.01em;min-height:100vh}
+  .tnum{font-variant-numeric:tabular-nums}
+  .wrap{max-width:560px;margin:0 auto;padding:22px 16px 40px}
+  .nav{display:flex;align-items:center;margin-bottom:16px}
+  .nav a{font-size:12.5px;color:var(--muted);text-decoration:none}
+  .hero{text-align:center;padding:6px 0 14px}
+  .hero .ky{font-size:12px;font-weight:750;color:var(--amber);letter-spacing:.04em}
+  .hero h1{font-size:24px;font-weight:800;margin:8px 0 6px;line-height:1.3}
+  .hero h1 .y{color:var(--amber)}
+  .hero .sub{font-size:13px;color:var(--muted)}
+  .tabs{display:flex;gap:8px;justify-content:center;margin:16px 0 6px}
+  .tab{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);font-size:13px;font-weight:750;padding:9px 18px;border-radius:100px;cursor:pointer;font-family:inherit}
+  .tab.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
+  .counts{display:flex;gap:9px;margin:14px 0}
+  .counts .c{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px;text-align:center}
+  .counts .c .v{font-size:22px;font-weight:800}
+  .counts .c.m .v{color:var(--blue)}.counts .c.f .v{color:var(--pink)}
+  .counts .c .k{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:6px}
+  @media(max-width:420px){.grid{grid-template-columns:1fr}}
+  .p{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;text-align:center;animation:fade .3s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .p .av{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;font-size:28px;margin:0 auto 10px}
+  .p.m .av{background:var(--blue-soft)}.p.f .av{background:var(--pink-soft)}
+  .p .nm{font-size:15px;font-weight:800}
+  .p .age{font-size:12px;color:var(--muted);margin-top:1px}
+  .p .job{display:inline-block;font-size:11.5px;font-weight:700;color:var(--amber);background:var(--amber-soft);padding:4px 11px;border-radius:100px;margin-top:9px}
+  .p .line{font-size:12px;color:var(--ink-2);margin-top:9px;line-height:1.5;min-height:18px}
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:44px 0;line-height:1.7}
+  .loading{text-align:center;padding:50px 0;color:var(--muted)}
+  .spin{width:28px;height:28px;border:3px solid var(--line-strong);border-top-color:var(--amber);border-radius:50%;margin:0 auto 12px;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .privacy{font-size:11px;color:var(--faint);text-align:center;margin-top:18px;line-height:1.6}
+  .cta{position:sticky;bottom:14px;margin-top:24px}
+  .cta a{display:block;text-align:center;background:var(--amber);color:var(--ink-on-amber);font-weight:800;font-size:15.5px;padding:16px;border-radius:15px;text-decoration:none;box-shadow:0 10px 30px rgba(232,176,80,.28)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a href="/rotation">← 로테이션 안내</a></div>
+
+  <div class="hero">
+    <div class="ky">💌 이번 로테이션</div>
+    <h1>이런 분들이<br><span class="y">참여해요</span></h1>
+    <div class="sub">승인 완료된 참가자만 미리 보여드려요</div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="counts">
+    <div class="c m"><div class="v tnum" id="cnt-m">–</div><div class="k">남성</div></div>
+    <div class="c f"><div class="v tnum" id="cnt-f">–</div><div class="k">여성</div></div>
+  </div>
+
+  <div id="body">
+    <div class="loading"><div class="spin"></div>불러오는 중…</div>
+  </div>
+
+  <div class="privacy">🔒 닉네임·나이대·직업만 공개돼요. 실명·연락처·사진·상세지역은 비공개입니다.</div>
+
+  <div class="cta"><a href="/rotation-apply">나도 신청하기 →</a></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var ROUNDS=["8/13 (목)","8/27 (목)"];
+  var cur=ROUNDS[0];
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function emoji(g){ return g==="여성" ? "👩" : "🧑"; }
+
+  // 탭
+  var tabsEl=document.getElementById("tabs");
+  ROUNDS.forEach(function(rd){
+    var b=document.createElement("button"); b.className="tab"+(rd===cur?" on":""); b.textContent=rd.replace(" ","");
+    b.addEventListener("click",function(){ cur=rd; [].forEach.call(tabsEl.children,function(x){x.classList.remove("on");}); b.classList.add("on"); load(); });
+    tabsEl.appendChild(b);
+  });
+
+  function load(){
+    document.getElementById("body").innerHTML='<div class="loading"><div class="spin"></div>불러오는 중…</div>';
+    document.getElementById("cnt-m").textContent="–"; document.getElementById("cnt-f").textContent="–";
+    fetch("/api/roster",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"preview",round:cur})})
+      .then(function(r){return r.json();}).then(render).catch(function(){
+        document.getElementById("body").innerHTML='<div class="empty">잠시 후 다시 시도해주세요.</div>';
+      });
+  }
+  function render(r){
+    if(r.error){ document.getElementById("body").innerHTML='<div class="empty">'+esc(r.error)+'</div>'; return; }
+    var list=r.list||[];
+    document.getElementById("cnt-m").textContent=(r.counts&&r.counts.남)||0;
+    document.getElementById("cnt-f").textContent=(r.counts&&r.counts.여)||0;
+    if(!list.length){
+      document.getElementById("body").innerHTML='<div class="empty">아직 공개된 참가자가 없어요.<br>승인이 확정되면 여기에 나타나요 💛</div>';
+      return;
+    }
+    var h='<div class="grid">';
+    list.forEach(function(p){
+      var cls=p.성별==="여성"?"f":"m";
+      h+='<div class="p '+cls+'"><div class="av">'+emoji(p.성별)+'</div>'
+        +'<div class="nm">'+esc(p.닉네임||"익명")+'</div>'
+        +'<div class="age">'+esc(p.년생||"")+'</div>'
+        +(p.직업?'<div class="job">'+esc(p.직업)+'</div>':'')
+        +(p.한줄?'<div class="line">"'+esc(p.한줄)+'"</div>':'<div class="line"></div>')
+        +'</div>';
+    });
+    h+='</div>';
+    document.getElementById("body").innerHTML=h;
+  }
+  load();
+})();
+</script>
+</body>
+</html>
