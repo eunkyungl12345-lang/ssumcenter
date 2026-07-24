@@ -410,5 +410,62 @@ document.querySelectorAll('[data-r]').forEach(el=>io.observe(el));
 /* Test result */
 (function(){const p=new URLSearchParams(location.search);if(p.get('result')){document.getElementById('from-test').classList.remove('hidden');document.getElementById('from-test-result').textContent=p.get('result')+'형 (상위 '+(p.get('pct')||'')+'%)';setTimeout(()=>document.getElementById('apply').scrollIntoView({behavior:'smooth'}),300)}})();
 </script>
+<!-- 문의봇 위젯 -->
+<style>
+  #askbot-fab{position:fixed;right:18px;bottom:18px;z-index:80;width:56px;height:56px;border-radius:50%;border:none;background:#E8B050;color:#171208;font-size:24px;cursor:pointer;box-shadow:0 8px 24px rgba(232,176,80,.4);transition:transform .15s}
+  #askbot-fab:hover{transform:scale(1.06)}
+  #askbot-panel{position:fixed;right:18px;bottom:84px;z-index:80;width:340px;max-width:calc(100vw - 36px);max-height:70vh;background:#161310;border:1px solid #3a2e1f;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.55);display:none;flex-direction:column;overflow:hidden}
+  #askbot-panel.on{display:flex}
+  .ab-head{display:flex;align-items:center;padding:14px 16px;background:#1e1811;border-bottom:1px solid #2a2117;font-size:14px;font-weight:800;color:#EDE0CC}
+  .ab-head span{flex:1}
+  .ab-head button{background:none;border:none;color:#998870;font-size:16px;cursor:pointer}
+  .ab-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .ab-msg{max-width:82%;font-size:13px;line-height:1.6;padding:10px 13px;border-radius:14px}
+  .ab-msg.bot{align-self:flex-start;background:#1e1811;border:1px solid #2a2117;color:#EDE0CC;border-bottom-left-radius:4px}
+  .ab-msg.me{align-self:flex-end;background:#E8B050;color:#171208;font-weight:600;border-bottom-right-radius:4px}
+  .ab-chips{padding:10px 12px 14px;display:flex;flex-wrap:wrap;gap:7px;border-top:1px solid #2a2117}
+  .ab-chip{background:#1e1811;border:1px solid #3a2e1f;color:#C9B896;font-size:12px;font-weight:600;padding:7px 11px;border-radius:100px;cursor:pointer;font-family:inherit}
+  .ab-chip:hover{border-color:#E8B050;color:#E8B050}
+  .ab-kko{display:block;text-align:center;font-size:12px;font-weight:700;color:#E8B050;text-decoration:none;padding:6px}
+</style>
+<div>
+  <button id="askbot-fab" aria-label="문의하기">💬</button>
+  <div id="askbot-panel">
+    <div class="ab-head"><span>💬 무엇이든 물어보세요</span><button id="askbot-close" aria-label="닫기">✕</button></div>
+    <div class="ab-body" id="ab-body"></div>
+    <div class="ab-chips" id="ab-chips"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var QA=[
+    {q:"일정 언제예요?",a:"8월 13일(목) · 8월 27일(목) 저녁 7시 45분이에요. 약 2시간 반 진행돼요 😊"},
+    {q:"참가비 얼마예요?",a:"29,900원이에요 (음료 1잔 포함). 지인 동반·재방문 시 최대 5,000원 할인!"},
+    {q:"환불 되나요?",a:"행사 4일 전(8/13→8/9, 8/27→8/23)부터는 환불이 어려워요. 당일 노쇼·지각도 환불 불가예요 🥲"},
+    {q:"누가 참여해요?",a:"남성 91~01년생·키 174 이상, 여성 93~03년생이에요. 매력 있으면 1~2살은 유연하게 봐드려요! (돌싱·무직은 다음 기회에)"},
+    {q:"장소 어디예요?",a:"강남역 도보 7분 거리예요. 정확한 장소는 확정되신 분께만 따로 알려드려요 😘"},
+    {q:"어떻게 진행돼요?",a:"여러 이성과 돌아가며 대화하는 로테이션 방식이에요. 최소 10명은 만나시게 보장해드려요!"},
+    {q:"신청하면 바로 확정?",a:"아니에요! 승인제라 프로필 검토 후 '확정 문자'를 받으셔야 참여 가능해요. 문자 꼭 확인해주세요 💌"},
+    {q:"1:1 소개팅도 있어요?",a:"네! 센터장이 직접 골라 소개하는 1:1 맞춤 매칭(유료 베타)도 있어요 :)"},
+    {q:"신청 어떻게 해요?",a:"홈에서 원하는 날짜를 고르고 신청폼을 작성하시면 돼요. 5분이면 끝나요!"}
+  ];
+  var body=document.getElementById("ab-body"), chips=document.getElementById("ab-chips"), panel=document.getElementById("askbot-panel");
+  function add(cls,txt){ var d=document.createElement("div"); d.className="ab-msg "+cls; d.textContent=txt; body.appendChild(d); body.scrollTop=body.scrollHeight; }
+  function chipsRender(){
+    chips.innerHTML="";
+    QA.forEach(function(item){
+      var b=document.createElement("button"); b.className="ab-chip"; b.textContent=item.q;
+      b.addEventListener("click",function(){ add("me",item.q); setTimeout(function(){ add("bot",item.a); },250); });
+      chips.appendChild(b);
+    });
+    var a=document.createElement("a"); a.className="ab-kko"; a.href="https://open.kakao.com/o/ghZ5uywh"; a.target="_blank"; a.rel="noopener"; a.textContent="더 궁금하면 → 오픈카톡 문의";
+    chips.appendChild(a);
+  }
+  var opened=false;
+  function open(){ panel.classList.add("on"); if(!opened){ add("bot","안녕하세요! 썸류센터예요 💛 궁금한 걸 눌러보세요."); chipsRender(); opened=true; } }
+  document.getElementById("askbot-fab").addEventListener("click",function(){ panel.classList.contains("on")?panel.classList.remove("on"):open(); });
+  document.getElementById("askbot-close").addEventListener("click",function(){ panel.classList.remove("on"); });
+})();
+</script>
 </body>
 </html>

@@ -116,7 +116,7 @@
   <div class="topbar">
     <div class="logo"><span class="dot"></span>썸류센터 <b>AI 오피스</b></div>
     <div class="usage">
-      <div class="chip">🤖 <span>일하는 AI</span> <b>3</b>/7</div>
+      <div class="chip">🤖 <span>일하는 AI</span> <b>4</b>/7</div>
       <div class="chip">📊 <span>오늘 사용량</span> <b>연결 예정</b></div>
       <div class="chip">⚡ <span>이번주</span> <div class="bar"><i style="width:22%"></i></div></div>
     </div>
@@ -156,9 +156,9 @@
             <div class="plant" style="right:16px;top:14px"></div>
             <div class="desks">
               <div class="person" data-bot="cs">
-                <div class="nametag">문의 응대봇<span class="role">카톡·DM 1차응대</span></div>
+                <div class="nametag">문의 응대봇<span class="role">홈 문의 자동응답</span></div>
                 <div class="avatar">🐱</div><div class="desk"></div>
-                <div class="status soon"><span class="d"></span>준비중</div>
+                <div class="status live"><span class="d"></span>작업중</div>
               </div>
               <div class="person" data-bot="content">
                 <div class="nametag">콘텐츠 생성봇<span class="role">릴스·스레드 소재</span></div>
@@ -241,8 +241,9 @@
     sms:{emoji:"🐰",name:"문자 작성봇",role:"안내 문자 작성",live:true,
       desc:"입금안내·확정·전날 리마인드 문자를 상황에 맞게 자동으로 써줘요. 회차별 관리 화면에서 참가자 골라 '문자 보내기' 누르면 돼요! (관리는 admin 비번 필요)",
       go:{label:"관리 화면 열기",href:"/rotation-admin"}},
-    cs:{emoji:"🐱",name:"문의 응대봇",role:"카톡·DM 1차응대",live:false,
-      desc:"'일정 언제예요?' 같은 반복 문의에 AI가 1차로 답해줘요. 자주 오는 질문부터 학습시킬 예정이에요."},
+    cs:{emoji:"🐱",name:"문의 응대봇",role:"홈 문의 자동응답",live:true,
+      desc:"홈 화면 오른쪽 아래 💬 버튼이에요! 일정·참가비·환불·대상 등 자주 묻는 질문에 바로 답해줘요. (AI 키 넣으면 자유 질문도 답하게 업글 가능)",
+      go:{label:"홈에서 💬 눌러보기",href:"/"}},
     content:{emoji:"🦊",name:"콘텐츠 생성봇",role:"릴스·스레드 소재",live:false,
       desc:"릴스·스레드 소재를 AI가 만들어줘요. 완성됐어요! Vercel에 ANTHROPIC_API_KEY만 넣으면 바로 켜져요 🔑",
       go:{label:"콘텐츠봇 열기",href:"/content-bot"}},
