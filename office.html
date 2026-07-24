@@ -244,7 +244,8 @@
     cs:{emoji:"🐱",name:"문의 응대봇",role:"카톡·DM 1차응대",live:false,
       desc:"'일정 언제예요?' 같은 반복 문의에 AI가 1차로 답해줘요. 자주 오는 질문부터 학습시킬 예정이에요."},
     content:{emoji:"🦊",name:"콘텐츠 생성봇",role:"릴스·스레드 소재",live:false,
-      desc:"릴스 소재·스레드 글을 뽑아줘요. 이미 하시는 릴스 스튜디오랑 연결할 예정이에요."},
+      desc:"릴스·스레드 소재를 AI가 만들어줘요. 완성됐어요! Vercel에 ANTHROPIC_API_KEY만 넣으면 바로 켜져요 🔑",
+      go:{label:"콘텐츠봇 열기",href:"/content-bot"}},
     plan:{emoji:"🦉",name:"기획자봇",role:"기능 기획·정리",live:false,
       desc:"'이거 만들어줘' 하면 어떻게 만들지 기획하고 순서를 정리해줘요. 지금은 클로드(저)가 대신 하고 있어요 🙂"},
     qa:{emoji:"🐧",name:"QA봇",role:"이슈·버그 찾기",live:false,
@@ -256,7 +257,7 @@
   var sheet=document.getElementById("sheet"), panel=document.getElementById("panel");
   function open(key){
     var b=BOTS[key]; if(!b) return;
-    var btn = b.live
+    var btn = b.go
       ? '<a class="pbtn go" href="'+b.go.href+'" style="display:block;text-align:center;text-decoration:none">'+b.go.label+' →</a>'
       : '<button class="pbtn dis">아직 준비중이에요</button>';
     panel.innerHTML='<div class="ph"><div class="pav">'+b.emoji+'</div><div><div class="pn">'+b.name
