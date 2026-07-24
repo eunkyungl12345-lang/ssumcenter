@@ -68,9 +68,13 @@
     <div class="sub">QR 투표 · 결과 공개를 여기서 운영해요 · <a class="home" href="/admin">일반 admin →</a></div>
 
     <div class="card">
-      <label class="f">행사 이름 (모든 작업의 기준)</label>
-      <input id="event" placeholder="예: 2026-08 재테크팅" value="2026-08 재테크팅">
-      <div class="desc" style="margin:8px 0 0">참가자·투표·공개가 이 이름으로 묶여요. 행사마다 다르게.</div>
+      <label class="f">회차 선택 (모든 작업의 기준)</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px" id="event-tabs">
+        <button type="button" class="btn sm evbtn" data-ev="8/13 (목)" style="flex:1">8/13 (목)</button>
+        <button type="button" class="btn g sm evbtn" data-ev="8/27 (목)" style="flex:1">8/27 (목)</button>
+      </div>
+      <input id="event" placeholder="직접 입력도 가능" value="8/13 (목)">
+      <div class="desc" style="margin:8px 0 0">참가자·투표·출석·공개가 이 회차로 묶여요. <b>8/13·8/27 각각 따로</b> 관리돼요.</div>
     </div>
 
     <div class="card">
@@ -137,6 +141,13 @@
       body:JSON.stringify(Object.assign({action:action},data||{}))}).then(function(r){return r.json();});
   }
   function ev(){ return document.getElementById("event").value.trim(); }
+  document.getElementById("event-tabs").addEventListener("click",function(e){
+    var b=e.target.closest(".evbtn"); if(!b) return;
+    [].forEach.call(this.querySelectorAll(".evbtn"),function(x){ x.classList.add("g"); });
+    b.classList.remove("g");
+    document.getElementById("event").value=b.dataset.ev;
+    if(sessionStorage.getItem(KEY)) refresh();
+  });
   function setMsg(id,txt,cls){ var e=document.getElementById(id); e.textContent=txt; e.className="msg "+(cls||""); }
 
   // ---- 로그인 ----
