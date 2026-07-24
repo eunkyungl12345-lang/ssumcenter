@@ -1143,7 +1143,7 @@ async function handleSubmit(e){
 
   } catch(err) {
     console.error(err);
-    alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
+    alert("신청 중 오류가 발생했어요 😢\n\n[원인] " + (err && err.message ? err.message : String(err)) + "\n\n다시 시도해주시고, 계속되면 이 화면을 센터장에게 캡처해서 보내주세요!");
     submitBtn.disabled = false;
     submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-1.5"></i>신청서 제출하기';
   }
