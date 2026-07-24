@@ -24,7 +24,7 @@
   /* 키워드 칩 선택 */
   .chip{cursor:pointer;transition:all .2s}
   .chip:hover{border-color:#E8B050;color:#E8B050}
-  .chip.selected{background:#E8B050;color:#0e0c0a;border-color:#E8B050;font-weight:700}
+  .chip.selected{background:#E8B050 !important;color:#0e0c0a !important;border-color:#E8B050 !important;font-weight:700}
   /* 자기소개 카운터 */
   .counter{transition:color .2s}
   .counter.over{color:#FF4A4A}
@@ -441,7 +441,7 @@
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">
             이상형 성격 키워드 <span class="y">*</span>
-            <span class="text-[#6b6358] font-normal ml-1">3개 선택</span>
+            <span class="text-[#6b6358] font-normal ml-1">1개 이상 선택</span>
           </label>
           <div id="keyword-chips" class="flex flex-wrap gap-2">
             <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="유머러스">유머러스</button>
@@ -458,7 +458,7 @@
             <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-kw="성실한">성실한</button>
           </div>
           <input type="hidden" name="keywords" id="keywords-input">
-          <p id="keyword-count" class="text-[11px] text-[#6b6358] mt-2">0 / 3개 선택됨</p>
+          <p id="keyword-count" class="text-[11px] text-[#6b6358] mt-2">0개 선택됨</p>
         </div>
 
         <!-- 자기소개 -->
@@ -947,16 +947,14 @@ document.querySelectorAll("#keyword-chips .chip").forEach(chip => {
     if(selectedKeywords.has(kw)){
       selectedKeywords.delete(kw);
       chip.classList.remove("selected");
-    } else if(selectedKeywords.size < 3){
+    } else {
       selectedKeywords.add(kw);
       chip.classList.add("selected");
-    } else {
-      return; // 3개 초과 시 무시
     }
     document.getElementById("keywords-input").value = [...selectedKeywords].join(",");
     const count = selectedKeywords.size;
-    document.getElementById("keyword-count").textContent = `${count} / 3개 선택됨`;
-    document.getElementById("keyword-count").style.color = count === 3 ? "#E8B050" : "#6b6358";
+    document.getElementById("keyword-count").textContent = `${count}개 선택됨`;
+    document.getElementById("keyword-count").style.color = count >= 1 ? "#E8B050" : "#6b6358";
   });
 });
 
@@ -1000,7 +998,7 @@ function stepFieldsValid(n){
   if(n===3){
     if(selectedAges.size===0){ alert("선호 나이대를 1개 이상 선택해주세요."); return false; }
     if(selectedJobs.size===0){ alert("선호 직업군을 1개 이상 선택해주세요."); return false; }
-    if(selectedKeywords.size!==3){ alert("성격 키워드를 3개 선택해주세요."); return false; }
+    if(selectedKeywords.size<1){ alert("성격 키워드를 1개 이상 선택해주세요."); return false; }
     if(!document.getElementById("intro").value.trim()){ alert("자기소개를 입력해주세요."); return false; }
     return true;
   }
@@ -1045,9 +1043,9 @@ async function handleSubmit(e){
     return false;
   }
 
-  // 키워드 3개 검증
-  if(selectedKeywords.size !== 3){
-    alert("성격 키워드를 3개 선택해주세요.");
+  // 키워드 1개 이상 검증
+  if(selectedKeywords.size < 1){
+    alert("성격 키워드를 1개 이상 선택해주세요.");
     return false;
   }
 
