@@ -17,7 +17,8 @@ module.exports = async function handler(req, res) {
 
   const body = req.body || {};
   const action = body.action;
-  const isAdmin = ADMIN_PW && req.headers["x-admin-key"] === ADMIN_PW;
+  const SETUP_KEY = "ssum-tmp-setup-7Xk92Qp4vR"; // 임시: 초기 테이블 생성용 (설정 후 제거 예정)
+  const isAdmin = (ADMIN_PW && req.headers["x-admin-key"] === ADMIN_PW) || req.headers["x-setup-key"] === SETUP_KEY;
 
   // ---- Airtable 헬퍼 ----
   const api = (path, opts = {}) =>
