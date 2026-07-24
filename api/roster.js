@@ -23,6 +23,7 @@ module.exports = async function handler(req, res) {
     const f = d.fields || {};
     const photos = (f["프로필사진"] || []).map(p => p.url).filter(Boolean);
     return res.status(200).json({
+      성별: f["성별"] || "",
       age: f["출생연도"] ? (f["출생연도"] + "년생") : "",
       job: f["직업"] || "",
       keywords: f["성격키워드"] || "",
