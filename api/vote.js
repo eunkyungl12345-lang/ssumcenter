@@ -17,8 +17,7 @@ module.exports = async function handler(req, res) {
 
   const body = req.body || {};
   const action = body.action;
-  const SETUP_KEY = "ssum-tmp-setup-7Xk92Qp4vR"; // 임시: 로테이션 테이블 생성용 (설정 후 제거)
-  const isAdmin = (ADMIN_PW && req.headers["x-admin-key"] === ADMIN_PW) || req.headers["x-setup-key"] === SETUP_KEY;
+  const isAdmin = ADMIN_PW && req.headers["x-admin-key"] === ADMIN_PW;
 
   // ---- Airtable 헬퍼 ----
   const api = (path, opts = {}) =>
@@ -250,27 +249,6 @@ module.exports = async function handler(req, res) {
         { name: "투표설정", fields: [
           { name: "행사", type: "singleLineText" },
           { name: "공개", type: "checkbox", options: { icon: "check", color: "greenBright" } },
-        ]},
-        { name: "로테이션 신청", fields: [
-          { name: "회차", type: "singleLineText" },
-          { name: "이름", type: "singleLineText" },
-          { name: "성별", type: "singleSelect", options: { choices: [{ name: "남성" }, { name: "여성" }] } },
-          { name: "출생연도", type: "singleLineText" },
-          { name: "연락처", type: "singleLineText" },
-          { name: "키", type: "singleLineText" },
-          { name: "직업_직장명", type: "singleLineText" },
-          { name: "어필포인트", type: "multilineText" },
-          { name: "프로필사진", type: "multipleAttachments" },
-          { name: "재직증명서", type: "multipleAttachments" },
-          { name: "음료선택", type: "singleLineText" },
-          { name: "닉네임", type: "singleLineText" },
-          { name: "유입경로", type: "singleLineText" },
-          { name: "추천인이름", type: "singleLineText" },
-          { name: "할인혜택", type: "singleLineText" },
-          { name: "할인상세", type: "singleLineText" },
-          { name: "촬영동의", type: "checkbox", options: { icon: "check", color: "greenBright" } },
-          { name: "승인상태", type: "singleLineText" },
-          { name: "신청일시", type: "singleLineText" },
         ]},
       ];
 

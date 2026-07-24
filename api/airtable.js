@@ -29,7 +29,7 @@ module.exports = async function handler(req, res) {
       }
     } else if (req.method === "POST") {
       // 신청 폼 제출용 (레코드 생성만 가능, 조회 불가)
-      const allowedTables = ["재테크 커피팅", "1:1 매칭 신청", "매칭 응답"];
+      const allowedTables = ["재테크 커피팅", "1:1 매칭 신청", "매칭 응답", "로테이션 신청"];
       if (!allowedTables.includes(table)) {
         return res.status(401).json({ error: "인증이 필요합니다" });
       }
@@ -50,7 +50,7 @@ module.exports = async function handler(req, res) {
   }
 
   // POST 요청 시 필수 필드 검증 (빈 데이터 차단) — 비인증 신청 폼만
-  if (req.method === "POST" && !isAdmin && (table === "재테크 커피팅" || table === "1:1 매칭 신청") && req.body && req.body.records) {
+  if (req.method === "POST" && !isAdmin && (table === "재테크 커피팅" || table === "1:1 매칭 신청" || table === "로테이션 신청") && req.body && req.body.records) {
     const fields = req.body.records[0]?.fields || {};
     if (!fields["이름"] || !fields["이름"].trim()) {
       return res.status(400).json({ error: "이름은 필수입니다" });
