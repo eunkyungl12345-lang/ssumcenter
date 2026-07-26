@@ -120,7 +120,7 @@
   <div class="topbar">
     <div class="logo"><span class="dot"></span>썸류센터 <b>AI 오피스</b></div>
     <div class="usage">
-      <div class="chip">🤖 <span>일하는 AI</span> <b>4</b>/8</div>
+      <div class="chip">🤖 <span>일하는 AI</span> <b>5</b>/9</div>
       <div class="chip">📊 <span>오늘 사용량</span> <b>연결 예정</b></div>
       <div class="chip">⚡ <span>이번주</span> <div class="bar"><i style="width:22%"></i></div></div>
     </div>
@@ -224,6 +224,11 @@
             <div class="mboard"><div class="mt">MEETING BOARD</div><div class="mb">회의 시작</div></div>
             <div class="plant" style="right:16px;top:14px"></div>
             <div class="desks">
+              <div class="person" data-bot="marketer">
+                <div class="nametag">마케팅 담당자<span class="role">콘텐츠·SNS 총괄</span></div>
+                <div class="avatar">🦁</div><div class="desk"></div>
+                <div class="status live"><span class="d"></span>작업중</div>
+              </div>
               <div class="person" data-bot="promo">
                 <div class="nametag">홍보봇<span class="role">SNS 홍보·이벤트</span></div>
                 <div class="avatar">📣</div><div class="desk"></div>
@@ -241,7 +246,33 @@
       <span><span class="d" style="background:var(--live)"></span>🟢 작업중 — 진짜 일하는 중</span>
       <span><span class="d" style="background:var(--amber)"></span>🟡 준비중 — 만드는 중 (곧 채용)</span>
     </div>
-    <div class="note">각 AI를 눌러보세요. 지금은 <b>매칭 추천봇</b>만 진짜로 일해요. 투표·문자·문의·콘텐츠를 하나씩 만들면 🟡준비중이 🟢작업중으로 바뀌어요. <br>이 오피스가 곧 진짜로 돌아가는 거예요.</div>
+    <div class="note">오늘 <b>마케팅 담당자🦁</b>를 채용했고, <b>출석부 자동 채우기</b>·<b>접수 안내</b>가 붙었어요. 아래 <b>실시간 활동 로그</b>는 진짜 신청·출석 데이터가 흘러요 — 가짜 아니에요. 준비중 봇에 AI 키를 넣으면 하나씩 🟢로 바뀌어요.</div>
+  </div>
+
+  <!-- 실시간 활동 로그 -->
+  <style>
+    .actlog-wrap{max-width:900px;margin:22px auto 0;padding:0 14px}
+    .actlog-card{background:var(--wall);color:#e8e2d2;border-radius:16px;padding:15px 17px;box-shadow:0 10px 28px rgba(46,58,42,.2)}
+    .actlog-head{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}
+    .actlog-sub{font-weight:600;font-size:11.5px;color:#a9b39a;margin-left:auto;letter-spacing:0}
+    .live-dot{width:9px;height:9px;border-radius:50%;background:#7FD37A;box-shadow:0 0 0 4px rgba(127,211,122,.22);animation:actpulse 1.6s ease-in-out infinite}
+    @keyframes actpulse{0%,100%{opacity:1}50%{opacity:.35}}
+    @media (prefers-reduced-motion:reduce){.live-dot{animation:none}}
+    .actlog-body{display:flex;flex-direction:column;max-height:330px;overflow-y:auto}
+    .actrow{display:flex;align-items:center;gap:11px;padding:9px 4px;border-bottom:1px solid rgba(255,255,255,.055);font-size:14px}
+    .actrow:last-child{border-bottom:none}
+    .actrow .ae{font-size:17px;flex:none;width:22px;text-align:center}
+    .actrow .at{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .actrow .aa{font-weight:700;color:#fff}
+    .actrow .ac{color:#c4cbb6}
+    .actrow .atime{font-size:12px;color:#93a085;flex:none;font-variant-numeric:tabular-nums}
+    .actlog-empty{color:#a9b39a;text-align:center;padding:26px 12px;font-size:14px;line-height:1.55}
+  </style>
+  <div class="actlog-wrap">
+    <div class="actlog-card">
+      <div class="actlog-head"><span class="live-dot"></span>실시간 활동 로그<span class="actlog-sub">진짜 신청·출석 데이터 · 자동 새로고침</span></div>
+      <div class="actlog-body" id="actlog"><div class="actlog-empty">불러오는 중…</div></div>
+    </div>
   </div>
 
   <!-- 봇 패널 -->
@@ -283,6 +314,9 @@
       go:{label:"운영 콘솔 열기",href:"/vote-admin"}},
     promo:{emoji:"📣",name:"홍보봇",role:"SNS 홍보·이벤트",live:false,
       desc:"인스타·스레드 홍보 기획, 이벤트 모집 카피, 홍보 문구를 짜줘요. 콘텐츠봇이랑 세트예요 — AI 키 넣으면 켜져요 🔑",
+      go:{label:"콘텐츠봇 열기",href:"/content-bot"}},
+    marketer:{emoji:"🦁",name:"마케팅 담당자",role:"콘텐츠·SNS 총괄",live:true,
+      desc:"릴스·스레드 콘텐츠를 기획하고 실제로 올려요.<br><br><b>오늘 한 일</b><br>✅ 릴스 대본 6개 작성<br>✅ 스레드 첫 글(T1) 발행<br>✅ 릴스 커버 이미지 제작<br><br>지금은 클로드(저) 채팅으로 무료 운영 중이에요. AI 키를 넣으면 24시간 자동으로 굴러가요 🔑",
       go:{label:"콘텐츠봇 열기",href:"/content-bot"}}
   };
   var sheet=document.getElementById("sheet"), panel=document.getElementById("panel");
@@ -318,6 +352,7 @@
     {bot:"plan",text:"그리고 8월 두 회차(8/13·27)를 홈 상단에서 더 눈에 띄게 배치하면 좋겠어요. 재테크 카드는 이미 숨김 처리돼 있고요 👍"},
     {bot:"roster",text:"신청·투표·출석은 다 연결됐어요. 문자봇만 붙으면 8월 운영이 완전 자동이에요 📚"},
     {bot:"match",text:"저는 잘 돌아갑니다. 이상 무! 🐻"},
+    {bot:"marketer",text:"오늘 릴스 대본 6개랑 스레드 첫 글(T1) 발행 끝냈어요. 커버 이미지도 뽑았고요. 8/13 회차 홍보 계속 밀게요 🦁"},
     {bot:"promo",text:"홍보실 새로 합류했어요! 8월 로테이션 인스타 홍보부터 준비할게요 📣"},
     {sys:"👑 대표진(성수·강남·판교 센터장)께 보고 완료"},
     {sys:"결론 — 급한 순서: ① 카톡 링크 ② 계좌번호 ③ 미리보기 링크 걸기. 센터장님이 정해주세요 🙂"}
@@ -343,6 +378,35 @@
   document.getElementById("meetClose2").addEventListener("click",closeMeeting);
   meet.addEventListener("click",function(e){ if(e.target===meet) closeMeeting(); });
   document.querySelectorAll(".mboard").forEach(function(mb){ mb.style.cursor="pointer"; mb.addEventListener("click",openMeeting); });
+
+  // ---- 실시간 활동 로그 ----
+  var actlog=document.getElementById("actlog");
+  function relTime(iso){
+    var diff=(Date.now()-new Date(iso).getTime())/1000;
+    if(diff<0) diff=0;
+    if(diff<60) return "방금";
+    if(diff<3600) return Math.floor(diff/60)+"분 전";
+    if(diff<86400) return Math.floor(diff/3600)+"시간 전";
+    return Math.floor(diff/86400)+"일 전";
+  }
+  function esc(s){ return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+  function loadActivity(){
+    if(!actlog) return;
+    fetch("/api/activity").then(function(r){return r.json();}).then(function(d){
+      if(!d||!d.events||!d.events.length){
+        actlog.innerHTML='<div class="actlog-empty">아직 활동이 없어요 — 신청이 들어오면 여기 실시간으로 떠요 🌱</div>'; return;
+      }
+      actlog.innerHTML=d.events.map(function(e){
+        return '<div class="actrow"><span class="ae">'+esc(e.emoji)+'</span>'
+          +'<span class="at"><span class="aa">'+esc(e.actor)+'</span> <span class="ac">· '+esc(e.action)+'</span></span>'
+          +'<span class="atime">'+relTime(e.time)+'</span></div>';
+      }).join("");
+    }).catch(function(){
+      actlog.innerHTML='<div class="actlog-empty">활동을 불러오지 못했어요. 잠시 후 다시 시도할게요.</div>';
+    });
+  }
+  loadActivity();
+  setInterval(loadActivity, 20000);
 })();
 </script>
 </body>
