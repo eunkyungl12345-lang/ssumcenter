@@ -1,4 +1,29 @@
 const { upsertMember } = require("./member.js");
+const { sendSms, isValidPhone } = require("./_sms.js");
+
+// 로테이션 접수 → 자동 입금안내 문자 (센터장 확정 문구)
+function 로테이션접수문자() {
+  return [
+    "🩷📦썸류센터 로테이션 커피팅 입금 안내📦🩷",
+    "",
+    "안녕하세요😊",
+    "썸류센터 로테이션 커피팅을 신청해주셔서 감사합니다!",
+    "",
+    "-",
+    "📦참가비 안내📦",
+    "",
+    "카카오뱅크 장민 3333-34-1009531",
+    "",
+    "위 계좌로 29,900원 입금 부탁드립니다!",
+    "",
+    "-",
+    "✔️입금자명과 신청서에 작성해주신 이름이 일치해야 신청이 확인됩니다.",
+    "✔️입금은 내일 자정 전까지 가능하며 기한 내 미입금시 참가 확정 취소 예정입니다.",
+    "✔️입금이 확인되면 최종 확정 안내드립니다.",
+    "",
+    "✔️환불은 신청하신 날짜의 4일전까지만 가능하며, 당일 노쇼와 지각 및 기타 사유로 인한 환불 또한 불가능한 점 양해부탁드려요🥲",
+  ].join("\n");
+}
 
 module.exports = async function handler(req, res) {
   // CORS
@@ -100,6 +125,21 @@ module.exports = async function handler(req, res) {
         const recs = (req.body && req.body.records) || [];
         for (const rc of recs) { await upsertMember({ table, fields: (rc && rc.fields) || {}, TOKEN, BASE_ID }); }
       } catch (e) { /* 명부 적립 실패는 무시 */ }
+    }
+
+    // 로테이션 신청 접수(공개 폼) → 입금안내 문자 자동 발송 (실패해도 신청은 성공 처리)
+    // - 공개 폼 제출만 대상(isAdmin 제외): admin 수동 등록은 기존 딸깍 버튼 사용
+    // - 번호가 유효할 때만 발송 → 테스트/빈값 오발송 방지
+    if (req.method === "POST" && !isAdmin && table === "로테이션 신청") {
+      try {
+        const recs = (req.body && req.body.records) || [];
+        for (const rc of recs) {
+          const to = (rc && rc.fields && rc.fields["연락처"]) || "";
+          if (isValidPhone(to)) {
+            await sendSms({ to, text: 로테이션접수문자() });
+          }
+        }
+      } catch (e) { console.error("[airtable] 접수문자 발송 실패:", e.message); }
     }
     return res.status(200).json(data);
   } catch (err) {

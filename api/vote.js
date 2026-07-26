@@ -296,6 +296,60 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, count: n });
     }
 
+    // ============ (관리자) 로테이션 승인자 자동 불러오기 ============
+    // 로테이션 신청(승인상태=승인 & 해당 회차)을 투표참가자로 자동 등록.
+    // 이미 등록된 번호는 건너뜀(중복방지) → 출석부 수동 복붙 제거.
+    if (action === "importFromRotation") {
+      if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
+      const event = body.event || "";
+      const round = body.round || event; // 투표 행사명 = 로테이션 회차명 (기본 동일)
+      if (!event) return res.status(400).json({ error: "행사(회차)를 입력하세요" });
+
+      // 승인된 해당 회차 신청자
+      const filter = `AND({승인상태}='승인',{회차}='${round}')`;
+      const applicants = await getAll("로테이션 신청", filter);
+      if (!applicants.length) {
+        return res.status(200).json({ ok: true, count: 0, skipped: 0, message: "해당 회차 승인자가 없어요" });
+      }
+
+      // 이미 등록된 참가자 번호(중복방지)
+      const existing = await getAll("투표참가자", `{행사}='${event}'`);
+      const seen = new Set(existing.map(r => norm(r.fields["전화번호"])).filter(Boolean));
+      let maxSeq = existing.reduce((mx, r) => Math.max(mx, parseInt(r.fields["순번"], 10) || 0), 0);
+
+      const firstLine = a => String(a || "").split("\n")[0].trim().slice(0, 60);
+      const rows = [];
+      let skipped = 0;
+      for (const r of applicants) {
+        const f = r.fields || {};
+        const phone = norm(f["연락처"]);
+        if (!phone || seen.has(phone)) { skipped++; continue; }
+        seen.add(phone);
+        maxSeq += 1;
+        rows.push({
+          fields: {
+            행사: event,
+            순번: maxSeq,
+            닉네임: f["닉네임"] || f["이름"] || "",
+            성별: f["성별"] || "",
+            년생: String(f["출생연도"] || ""),
+            한줄소개: firstLine(f["어필포인트"] || f["자기소개"]),
+            전화번호: f["연락처"] || "",
+            음료: "",
+          },
+        });
+      }
+
+      let n = 0;
+      for (let i = 0; i < rows.length; i += 10) {
+        const chunk = rows.slice(i, i + 10);
+        if (!chunk.length) break;
+        await api("투표참가자", { method: "POST", body: { records: chunk } });
+        n += chunk.length;
+      }
+      return res.status(200).json({ ok: true, count: n, skipped, total: applicants.length });
+    }
+
     // ============ (관리자) 출석 체크 ============
     if (action === "setAttend") {
       if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });

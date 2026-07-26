@@ -86,7 +86,12 @@
 
     <div class="card">
       <h2><span class="step">2</span> 참가자 등록</h2>
-      <div class="desc">한 줄에 한 명씩. 순서: <b>닉네임, 성별, 년생, 한줄소개, 전화번호, 음료</b> (쉼표로 구분)</div>
+      <div style="background:rgba(255,105,180,.08);border:1px solid rgba(255,105,180,.3);border-radius:12px;padding:12px;margin-bottom:14px">
+        <div class="desc" style="margin:0 0 8px"><b>🚀 로테이션 승인자 자동 불러오기</b> — 손으로 복붙할 필요 없어요! 위 회차의 <b>승인된 신청자</b>를 자동으로 참가자에 등록해요. (이미 등록된 사람은 건너뜀)</div>
+        <button class="btn" id="importBtn">이 회차 승인자 자동 불러오기</button>
+        <div class="msg" id="import-msg"></div>
+      </div>
+      <div class="desc">또는 직접 입력 — 한 줄에 한 명씩. 순서: <b>닉네임, 성별, 년생, 한줄소개, 전화번호, 음료</b> (쉼표로 구분)</div>
       <textarea id="ptext" placeholder="배당곰, 남성, 92년생, 금융권 배당주, 010-1111-2222, 아이스아메리카노
 절약토끼, 여성, 95년생, 무지출 챌린지, 010-3333-5678, 아이스티
 임장왕, 남성, 97년생, 자영업 임장러, 010-2222-3333, 아이스아메리카노"></textarea>
@@ -182,6 +187,22 @@
       if(r.created&&r.created.length) parts.push("생성: "+r.created.join(", "));
       if(r.skipped&&r.skipped.length) parts.push("이미 있음: "+r.skipped.join(", "));
       setMsg("setup-msg","✅ 완료! "+parts.join(" · "),"ok");
+    });
+  });
+
+  // ---- 2-0. 로테이션 승인자 자동 불러오기 ----
+  document.getElementById("importBtn").addEventListener("click",function(){
+    if(!ev()){ setMsg("import-msg","행사(회차) 이름을 먼저 입력하세요.","err"); return; }
+    var b=this; b.disabled=true; setMsg("import-msg","불러오는 중…","");
+    post("importFromRotation",{event:ev(),round:ev()}).then(function(r){
+      b.disabled=false;
+      if(r.error){ setMsg("import-msg","❌ "+r.error,"err"); return; }
+      if(r.count===0){
+        setMsg("import-msg", (r.message||"불러올 승인자가 없어요")+(r.skipped?(" (이미 등록됨 "+r.skipped+"명)"):""), "err");
+      } else {
+        setMsg("import-msg","✅ "+r.count+"명 자동 등록! "+(r.skipped?("(이미 있어서 건너뜀 "+r.skipped+"명)"):""),"ok");
+      }
+      refresh();
     });
   });
 
