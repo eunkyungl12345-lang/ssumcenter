@@ -312,8 +312,8 @@
 
         <!-- 직업 -->
         <div>
-          <label class="block text-xs font-bold text-[#9a9080] mb-2">직업 <span class="y">*</span></label>
-          <input type="text" name="job" required placeholder="예: 마케터, 개발자, 간호사"
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">직업 / 직장명 <span class="y">*</span></label>
+          <input type="text" name="job" required placeholder="예: 마케터 (OO회사), 간호사 (OO병원)"
             class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
         </div>
 
@@ -944,7 +944,7 @@ document.getElementById("agree").addEventListener("change", function(){
 function stepFieldsValid(n){
   if(n===1){
     if(!photoFiles[0]&&!photoFiles[1]&&!photoFiles[2]){ alert("프로필 사진을 최소 1장 올려주세요."); return false; }
-    var req=[["name","이름"],["phone","연락처"],["job","직업"],["height","키"],["location","사는 곳"],["hobby","취미"]];
+    var req=[["name","이름"],["phone","연락처"],["job","직업/직장명"],["height","키"],["location","사는 곳"],["hobby","취미"]];
     for(var i=0;i<req.length;i++){ var el=document.querySelector("[name=\""+req[i][0]+"\"]"); if(!el||!el.value.trim()){ alert(req[i][1]+"을(를) 입력해주세요."); if(el) el.focus(); return false; } }
     if(!document.querySelector("[name=\"gender\"]:checked")){ alert("성별을 선택해주세요."); return false; }
     if(!document.querySelector("[name=\"birthYear\"]").value){ alert("출생 연도를 선택해주세요."); return false; }
