@@ -74,7 +74,7 @@
   input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(232,176,80,.13)}
   /* 칩·라디오 살짝 더 부드럽게 */
   .chip,.radio-card{border-radius:12px}
-  #job-chips .chip,#keyword-chips .chip{border-radius:100px}
+  #keyword-chips .chip{border-radius:100px}
   /* 섹션 헤더 아이콘칩 그라데이션 */
   .bg-\[\#E8B050\]\/10{background:linear-gradient(135deg,rgba(232,176,80,.16),rgba(212,149,42,.06))!important}
   /* 제출 버튼 그림자 */
@@ -419,24 +419,6 @@
           <input type="hidden" name="prefAge" id="pref-age-input">
         </div>
 
-        <!-- 선호 직업군 (복수 선택) -->
-        <div>
-          <label class="block text-xs font-bold text-[#9a9080] mb-2">선호 직업군 <span class="y">*</span> <span class="text-[#6b6358] font-normal ml-1">복수 선택 가능</span></label>
-          <div id="job-chips" class="flex flex-wrap gap-2">
-            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="사무직/회사원">사무직/회사원</button>
-            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="전문직">전문직</button>
-            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="공무원/공공기관">공무원/공공기관</button>
-            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="IT/개발">IT/개발</button>
-            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="금융/경영">금융/경영</button>
-            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="디자인/크리에이티브">디자인/크리에이티브</button>
-            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="교육">교육</button>
-            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="의료/보건">의료/보건</button>
-            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="자영업/창업">자영업/창업</button>
-            <button type="button" class="chip bg-[#0e0c0a] border border-[#1e1c17] rounded-full px-3.5 py-2 text-xs" data-val="상관없음">상관없음</button>
-          </div>
-          <input type="hidden" name="prefJob" id="pref-job-input">
-        </div>
-
         <!-- 성격 키워드 -->
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">
@@ -588,6 +570,10 @@
       </div>
       <!-- 제출 -->
       <div data-reveal>
+        <div class="bg-[#16140f] border border-[#1e1c17] rounded-xl px-4 py-3 mb-3 flex gap-2.5 items-start">
+          <i class="fa-solid fa-circle-info y text-xs mt-0.5 shrink-0"></i>
+          <p class="text-[11px] text-[#9a9080] leading-relaxed">신청하신다고 해서 <b class="text-[#c9bfa8]">100% 매칭이 되는 것은 아니에요.</b> 센터에서 프로필과 조건을 검토한 뒤, 잘 맞는 상대가 있을 때 소개해 드려요. 매칭 상대가 없을 수도 있는 점 양해 부탁드려요.</p>
+        </div>
         <button type="submit" id="submit-btn"
           class="bg-y text-black font-extrabold w-full px-6 py-4 rounded-2xl text-base transition hover:bg-[#D4952A] disabled:opacity-50 disabled:cursor-not-allowed">
           <i class="fa-solid fa-paper-plane mr-1.5"></i>신청서 제출하기
@@ -846,33 +832,6 @@ document.querySelectorAll("#age-chips .chip").forEach(chip => {
   });
 });
 
-// 선호 직업군 복수 선택
-const selectedJobs = new Set();
-document.querySelectorAll("#job-chips .chip").forEach(chip => {
-  chip.addEventListener("click", () => {
-    const val = chip.dataset.val;
-    // "상관없음" 선택 시 나머지 해제
-    if(val === "상관없음"){
-      selectedJobs.clear();
-      document.querySelectorAll("#job-chips .chip").forEach(c => c.classList.remove("selected"));
-      selectedJobs.add(val);
-      chip.classList.add("selected");
-    } else {
-      // 다른 항목 선택 시 "상관없음" 해제
-      selectedJobs.delete("상관없음");
-      document.querySelector('#job-chips .chip[data-val="상관없음"]').classList.remove("selected");
-      if(selectedJobs.has(val)){
-        selectedJobs.delete(val);
-        chip.classList.remove("selected");
-      } else {
-        selectedJobs.add(val);
-        chip.classList.add("selected");
-      }
-    }
-    document.getElementById("pref-job-input").value = [...selectedJobs].join(",");
-  });
-});
-
 // 프로필 사진 업로드 (최대 3장)
 const photoFiles = [null, null, null];
 let activeSlot = 0;
@@ -997,7 +956,6 @@ function stepFieldsValid(n){
   if(n===2){ if(!docFiles.job){ alert("재직증명서 또는 사업자등록증을 제출해주세요."); return false; } return true; }
   if(n===3){
     if(selectedAges.size===0){ alert("선호 나이대를 1개 이상 선택해주세요."); return false; }
-    if(selectedJobs.size===0){ alert("선호 직업군을 1개 이상 선택해주세요."); return false; }
     if(selectedKeywords.size<1){ alert("성격 키워드를 1개 이상 선택해주세요."); return false; }
     if(!document.getElementById("intro").value.trim()){ alert("자기소개를 입력해주세요."); return false; }
     return true;
@@ -1034,12 +992,6 @@ async function handleSubmit(e){
   // 선호 나이대 검증
   if(selectedAges.size === 0){
     alert("선호 나이대를 1개 이상 선택해주세요.");
-    return false;
-  }
-
-  // 선호 직업군 검증
-  if(selectedJobs.size === 0){
-    alert("선호 직업군을 1개 이상 선택해주세요.");
     return false;
   }
 
@@ -1102,7 +1054,7 @@ async function handleSubmit(e){
       "출생연도": payload.birthYear || "", "직업": payload.job || "",
       "키": payload.height || "", "사는곳": payload.location || "",
       "취미": payload.hobby || "", "종교": payload.religion || "",
-      "선호나이대": [...selectedAges].join(", "), "선호직업군": [...selectedJobs].join(", "),
+      "선호나이대": [...selectedAges].join(", "),
       "성격키워드": [...selectedKeywords].join(", "), "자기소개": payload.intro || "",
       "테스트결과": payload.testResult || "", "매칭유형": payload.matchType || "일반매칭", "매칭상태": "대기",
       "신청일시": new Date().toLocaleString("ko-KR")
