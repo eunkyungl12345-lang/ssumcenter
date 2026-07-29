@@ -1044,7 +1044,8 @@ async function handleSubmit(e){
     // 사진·서류 업로드를 동시에 진행 (속도 ↑)
     submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>사진·서류 업로드 중...';
     const photoTasks = photoFiles.filter(Boolean).map(async (file) => ({ url: await uploadToCloudinary(await compressImage(file), "ssumcenter/photos") }));
-    const docJobTask = docFiles.job ? uploadToCloudinary(docFiles.job, "ssumcenter/docs") : Promise.resolve(null);
+    // 서류도 사진일 땐 압축해서 올림(속도↑). PDF 등은 compressImage가 원본 그대로 통과시킴.
+    const docJobTask = docFiles.job ? compressImage(docFiles.job).then(f => uploadToCloudinary(f, "ssumcenter/docs")) : Promise.resolve(null);
     const [photoUrls, docJobUrl] = await Promise.all([ Promise.all(photoTasks), docJobTask ]);
 
     submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>신청서 제출 중...';
