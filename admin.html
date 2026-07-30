@@ -1106,10 +1106,10 @@ function generateMatch(){
   const photoB = b["프로필사진"] && b["프로필사진"][0] ? b["프로필사진"][0].url : "";
 
   // A에게 보낼 링크 (B의 프로필, myId=A의 ID)
-  const urlForA = `${SITE_URL}/response.html?id=${selected[1].id}&myId=${selected[0].id}&age=${encodeURIComponent((b["출생연도"]||"")+"년생")}&job=${encodeURIComponent(b["직업"]||"")}&keywords=${encodeURIComponent(b["성격키워드"]||"")}&intro=${encodeURIComponent(b["자기소개"]||"")}&photo1=${encodeURIComponent(photoB)}`;
+  const urlForA = `${SITE_URL}/response.html?id=${selected[1].id}&myId=${selected[0].id}`;
 
   // B에게 보낼 링크 (A의 프로필, myId=B의 ID)
-  const urlForB = `${SITE_URL}/response.html?id=${selected[0].id}&myId=${selected[1].id}&age=${encodeURIComponent((a["출생연도"]||"")+"년생")}&job=${encodeURIComponent(a["직업"]||"")}&keywords=${encodeURIComponent(a["성격키워드"]||"")}&intro=${encodeURIComponent(a["자기소개"]||"")}&photo1=${encodeURIComponent(photoA)}`;
+  const urlForB = `${SITE_URL}/response.html?id=${selected[0].id}&myId=${selected[1].id}`;
 
   document.getElementById("result-name-1").textContent = a["이름"];
   document.getElementById("url-for-1").value = urlForA;
