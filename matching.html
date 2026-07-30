@@ -1085,12 +1085,15 @@ async function handleSubmit(e){
     }
     if(!ok) throw new Error("전송 실패: " + lastErr);
 
-    // 성공 화면 표시
-    form.closest("section").classList.add("hidden");
-    document.querySelector("header").classList.add("hidden");
-    document.querySelector("section.px-5.pb-8").classList.add("hidden");
-    document.getElementById("success-screen").classList.remove("hidden");
-    window.scrollTo({top: 0, behavior: "smooth"});
+    // 성공 화면 표시 — 저장은 이미 끝났으니, 여기서 무슨 일이 있어도 오류로 빠지지 않게 안전 처리
+    try {
+      var formSec = form.closest("section"); if(formSec) formSec.classList.add("hidden");
+      var hdr = document.querySelector("header"); if(hdr) hdr.classList.add("hidden");
+      var infoSec = document.querySelector("section.px-5.pb-16"); if(infoSec) infoSec.classList.add("hidden");
+      var success = document.getElementById("success-screen"); if(success) success.classList.remove("hidden");
+      window.scrollTo({top: 0, behavior: "smooth"});
+    } catch(_) { /* 화면 전환 실패해도 신청은 이미 성공 처리 */ }
+    return false;
 
   } catch(err) {
     console.error(err);
