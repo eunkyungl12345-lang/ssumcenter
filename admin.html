@@ -162,7 +162,11 @@
 
   <!-- 매칭 도구 -->
   <div class="bg-[#161615] border border-[#FFD400]/20 rounded-2xl p-5 mb-8">
-    <h2 class="font-bold text-sm mb-3"><i class="fa-solid fa-heart-circle-plus y mr-1.5"></i>매칭하기</h2>
+    <button type="button" onclick="toggleMatchTool()" class="w-full flex items-center justify-between text-left">
+      <h2 class="font-bold text-sm"><i class="fa-solid fa-heart-circle-plus y mr-1.5"></i>매칭하기 <span class="text-[11px] text-[#9E9E97] font-normal">— 두 사람 골라 링크 만들기</span></h2>
+      <i id="match-tool-chevron" class="fa-solid fa-chevron-down text-[#9E9E97] text-xs"></i>
+    </button>
+    <div id="match-tool-body" class="hidden mt-4">
     <p class="text-xs text-[#9E9E97] mb-4">아래 목록에서 매칭할 두 사람을 클릭하세요</p>
 
     <div class="grid grid-cols-2 gap-3 mb-4">
@@ -227,6 +231,7 @@
       </button>
       <p class="text-[11px] text-[#555] text-center">문자 또는 링크 복사 후 카카오톡으로 보내주세요</p>
     </div>
+    </div><!-- /match-tool-body -->
   </div>
 
   <!-- 신청자 등록 버튼 -->
@@ -237,13 +242,18 @@
   <!-- 소개 풀 헤더 -->
   <div class="mb-4">
     <h2 class="text-lg font-black mb-3">소개 풀 (<span id="pool-count">0</span>명)</h2>
-    <!-- 필터 -->
-    <div class="flex flex-wrap gap-2 mb-3">
+    <!-- 필터: 상태 -->
+    <div class="flex flex-wrap gap-2 mb-2 items-center">
+      <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">상태</span>
       <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
       <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">승인대기</button>
       <button onclick="filterBy('승인')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
       <button onclick="filterBy('소개중')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="소개중">소개중</button>
       <button onclick="filterBy('거절')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="거절">거절</button>
+    </div>
+    <!-- 필터: 성별 -->
+    <div class="flex flex-wrap gap-2 mb-3 items-center">
+      <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">성별</span>
       <button onclick="filterBy('남성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
       <button onclick="filterBy('여성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
     </div>
@@ -1029,7 +1039,17 @@ function toggleSelect(id){
 
   document.getElementById("match-btn").disabled = !(selected[0] && selected[1]);
   document.getElementById("match-result").classList.add("hidden");
+  if(selected[0] || selected[1]) toggleMatchTool(true);
   renderList();
+}
+
+function toggleMatchTool(force){
+  const body = document.getElementById("match-tool-body");
+  const chev = document.getElementById("match-tool-chevron");
+  if(!body) return;
+  const willOpen = (force===true) ? true : (force===false ? false : body.classList.contains("hidden"));
+  body.classList.toggle("hidden", !willOpen);
+  if(chev) chev.style.transform = willOpen ? "rotate(180deg)" : "";
 }
 
 function generateMatch(){
