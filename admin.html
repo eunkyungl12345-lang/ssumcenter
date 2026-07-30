@@ -764,7 +764,7 @@ const SITE_URL = "https://ssumcenter.vercel.app";
 
 // API 인증 헤더 (로그인한 비밀번호를 사용)
 function apiHeaders(){
-  return {"Content-Type": "application/json", "x-admin-key": sessionStorage.getItem("admin_key") || ""};
+  return {"Content-Type": "application/json", "x-admin-key": localStorage.getItem("admin_key") || ""};
 }
 
 // ---- 회차 설정 (Airtable "설정" 테이블: 키/값) ----
@@ -1011,7 +1011,7 @@ async function sendIntakeSMS(id){
   try {
     const r = await fetch("/api/send-sms", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-admin-key": sessionStorage.getItem("admin_key") || "" },
+      headers: { "Content-Type": "application/json", "x-admin-key": localStorage.getItem("admin_key") || "" },
       body: JSON.stringify({ to: to, text: text })
     });
     const d = await r.json();
@@ -1106,7 +1106,7 @@ async function genAiReason(){
   try{
     const r = await fetch("/api/ai-reason", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-admin-key": sessionStorage.getItem("admin_key") || "" },
+      headers: { "Content-Type": "application/json", "x-admin-key": localStorage.getItem("admin_key") || "" },
       body: JSON.stringify({ a: mk(a), b: mk(b) })
     });
     const data = await r.json();
@@ -1793,7 +1793,7 @@ async function checkPw(){
     if(data.ok){
       pwFailCount = 0;
       document.getElementById("lock-screen").classList.add("hidden");
-      sessionStorage.setItem("admin_key", input);
+      localStorage.setItem("admin_key", input);
       loadApplicants();
       loadSettings();
     } else {
@@ -1814,8 +1814,8 @@ async function checkPw(){
   }
 }
 
-// 세션 유지 (탭 닫기 전까지)
-if(sessionStorage.getItem("admin_key")){
+// 로그인 유지 (기기에 저장 — 모바일에서도 매번 로그인 안 해도 됨)
+if(localStorage.getItem("admin_key")){
   document.getElementById("lock-screen").classList.add("hidden");
   loadApplicants();
   loadSettings();
