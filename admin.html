@@ -155,8 +155,8 @@
       <div class="text-[11px] text-[#9E9E97] mt-1">승인</div>
     </div>
     <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
-      <div class="text-2xl font-black text-emerald-400" id="stat-matched">-</div>
-      <div class="text-[11px] text-[#9E9E97] mt-1">매칭 완료</div>
+      <div class="text-2xl font-black text-blue-400" id="stat-matched">-</div>
+      <div class="text-[11px] text-[#9E9E97] mt-1">소개중 (수락 대기)</div>
     </div>
   </div>
 
@@ -242,7 +242,7 @@
       <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
       <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">승인대기</button>
       <button onclick="filterBy('승인')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
-      <button onclick="filterBy('매칭완료')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="매칭완료">매칭완료</button>
+      <button onclick="filterBy('소개중')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="소개중">소개중</button>
       <button onclick="filterBy('거절')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="거절">거절</button>
       <button onclick="filterBy('남성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
       <button onclick="filterBy('여성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
@@ -910,7 +910,7 @@ function updateStats(){
   const total = applicants.length;
   const waiting = applicants.filter(r => (r.fields["매칭상태"] || "대기") === "대기").length;
   const approved = applicants.filter(r => r.fields["매칭상태"] === "승인").length;
-  const matched = applicants.filter(r => r.fields["매칭상태"] === "매칭완료").length;
+  const matched = applicants.filter(r => r.fields["매칭상태"] === "소개중").length;
   document.getElementById("stat-total").textContent = total;
   document.getElementById("stat-waiting").textContent = waiting;
   document.getElementById("stat-approved").textContent = approved;
@@ -921,7 +921,7 @@ function renderList(){
   const list = document.getElementById("applicant-list");
   let filtered = applicants;
 
-  if(currentFilter === "대기" || currentFilter === "승인" || currentFilter === "매칭완료" || currentFilter === "거절"){
+  if(currentFilter === "대기" || currentFilter === "승인" || currentFilter === "소개중" || currentFilter === "거절"){
     filtered = applicants.filter(r => (r.fields["매칭상태"] || "대기") === currentFilter);
   } else if(currentFilter === "남성" || currentFilter === "여성"){
     filtered = applicants.filter(r => r.fields["성별"] === currentFilter);
@@ -939,7 +939,7 @@ function renderList(){
     const f = r.fields;
     const isSelected = selected[0]?.id === r.id || selected[1]?.id === r.id;
     const status = f["매칭상태"] || "대기";
-    const statusColor = status === "대기" ? "color:#FFD400" : status === "승인" ? "color:#22c55e" : status === "매칭완료" ? "color:#3b82f6" : status === "거절" ? "color:#ef4444" : "color:#9E9E97";
+    const statusColor = status === "대기" ? "color:#FFD400" : status === "승인" ? "color:#22c55e" : status === "소개중" ? "color:#3b82f6" : status === "거절" ? "color:#ef4444" : "color:#9E9E97";
     const photoUrl = f["프로필사진"] && f["프로필사진"][0] ? f["프로필사진"][0].url : null;
     const photos = f["프로필사진"] || [];
     const gender = f["성별"] === "여성" ? "♀" : f["성별"] === "남성" ? "♂" : "";
@@ -1113,7 +1113,7 @@ async function updateMatchStatus(recordId){
     await fetch("/api/airtable?table=1:1 매칭 신청", {
       method: "PATCH",
       headers: apiHeaders(),
-      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "매칭완료" } }] })
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "소개중" } }] })
     });
   } catch(err){ console.error(err); }
 }
