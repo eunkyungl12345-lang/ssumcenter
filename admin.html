@@ -142,22 +142,22 @@
 
   <!-- 통계 -->
   <div class="grid grid-cols-4 gap-3 mb-8">
-    <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
+    <button type="button" onclick="filterBy('all')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
       <div class="text-2xl font-black y" id="stat-total">-</div>
       <div class="text-[11px] text-[#9E9E97] mt-1">전체 신청</div>
-    </div>
-    <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
+    </button>
+    <button type="button" onclick="filterBy('대기')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
       <div class="text-2xl font-black text-[#FFD400]" id="stat-waiting">-</div>
       <div class="text-[11px] text-[#9E9E97] mt-1">승인 대기</div>
-    </div>
-    <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
+    </button>
+    <button type="button" onclick="filterBy('승인')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
       <div class="text-2xl font-black text-emerald-400" id="stat-approved">-</div>
       <div class="text-[11px] text-[#9E9E97] mt-1">승인</div>
-    </div>
-    <div class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center">
+    </button>
+    <button type="button" onclick="filterBy('소개중')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
       <div class="text-2xl font-black text-blue-400" id="stat-matched">-</div>
-      <div class="text-[11px] text-[#9E9E97] mt-1">소개중 (수락 대기)</div>
-    </div>
+      <div class="text-[11px] text-[#9E9E97] mt-1">소개중</div>
+    </button>
   </div>
 
   <!-- 매칭 도구 -->
@@ -901,18 +901,23 @@ function renderResponses(responses){
     const a = r.fields["응답자ID"], b = r.fields["매칭ID"];
     if(set.has(b + "→" + a)) matched.add([a, b].sort().join("|"));
   });
-  let html = '<div class="bg-[#161615] border border-[#242422] rounded-2xl p-4"><div class="font-black text-sm mb-3">💌 매칭 응답 현황 <span class="text-[11px] text-[#9E9E97] font-normal">(' + responses.length + '건)</span></div>';
+  const accCnt = responses.filter(r => r.fields["응답"] === "수락").length;
+  const rejCnt = responses.filter(r => r.fields["응답"] === "거절").length;
+  let html = '<div class="bg-[#161615] border border-[#242422] rounded-2xl p-4"><div class="font-black text-sm mb-3">💌 매칭 응답 <span class="text-[11px] text-[#9E9E97] font-normal">(성사 ' + matched.size + ' · 수락 ' + accCnt + ' · 거절 ' + rejCnt + ')</span></div>';
+  // 성사된 쌍은 항상 눈에 띄게 (바로 처리해야 하니까)
   matched.forEach(pair => {
     const [a, b] = pair.split("|");
     html += '<div class="bg-[#22c55e]/10 border border-[#22c55e]/40 rounded-xl p-3 mb-2 text-sm">🎉 <b class="text-[#22c55e]">성사!</b> ' + nameOf(a) + ' ❤️ ' + nameOf(b) + '<div class="text-[11px] text-[#9E9E97] mt-1">결제 확인 후 연락처를 전달하세요</div></div>';
   });
-  html += '<div class="mt-1">';
+  if(!matched.size) html += '<div class="text-[12px] text-[#9E9E97] mb-1">아직 성사된 매칭이 없어요.</div>';
+  // 상세 응답 기록은 접어두기 (필요할 때만 펼침)
+  html += '<details class="mt-1"><summary style="cursor:pointer;font-size:12px;color:#9E9E97;padding:6px 0;list-style:none">▸ 응답 기록 전체 보기 (' + responses.length + '건)</summary><div class="mt-1">';
   responses.forEach(r => {
     const f = r.fields, ans = f["응답"] || "?", sup = f["매칭유형"] === "슈퍼매칭";
     const c = ans === "수락" ? "#22c55e" : "#ef4444";
     html += '<div class="flex items-center gap-2 text-[12.5px] py-2 border-t border-[#242422]"><span style="color:' + c + ';font-weight:800">' + ans + '</span> <span class="text-white font-bold">' + nameOf(f["응답자ID"]) + '</span><span class="text-[#9E9E97]">→ ' + nameOf(f["매칭ID"]) + '</span>' + (sup ? ' <span style="color:#FFD400;font-size:10px">⚡슈퍼</span>' : '') + '<span class="text-[10px] text-[#555] ml-auto">' + (f["응답일시"] || "") + '</span></div>';
   });
-  html += '</div></div>';
+  html += '</div></details></div>';
   box.innerHTML = html;
 }
 
