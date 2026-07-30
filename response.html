@@ -50,6 +50,12 @@
       </p>
     </div>
 
+    <!-- 슈퍼매칭 수신 배지 (상대가 슈퍼매칭을 보냈을 때만 표시) -->
+    <div id="super-incoming-badge" class="hidden" style="background:rgba(255,212,0,.08);border:1px solid rgba(255,212,0,.4);border-radius:16px;padding:16px;margin-bottom:24px;text-align:center" data-reveal>
+      <div style="font-size:17px;font-weight:900;color:#FFD400;display:flex;align-items:center;justify-content:center;gap:8px"><i class="fa-solid fa-crown"></i> 슈퍼매칭이 왔어요!</div>
+      <p style="font-size:13px;color:#9E9E97;margin-top:6px;line-height:1.6">상대방이 <b style="color:#fff">비용을 모두 부담</b>했어요.<br>수락하시면 <b style="color:#FFD400">무료</b>로 연락처를 받으실 수 있어요 💛</p>
+    </div>
+
     <!-- 타이머 -->
     <div class="bg-[#161615] border border-[#FFD400]/20 rounded-xl p-3 flex items-center justify-center gap-2 mb-6 text-sm" data-reveal>
       <i class="fa-solid fa-clock y"></i>
@@ -240,12 +246,12 @@
     <div id="matched-pay-box" class="bg-[#161615] border border-[#FFD400]/30 rounded-2xl p-6 mt-6 space-y-4">
       <div class="text-center">
         <div class="text-[11px] text-[#9E9E97] font-bold uppercase tracking-wider mb-1">매칭 비용</div>
-        <div class="text-3xl font-black y">19,900원</div>
+        <div id="matched-amount" class="text-3xl font-black y">19,900원</div>
       </div>
       <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-4 space-y-2 text-left">
         <div class="flex gap-3 items-center text-sm">
           <div class="w-6 h-6 rounded-lg bg-y text-black flex items-center justify-center text-xs font-bold">1</div>
-          <span class="text-[#9E9E97]">아래 계좌로 <b class="text-white">19,900원</b> 입금</span>
+          <span class="text-[#9E9E97]">아래 계좌로 <b id="matched-amount-inline" class="text-white">19,900원</b> 입금</span>
         </div>
         <div class="flex gap-3 items-center text-sm">
           <div class="w-6 h-6 rounded-lg bg-[#242422] text-[#9E9E97] flex items-center justify-center text-xs font-bold">2</div>
@@ -256,6 +262,12 @@
         <div class="text-[11px] text-[#9E9E97] mb-1">입금 계좌</div>
         <div class="text-base font-black text-white" id="payment-account">카카오뱅크 3333-34-1009531 (장민)</div>
       </div>
+    </div>
+    <!-- 슈퍼매칭 받은 사람: 무료 (결제 없음) -->
+    <div id="matched-free-box" class="hidden" style="background:#161615;border:1px solid rgba(255,212,0,.3);border-radius:16px;padding:24px;margin-top:24px;text-align:center">
+      <div style="font-size:26px">💛</div>
+      <div style="font-size:18px;font-weight:900;color:#FFD400;margin-top:4px">상대방이 슈퍼매칭을 보냈어요!</div>
+      <p style="font-size:14px;color:#9E9E97;margin-top:8px;line-height:1.6">상대방이 비용을 모두 부담했어요.<br>따로 결제하실 필요 없이 <b style="color:#fff">무료</b>로 연락처를 받으세요!</p>
     </div>
     <p id="matched-foot" class="text-xs text-[#9E9E97] mt-5 leading-relaxed">입금 확인 후 카카오톡으로 상대방 연락처를 보내드려요.</p>
   </div>
@@ -513,9 +525,61 @@ async function checkOtherResponse(){
   }
 }
 
+// 매칭 응답 표에서 두 사람의 매칭유형(슈퍼/일반) 조회
+async function getMatchTypes(){
+  var myId = params.get("myId");
+  var out = { mine:"", other:"" };
+  if(!myId || !matchId) return out;
+  try {
+    var f1 = encodeURIComponent('AND({응답자ID}="'+myId+'",{매칭ID}="'+matchId+'")');
+    var r1 = await fetch("/api/airtable?table=매칭 응답&filter=" + f1);
+    var d1 = await r1.json();
+    if(d1.records && d1.records.length) out.mine = d1.records[0].fields["매칭유형"] || "";
+    var f2 = encodeURIComponent('AND({응답자ID}="'+matchId+'",{매칭ID}="'+myId+'")');
+    var r2 = await fetch("/api/airtable?table=매칭 응답&filter=" + f2);
+    var d2 = await r2.json();
+    if(d2.records && d2.records.length) out.other = d2.records[0].fields["매칭유형"] || "";
+  } catch(e){ console.error(e); }
+  return out;
+}
+
+// 슈퍼매칭 정책에 따라 결제 화면 커스터마이즈
+//  - 내가 슈퍼(상대 일반): 39,800원(양쪽 몫)  · 상대가 슈퍼(나 일반): 0원(무료)  · 그 외: 각자 19,900원
+function applyMatchPricing(iSuper, oSuper){
+  var myPay = 19900;
+  if(iSuper && !oSuper) myPay = 39800;
+  else if(oSuper && !iSuper) myPay = 0;
+
+  var payBox = document.getElementById("matched-pay-box");
+  var freeBox = document.getElementById("matched-free-box");
+  var sub = document.getElementById("matched-sub");
+  var foot = document.getElementById("matched-foot");
+  var amt = document.getElementById("matched-amount");
+  var amtInline = document.getElementById("matched-amount-inline");
+
+  if(myPay === 0){
+    if(payBox) payBox.classList.add("hidden");
+    if(freeBox) freeBox.classList.remove("hidden");
+    if(sub) sub.innerHTML = "양쪽 모두 수락했어요! 💛<br>상대방이 슈퍼매칭으로 비용을 모두 냈어요.";
+    if(foot) foot.innerHTML = "센터장이 상대방 입금 확인 후 카카오톡으로 연락처를 보내드려요.";
+    return;
+  }
+  if(freeBox) freeBox.classList.add("hidden");
+  if(payBox) payBox.classList.remove("hidden");
+  var won = (myPay === 39800) ? "39,800원" : "19,900원";
+  if(amt) amt.textContent = won;
+  if(amtInline) amtInline.textContent = won;
+  if(iSuper){
+    if(sub) sub.innerHTML = "양쪽 모두 수락했어요! ⚡<br>슈퍼매칭 — 상대방 몫까지 함께 결제해요.";
+    if(foot) foot.innerHTML = "입금 확인 후 카카오톡으로 상대방 연락처를 보내드려요. (상대방은 무료로 받아요)";
+  } else {
+    if(sub) sub.innerHTML = "양쪽 모두 수락했어요!<br>결제 완료 후 연락처를 전달해 드려요.";
+    if(foot) foot.innerHTML = "입금 확인 후 카카오톡으로 상대방 연락처를 보내드려요.";
+  }
+}
+
 // 매칭 성사 → 결제 안내 표시 (연락처는 입금 확인 후 센터장이 전달)
 async function showContact(){
-
   try {
     // 매칭 상태 업데이트
     await fetch("/api/airtable?table=1:1 매칭 신청", {
@@ -527,8 +591,11 @@ async function showContact(){
       ]})
     });
 
-    // 남녀 모두 성사비 결제 (매칭 성사 시 양쪽 다 2만원)
-    // 결제 안내 화면 표시 (연락처는 아직 안 보여줌)
+    // 슈퍼매칭 여부에 따라 결제 금액 계산 후 화면 표시 (연락처는 아직 안 보여줌)
+    try {
+      var t = await getMatchTypes();
+      applyMatchPricing(t.mine === "슈퍼매칭", t.other === "슈퍼매칭");
+    } catch(e){ console.error(e); }
     showScreen("matched");
   } catch(err){
     console.error(err);
@@ -607,6 +674,14 @@ async function checkMyResponse(){
     else if(other === false) showScreen("unmatched");
     else showScreen("accept");     // 수락자는 결과 화면
   } else {
+    // 상대가 이미 슈퍼매칭을 보냈으면 배지 표시 (수락 시 무료 안내)
+    try {
+      var mt = await getMatchTypes();
+      if(mt.other === "슈퍼매칭"){
+        var badge = document.getElementById("super-incoming-badge");
+        if(badge) badge.classList.remove("hidden");
+      }
+    } catch(e){}
     showScreen("match");           // 처음 보는 사람만 프로필 + 수락/거절 공개
   }
 })();
