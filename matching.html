@@ -443,6 +443,14 @@
           <p id="keyword-count" class="text-[11px] text-[#6b6358] mt-2">0개 선택됨</p>
         </div>
 
+        <!-- 이상형 자유 입력 (필수) -->
+        <div>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">어떤 분을 만나고 싶으세요? <span class="y">*</span></label>
+          <textarea name="idealType" id="ideal-type" required maxlength="150" rows="3"
+            placeholder="예: 대화 잘 통하고 유머 있는 분, 결혼 생각 있는 분, 운동 좋아하면 좋아요 (150자 이내)"
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition resize-none"></textarea>
+        </div>
+
         <!-- 자기소개 -->
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">간단한 자기소개 <span class="y">*</span></label>
@@ -957,6 +965,7 @@ function stepFieldsValid(n){
   if(n===3){
     if(selectedAges.size===0){ alert("선호 나이대를 1개 이상 선택해주세요."); return false; }
     if(selectedKeywords.size<1){ alert("성격 키워드를 1개 이상 선택해주세요."); return false; }
+    if(!document.getElementById("ideal-type").value.trim()){ alert("어떤 분을 만나고 싶은지 적어주세요."); return false; }
     if(!document.getElementById("intro").value.trim()){ alert("자기소개를 입력해주세요."); return false; }
     return true;
   }
@@ -1056,7 +1065,7 @@ async function handleSubmit(e){
       "키": payload.height || "", "사는곳": payload.location || "",
       "취미": payload.hobby || "", "종교": payload.religion || "",
       "선호나이대": [...selectedAges].join(", "),
-      "성격키워드": [...selectedKeywords].join(", "), "자기소개": payload.intro || "",
+      "성격키워드": [...selectedKeywords].join(", "), "이상형": payload.idealType || "", "자기소개": payload.intro || "",
       "테스트결과": payload.testResult || "", "매칭유형": payload.matchType || "일반매칭", "매칭상태": "대기",
       "신청일시": new Date().toLocaleString("ko-KR")
     };
