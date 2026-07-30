@@ -18,7 +18,7 @@ function sourceLabel(table) {
 
 // 신청 레코드 필드 → 회원 필드로 매핑
 function mapToMember(fields) {
-  const 이상형 = [fields["선호나이대"], fields["선호직업군"]].filter(Boolean).join(" / ");
+  const 이상형 = fields["이상형"] || [fields["선호나이대"], fields["선호직업군"]].filter(Boolean).join(" / ");
   const m = {
     "이름": fields["이름"] || "",
     "전화번호": normPhone(fields["연락처"] || fields["전화번호"]),
