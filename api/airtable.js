@@ -25,6 +25,17 @@ function 로테이션접수문자() {
   ].join("\n");
 }
 
+// 1:1 신청 접수 → 자동 접수 안내 문자 (관리자 수동 버튼과 동일 문구)
+function 일대일접수문자(name) {
+  return [
+    name + "님, 안녕하세요. 썸류센터입니당",
+    "1:1 매칭 신청이 잘 접수됐어요 💛",
+    "센터장이 " + name + "님께 어울리는 분을 신중하게 찾고 있어요.",
+    "좋은 인연이 준비되면 상대 프로필과 함께 문자로 안내드릴게요!",
+    "설레는 마음으로 준비할게요. 조금만 기다려주세요 ✨",
+  ].join("\n");
+}
+
 module.exports = async function handler(req, res) {
   // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -140,6 +151,20 @@ module.exports = async function handler(req, res) {
           }
         }
       } catch (e) { console.error("[airtable] 접수문자 발송 실패:", e.message); }
+    }
+
+    // 1:1 매칭 신청 접수(공개 폼) → 접수 안내 문자 자동 발송 (실패해도 신청은 성공)
+    if (req.method === "POST" && !isAdmin && table === "1:1 매칭 신청") {
+      try {
+        const recs = (req.body && req.body.records) || [];
+        for (const rc of recs) {
+          const f = (rc && rc.fields) || {};
+          const to = f["연락처"] || "";
+          if (isValidPhone(to)) {
+            await sendSms({ to, text: 일대일접수문자(f["이름"] || "") });
+          }
+        }
+      } catch (e) { console.error("[airtable] 1:1 접수문자 발송 실패:", e.message); }
     }
     return res.status(200).json(data);
   } catch (err) {
