@@ -979,6 +979,7 @@ function renderList(){
             <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">종교</span><br><b>${f["종교"] || "-"}</b></div>
             <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">취미</span><br><b>${f["취미"] || "-"}</b></div>
             <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
+            ${f["테스트결과"] ? `<div style="grid-column:1/-1;background:#0D0D0C;border:1px solid rgba(232,176,80,.3);border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">☕ 연애 테스트 결과</span><br><b style="color:#E8B050">${f["테스트결과"]}</b></div>` : ""}
           </div>
           ${(f["재직증명서"] && f["재직증명서"][0] && f["재직증명서"][0].url)
             ? `<a href="${f["재직증명서"][0].url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:8px;background:#0D0D0C;border:1px solid #22c55e;border-radius:11px;padding:10px 12px;font-size:13px;color:#22c55e;font-weight:700;text-decoration:none"><i class="fa-solid fa-file-shield"></i> 재직증명서·사업자등록증 보기</a>`
