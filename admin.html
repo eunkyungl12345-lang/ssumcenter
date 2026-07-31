@@ -854,6 +854,7 @@ function openPhoto(url){
 }
 
 let applicants = [];
+let matchResponses = [];
 let selected = [null, null];
 let currentFilter = "all";
 
@@ -887,8 +888,32 @@ async function loadResponses(){
     const res = await fetch("/api/airtable?table=매칭 응답&sort=응답일시", {headers: apiHeaders()});
     if(!res.ok) return;
     const data = await res.json();
-    renderResponses(data.records || []);
+    matchResponses = data.records || [];
+    renderResponses(matchResponses);
+    renderList(); // 카드에 매칭 이력 반영
   } catch(e){ console.error(e); }
+}
+
+// 특정 신청자의 매칭 이력 (내가 한 응답 + 받은 응답)
+function matchHistoryFor(id){
+  if(!matchResponses || !matchResponses.length) return "";
+  const nm = (rid) => { const a = applicants.find(x=>x.id===rid); return a ? (a.fields["이름"]||"?") : "(명단밖)"; };
+  const rowHtml = (txt, ans, sup) => {
+    const c = ans==="수락" ? "#22c55e" : "#ef4444";
+    return '<div style="font-size:12.5px;padding:3px 0">'+txt+' <span style="color:'+c+';font-weight:800">'+ans+'</span>'+(sup?' <span style="color:#FFD400;font-size:10px">⚡슈퍼</span>':'')+'</div>';
+  };
+  let mine="", toMe="";
+  matchResponses.forEach(r=>{
+    const f=r.fields||{};
+    if(f["응답자ID"]===id && f["매칭ID"]) mine += rowHtml('내가 <b style="color:#fff">'+nm(f["매칭ID"])+'</b> →', f["응답"], f["매칭유형"]==="슈퍼매칭");
+    if(f["매칭ID"]===id && f["응답자ID"]) toMe += rowHtml('<b style="color:#fff">'+nm(f["응답자ID"])+'</b>가 나를 →', f["응답"], f["매칭유형"]==="슈퍼매칭");
+  });
+  if(!mine && !toMe) return "";
+  return '<div style="background:#0D0D0C;border:1px solid #3b82f6;border-radius:11px;padding:10px 12px">'
+    + '<div style="color:#60a5fa;font-size:11px;font-weight:800;margin-bottom:4px">💘 매칭 이력</div>'
+    + (mine? '<div style="color:#8a8070;font-size:10px;margin-top:2px">내가 한 응답</div>'+mine : '')
+    + (toMe? '<div style="color:#8a8070;font-size:10px;margin-top:4px">받은 응답</div>'+toMe : '')
+    + '</div>';
 }
 function renderResponses(responses){
   const box = document.getElementById("response-status");
@@ -1016,6 +1041,7 @@ function renderList(){
             <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
             ${f["테스트결과"] ? `<div style="grid-column:1/-1;background:#0D0D0C;border:1px solid rgba(232,176,80,.3);border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">☕ 연애 테스트 결과</span><br><b style="color:#E8B050">${f["테스트결과"]}</b></div>` : ""}
           </div>
+          ${matchHistoryFor(r.id)}
           ${myCoffee ? `<div style="background:#0D0D0C;border:1px solid rgba(232,176,80,.35);border-radius:11px;padding:10px 12px">
             <div style="color:#E8B050;font-size:11px;font-weight:800;margin-bottom:2px">☕ 커피 궁합 잘 맞는 이성 ${coffeeBuddies.length ? '('+coffeeBuddies.length+'명)' : ''}</div>
             ${coffeeBuddies.length ? coffeeBuddies.map(o=>{const of=o.fields||{};return `<div style="font-size:12.5px;padding:4px 0;border-top:1px solid #242422;cursor:pointer" onclick="event.stopPropagation();toggleSelect('${o.id}')"><b style="color:#fff">${of["이름"]||"?"}</b> <span style="color:#9E9E97">${of["출생연도"]||"?"}년생 · ${of["성별"]||""} · ${coffeeType(of["테스트결과"])}</span></div>`;}).join("") : '<div style="font-size:12px;color:#9E9E97;padding-top:4px">아직 궁합 맞는 이성 신청자가 없어요</div>'}
