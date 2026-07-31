@@ -1008,7 +1008,7 @@ function renderList(){
     return;
   }
 
-  list.innerHTML = filtered.map(r => {
+  const cardHtml = (r) => {
     const f = r.fields;
     const isSelected = selected[0]?.id === r.id || selected[1]?.id === r.id;
     const status = f["매칭상태"] || "대기";
@@ -1062,7 +1062,20 @@ function renderList(){
         </div>
       </div>
     </div>`;
-  }).join("");
+  };
+
+  // 👦👧 남/여 2단 매칭 보드 (좁은 화면에선 자동으로 위아래로 쌓임)
+  const males = filtered.filter(r => r.fields["성별"] === "남성");
+  const females = filtered.filter(r => r.fields["성별"] === "여성");
+  const etc = filtered.filter(r => r.fields["성별"] !== "남성" && r.fields["성별"] !== "여성");
+  const column = (emoji, title, arr, color) =>
+    `<div style="flex:1 1 320px">
+       <div style="position:sticky;top:0;z-index:2;font-weight:900;font-size:13px;color:${color};background:#0D0D0C;padding:8px 11px;border-radius:10px;margin-bottom:8px;border:1px solid #242422">${emoji} ${title} <span style="color:#8a8070;font-weight:600;font-size:12px">${arr.length}명</span></div>
+       ${arr.length ? arr.map(cardHtml).join("") : '<div style="color:#555;font-size:12px;text-align:center;padding:24px 0">없음</div>'}
+     </div>`;
+  list.innerHTML =
+    `<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start">${column("👦","남성",males,"#60a5fa")}${column("👧","여성",females,"#f472b6")}</div>`
+    + (etc.length ? `<div style="margin-top:12px">${etc.map(cardHtml).join("")}</div>` : "");
 }
 
 async function sendIntakeSMS(id){
