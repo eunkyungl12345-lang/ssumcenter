@@ -462,6 +462,11 @@ function loadProfile(data){
 }
 
 async function respond(action, isSuper){
+  // 유효한 매칭 링크인지 확인 (myId 없으면 '누가 응답했는지' 기록 불가 → 차단)
+  if(!matchId || !params.get("myId")){
+    alert("유효하지 않은 매칭 링크예요 😢\n\n센터장이 문자로 보내드린 링크로 다시 들어와 주세요!\n(링크 전체가 열려야 해요)");
+    return;
+  }
   // 버튼 비활성화
   ["btn-accept","btn-super","btn-reject"].forEach(function(id){ var b=document.getElementById(id); if(b) b.disabled=true; });
   var clicked = action === "accept" ? (isSuper ? "btn-super" : "btn-accept") : "btn-reject";
