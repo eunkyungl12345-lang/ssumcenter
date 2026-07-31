@@ -1136,6 +1136,24 @@ function toggleMatchTool(force){
   if(chev) chev.style.transform = willOpen ? "rotate(180deg)" : "";
 }
 
+// 매칭 테이블에 커플 한 줄 기록 (관계형)
+function saveMatchRecord(p0, p1){
+  if(!p0 || !p1) return;
+  try {
+    const man = p0.fields["성별"] === "남성" ? p0 : p1;
+    const woman = p0.fields["성별"] === "남성" ? p1 : p0;
+    fetch("/api/airtable?table=매칭", {
+      method: "POST", headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ fields: {
+        "남자": man.fields["이름"] || "", "여자": woman.fields["이름"] || "",
+        "남자ID": man.id, "여자ID": woman.id,
+        "상태": "소개중", "남자응답": "대기", "여자응답": "대기",
+        "생성일": new Date().toLocaleString("ko-KR")
+      }}]})
+    }).catch(()=>{});
+  } catch(e){ console.error(e); }
+}
+
 function generateMatch(){
   if(!selected[0] || !selected[1]) return;
 
@@ -1159,6 +1177,7 @@ function generateMatch(){
   // Airtable 매칭상태 업데이트
   updateMatchStatus(selected[0].id);
   updateMatchStatus(selected[1].id);
+  saveMatchRecord(selected[0], selected[1]); // 매칭 테이블에 커플 기록
 
   // AI 추천 이유 영역 초기화
   const aiBox = document.getElementById("ai-reason-box");
