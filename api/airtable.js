@@ -166,6 +166,29 @@ module.exports = async function handler(req, res) {
         }
       } catch (e) { console.error("[airtable] 1:1 접수문자 발송 실패:", e.message); }
     }
+
+    // 매칭 응답이 '거절'이면 → 양쪽을 '승인'으로 되돌림 (소개중 해제 → 다음 소개 가능, best-effort)
+    if (req.method === "POST" && table === "매칭 응답") {
+      try {
+        const recs = (req.body && req.body.records) || [];
+        const revert = new Set();
+        for (const rc of recs) {
+          const f = (rc && rc.fields) || {};
+          if (f["응답"] === "거절") {
+            if (f["응답자ID"]) revert.add(f["응답자ID"]);
+            if (f["매칭ID"]) revert.add(f["매칭ID"]);
+          }
+        }
+        const ids = [...revert].filter(id => typeof id === "string" && id.startsWith("rec"));
+        if (ids.length) {
+          await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}`, {
+            method: "PATCH",
+            headers: { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ records: ids.map(id => ({ id, fields: { "매칭상태": "승인" } })) })
+          });
+        }
+      } catch (e) { console.error("[airtable] 거절 후 상태복귀 실패:", e.message); }
+    }
     return res.status(200).json(data);
   } catch (err) {
     return res.status(500).json({ error: err.message });
