@@ -83,10 +83,36 @@ async function upsertMember({ table, fields, TOKEN, BASE_ID }) {
   }
 }
 
-// 셋업(테이블 생성·데이터 이전)은 최초 1회 완료됨. 이 엔드포인트는 더 이상 직접 호출 안 함.
+// 관리자 셋업 엔드포인트: 테이블/필드 생성 (Metadata API, 함수 개수 절약 위해 여기 통합)
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-key");
   if (req.method === "OPTIONS") return res.status(200).end();
+
+  const TOKEN = process.env.AIRTABLE_TOKEN;
+  const BASE_ID = process.env.AIRTABLE_BASE_ID;
+  const ADMIN_PW = process.env.ADMIN_PASSWORD;
+  const isAdmin = ADMIN_PW && req.headers["x-admin-key"] === ADMIN_PW;
+  const body = (req.method === "POST" && req.body) || {};
+
+  if (isAdmin && (body.action === "createTable" || body.action === "createField")) {
+    try {
+      const url = body.action === "createTable"
+        ? `https://api.airtable.com/v0/meta/bases/${BASE_ID}/tables`
+        : `https://api.airtable.com/v0/meta/bases/${BASE_ID}/tables/${body.tableId}/fields`;
+      const payload = body.action === "createTable"
+        ? { name: body.name, description: body.description || "", fields: body.fields || [] }
+        : { name: body.name, type: body.type || "multilineText", description: body.description || "" };
+      const r = await fetch(url, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      return res.status(r.status).json(await r.json());
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
   return res.status(404).json({ error: "not found" });
 };
 
