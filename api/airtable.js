@@ -189,6 +189,38 @@ module.exports = async function handler(req, res) {
         }
       } catch (e) { console.error("[airtable] 거절 후 상태복귀 실패:", e.message); }
     }
+
+    // 매칭 응답 → '매칭' 테이블 상태 자동 갱신 (소개중 → 성사/불발, best-effort)
+    if (req.method === "POST" && table === "매칭 응답") {
+      try {
+        const AUTH = { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" };
+        const MTBL = encodeURIComponent("매칭");
+        const recs = (req.body && req.body.records) || [];
+        for (const rc of recs) {
+          const f = (rc && rc.fields) || {};
+          const responder = f["응답자ID"], target = f["매칭ID"], ans = f["응답"];
+          if (!responder || !target || !ans) continue;
+          const formula = `AND({상태}="소개중",OR(AND({남자ID}="${responder}",{여자ID}="${target}"),AND({남자ID}="${target}",{여자ID}="${responder}")))`;
+          const fr = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${MTBL}?filterByFormula=${encodeURIComponent(formula)}&pageSize=1`, { headers: AUTH });
+          const fd = await fr.json();
+          const rec = (fd.records || [])[0];
+          if (!rec) continue;
+          const mf = rec.fields || {};
+          const responderIsMan = mf["남자ID"] === responder;
+          const upd = responderIsMan ? { "남자응답": ans } : { "여자응답": ans };
+          const manAns = responderIsMan ? ans : mf["남자응답"];
+          const womanAns = responderIsMan ? mf["여자응답"] : ans;
+          if (ans === "거절") {
+            upd["상태"] = "불발";
+            upd["결과"] = (responderIsMan ? mf["남자"] : mf["여자"]) + " 거절 → 불발";
+          } else if (manAns === "수락" && womanAns === "수락") {
+            upd["상태"] = "성사";
+            upd["결과"] = "양쪽 수락 → 성사 🎉";
+          }
+          await fetch(`https://api.airtable.com/v0/${BASE_ID}/${MTBL}/${rec.id}`, { method: "PATCH", headers: AUTH, body: JSON.stringify({ fields: upd }) });
+        }
+      } catch (e) { console.error("[airtable] 매칭 테이블 갱신 실패:", e.message); }
+    }
     return res.status(200).json(data);
   } catch (err) {
     return res.status(500).json({ error: err.message });

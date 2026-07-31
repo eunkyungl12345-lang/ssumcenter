@@ -268,6 +268,9 @@
   <!-- 매칭 응답 현황 -->
   <div id="response-status" class="mb-5"></div>
 
+  <!-- 💑 매칭 현황 (매칭 테이블) -->
+  <div id="match-board-status" class="mb-5"></div>
+
   <!-- 신청자 목록 (소개 풀) -->
   <div id="applicant-list" class="space-y-0">
     <div class="text-center py-10 text-[#555]">
@@ -872,6 +875,7 @@ async function loadApplicants(){
     updateStats();
     renderList();
     loadResponses();
+    loadMatches();
   } catch(err) {
     console.error(err);
     document.getElementById("applicant-list").innerHTML = '<p class="text-center text-red-400 py-10">데이터를 불러올 수 없습니다</p>';
@@ -883,6 +887,34 @@ function nameOf(id){
   const a = applicants.find(x => x.id === id);
   return a ? (a.fields["이름"] || a.fields["닉네임"] || "?") : "(명단밖)";
 }
+// 💑 매칭 현황 (매칭 테이블) 로드·표시
+async function loadMatches(){
+  const box = document.getElementById("match-board-status");
+  if(!box) return;
+  try {
+    const res = await fetch("/api/airtable?table=매칭&sort=생성일", {headers: apiHeaders()});
+    if(!res.ok) return;
+    const data = await res.json();
+    const recs = data.records || [];
+    if(!recs.length){ box.innerHTML = ""; return; }
+    const order = {"소개중":0,"성사":1,"불발":2};
+    recs.sort((a,b)=> (order[(a.fields||{})["상태"]] ?? 9) - (order[(b.fields||{})["상태"]] ?? 9));
+    const cnt = s => recs.filter(r=>(r.fields||{})["상태"]===s).length;
+    const badge = s => s==="성사" ? 'background:#22c55e;color:#000' : s==="소개중" ? 'background:#3b82f6;color:#fff' : 'background:#3a3a37;color:#9E9E97';
+    let html = '<div class="bg-[#161615] border border-[#242422] rounded-2xl p-4">';
+    html += '<div class="font-black text-sm mb-3">💑 매칭 현황 <span class="text-[11px] text-[#9E9E97] font-normal">(소개중 '+cnt("소개중")+' · 성사 '+cnt("성사")+' · 불발 '+cnt("불발")+')</span></div>';
+    html += recs.map(r=>{ const f=r.fields||{}; const s=f["상태"]||"소개중";
+      return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #242422;font-size:13px;flex-wrap:wrap">'
+        +'<span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;'+badge(s)+'">'+s+'</span>'
+        +'<b style="color:#60a5fa">'+(f["남자"]||"?")+'</b> <span style="color:#f472b6">❤</span> <b style="color:#f472b6">'+(f["여자"]||"?")+'</b>'
+        +(f["결과"] ? '<span style="color:#8a8070;font-size:11px;margin-left:auto">'+f["결과"]+'</span>' : '')
+        +'</div>';
+    }).join("");
+    html += '</div>';
+    box.innerHTML = html;
+  } catch(e){ console.error(e); }
+}
+
 async function loadResponses(){
   try {
     const res = await fetch("/api/airtable?table=매칭 응답&sort=응답일시", {headers: apiHeaders()});
