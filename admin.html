@@ -886,6 +886,13 @@ function nameOf(id){
   const a = applicants.find(x => x.id === id);
   return a ? (a.fields["이름"] || a.fields["닉네임"] || "?") : "(명단밖)";
 }
+// 매칭 링크 복사 (매칭 현황에서)
+function copyLink(url){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=>toast("링크 복사됨! 카톡·문자에 붙여넣으세요"), ()=>toast("복사 실패"));
+  } else { toast("복사가 안 돼요 — 링크를 길게 눌러 복사해주세요"); }
+}
+
 // 💑 매칭 현황 (매칭 테이블) 로드·표시
 async function loadMatches(){
   const box = document.getElementById("match-board-status");
@@ -904,10 +911,17 @@ async function loadMatches(){
     let html = '<div class="bg-[#161615] border border-[#242422] rounded-2xl p-4">';
     html += '<div class="font-black text-sm mb-3">💑 매칭 현황 <span class="text-[11px] text-[#9E9E97] font-normal">(소개중 '+cnt("소개중")+' · 성사 '+cnt("성사")+' · 불발 '+cnt("불발")+')</span></div>';
     html += recs.map(r=>{ const f=r.fields||{}; const s=f["상태"]||"소개중";
+      const links = (s==="소개중" && (f["남자링크"]||f["여자링크"]))
+        ? '<div style="width:100%;display:flex;gap:6px;margin-top:5px">'
+          + (f["남자링크"] ? '<button onclick="copyLink(\''+f["남자링크"]+'\')" style="flex:1;background:#0D0D0C;border:1px solid #3b82f6;color:#60a5fa;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">📋 '+(f["남자"]||"남")+'에게 링크</button>' : '')
+          + (f["여자링크"] ? '<button onclick="copyLink(\''+f["여자링크"]+'\')" style="flex:1;background:#0D0D0C;border:1px solid #f472b6;color:#f472b6;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">📋 '+(f["여자"]||"여")+'에게 링크</button>' : '')
+          + '</div>'
+        : '';
       return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #242422;font-size:13px;flex-wrap:wrap">'
         +'<span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;'+badge(s)+'">'+s+'</span>'
         +'<b style="color:#60a5fa">'+(f["남자"]||"?")+'</b> <span style="color:#f472b6">❤</span> <b style="color:#f472b6">'+(f["여자"]||"?")+'</b>'
         +(f["결과"] ? '<span style="color:#8a8070;font-size:11px;margin-left:auto">'+f["결과"]+'</span>' : '')
+        +links
         +'</div>';
     }).join("");
     html += '</div>';
@@ -1180,6 +1194,8 @@ function saveMatchRecord(p0, p1){
       body: JSON.stringify({ records: [{ fields: {
         "남자": man.fields["이름"] || "", "여자": woman.fields["이름"] || "",
         "남자ID": man.id, "여자ID": woman.id,
+        "남자링크": `${SITE_URL}/response.html?id=${woman.id}&myId=${man.id}`,
+        "여자링크": `${SITE_URL}/response.html?id=${man.id}&myId=${woman.id}`,
         "상태": "소개중", "남자응답": "대기", "여자응답": "대기",
         "생성일": new Date().toLocaleString("ko-KR")
       }}]})
