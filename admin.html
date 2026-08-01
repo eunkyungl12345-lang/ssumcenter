@@ -146,9 +146,9 @@
       <div class="text-2xl font-black y" id="stat-total">-</div>
       <div class="text-[11px] text-[#9E9E97] mt-1">전체 신청</div>
     </button>
-    <button type="button" onclick="filterBy('대기')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
-      <div class="text-2xl font-black text-[#FFD400]" id="stat-waiting">-</div>
-      <div class="text-[11px] text-[#9E9E97] mt-1">승인 대기</div>
+    <button type="button" onclick="var e=document.getElementById('match-board-status'); if(e) e.scrollIntoView({behavior:'smooth'})" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
+      <div class="text-2xl font-black text-emerald-400" id="stat-waiting">-</div>
+      <div class="text-[11px] text-[#9E9E97] mt-1">성사 🎉</div>
     </button>
     <button type="button" onclick="filterBy('승인')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
       <div class="text-2xl font-black text-emerald-400" id="stat-approved">-</div>
@@ -896,10 +896,11 @@ async function loadMatches(){
     if(!res.ok) return;
     const data = await res.json();
     const recs = data.records || [];
-    if(!recs.length){ box.innerHTML = ""; return; }
+    if(!recs.length){ box.innerHTML = ""; const s0=document.getElementById("stat-waiting"); if(s0) s0.textContent="0"; return; }
     const order = {"소개중":0,"성사":1,"불발":2};
     recs.sort((a,b)=> (order[(a.fields||{})["상태"]] ?? 9) - (order[(b.fields||{})["상태"]] ?? 9));
     const cnt = s => recs.filter(r=>(r.fields||{})["상태"]===s).length;
+    const stW = document.getElementById("stat-waiting"); if(stW) stW.textContent = cnt("성사");
     const badge = s => s==="성사" ? 'background:#22c55e;color:#000' : s==="소개중" ? 'background:#3b82f6;color:#fff' : 'background:#3a3a37;color:#9E9E97';
     let html = '<div class="bg-[#161615] border border-[#242422] rounded-2xl p-4">';
     html += '<div class="font-black text-sm mb-3">💑 매칭 현황 <span class="text-[11px] text-[#9E9E97] font-normal">(소개중 '+cnt("소개중")+' · 성사 '+cnt("성사")+' · 불발 '+cnt("불발")+')</span></div>';
@@ -980,13 +981,12 @@ function renderResponses(responses){
 
 function updateStats(){
   const total = applicants.length;
-  const waiting = applicants.filter(r => (r.fields["매칭상태"] || "대기") === "대기").length;
   const approved = applicants.filter(r => r.fields["매칭상태"] === "승인").length;
   const matched = applicants.filter(r => r.fields["매칭상태"] === "소개중").length;
   document.getElementById("stat-total").textContent = total;
-  document.getElementById("stat-waiting").textContent = waiting;
   document.getElementById("stat-approved").textContent = approved;
   document.getElementById("stat-matched").textContent = matched;
+  // stat-waiting(성사)는 loadMatches에서 매칭 테이블 기준으로 채움
 }
 
 // ☕ 커피 궁합 (연애 테스트 결과 기반 매칭 추천)
@@ -1091,15 +1091,17 @@ function renderList(){
             <button onclick="event.stopPropagation();approveApplicant('${r.id}')" style="flex:1;background:#22c55e;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">✅ 승인</button>
             <button onclick="event.stopPropagation();rejectApplicant('${r.id}')" style="flex:1;background:#ef4444;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">❌ 반려</button>
           </div>` : ""}
+          ${status !== "대기" ? `<button onclick="event.stopPropagation();excludeApplicant('${r.id}')" style="margin-top:8px;width:100%;background:#161615;border:1px solid #ef4444;color:#ef4444;font-size:11px;font-weight:700;padding:7px;border-radius:10px;cursor:pointer">🚫 소개 풀에서 제외(숨김)</button>` : ""}
         </div>
       </div>
     </div>`;
   };
 
   // 👦👧 남/여 2단 매칭 보드 (좁은 화면에선 자동으로 위아래로 쌓임)
-  const males = filtered.filter(r => r.fields["성별"] === "남성");
-  const females = filtered.filter(r => r.fields["성별"] === "여성");
-  const etc = filtered.filter(r => r.fields["성별"] !== "남성" && r.fields["성별"] !== "여성");
+  const shown = filtered.filter(r => r.fields["매칭상태"] !== "제외"); // 제외된 사람은 보드에서 숨김
+  const males = shown.filter(r => r.fields["성별"] === "남성");
+  const females = shown.filter(r => r.fields["성별"] === "여성");
+  const etc = shown.filter(r => r.fields["성별"] !== "남성" && r.fields["성별"] !== "여성");
   const column = (emoji, title, arr, color) =>
     `<div style="flex:1 1 320px">
        <div style="position:sticky;top:0;z-index:2;font-weight:900;font-size:13px;color:${color};background:#0D0D0C;padding:8px 11px;border-radius:10px;margin-bottom:8px;border:1px solid #242422">${emoji} ${title} <span style="color:#8a8070;font-weight:600;font-size:12px">${arr.length}명</span></div>
@@ -1278,6 +1280,22 @@ async function updateMatchStatus(recordId){
 }
 
 // 1:1 매칭 가입 승인
+// 소개 풀에서 제외(숨김) — 삭제 아님, 매칭상태를 '제외'로
+async function excludeApplicant(recordId){
+  const rec = applicants.find(r => r.id === recordId);
+  if(!rec) return;
+  const name = rec.fields["이름"] || "";
+  if(!confirm(name + "님을 소개 풀에서 제외할까요?\n\n목록에서 숨겨져요. (삭제는 아니에요 — 나중에 되돌릴 수 있어요)")) return;
+  try {
+    await fetch("/api/airtable?table=1:1 매칭 신청", {
+      method: "PATCH", headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "제외" } }] })
+    });
+    toast(name + "님을 제외했어요");
+    loadApplicants();
+  } catch(e){ console.error(e); toast("제외 실패 — 다시 시도해주세요"); }
+}
+
 async function approveApplicant(recordId){
   const record = applicants.find(r => r.id === recordId);
   if(!record) return;
