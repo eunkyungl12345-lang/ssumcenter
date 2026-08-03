@@ -96,6 +96,14 @@ module.exports = async function handler(req, res) {
   const isAdmin = ADMIN_PW && req.headers["x-admin-key"] === ADMIN_PW;
   const body = (req.method === "POST" && req.body) || {};
 
+  if (isAdmin && body.action === "listTables") {
+    try {
+      const r = await fetch(`https://api.airtable.com/v0/meta/bases/${BASE_ID}/tables`, { headers: { "Authorization": `Bearer ${TOKEN}` } });
+      const d = await r.json();
+      return res.status(r.status).json({ tables: (d.tables || []).map(t => ({ id: t.id, name: t.name })) });
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
   if (isAdmin && (body.action === "createTable" || body.action === "createField")) {
     try {
       const url = body.action === "createTable"
