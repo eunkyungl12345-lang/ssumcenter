@@ -107,6 +107,7 @@
     </div>
     <div class="toolbar">
       <button class="btn g sm" id="refreshBtn">새로고침</button>
+      <button class="btn g sm" id="reminderBtn" style="background:#8B5CF6;color:#fff;border:none">📢 전날 안내 일괄발송</button>
       <span class="cnt" id="cnt"></span>
     </div>
     <div id="list"></div>
@@ -164,7 +165,6 @@
     // 회차 탭
     var rounds=["전체"];
     records.forEach(function(x){ var rd=x.fields["회차"]; if(rd && rounds.indexOf(rd)<0) rounds.push(rd); });
-    if(rounds.indexOf("8/13 (목)")<0) rounds.push("8/13 (목)");
     if(rounds.indexOf("8/27 (목)")<0) rounds.push("8/27 (목)");
     var tabs=document.getElementById("tabs"); tabs.innerHTML="";
     rounds.forEach(function(rd){
@@ -214,8 +214,10 @@
       + '<button class="a-ok'+(st==="승인"?" on":"")+'" data-s="승인">승인</button>'
       + '<button class="a-no'+(st==="거절"?" on":"")+'" data-s="거절">거절</button>'
       + '</div>'
-      + '<button class="btn g sm smsbtn" style="width:100%;margin-top:8px">📨 문자 보내기</button>';
+      + '<button class="cfmbtn" style="width:100%;margin-top:8px;background:#22c55e;color:#fff;border:none;border-radius:12px;padding:9px;font-weight:800;font-size:13px;cursor:pointer">💰 입금확인 → 확정문자 발송</button>'
+      + '<button class="btn g sm smsbtn" style="width:100%;margin-top:7px">📨 문자 직접 보내기</button>';
     el.querySelector(".smsbtn").addEventListener("click",function(){ openSms(f); });
+    el.querySelector(".cfmbtn").addEventListener("click",function(){ sendConfirm(f); });
     el.querySelectorAll(".acts button").forEach(function(btn){
       btn.addEventListener("click",function(){
         var ns=btn.dataset.s;
@@ -246,10 +248,116 @@
   fee.addEventListener("input",function(){ localStorage.setItem("rot_fee",fee.value); });
   function feeVal(){ return fee.value.trim()||"참가비"; }
   var TPLS={
-    "입금안내":function(f){ return (f["닉네임"]||f["이름"]||"")+"님 안녕하세요, 썸류센터입니다 💛\n로테이션 소개팅("+(f["회차"]||"")+") 신청이 승인됐어요!\n아래 계좌로 "+feeVal()+" 입금해주시면 참가가 확정됩니다.\n\n▪️카카오뱅크 3333-34-1009531 (장민)\n▪️입금자명: "+(f["닉네임"]||f["이름"]||"")+"\n\n입금 확인되면 확정 문자 보내드릴게요 :)"; },
-    "확정":function(f){ return (f["닉네임"]||f["이름"]||"")+"님, 입금 확인됐습니다! ✅\n로테이션 소개팅("+(f["회차"]||"")+") 참가가 확정됐어요 🎉\n장소·시간 상세 안내는 행사 전에 다시 보내드릴게요. 곧 만나요 💛"; },
-    "전날 리마인드":function(f){ return (f["닉네임"]||f["이름"]||"")+"님, 내일이 바로 그날이에요! 😊\n썸류센터 로테이션 소개팅("+(f["회차"]||"")+")\n▪️시간: 19:45\n▪️장소: 강남역 인근 (상세 안내 확인 부탁드려요)\n설레는 마음으로 기다릴게요 💛"; }
+    "입금안내":function(f){ return `🩷📦썸류센터 로테이션 커피팅 입금 안내📦🩷
+
+안녕하세요😊
+썸류센터 로테이션 커피팅을 신청해주셔서 감사합니다!
+
+-
+📦참가비 안내📦
+
+카카오뱅크 장민 3333-34-1009531
+
+위 계좌로 29,900원 입금 부탁드립니다!
+
+-
+✔️입금자명과 신청서에 작성해주신 이름이 일치해야 신청이 확인됩니다.
+✔️입금은 내일 자정 전까지 가능하며 기한 내 미입금시 참가 확정 취소 예정입니다.
+✔️입금이 확인되면 최종 확정 안내드립니다.
+
+✔️환불은 신청하신 날짜의 4일전까지만 가능하며, 당일 노쇼와 지각 및 기타 사유로 인한 환불 또한 불가능한 점 양해부탁드려요🥲`; },
+    "확정":function(f){ return `🩷📦썸류센터 로테이션 커피팅 최종 확정 안내📦🩷
+입금 확인되시어 최종 확정 안내드립니다.
+설레는 인연, 함께 만들어가보아요.💕
+
+❤️일정
+2026년 8월 27일 (목) 19:45
+소개팅 시작 전 나를 표현할 수 있는 프로필 카드를 쓸 수 있도록 꼭 45분까지 도착 부탁드려요☺️ 늦으실수록 나를 어필할 수 있는 시간이 줄어듭니다!
+
+❤️시간
+19:45 - 20:00 : 프로필 카드 작성
+20:00 - 22:20 : 1대 1 대화 로테이션
+"약 2시간 반 소요될 예정이에요!"
+
+❤️장소
+"강남역 근처 휴양지 감성 가득한 카페☕"
+강남/신논현역 도보 5분 이내이며 정확한 장소는 '하루 전' 안내드립니다!
+
+❤️준비물
+- 신분증 + 사원증 또는 명함
+
+🔥 진행방식
+▻ 14:14 로테이션 소개팅🤍
+14팀(남 14 ✕ 여 14)이 감성 테이블을 돌며 이성과 1:1로 만나요.
+▻ 라운드 시간 ⏱️
+대화 8-10분 이동 (이동‧정리시간 포함! 😉)
+▻ 매칭 카드 작성✏️
+돌아가시기 전에 1·2순위를 적어주시면 센터장이 확인!
+▻ 썸 배달!📲
+서로의 마음이 통하신 분들께 한해 전달드립니다!
+▻ 배달이 오지 않았다면!?💼
+아무런 썸배달도 받지 못한 분들! 🚨주목🚨
+천년의 이상형을 만나셨지만 매칭이 안되신 분들은 센터장에게 말씀주세요!
+센터장이 상대의 마음을 확인 후에 연락처를 배달해 드립니다. (유료)
+
+❤️더 궁금한 점이 있다면? 오픈카톡으로 문의주세요🌸`; },
+    "전날 리마인드":function(f){ return `안녕하세요😊
+썸류센터 로테이션 커피팅 참가자분께 장소 및 숙지하실 점 안내드립니다📦
+설레는 인연, 함께 만들어가보아요💕
+최대 14:14 (최소 10:10 보장)
+
+❤️일정
+2026년 8월27일(목) 19:45
+서로를 위해 시간 꼭 지켜주세요!
+
+저녁 7시 45분 입니다!✅️
+늦게 도착하시면 프로필지 작성할 시간이 없어요.
+
+❤️장소
+"강남역 ab카페 지하 2층☕"
+서울 강남구 강남대로 102길 32
+
+들어와서 한 층 내려오시면 지하 2층 입구에 센터장들이 기다리고 있어요!
+먼저 신분증 확인 후 음료 수령하셔서 지하2층으로 입장해주세요
+
+- 주차는 지원되지 않습니다.
+
+❤️준비물
+신분증 지참 부탁드립니다
+
+❤️드레스코드 필수!
+깔끔한 복장으로 부탁드립니다!
+
+- 무늬 및 그림 그려진 티셔츠 금지
+- 뭘 입을지 고민된다면?
+남성분들께는 화이트/블루/블랙 민무늬 셔츠 추천드립니다 🫶
+
+❤️더 궁금하신 점은 언제든 말씀주세요`; }
   };
+  // ---- 문자 발송 헬퍼 ----
+  function sendSmsTo(to,text){
+    return fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({to:to,text:text})}).then(function(r){return r.json();});
+  }
+  // 입금확인 → 확정 문자 (개별)
+  window.sendConfirm=function(f){
+    var to=f["연락처"]; if(!to){ alert("연락처가 없어요."); return; }
+    if(!confirm((f["닉네임"]||f["이름"]||"")+"님께 '최종 확정 안내' 문자를 보낼까요?\n(입금 확인된 분께 보내세요)")) return;
+    sendSmsTo(to, TPLS["확정"](f)).then(function(r){ alert(r&&r.ok?"✅ 확정 문자 발송됨":"❌ "+((r&&r.error)||"발송 실패")); });
+  };
+  // 전날 안내 일괄 발송 (현재 회차 · 승인자 전원)
+  document.getElementById("reminderBtn").addEventListener("click",function(){
+    var targets=records.filter(function(x){ return (curRound==="전체"||x.fields["회차"]===curRound) && x.fields["승인상태"]==="승인" && x.fields["연락처"]; });
+    if(!targets.length){ alert("이 회차에 승인된(연락처 있는) 참가자가 없어요."); return; }
+    if(!confirm("승인된 "+targets.length+"명에게 '전날 안내(장소)' 문자를 일괄 발송할까요?")) return;
+    var btn=this; btn.disabled=true; var orig=btn.textContent; btn.textContent="발송 중…";
+    var ok=0, done=0;
+    targets.forEach(function(x){
+      sendSmsTo(x.fields["연락처"], TPLS["전날 리마인드"](x.fields))
+        .then(function(r){ if(r&&r.ok) ok++; }).catch(function(){})
+        .then(function(){ done++; if(done===targets.length){ btn.disabled=false; btn.textContent=orig; alert("✅ 전날 안내 발송 완료: "+ok+"/"+targets.length+"명"); } });
+    });
+  });
+
   var smsSheet=document.getElementById("sms-sheet"), smsText=document.getElementById("sms-text"),
       smsWho=document.getElementById("sms-who"), smsTpls=document.getElementById("sms-tpls"), smsTarget=null;
   window.openSms=function(f){
