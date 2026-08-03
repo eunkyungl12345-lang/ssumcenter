@@ -5,108 +5,141 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>특급 배송 — 1:1 온라인 매칭 | 썸류센터</title>
 <link rel="stylesheet" href="/tailwind.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"></noscript>
 <style>
+  :root{
+    --bg:#0e0c0a; --card:#1b1813; --line:rgba(255,200,100,.12);
+    --ink:#f8f3ec;          /* 제목·강조 */
+    --body:#e0d7c9;         /* 본문 (밝게, 대비 ↑) */
+    --dim:#b9ae9b;          /* 캡션·보조 */
+    --amber:#FFBE2E;
+  }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0e0c0a;color:#f5f0ea;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  body{
+    font-family:'Apple SD Gothic Neo','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Malgun Gothic',sans-serif;
+    background:var(--bg);color:var(--body);
+    font-size:16px;line-height:1.75;letter-spacing:-.01em;
+    overflow-x:hidden;-webkit-font-smoothing:antialiased;word-break:keep-all;
+  }
   a{text-decoration:none;color:inherit}
-  .y{color:#FFBE2E}.bg-y{background:#FFBE2E}
-  ::selection{background:#FFBE2E;color:#000}
-  .card{background:#1b1813;border-radius:18px;border:1px solid rgba(255,200,100,.12);transition:all .35s}
-  .card:hover{border-color:rgba(255,190,46,.28);box-shadow:0 8px 40px rgba(255,190,46,.08)}
-  h1,h2,h3{letter-spacing:-.01em}
-  .sec-inner p{word-break:keep-all}
-  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,190,46,.08);border:1px solid rgba(255,190,46,.18);color:#FFBE2E;padding:6px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px}
-  .sec{padding:64px 20px}
-  @media(max-width:768px){.sec{padding:48px 16px}}
-  .sec-inner{max-width:720px;margin:0 auto}
-  [data-r]{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+  .y{color:var(--amber)} .bg-y{background:var(--amber)}
+  ::selection{background:var(--amber);color:#000}
+
+  /* 타이포 */
+  h1{color:var(--ink);font-weight:900;letter-spacing:-.02em}
+  .h2{color:var(--ink);font-size:23px;font-weight:800;text-align:center;letter-spacing:-.02em;line-height:1.35}
+  @media(min-width:768px){.h2{font-size:26px}}
+  h3{color:var(--ink)}
+  .lead{color:var(--body);font-size:16.5px;line-height:1.8}
+  .body{color:var(--body);font-size:15.5px;line-height:1.75}
+  .cap{color:var(--dim);font-size:13.5px;line-height:1.7}
+  strong,b{color:var(--ink);font-weight:800}
+
+  /* 레이아웃 */
+  .sec{padding:60px 20px}
+  @media(max-width:768px){.sec{padding:46px 18px}}
+  .sec-inner{max-width:640px;margin:0 auto}
+  .alt{background:rgba(255,255,255,.02)}
+
+  /* 카드 */
+  .card{background:var(--card);border-radius:18px;border:1px solid var(--line);transition:border-color .3s,box-shadow .3s}
+  .card:hover{border-color:rgba(255,190,46,.3);box-shadow:0 8px 40px rgba(255,190,46,.07)}
+
+  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,190,46,.1);border:1px solid rgba(255,190,46,.22);color:var(--amber);padding:7px 16px;border-radius:100px;font-size:12.5px;font-weight:700;letter-spacing:.02em}
+
+  /* 번호 스텝 */
+  .step-n{width:38px;height:38px;flex-shrink:0;border-radius:12px;background:var(--amber);color:#0e0c0a;font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center}
+
+  /* CTA */
+  .cta{display:inline-block;background:var(--amber);color:#0e0c0a;font-weight:900;border-radius:15px;text-align:center;transition:filter .2s,transform .1s}
+  .cta:hover{filter:brightness(.92)} .cta:active{transform:scale(.98)}
+  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,190,46,.28)}50%{box-shadow:0 0 26px 9px rgba(255,190,46,.1)}}
+  .cta-glow{animation:glow-pulse 2.6s infinite ease-in-out}
+
+  [data-r]{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
   [data-r].in{opacity:1;transform:none}
-  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,190,46,.3)}50%{box-shadow:0 0 24px 8px rgba(255,190,46,.12)}}
-  .cta-glow{animation:glow-pulse 2.5s infinite ease-in-out}
+  @media(prefers-reduced-motion:reduce){[data-r]{opacity:1;transform:none}.cta-glow{animation:none}}
 </style>
 </head>
 <body>
 
 <!-- Nav -->
-<nav class="sticky top-0 z-50 backdrop-blur-xl bg-[#0e0c0a]/80 border-b border-white/[.04] px-5 py-3.5">
-  <div class="max-w-[720px] mx-auto flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-2"><img src="logo.png" alt="썸류센터" class="h-7"></a>
-    <a href="index.html" class="text-sm font-semibold text-[#beb4a2] hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i>홈으로</a>
+<nav class="sticky top-0 z-50 backdrop-blur-xl border-b" style="background:rgba(14,12,10,.85);border-color:rgba(255,255,255,.05);padding:13px 20px">
+  <div style="max-width:640px;margin:0 auto;display:flex;align-items:center;justify-content:space-between">
+    <a href="index.html"><img src="logo.png" alt="썸류센터" style="height:28px"></a>
+    <a href="index.html" class="body" style="font-weight:700;color:var(--dim)"><i class="fa-solid fa-arrow-left" style="margin-right:5px"></i>홈으로</a>
   </div>
 </nav>
 
 <!-- Hero -->
-<header class="sec text-center" style="background:radial-gradient(ellipse at 50% 30%,rgba(255,190,46,.06) 0%,transparent 65%)">
+<header class="sec" style="text-align:center;background:radial-gradient(ellipse at 50% 25%,rgba(255,190,46,.07) 0%,transparent 62%)">
   <div class="sec-inner">
-    <span class="badge mb-5"><i class="fa-solid fa-gift"></i> 특급 배송</span>
-    <div class="text-5xl mb-4">🎁</div>
-    <h1 class="text-[28px] md:text-[42px] font-black leading-[1.2] tracking-tight">나만을 위한 맞춤 한 건,<br><span class="y">1:1 온라인 매칭</span></h1>
-    <p class="text-[13px] text-[#cabda7] font-bold mt-3">장소 · 시간 자유 · 슈퍼매칭 가능</p>
-    <p class="text-[15px] text-[#beb4a2] mt-3 leading-relaxed">센터장이 당신의 이상형 조건에 맞는 단 한 사람을 찾아<br>설렘을 특급 배송해 드려요.</p>
-    <div class="flex flex-wrap justify-center gap-2 mt-5">
-      <span class="badge"><i class="fa-solid fa-tag"></i>일반 매칭 19,900원</span>
-      <span class="badge" style="background:rgba(255,190,46,.15);border-color:rgba(255,190,46,.3)"><i class="fa-solid fa-crown"></i>슈퍼매칭 39,800원</span>
+    <span class="badge" style="margin-bottom:20px"><i class="fa-solid fa-gift"></i> 특급 배송</span>
+    <div style="font-size:52px;margin-bottom:14px">🎁</div>
+    <h1 style="font-size:30px;line-height:1.28;margin-bottom:16px">나만을 위한 맞춤 한 건,<br><span class="y">1:1 온라인 매칭</span></h1>
+    <p class="y" style="font-size:14px;font-weight:800;margin-bottom:12px">장소·시간 자유 · 슈퍼매칭 가능</p>
+    <p class="lead">센터장이 당신의 이상형 조건에 맞는 단 한 사람을 찾아<br>설렘을 특급 배송해 드려요.</p>
+
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:22px">
+      <span class="badge"><i class="fa-solid fa-tag"></i> 일반 매칭 19,900원</span>
+      <span class="badge" style="background:rgba(255,190,46,.16);border-color:rgba(255,190,46,.34)"><i class="fa-solid fa-crown"></i> 슈퍼매칭 39,800원</span>
     </div>
-    <div class="mt-8">
-      <a href="/matching" class="cta-glow" style="display:inline-block;background:#FFBE2E;color:#0e0c0a;font-weight:800;font-size:16px;padding:15px 44px;border-radius:14px"><i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>1:1 매칭 신청하기</a>
-      <p style="font-size:12px;color:#6b6358;margin-top:12px">매칭 성사될 때만 결제 · 안 되면 0원</p>
+
+    <div style="margin-top:32px">
+      <a href="/matching" class="cta cta-glow" style="font-size:17px;padding:17px 46px"><i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>1:1 매칭 신청하기</a>
+      <p class="cap" style="margin-top:14px">매칭 성사될 때만 결제 · 안 되면 <b class="y">0원</b></p>
     </div>
   </div>
 </header>
 
-<!-- 이런 분께 -->
-<section class="sec" style="background:rgba(255,255,255,.015)">
+<!-- 이런 분께 추천 -->
+<section class="sec alt">
   <div class="sec-inner">
-    <h2 class="text-[22px] font-black text-center mb-8" data-r>이런 분께 <span class="y">추천해요</span></h2>
-    <div class="space-y-3" data-r>
-      <div class="card p-5 flex gap-3 items-start"><i class="fa-solid fa-heart y mt-1 shrink-0"></i><p class="text-sm leading-relaxed">내 이상형에 딱 맞는 한 사람만 만나고 싶은 분</p></div>
-      <div class="card p-5 flex gap-3 items-start"><i class="fa-solid fa-heart y mt-1 shrink-0"></i><p class="text-sm leading-relaxed">시간/장소 제약 없이 편하게 매칭받고 싶은 분</p></div>
-      <div class="card p-5 flex gap-3 items-start"><i class="fa-solid fa-heart y mt-1 shrink-0"></i><p class="text-sm leading-relaxed">로테이션보다 조용하고 프라이빗한 만남을 원하는 분</p></div>
-      <div class="card p-5 flex gap-3 items-start"><i class="fa-solid fa-heart y mt-1 shrink-0"></i><p class="text-sm leading-relaxed">마음에 드는 상대에게 진심을 전하고 싶은 분 (슈퍼매칭)</p></div>
+    <h2 class="h2" data-r style="margin-bottom:28px">이런 분께 <span class="y">추천해요</span></h2>
+    <div style="display:flex;flex-direction:column;gap:12px" data-r>
+      <div class="card" style="padding:18px 20px;display:flex;gap:13px;align-items:flex-start"><i class="fa-solid fa-heart y" style="margin-top:5px;flex-shrink:0"></i><p class="body">내 이상형에 딱 맞는 한 사람만 만나고 싶은 분</p></div>
+      <div class="card" style="padding:18px 20px;display:flex;gap:13px;align-items:flex-start"><i class="fa-solid fa-heart y" style="margin-top:5px;flex-shrink:0"></i><p class="body">시간·장소 제약 없이 편하게 매칭받고 싶은 분</p></div>
+      <div class="card" style="padding:18px 20px;display:flex;gap:13px;align-items:flex-start"><i class="fa-solid fa-heart y" style="margin-top:5px;flex-shrink:0"></i><p class="body">로테이션보다 조용하고 프라이빗한 만남을 원하는 분</p></div>
+      <div class="card" style="padding:18px 20px;display:flex;gap:13px;align-items:flex-start"><i class="fa-solid fa-heart y" style="margin-top:5px;flex-shrink:0"></i><p class="body">마음에 드는 상대에게 진심을 전하고 싶은 분 <span class="y" style="font-weight:700">(슈퍼매칭)</span></p></div>
     </div>
   </div>
 </section>
 
-<!-- 일반 vs 슈퍼 비교 -->
+<!-- 일반 vs 슈퍼 -->
 <section class="sec">
   <div class="sec-inner">
-    <h2 class="text-[22px] font-black text-center mb-3" data-r>일반 매칭 vs <span class="y">슈퍼매칭</span></h2>
-    <p class="text-center text-sm text-[#beb4a2] mb-8" data-r>두 유형 모두 매칭 불발 시 비용 없음</p>
+    <h2 class="h2" data-r style="margin-bottom:8px">일반 매칭 vs <span class="y">슈퍼매칭</span></h2>
+    <p class="cap" data-r style="text-align:center;margin-bottom:26px">두 유형 모두 <b>매칭 불발 시 비용 없음</b></p>
 
-    <div class="space-y-4" data-r>
-      <div class="card p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <i class="fa-solid fa-handshake y text-lg"></i>
-          <h3 class="font-bold">일반 매칭</h3>
-          <span class="ml-auto text-sm y font-bold">19,900원</span>
+    <div style="display:flex;flex-direction:column;gap:16px" data-r>
+      <div class="card" style="padding:24px">
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:16px">
+          <i class="fa-solid fa-handshake y" style="font-size:19px"></i>
+          <h3 style="font-weight:800;font-size:17px">일반 매칭</h3>
+          <span class="y" style="margin-left:auto;font-weight:800;font-size:16px">19,900원</span>
         </div>
-        <ul class="space-y-2.5 text-sm text-[#beb4a2]">
-          <li class="flex gap-2"><i class="fa-solid fa-check y text-xs mt-1 shrink-0"></i>센터장이 이상형 조건에 맞는 상대를 찾아드려요</li>
-          <li class="flex gap-2"><i class="fa-solid fa-check y text-xs mt-1 shrink-0"></i>상대방이 수락하면 매칭 성사!</li>
-          <li class="flex gap-2"><i class="fa-solid fa-check y text-xs mt-1 shrink-0"></i>양쪽 모두 각자 19,900원 결제 후 연락처 교환</li>
-          <li class="flex gap-2"><i class="fa-solid fa-check y text-xs mt-1 shrink-0"></i>매칭 불발 시 비용 없음 (무료)</li>
+        <ul style="display:flex;flex-direction:column;gap:11px">
+          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-check y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>센터장이 이상형 조건에 맞는 상대를 찾아드려요</li>
+          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-check y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>상대방이 수락하면 매칭 성사!</li>
+          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-check y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>양쪽 모두 각자 19,900원 결제 후 연락처 교환</li>
+          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-check y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>매칭 불발 시 <b class="y">비용 없음 (무료)</b></li>
         </ul>
       </div>
 
-      <div class="card p-6 relative" style="border-color:rgba(255,190,46,.15);background:rgba(255,190,46,.02)">
-        <span class="absolute top-4 right-4 text-[9px] bg-y text-black font-bold px-2.5 py-1 rounded-full">추천</span>
-        <div class="flex items-center gap-3 mb-4">
-          <i class="fa-solid fa-crown y text-lg"></i>
-          <h3 class="font-bold">슈퍼매칭</h3>
-          <span class="ml-auto text-sm y font-bold">39,800원</span>
+      <div class="card" style="padding:24px;position:relative;border-color:rgba(255,190,46,.28);background:rgba(255,190,46,.03)">
+        <span style="position:absolute;top:16px;right:16px;font-size:11px;background:var(--amber);color:#000;font-weight:800;padding:4px 11px;border-radius:100px">추천</span>
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:16px">
+          <i class="fa-solid fa-crown y" style="font-size:19px"></i>
+          <h3 style="font-weight:800;font-size:17px">슈퍼매칭</h3>
+          <span class="y" style="margin-left:auto;font-weight:800;font-size:16px">39,800원</span>
         </div>
-        <ul class="space-y-2.5 text-sm text-[#beb4a2]">
-          <li class="flex gap-2"><i class="fa-solid fa-bolt y text-xs mt-1 shrink-0"></i>상대방 비용까지 내가 부담해요</li>
-          <li class="flex gap-2"><i class="fa-solid fa-bolt y text-xs mt-1 shrink-0"></i>상대방에게 <b class="text-[#f5f0ea]">"슈퍼매칭이 왔어요!"</b> 표시 → 진심 전달</li>
-          <li class="flex gap-2"><i class="fa-solid fa-bolt y text-xs mt-1 shrink-0"></i>상대방은 무료로 연락처를 받아요</li>
-          <li class="flex gap-2"><i class="fa-solid fa-bolt y text-xs mt-1 shrink-0"></i>매칭 수락률이 눈에 띄게 UP!</li>
+        <ul style="display:flex;flex-direction:column;gap:11px">
+          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-bolt y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>상대방 비용까지 내가 부담해요</li>
+          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-bolt y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>상대방에게 <b>"슈퍼매칭이 왔어요!"</b> 표시 → 진심 전달</li>
+          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-bolt y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>상대방은 <b class="y">무료</b>로 연락처를 받아요</li>
+          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-bolt y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>매칭 수락률이 눈에 띄게 UP!</li>
         </ul>
       </div>
     </div>
@@ -114,25 +147,25 @@
 </section>
 
 <!-- 진행 방식 -->
-<section class="sec" style="background:rgba(255,255,255,.015)">
+<section class="sec alt">
   <div class="sec-inner">
-    <h2 class="text-[22px] font-black text-center mb-8" data-r>이렇게 <span class="y">진행돼요</span></h2>
-    <div class="space-y-3" data-r>
-      <div class="card p-5 flex gap-4 items-start">
-        <div class="w-9 h-9 shrink-0 rounded-xl bg-y text-black font-black text-sm flex items-center justify-center">1</div>
-        <div><h3 class="font-bold text-sm">신청서 제출</h3><p class="text-sm text-[#beb4a2] mt-1">프로필 사진, 자기소개, 이상형 조건을 작성해요.</p></div>
+    <h2 class="h2" data-r style="margin-bottom:28px">이렇게 <span class="y">진행돼요</span></h2>
+    <div style="display:flex;flex-direction:column;gap:12px" data-r>
+      <div class="card" style="padding:18px 20px;display:flex;gap:15px;align-items:flex-start">
+        <div class="step-n">1</div>
+        <div><h3 style="font-weight:800;font-size:16px;margin-bottom:3px">신청서 제출</h3><p class="body">프로필 사진, 자기소개, 이상형 조건을 작성해요.</p></div>
       </div>
-      <div class="card p-5 flex gap-4 items-start">
-        <div class="w-9 h-9 shrink-0 rounded-xl bg-y text-black font-black text-sm flex items-center justify-center">2</div>
-        <div><h3 class="font-bold text-sm">센터장이 상대 물색</h3><p class="text-sm text-[#beb4a2] mt-1">이상형 조건 기반으로 딱 맞는 한 분을 찾아드려요.</p></div>
+      <div class="card" style="padding:18px 20px;display:flex;gap:15px;align-items:flex-start">
+        <div class="step-n">2</div>
+        <div><h3 style="font-weight:800;font-size:16px;margin-bottom:3px">센터장이 상대 물색</h3><p class="body">이상형 조건 기반으로 딱 맞는 한 분을 찾아드려요.</p></div>
       </div>
-      <div class="card p-5 flex gap-4 items-start">
-        <div class="w-9 h-9 shrink-0 rounded-xl bg-y text-black font-black text-sm flex items-center justify-center">3</div>
-        <div><h3 class="font-bold text-sm">상대방에게 프로필 전달</h3><p class="text-sm text-[#beb4a2] mt-1">상대방이 프로필을 확인하고 수락하면 매칭 성사!</p></div>
+      <div class="card" style="padding:18px 20px;display:flex;gap:15px;align-items:flex-start">
+        <div class="step-n">3</div>
+        <div><h3 style="font-weight:800;font-size:16px;margin-bottom:3px">상대방에게 프로필 전달</h3><p class="body">상대방이 프로필을 확인하고 수락하면 매칭 성사!</p></div>
       </div>
-      <div class="card p-5 flex gap-4 items-start" style="border-color:rgba(255,190,46,.15)">
-        <div class="w-9 h-9 shrink-0 rounded-xl bg-y text-black font-black text-sm flex items-center justify-center">4</div>
-        <div><h3 class="font-bold text-sm y">연락처 교환</h3><p class="text-sm text-[#beb4a2] mt-1">결제 후 카카오톡으로 서로의 연락처를 전달해 드려요.</p></div>
+      <div class="card" style="padding:18px 20px;display:flex;gap:15px;align-items:flex-start;border-color:rgba(255,190,46,.28)">
+        <div class="step-n">4</div>
+        <div><h3 class="y" style="font-weight:800;font-size:16px;margin-bottom:3px">연락처 교환</h3><p class="body">결제 후 카카오톡으로 서로의 연락처를 전달해 드려요.</p></div>
       </div>
     </div>
   </div>
@@ -141,37 +174,37 @@
 <!-- 참가 자격 -->
 <section class="sec">
   <div class="sec-inner">
-    <h2 class="text-[22px] font-black text-center mb-8" data-r>이런 분을 <span class="y">찾아요</span></h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" data-r>
-      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">💑</div><div class="font-bold text-sm">20~30대</div><div class="text-xs text-[#beb4a2] mt-1">미혼 싱글</div></div>
-      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">📸</div><div class="font-bold text-sm">프로필 사진</div><div class="text-xs text-[#beb4a2] mt-1">+ 신분 인증</div></div>
-      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">📄</div><div class="font-bold text-sm">재직증명서</div><div class="text-xs text-[#beb4a2] mt-1">or 사업자등록증</div></div>
-      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">🤝</div><div class="font-bold text-sm">매너</div><div class="text-xs text-[#beb4a2] mt-1">성실한 분</div></div>
+    <h2 class="h2" data-r style="margin-bottom:28px">이런 분을 <span class="y">찾아요</span></h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3" data-r>
+      <div class="card" style="padding:22px 14px;text-align:center"><div style="font-size:34px;margin-bottom:10px">💑</div><div style="font-weight:800;font-size:15px;color:var(--ink)">20~30대</div><div class="cap" style="margin-top:3px">미혼 싱글</div></div>
+      <div class="card" style="padding:22px 14px;text-align:center"><div style="font-size:34px;margin-bottom:10px">📸</div><div style="font-weight:800;font-size:15px;color:var(--ink)">프로필 사진</div><div class="cap" style="margin-top:3px">본인 확인</div></div>
+      <div class="card" style="padding:22px 14px;text-align:center"><div style="font-size:34px;margin-bottom:10px">📄</div><div style="font-weight:800;font-size:15px;color:var(--ink)">재직증명서</div><div class="cap" style="margin-top:3px">or 사업자등록증</div></div>
+      <div class="card" style="padding:22px 14px;text-align:center"><div style="font-size:34px;margin-bottom:10px">🤝</div><div style="font-weight:800;font-size:15px;color:var(--ink)">매너</div><div class="cap" style="margin-top:3px">성실한 분</div></div>
     </div>
-    <div class="card p-5 flex gap-3 items-center mt-4" data-r>
-      <div class="shrink-0 w-10 h-10 rounded-xl bg-y flex items-center justify-center text-black"><i class="fa-solid fa-shield-check"></i></div>
-      <p class="text-xs text-[#beb4a2]">제출하신 서류는 본인 인증 목적으로만 사용되며, 확인 후 즉시 폐기됩니다.</p>
+    <div class="card" style="padding:18px 20px;display:flex;gap:13px;align-items:center;margin-top:14px" data-r>
+      <div style="flex-shrink:0;width:40px;height:40px;border-radius:12px;background:var(--amber);display:flex;align-items:center;justify-content:center;color:#000"><i class="fa-solid fa-shield-halved"></i></div>
+      <p class="cap">제출하신 서류는 본인 인증 목적으로만 사용되며, 확인 후 즉시 폐기됩니다.</p>
     </div>
   </div>
 </section>
 
 <!-- CTA -->
-<section class="sec text-center" style="background:radial-gradient(ellipse at 50% 50%,rgba(255,190,46,.06) 0%,transparent 70%)">
+<section class="sec" style="text-align:center;background:radial-gradient(ellipse at 50% 50%,rgba(255,190,46,.07) 0%,transparent 68%)">
   <div class="sec-inner" data-r>
-    <h2 class="text-2xl font-black">나만을 위한 설렘,<br><span class="y">특급 배송 신청하기</span> 🎁</h2>
-    <p class="text-sm text-[#beb4a2] mt-3">매칭 불발 시 비용이 발생하지 않아요</p>
-    <div class="max-w-[320px] mx-auto mt-8">
-      <a href="javascript:void(0)" onclick="if(localStorage.getItem('ssumUser')){location.href='matching.html'}else{location.href='login.html?redirect=matching.html'}" class="bg-y text-black font-extrabold w-full py-[18px] rounded-2xl text-[15px] cta-glow hover:brightness-90 transition block text-center"><i class="fa-solid fa-gift mr-1.5"></i>1:1 매칭 신청하기</a>
+    <h2 class="h2" style="font-size:25px">나만을 위한 설렘,<br><span class="y">특급 배송 신청하기</span> 🎁</h2>
+    <p class="body" style="margin-top:14px">매칭 불발 시 비용이 발생하지 않아요</p>
+    <div style="max-width:340px;margin:32px auto 0">
+      <a href="javascript:void(0)" onclick="if(localStorage.getItem('ssumUser')){location.href='matching.html'}else{location.href='login.html?redirect=matching.html'}" class="cta cta-glow" style="display:block;width:100%;padding:18px;font-size:16px"><i class="fa-solid fa-gift" style="margin-right:7px"></i>1:1 매칭 신청하기</a>
     </div>
-    <p class="text-xs text-[#6b6358] mt-4">신청 무료 · 매칭 성사 시에만 결제</p>
-    <a href="index.html" class="inline-block mt-6 text-sm text-[#beb4a2] hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i>홈으로 돌아가기</a>
+    <p class="cap" style="margin-top:16px">신청 무료 · 매칭 성사 시에만 결제</p>
+    <a href="index.html" class="body" style="display:inline-block;margin-top:24px;color:var(--dim);font-weight:600"><i class="fa-solid fa-arrow-left" style="margin-right:6px"></i>홈으로 돌아가기</a>
   </div>
 </section>
 
 <!-- Footer -->
-<footer class="border-t border-white/[.04] px-5 py-8 text-center">
-  <img src="logo.png" alt="썸류센터" class="h-5 mx-auto mb-3 opacity-40">
-  <p class="text-[11px] text-[#5a5248]">문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#FFBE2E;text-decoration:none">카카오톡 채널 →</a></p>
+<footer style="border-top:1px solid rgba(255,255,255,.05);padding:32px 20px;text-align:center">
+  <img src="logo.png" alt="썸류센터" style="height:20px;margin:0 auto 12px;opacity:.4">
+  <p class="cap" style="color:#6b6358">문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" class="y" style="font-weight:700">카카오톡 채널 →</a></p>
 </footer>
 
 <script>
