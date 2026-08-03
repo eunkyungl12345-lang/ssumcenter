@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>참가자 마스터 | 썸류센터</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--gold:#FFD37A;--ok:#6FBE97;--male:#7EA6E0;--female:#E88FB0;--ink-on-amber:#171208;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em}
+  .wrap{max-width:680px;margin:0 auto;padding:20px 15px 70px}
+  h1{font-size:21px;font-weight:900}
+  .sub{font-size:12.5px;color:var(--muted);margin:3px 0 16px}
+  a.home{color:var(--muted);text-decoration:none}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px}
+  input{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
+  input:focus{outline:none;border-color:var(--amber)}
+  .btn{border:none;border-radius:11px;padding:12px 16px;font-size:14px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;width:100%}
+  .hide{display:none}
+  /* 통계 */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px 6px;text-align:center}
+  .stat .k{font-size:10.5px;color:var(--muted)}
+  .stat .v{font-size:20px;font-weight:900;margin-top:3px}
+  .stat.gold .v{color:var(--gold)} .stat.re .v{color:var(--amber)}
+  /* 필터 */
+  .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{background:var(--surface);border:1px solid var(--line-strong);color:var(--muted);border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:750;cursor:pointer;transition:all .15s}
+  .chip.on{background:var(--amber);border-color:var(--amber);color:var(--ink-on-amber)}
+  .search{margin-bottom:12px}
+  .cnt{font-size:12px;color:var(--muted);margin:0 2px 10px}
+  /* 리스트 */
+  .p{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:9px}
+  .p.gold{border-color:rgba(255,211,122,.4);background:linear-gradient(180deg,rgba(255,211,122,.05),transparent)}
+  .p .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .p .nm{font-weight:800;font-size:16px}
+  .p .nk{font-size:12.5px;color:var(--muted)}
+  .p .gd{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px}
+  .gd.m{color:var(--male);background:rgba(126,166,224,.12)} .gd.f{color:var(--female);background:rgba(232,143,176,.12)}
+  .p .cntb{margin-left:auto;font-size:12.5px;font-weight:900;padding:3px 10px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+  .p .cntb.gold{background:rgba(255,211,122,.15);color:var(--gold)}
+  .p .cntb.re{background:rgba(232,176,80,.12);color:var(--amber)}
+  .rounds{display:flex;gap:4px;flex-wrap:wrap;margin-top:9px}
+  .rd{font-size:11px;font-weight:700;padding:2px 8px;border-radius:7px;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--muted)}
+  .meta{font-size:12px;color:var(--muted);margin-top:8px;display:flex;gap:10px;flex-wrap:wrap}
+  .meta .ch{color:var(--faint)}
+  .memo{font-size:11.5px;color:var(--faint);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line-strong);line-height:1.5}
+  .empty{text-align:center;color:var(--muted);padding:44px 0;font-size:13px}
+  .spin{width:26px;height:26px;border:3px solid var(--line-strong);border-top-color:var(--amber);border-radius:50%;margin:34px auto;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  #login-msg{font-size:12.5px;color:#E8828A;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- 로그인 -->
+  <div id="login">
+    <h1>🎯 참가자 마스터</h1>
+    <div class="sub">센터장 전용 · 관리자 비밀번호</div>
+    <div class="card">
+      <input id="pw" type="password" placeholder="admin 비밀번호">
+      <div style="margin-top:12px"><button class="btn" id="loginBtn">로그인</button></div>
+      <div id="login-msg"></div>
+    </div>
+  </div>
+
+  <!-- 콘솔 -->
+  <div id="console" class="hide">
+    <h1>🎯 참가자 마스터</h1>
+    <div class="sub">그동안 오신 분 전체 · 회차 많은 순 · 👑겹치게 온 단골 강조<br>
+      <a class="home" href="/rotation-admin">← 로테이션</a> · <a class="home" href="/lineup">🎬 라인업</a> · <a class="home" href="/admin">🏠 홈</a></div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">전체</div><div class="v" id="s-all">–</div></div>
+      <div class="stat gold"><div class="k">👑 단골(3회+)</div><div class="v" id="s-gold">–</div></div>
+      <div class="stat re"><div class="k">🔁 재방문(2회+)</div><div class="v" id="s-re">–</div></div>
+      <div class="stat"><div class="k">여 / 남</div><div class="v" id="s-gender" style="font-size:15px">–</div></div>
+    </div>
+
+    <div class="search"><input id="q" placeholder="🔍 이름·닉네임 검색"></div>
+    <div class="filters" id="filters">
+      <span class="chip on" data-f="all">전체</span>
+      <span class="chip" data-f="gold">👑 단골(3회+)</span>
+      <span class="chip" data-f="re">🔁 재방문(2회+)</span>
+      <span class="chip" data-f="f">여성</span>
+      <span class="chip" data-f="m">남성</span>
+    </div>
+    <div class="cnt" id="cnt"></div>
+    <div id="list"><div class="spin"></div></div>
+  </div>
+</div>
+<script>
+  var KEY="admin_key";
+  function key(){ return localStorage.getItem(KEY)||""; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  var ALL=[], curFilter="all", curQ="";
+
+  document.getElementById("loginBtn").addEventListener("click",doLogin);
+  document.getElementById("pw").addEventListener("keydown",function(e){ if(e.key==="Enter") doLogin(); });
+  function doLogin(){
+    var pw=document.getElementById("pw").value;
+    fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ localStorage.setItem(KEY,pw); showConsole(); }
+        else { document.getElementById("login-msg").textContent="비밀번호가 틀렸어요"; }
+      }).catch(function(){ document.getElementById("login-msg").textContent="오류가 났어요."; });
+  }
+  function showConsole(){ document.getElementById("login").classList.add("hide"); document.getElementById("console").classList.remove("hide"); load(); }
+  if(key()){ showConsole(); }
+
+  // 필터/검색
+  document.getElementById("q").addEventListener("input",function(e){ curQ=e.target.value.trim(); render(); });
+  Array.prototype.forEach.call(document.querySelectorAll("#filters .chip"),function(c){
+    c.addEventListener("click",function(){
+      document.querySelectorAll("#filters .chip").forEach(function(x){x.classList.remove("on");});
+      c.classList.add("on"); curFilter=c.getAttribute("data-f"); render();
+    });
+  });
+
+  // 전체 페이지 불러오기 (offset 순회)
+  function load(){
+    ALL=[];
+    fetchPage("");
+  }
+  function fetchPage(offset){
+    var url="/api/airtable?table="+encodeURIComponent("참가자 마스터")+(offset?"&offset="+encodeURIComponent(offset):"");
+    fetch(url,{headers:{"x-admin-key":key()}}).then(function(r){return r.json();}).then(function(r){
+      if(r.error){ document.getElementById("list").innerHTML='<div class="empty">'+esc(r.error)+'</div>'; return; }
+      ALL=ALL.concat(r.records||[]);
+      if(r.offset){ fetchPage(r.offset); }   // 다음 페이지
+      else { ready(); }
+    }).catch(function(){ document.getElementById("list").innerHTML='<div class="empty">불러오기 오류</div>'; });
+  }
+
+  function cnt(f){ return parseInt(f["회차수"]||0,10) || (f["참여회차"]?String(f["참여회차"]).split(",").filter(Boolean).length:0); }
+
+  function ready(){
+    // 회차수 desc, 동률이면 이름
+    ALL.sort(function(a,b){ var d=cnt(b.fields||{})-cnt(a.fields||{}); return d!==0?d:String((a.fields||{})["이름"]||"").localeCompare(String((b.fields||{})["이름"]||"")); });
+    // 통계
+    var gold=0,re=0,fw=0,m=0;
+    ALL.forEach(function(x){ var f=x.fields||{},c=cnt(f); if(c>=3)gold++; if(c>=2)re++; if(f["성별"]==="여")fw++; if(f["성별"]==="남")m++; });
+    document.getElementById("s-all").textContent=ALL.length;
+    document.getElementById("s-gold").textContent=gold;
+    document.getElementById("s-re").textContent=re;
+    document.getElementById("s-gender").textContent=fw+" / "+m;
+    render();
+  }
+
+  function render(){
+    var q=curQ.toLowerCase();
+    var rows=ALL.filter(function(x){
+      var f=x.fields||{},c=cnt(f);
+      if(curFilter==="gold"&&c<3) return false;
+      if(curFilter==="re"&&c<2) return false;
+      if(curFilter==="f"&&f["성별"]!=="여") return false;
+      if(curFilter==="m"&&f["성별"]!=="남") return false;
+      if(q){ var hay=((f["이름"]||"")+" "+(f["닉네임"]||"")).toLowerCase(); if(hay.indexOf(q)<0) return false; }
+      return true;
+    });
+    document.getElementById("cnt").textContent=rows.length+"명"+(curFilter==="all"&&!q?"":" (필터 적용)");
+    var list=document.getElementById("list");
+    if(!rows.length){ list.innerHTML='<div class="empty">해당하는 참가자가 없어요.</div>'; return; }
+    list.innerHTML=rows.map(function(x){
+      var f=x.fields||{},c=cnt(f);
+      var g=f["성별"]==="남"?"m":f["성별"]==="여"?"f":"";
+      var gLabel=f["성별"]||"";
+      var badgeCls=c>=3?"gold":c>=2?"re":"";
+      var crown=c>=3?"👑 ":c>=2?"🔁 ":"";
+      var rounds=String(f["참여회차"]||"").split(",").filter(Boolean).map(function(r){return '<span class="rd">'+esc(r.trim())+'기</span>';}).join("");
+      var meta=[];
+      if(f["채널"]) meta.push('<span class="ch">📥 '+esc(f["채널"])+'</span>');
+      if(f["연락처"]) meta.push('<span class="ch">📞 '+esc(f["연락처"])+'</span>');
+      return '<div class="p '+(c>=3?"gold":"")+'">'
+        + '<div class="top">'
+        +   '<span class="nm">'+esc(f["이름"]||"?")+'</span>'
+        +   (f["닉네임"]?'<span class="nk">'+esc(f["닉네임"])+'</span>':'')
+        +   (gLabel?'<span class="gd '+g+'">'+esc(gLabel)+'</span>':'')
+        +   '<span class="cntb '+badgeCls+'">'+crown+c+'회</span>'
+        + '</div>'
+        + (rounds?'<div class="rounds">'+rounds+'</div>':'')
+        + (meta.length?'<div class="meta">'+meta.join("")+'</div>':'')
+        + (f["메모"]?'<div class="memo">📝 '+esc(f["메모"])+'</div>':'')
+        + '</div>';
+    }).join("");
+  }
+</script>
+</body>
+</html>

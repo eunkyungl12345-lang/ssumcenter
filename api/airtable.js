@@ -51,7 +51,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: "서버 환경변수가 설정되지 않았습니다" });
   }
 
-  const { table, recordId, filter, sort } = req.query;
+  const { table, recordId, filter, sort, offset } = req.query;
   if (!table) return res.status(400).json({ error: "table 파라미터 필요" });
 
   // ---- 접근 제어 ----
@@ -110,6 +110,7 @@ module.exports = async function handler(req, res) {
     params.set("sort[0][field]", sort);
     params.set("sort[0][direction]", "desc");
   }
+  if (offset) params.set("offset", offset);
   const qs = params.toString();
   if (!recordId && req.method === "GET" && qs) url += `?${qs}`;
 
