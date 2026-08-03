@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>출석부 | 썸류센터</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--ok:#6FBE97;--ink-on-amber:#171208;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em}
+  .wrap{max-width:620px;margin:0 auto;padding:20px 16px 70px}
+  h1{font-size:21px;font-weight:800}
+  .sub{font-size:12.5px;color:var(--muted);margin:3px 0 18px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px}
+  input{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
+  input:focus{outline:none;border-color:var(--amber)}
+  .btn{border:none;border-radius:11px;padding:12px 16px;font-size:14px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;width:100%}
+  .btn.g{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong);width:auto;padding:9px 14px;font-size:12.5px;font-weight:750}
+  .hide{display:none}
+  .stat{display:flex;gap:9px;margin-bottom:14px}
+  .stat .b{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:13px 8px;text-align:center}
+  .stat .b .k{font-size:11px;color:var(--muted)} .stat .b .v{font-size:22px;font-weight:800;margin-top:2px}
+  .stat .b.on .v{color:var(--ok)}
+  .row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:9px;cursor:pointer;transition:background .15s,border-color .15s;user-select:none;-webkit-tap-highlight-color:transparent}
+  .row.present{background:rgba(111,190,151,.1);border-color:rgba(111,190,151,.4)}
+  .chk{width:32px;height:32px;border-radius:9px;border:2px solid var(--line-strong);flex-shrink:0;display:grid;place-items:center;font-size:17px;color:transparent;transition:all .15s}
+  .row.present .chk{background:var(--ok);border-color:transparent;color:#083b26}
+  .nm{font-weight:800;font-size:15.5px} .nm .g{font-size:12px;color:var(--muted);font-weight:600;margin-left:6px}
+  .meta{font-size:12px;color:var(--muted);margin-top:2px}
+  .empty{text-align:center;color:var(--muted);padding:44px 0;font-size:13px}
+  .spin{width:26px;height:26px;border:3px solid var(--line-strong);border-top-color:var(--amber);border-radius:50%;margin:34px auto;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  a.home{font-size:12px;color:var(--muted);text-decoration:none}
+  .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .toolbar .cnt{font-size:12.5px;color:var(--muted);margin-left:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- 로그인 -->
+  <div id="login">
+    <h1>📋 출석부</h1>
+    <div class="sub">센터장 전용 · 관리자 비밀번호</div>
+    <div class="card">
+      <input id="pw" type="password" placeholder="admin 비밀번호">
+      <div style="margin-top:12px"><button class="btn" id="loginBtn">로그인</button></div>
+      <div id="login-msg" style="font-size:12.5px;color:#E8828A;margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- 콘솔 -->
+  <div id="console" class="hide">
+    <h1>📋 출석부 <span style="font-size:15px;color:var(--amber)">· 8/27 (목)</span></h1>
+    <div class="sub">도착한 분을 탭하면 출석 체크돼요 ✅ · <a class="home" href="/rotation-admin">← 로테이션 관리</a></div>
+    <div class="stat">
+      <div class="b on"><div class="k">출석</div><div class="v" id="s-present">–</div></div>
+      <div class="b"><div class="k">전체</div><div class="v" id="s-all">–</div></div>
+      <div class="b"><div class="k">남 / 여</div><div class="v" id="s-gender" style="font-size:17px">–</div></div>
+    </div>
+    <div class="toolbar">
+      <button class="btn g" id="refreshBtn">새로고침</button>
+      <span class="cnt" id="cnt"></span>
+    </div>
+    <div id="list"></div>
+  </div>
+</div>
+<script>
+  var KEY="admin_key";
+  function key(){ return localStorage.getItem(KEY)||""; }
+  var records=[];
+  function apiUrl(sort){ return "/api/airtable?table="+encodeURIComponent("로테이션 신청")+(sort?"&sort=신청일시":""); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+  document.getElementById("loginBtn").addEventListener("click",doLogin);
+  document.getElementById("pw").addEventListener("keydown",function(e){ if(e.key==="Enter") doLogin(); });
+  function doLogin(){
+    var pw=document.getElementById("pw").value;
+    fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ localStorage.setItem(KEY,pw); showConsole(); }
+        else { document.getElementById("login-msg").textContent="비밀번호가 틀렸어요"; }
+      }).catch(function(){ document.getElementById("login-msg").textContent="오류가 났어요. 다시 시도해주세요."; });
+  }
+  function showConsole(){ document.getElementById("login").classList.add("hide"); document.getElementById("console").classList.remove("hide"); load(); }
+  if(key()){ showConsole(); }
+
+  document.getElementById("refreshBtn").addEventListener("click",load);
+  function load(){
+    document.getElementById("list").innerHTML='<div class="spin"></div>';
+    fetch(apiUrl(true),{headers:{"x-admin-key":key()}}).then(function(r){return r.json();}).then(function(r){
+      if(r.error){ document.getElementById("list").innerHTML='<div class="empty">'+esc(r.error)+'<br>(비밀번호 확인 · 새로고침)</div>'; return; }
+      records=(r.records||[]).filter(function(x){ var f=x.fields||{}; return f["승인상태"]==="승인" && String(f["회차"]||"").indexOf("8/27")>=0; });
+      render();
+    }).catch(function(){ document.getElementById("list").innerHTML='<div class="empty">불러오기 오류</div>'; });
+  }
+  function render(){
+    var present=records.filter(function(x){ return (x.fields||{})["출석"]==="O"; }).length;
+    var m=records.filter(function(x){return (x.fields||{})["성별"]==="남성";}).length;
+    var fw=records.filter(function(x){return (x.fields||{})["성별"]==="여성";}).length;
+    document.getElementById("s-present").textContent=present;
+    document.getElementById("s-all").textContent=records.length;
+    document.getElementById("s-gender").textContent=m+" / "+fw;
+    document.getElementById("cnt").textContent="출석 "+present+"/"+records.length+"명";
+    var list=document.getElementById("list"); list.innerHTML="";
+    if(!records.length){ list.innerHTML='<div class="empty">8/27 승인된 참가자가 아직 없어요.</div>'; return; }
+    records.forEach(function(x){
+      var f=x.fields||{}, on=f["출석"]==="O";
+      var el=document.createElement("div"); el.className="row"+(on?" present":"");
+      el.innerHTML='<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["닉네임"]||f["이름"]||"?")+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div><div class="meta">'+esc(f["연락처"]||"")+'</div></div>';
+      el.addEventListener("click",function(){ toggle(x, el); });
+      list.appendChild(el);
+    });
+  }
+  function toggle(x, el){
+    var next=((x.fields||{})["출석"]==="O") ? "" : "O";
+    x.fields["출석"]=next;
+    render(); // 즉시 반영(체크 + 통계)
+    fetch(apiUrl(false),{method:"PATCH",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({records:[{id:x.id,fields:{"출석":next}}]})})
+      .then(function(r){return r.json();}).then(function(r){ if(r.error){ alert("저장 실패 — 다시 시도해주세요"); load(); } })
+      .catch(function(){ alert("저장 중 오류"); load(); });
+  }
+</script>
+</body>
+</html>
