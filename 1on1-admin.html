@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>센터장 매칭 관리 | 썸류센터</title>
+<link rel="stylesheet" href="/tailwind.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0D0D0C;color:#F5F5F3;overflow-x:hidden}
+  .y{color:#FFD400}.bg-y{background:#FFD400}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#161615}::-webkit-scrollbar-thumb{background:#FFD400;border-radius:3px}
+  .card{transition:all .2s}
+  .card:hover{border-color:#FFD400}
+  .card.selected{background:rgba(255,212,0,.08);border-color:#FFD400}
+  .pipe-step{cursor:pointer;transition:all .15s;border-radius:12px;padding:4px 2px}
+  .pipe-step:hover{background:rgba(255,212,0,.08)}
+  .pipe-step:active{transform:scale(.95)}
+
+  /* 등록 모달 */
+  .reg-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.85);overflow-y:auto;display:none}
+  .reg-overlay.show{display:flex;justify-content:center;padding:20px 10px}
+  .reg-modal{background:#161615;border:1px solid #242422;border-radius:20px;max-width:560px;width:100%;margin:auto;position:relative}
+  .reg-header{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 0;position:sticky;top:0;background:#161615;border-radius:20px 20px 0 0;z-index:1}
+  .reg-body{padding:16px 20px 24px}
+  .reg-close{width:36px;height:36px;border-radius:10px;background:#242422;border:none;color:#9E9E97;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+  .reg-close:hover{color:#fff}
+  .ai-toggle{display:flex;align-items:center;gap:6px;background:#FFD400;color:#000;border:none;padding:8px 16px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+  .ai-toggle.active{box-shadow:0 0 16px rgba(255,212,0,.4)}
+  .ai-toggle:hover{transform:scale(1.03);background:#E6BE00}
+  .ai-box{background:rgba(255,212,0,.06);border:1.5px solid rgba(255,212,0,.3);border-radius:16px;padding:16px;margin-bottom:16px;display:none}
+  .ai-box.show{display:block}
+  .ai-box p{color:#FFD400;font-size:11px;margin-bottom:10px}
+  .ai-box textarea{width:100%;background:#0D0D0C;border:1.5px solid rgba(255,212,0,.25);border-radius:12px;padding:12px;color:#F5F5F3;font-size:13px;resize:vertical;min-height:100px;font-family:inherit}
+  .ai-box textarea:focus{outline:none;border-color:#FFD400}
+  .ai-fill-btn{background:#FFD400;color:#000;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;float:right;margin-top:8px}
+  .ai-fill-btn:hover{background:#E6BE00}
+  .reg-field{margin-bottom:12px}
+  .reg-field label{display:block;font-size:11px;color:#9E9E97;font-weight:700;margin-bottom:5px}
+  .reg-field label .req{color:#FFD400}
+  .reg-field input,.reg-field select,.reg-field textarea{width:100%;background:#0D0D0C;border:1px solid #242422;border-radius:12px;padding:10px 14px;color:#F5F5F3;font-size:13px;font-family:inherit}
+  .reg-field input:focus,.reg-field select:focus,.reg-field textarea:focus{outline:none;border-color:#FFD400}
+  .reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .reg-gender{display:flex;gap:8px}
+  .reg-gender button{flex:1;padding:10px;border-radius:12px;border:1px solid #242422;background:#0D0D0C;color:#9E9E97;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+  .reg-gender button.active{background:#FFD400;border-color:#FFD400;color:#000}
+  .photo-upload-area{border:2px dashed #333;border-radius:16px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:12px}
+  .photo-upload-area:hover{border-color:#FFD400}
+  .photo-upload-area i{font-size:28px;color:#FFD400;margin-bottom:6px}
+  .photo-preview-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .photo-preview-item{position:relative;width:80px;height:80px;border-radius:12px;overflow:hidden;border:2px solid #242422}
+  .photo-preview-item img{width:100%;height:100%;object-fit:cover}
+  .photo-preview-item .photo-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(255,0,0,.8);color:#fff;border:none;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .photo-preview-item .photo-drag{position:absolute;top:4px;left:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;cursor:grab}
+  .reg-submit{width:100%;padding:14px;border-radius:14px;border:none;background:#FFD400;color:#000;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;margin-top:8px}
+  .reg-submit:hover{background:#E6BE00}
+  .reg-submit:disabled{opacity:.4;cursor:not-allowed}
+  .reg-type-tabs{display:flex;gap:6px;margin-bottom:16px}
+  .reg-type-tab{flex:1;padding:10px;border-radius:12px;border:1px solid #242422;background:#0D0D0C;color:#9E9E97;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+  .reg-type-tab.active{background:#FFD400;border-color:#FFD400;color:#000}
+  .sort-select{background:#161615;border:1px solid #242422;color:#9E9E97;font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer}
+  .sort-select:focus{outline:none;border-color:#FFD400}
+
+  /* 소트 탭 */
+  .sort-tab{background:#161615;border:1px solid #242422;color:#9E9E97;cursor:pointer}
+  .sort-tab:hover{border-color:#FFD400;color:#FFD400}
+  .sort-tab.active{background:#FFD400;border-color:#FFD400;color:#000}
+
+  /* 소개 풀 카드 */
+  .appcard{background:#161615;border:1px solid #242422;border-radius:16px;padding:4px 15px 14px;margin-bottom:12px;transition:border-color .15s}
+  .appcard.sel{border-color:#FFD400;background:rgba(255,212,0,.05)}
+  .pool-row{display:flex;align-items:center;gap:12px;padding:13px 0 11px;cursor:pointer}
+  .pool-row:hover{background:transparent}
+  .pool-row.selected{background:transparent}
+  .pool-info{flex:1;min-width:0}
+  .pool-birth{font-size:17px;font-weight:900;line-height:1.2}
+  .pool-detail{font-size:12px;color:#9E9E97;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pool-status{font-size:10px;font-weight:700;margin-top:3px}
+  .pool-thumb{width:64px;height:64px;border-radius:12px;overflow:hidden;flex-shrink:0;background:#242422;display:flex;align-items:center;justify-content:center}
+  .pool-thumb img{width:100%;height:100%;object-fit:cover}
+  .pool-thumb i{color:#555;font-size:18px}
+
+  /* 아코디언 상세 */
+  .pool-expand{display:block;padding:0}
+  .pool-expand.open{display:block}
+  .pool-birth{font-size:15px;font-weight:800}
+  .pool-detail{font-size:12.5px;color:#9E9E97;margin-top:2px}
+  .pool-status{font-size:11px;font-weight:750;margin-top:5px}
+</style>
+</head>
+<body class="min-h-screen selection:bg-[#FFD400] selection:text-black">
+
+<!-- 비밀번호 잠금 화면 -->
+<div id="lock-screen" class="fixed inset-0 z-[100] bg-[#0D0D0C] flex items-center justify-center px-5">
+  <div class="max-w-sm w-full text-center">
+    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#161615] border border-[#FFD400]/30 flex items-center justify-center">
+      <i class="fa-solid fa-lock y text-2xl"></i>
+    </div>
+    <h2 class="text-xl font-black">관리자 인증</h2>
+    <p class="text-sm text-[#9E9E97] mt-2">센터장 비밀번호를 입력해주세요</p>
+    <div class="mt-6">
+      <input type="password" id="pw-input" placeholder="비밀번호 입력"
+        onkeydown="if(event.key==='Enter')checkPw()"
+        class="w-full bg-[#161615] border border-[#242422] rounded-xl px-4 py-3 text-sm text-white text-center placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+      <p id="pw-error" class="hidden text-xs text-red-400 mt-2">비밀번호가 틀렸습니다</p>
+      <button onclick="checkPw()" class="bg-y text-black font-extrabold w-full px-6 py-3 rounded-xl text-sm mt-3 transition hover:bg-[#E6BE00]">
+        <i class="fa-solid fa-right-to-bracket mr-1.5"></i>로그인
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 네비 -->
+<nav class="sticky top-0 z-50 bg-[#0D0D0C]/95 backdrop-blur-md border-b border-[#242422] px-4 py-3">
+  <div class="max-w-4xl mx-auto flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <span class="text-xl font-black tracking-tight">썸류<span class="y">센터</span></span>
+      <span class="text-[10px] bg-[#FFD400]/15 text-[#FFD400] border border-[#FFD400]/30 font-bold px-2 py-0.5 rounded-full">ADMIN</span>
+    </div>
+    <button onclick="loadApplicants();loadCoffeeApplicants()" class="text-sm text-[#9E9E97] hover:text-white transition">
+      <i class="fa-solid fa-arrows-rotate mr-1"></i>새로고침
+    </button>
+  </div>
+</nav>
+
+<!-- 관리자 페이지 이동 -->
+<div class="max-w-4xl mx-auto px-4 pt-3 flex flex-wrap gap-2 text-[11px]">
+  <a href="/admin" class="bg-[#161615] border border-[#242422] text-[#9E9E97] font-bold px-2.5 py-1 rounded-full hover:border-[#FFD400] transition">🏠 홈</a>
+  <span class="bg-[#E88FB0]/15 text-[#E88FB0] border border-[#E88FB0]/30 font-bold px-2.5 py-1 rounded-full">💘 1:1 매칭</span>
+</div>
+
+<!-- 메인 -->
+<div class="max-w-4xl mx-auto px-5 py-8">
+
+  <!-- 탭 전환 -->
+  <div class="flex gap-2 mb-6">
+    <button onclick="switchTab('matching')" id="tab-matching" class="tab-btn bg-y text-black text-sm font-bold px-4 py-2 rounded-xl transition">
+      <i class="fa-solid fa-video mr-1.5"></i>1:1 매칭
+    </button>
+    <button onclick="switchTab('coffee')" id="tab-coffee" class="tab-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-sm font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]">
+      <i class="fa-solid fa-chart-line mr-1.5"></i>재테크 커피팅
+    </button>
+  </div>
+
+  <!-- 1:1 매칭 섹션 -->
+  <div id="section-matching">
+
+  <!-- 통계 -->
+  <div class="grid grid-cols-4 gap-3 mb-8">
+    <button type="button" onclick="filterBy('all')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
+      <div class="text-2xl font-black y" id="stat-total">-</div>
+      <div class="text-[11px] text-[#9E9E97] mt-1">전체 신청</div>
+    </button>
+    <button type="button" onclick="var e=document.getElementById('match-board-status'); if(e) e.scrollIntoView({behavior:'smooth'})" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
+      <div class="text-2xl font-black text-emerald-400" id="stat-waiting">-</div>
+      <div class="text-[11px] text-[#9E9E97] mt-1">성사 🎉</div>
+    </button>
+    <button type="button" onclick="filterBy('승인')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
+      <div class="text-2xl font-black text-emerald-400" id="stat-approved">-</div>
+      <div class="text-[11px] text-[#9E9E97] mt-1">승인</div>
+    </button>
+    <button type="button" onclick="filterBy('소개중')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
+      <div class="text-2xl font-black text-blue-400" id="stat-matched">-</div>
+      <div class="text-[11px] text-[#9E9E97] mt-1">소개중</div>
+    </button>
+  </div>
+
+  <!-- 매칭 도구 -->
+  <div class="bg-[#161615] border border-[#FFD400]/20 rounded-2xl p-5 mb-8">
+    <button type="button" onclick="toggleMatchTool()" class="w-full flex items-center justify-between text-left">
+      <h2 class="font-bold text-sm"><i class="fa-solid fa-heart-circle-plus y mr-1.5"></i>매칭하기 <span class="text-[11px] text-[#9E9E97] font-normal">— 두 사람 골라 링크 만들기</span></h2>
+      <i id="match-tool-chevron" class="fa-solid fa-chevron-down text-[#9E9E97] text-xs"></i>
+    </button>
+    <div id="match-tool-body" class="hidden mt-4">
+    <p class="text-xs text-[#9E9E97] mb-4">아래 목록에서 매칭할 두 사람을 클릭하세요</p>
+
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-3 min-h-[60px]">
+        <div class="text-[10px] text-[#9E9E97] font-bold uppercase tracking-wider mb-1">선택 1</div>
+        <div id="pick-1" class="text-sm text-[#555]">목록에서 선택</div>
+      </div>
+      <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-3 min-h-[60px]">
+        <div class="text-[10px] text-[#9E9E97] font-bold uppercase tracking-wider mb-1">선택 2</div>
+        <div id="pick-2" class="text-sm text-[#555]">목록에서 선택</div>
+      </div>
+    </div>
+
+    <button onclick="generateMatch()" id="match-btn" disabled
+      class="bg-y text-black font-extrabold w-full px-6 py-3 rounded-xl text-sm transition hover:bg-[#E6BE00] disabled:opacity-30 disabled:cursor-not-allowed">
+      <i class="fa-solid fa-link mr-1.5"></i>매칭 URL 생성
+    </button>
+
+    <!-- 매칭 결과 -->
+    <div id="match-result" class="hidden mt-4 space-y-3">
+      <div class="bg-[#0D0D0C] border border-[#FFD400]/30 rounded-xl p-4">
+        <div class="text-[10px] y font-bold uppercase tracking-wider mb-2"><span id="result-name-1"></span>에게 보낼 링크</div>
+        <div class="flex gap-2">
+          <input type="text" id="url-for-1" readonly class="flex-1 bg-[#161615] border border-[#242422] rounded-lg px-3 py-2 text-xs text-white">
+          <button onclick="copyUrl('url-for-1')" class="bg-[#242422] hover:bg-[#FFD400]/10 text-white text-xs font-bold px-3 py-2 rounded-lg transition">복사</button>
+        </div>
+        <button onclick="sendMatchSms(0)" id="sms-btn-1" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition">
+          <i class="fa-solid fa-comment-sms mr-1"></i>문자로 보내기
+        </button>
+      </div>
+      <div class="bg-[#0D0D0C] border border-[#FFD400]/30 rounded-xl p-4">
+        <div class="text-[10px] y font-bold uppercase tracking-wider mb-2"><span id="result-name-2"></span>에게 보낼 링크</div>
+        <div class="flex gap-2">
+          <input type="text" id="url-for-2" readonly class="flex-1 bg-[#161615] border border-[#242422] rounded-lg px-3 py-2 text-xs text-white">
+          <button onclick="copyUrl('url-for-2')" class="bg-[#242422] hover:bg-[#FFD400]/10 text-white text-xs font-bold px-3 py-2 rounded-lg transition">복사</button>
+        </div>
+        <button onclick="sendMatchSms(1)" id="sms-btn-2" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition">
+          <i class="fa-solid fa-comment-sms mr-1"></i>문자로 보내기
+        </button>
+      </div>
+      <!-- AI 추천 이유 초안 -->
+      <div class="bg-[#0D0D0C] border border-[#8B5CF6]/40 rounded-xl p-4">
+        <button onclick="genAiReason()" id="ai-reason-btn" class="w-full bg-[#8B5CF6] hover:bg-[#7C4DEF] text-white text-sm font-extrabold px-4 py-3 rounded-xl transition">
+          <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>AI로 추천 이유 초안 만들기
+        </button>
+        <div id="ai-reason-box" class="hidden mt-3 space-y-3">
+          <div>
+            <div class="text-[10px] font-bold uppercase tracking-wider mb-1 text-[#B69CF7]"><span id="ai-name-1"></span>에게 보낼 추천 이유</div>
+            <textarea id="ai-reason-1" rows="3" class="w-full bg-[#161615] border border-[#242422] rounded-lg px-3 py-2 text-xs text-white leading-relaxed"></textarea>
+            <button onclick="copyText('ai-reason-1')" class="mt-1 text-[11px] text-[#9E9E97] hover:text-white">📋 복사</button>
+          </div>
+          <div>
+            <div class="text-[10px] font-bold uppercase tracking-wider mb-1 text-[#B69CF7]"><span id="ai-name-2"></span>에게 보낼 추천 이유</div>
+            <textarea id="ai-reason-2" rows="3" class="w-full bg-[#161615] border border-[#242422] rounded-lg px-3 py-2 text-xs text-white leading-relaxed"></textarea>
+            <button onclick="copyText('ai-reason-2')" class="mt-1 text-[11px] text-[#9E9E97] hover:text-white">📋 복사</button>
+          </div>
+          <p class="text-[11px] text-[#555]">AI 초안이에요. 확인·수정 후 문자/카톡으로 보내주세요.</p>
+        </div>
+      </div>
+      <button onclick="sendMatchSmsAll()" id="sms-btn-all" class="w-full bg-[#FFD400] text-black text-sm font-extrabold px-4 py-3 rounded-xl transition hover:bg-[#E6BE00]">
+        <i class="fa-solid fa-paper-plane mr-1.5"></i>양쪽 모두에게 문자 보내기
+      </button>
+      <p class="text-[11px] text-[#555] text-center">문자 또는 링크 복사 후 카카오톡으로 보내주세요</p>
+    </div>
+    </div><!-- /match-tool-body -->
+  </div>
+
+  <!-- 신청자 등록 버튼 -->
+  <button onclick="openRegModal('matching')" class="w-full bg-[#161615] border border-dashed border-[#FFD400]/40 rounded-2xl py-4 text-sm font-bold text-[#FFD400] hover:bg-[#FFD400]/5 transition mb-6">
+    <i class="fa-solid fa-user-plus mr-2"></i>신청자 등록
+  </button>
+
+  <!-- 소개 풀 헤더 -->
+  <div class="mb-4">
+    <h2 class="text-lg font-black mb-3">소개 풀 (<span id="pool-count">0</span>명)</h2>
+    <!-- 필터: 상태 -->
+    <div class="flex flex-wrap gap-2 mb-2 items-center">
+      <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">상태</span>
+      <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
+      <button onclick="filterBy('승인')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
+      <button onclick="filterBy('소개중')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="소개중">소개중</button>
+      <button onclick="filterBy('거절')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="거절">거절</button>
+    </div>
+    <!-- 필터: 성별 -->
+    <div class="flex flex-wrap gap-2 mb-3 items-center">
+      <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">성별</span>
+      <button onclick="filterBy('남성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
+      <button onclick="filterBy('여성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
+    </div>
+    <!-- 정렬 탭 -->
+    <div class="flex gap-1.5">
+      <button onclick="sortMatching('age-asc')" class="sort-tab active text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="age-asc">나이순</button>
+      <button onclick="sortMatching('date-desc')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="date-desc">최신순</button>
+      <button onclick="sortMatching('name')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="name">이름순</button>
+    </div>
+  </div>
+
+  <!-- 매칭 응답 현황 -->
+  <div id="response-status" class="mb-5"></div>
+
+  <!-- 💑 매칭 현황 (매칭 테이블) -->
+  <div id="match-board-status" class="mb-5"></div>
+
+  <!-- 신청자 목록 (소개 풀) -->
+  <div id="applicant-list" class="space-y-0">
+    <div class="text-center py-10 text-[#555]">
+      <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
+      <p class="text-sm">신청자 목록 불러오는 중...</p>
+    </div>
+  </div>
+
+  </div><!-- /section-matching -->
+
+  <!-- 커피팅 섹션 -->
+  <div id="section-coffee" class="hidden">
+
+    <!-- 날짜 헤더 -->
+    <div class="bg-[#161615] border border-[#FFD400]/20 rounded-2xl p-5 mb-6 text-center">
+      <div class="text-2xl mb-2">💰</div>
+      <h2 class="text-lg font-black" id="coffee-event-title">7월 24일 (금) 재테크 미팅</h2>
+      <p class="text-xs text-[#9E9E97] mt-1" id="coffee-event-sub">삼성역 도보 3분 · 19:45 시작</p>
+    </div>
+
+    <!-- 파이프라인 진행 상태 (클릭하면 해당 단계 화면으로 이동) -->
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mb-6">
+      <div class="text-xs font-bold text-[#9E9E97] mb-3">📋 운영 파이프라인 <span class="text-[#555] font-normal">· 단계를 누르면 해당 화면으로 이동해요</span></div>
+      <div class="flex items-center gap-1 overflow-x-auto pb-1" style="scrollbar-width:none">
+        <div class="pipe-step flex flex-col items-center min-w-[60px]" onclick="gotoStage('list','all')" title="전체 신청자 보기">
+          <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-check"></i></div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">신청</div>
+        </div>
+        <div class="h-[2px] w-4 bg-[#242422] flex-shrink-0"></div>
+        <div class="pipe-step flex flex-col items-center min-w-[60px]" onclick="gotoStage('list','대기')" title="대기자 승인하러 가기">
+          <div class="w-8 h-8 rounded-full bg-[#FFD400]/20 text-[#FFD400] flex items-center justify-center text-xs font-bold" id="pipe-approve">-</div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">승인</div>
+        </div>
+        <div class="h-[2px] w-4 bg-[#242422] flex-shrink-0"></div>
+        <div class="pipe-step flex flex-col items-center min-w-[60px]" onclick="gotoStage('list','승인')" title="입금 확인하러 가기">
+          <div class="w-8 h-8 rounded-full bg-[#FFD400]/20 text-[#FFD400] flex items-center justify-center text-xs font-bold" id="pipe-paid">-</div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">입금</div>
+        </div>
+        <div class="h-[2px] w-4 bg-[#242422] flex-shrink-0"></div>
+        <div class="pipe-step flex flex-col items-center min-w-[60px]" onclick="gotoStage('sms','location')" title="전날 장소 안내 보내러 가기">
+          <div class="w-8 h-8 rounded-full bg-[#242422] text-[#555] flex items-center justify-center text-xs" id="pipe-location"><i class="fa-solid fa-map-pin"></i></div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">장소안내</div>
+        </div>
+        <div class="h-[2px] w-4 bg-[#242422] flex-shrink-0"></div>
+        <div class="pipe-step flex flex-col items-center min-w-[60px]" onclick="gotoStage('lineup')" title="출석부 열기">
+          <div class="w-8 h-8 rounded-full bg-[#242422] text-[#555] flex items-center justify-center text-xs" id="pipe-attend"><i class="fa-solid fa-clipboard-check"></i></div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">출석</div>
+        </div>
+        <div class="h-[2px] w-4 bg-[#242422] flex-shrink-0"></div>
+        <div class="pipe-step flex flex-col items-center min-w-[60px]" onclick="gotoStage('sms','post')" title="행사 후 문자 보내러 가기">
+          <div class="w-8 h-8 rounded-full bg-[#242422] text-[#555] flex items-center justify-center text-xs" id="pipe-done"><i class="fa-solid fa-flag-checkered"></i></div>
+          <div class="text-[9px] text-[#9E9E97] mt-1 text-center">완료</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 커피팅 통계 -->
+    <div class="grid grid-cols-4 gap-2 mb-6">
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-3 text-center">
+        <div class="text-xl font-black y" id="coffee-stat-total">-</div>
+        <div class="text-[10px] text-[#9E9E97] mt-1">전체</div>
+      </div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-3 text-center">
+        <div class="text-xl font-black y" id="coffee-stat-waiting">-</div>
+        <div class="text-[10px] text-[#9E9E97] mt-1">대기</div>
+      </div>
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl py-3 text-center">
+        <div class="text-xl font-black y" id="coffee-stat-approved">-</div>
+        <div class="text-[10px] text-[#9E9E97] mt-1">승인</div>
+      </div>
+      <div class="bg-[#161615] border border-emerald-500/30 rounded-2xl py-3 text-center">
+        <div class="text-xl font-black text-emerald-400" id="coffee-stat-paid">-</div>
+        <div class="text-[10px] text-[#9E9E97] mt-1">입금완료</div>
+      </div>
+    </div>
+
+    <!-- 서브탭: 신청자 / 출석부 / 문자발송 -->
+    <div class="flex gap-2 mb-5">
+      <button onclick="switchCoffeeView('list')" id="cv-list" class="cv-btn bg-y text-black text-xs font-bold px-4 py-2 rounded-xl transition">
+        <i class="fa-solid fa-list mr-1"></i>신청자 관리
+      </button>
+      <button onclick="switchCoffeeView('lineup')" id="cv-lineup" class="cv-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]">
+        <i class="fa-solid fa-clipboard-check mr-1"></i>출석부
+      </button>
+      <button onclick="switchCoffeeView('sms')" id="cv-sms" class="cv-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]">
+        <i class="fa-solid fa-paper-plane mr-1"></i>문자발송
+      </button>
+      <button onclick="switchCoffeeView('settings')" id="cv-settings" class="cv-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]">
+        <i class="fa-solid fa-gear mr-1"></i>설정
+      </button>
+    </div>
+
+    <!-- 뷰: 신청자 관리 -->
+    <div id="coffee-view-list">
+      <!-- 음료 카운트 -->
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mb-6">
+        <div class="text-xs font-bold text-[#9E9E97] mb-3">☕ 음료 주문 현황 <span class="text-[#555]">(승인된 참가자 기준)</span></div>
+        <div id="drink-count" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- 신청자 등록 버튼 -->
+      <button onclick="openRegModal('coffee')" class="w-full bg-[#0D0D0C] border border-dashed border-[#FFD400]/40 rounded-2xl py-3.5 text-sm font-bold text-[#FFD400] hover:bg-[#FFD400]/5 transition mb-4">
+        <i class="fa-solid fa-user-plus mr-2"></i>신청자 등록
+      </button>
+
+      <!-- 신청자 검색 -->
+      <div class="mb-3">
+        <input type="text" id="coffeeSearch" oninput="coffeeSearchFilter()" placeholder="🔍 이름, 닉네임, 연락처로 검색" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition">
+      </div>
+
+      <!-- 커피팅 필터 + 정렬 -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex flex-wrap gap-2">
+          <button onclick="coffeeFilterBy('all')" class="coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
+          <button onclick="coffeeFilterBy('대기')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기</button>
+          <button onclick="coffeeFilterBy('승인')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
+          <button onclick="coffeeFilterBy('입금완료')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="입금완료">입금완료</button>
+          <button onclick="coffeeFilterBy('남성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
+          <button onclick="coffeeFilterBy('여성')" class="coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
+        </div>
+        <select id="coffee-sort" onchange="sortCoffee(this.value)" class="sort-select">
+          <option value="date-desc">최신순</option>
+          <option value="date-asc">오래된순</option>
+          <option value="name">이름순</option>
+          <option value="age-asc">나이 많은순</option>
+          <option value="age-desc">나이 적은순</option>
+        </select>
+      </div>
+
+      <!-- 커피팅 신청자 목록 -->
+      <div id="coffee-list" class="space-y-3">
+        <div class="text-center py-10 text-[#555]">
+          <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
+          <p class="text-sm">커피팅 신청자 불러오는 중...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 뷰: 출석부 -->
+    <div id="coffee-view-lineup" class="hidden">
+      <!-- 음료 카운트 (출석부용) -->
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mb-4">
+        <div class="text-xs font-bold text-[#9E9E97] mb-3">☕ 음료 주문 현황 <span class="text-[#555]">(입금완료 참가자 기준)</span></div>
+        <div id="lineup-drink-count" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-black"><i class="fa-solid fa-clipboard-check y mr-1.5"></i>출석부 (입금완료 참가자)</h3>
+          <div class="text-xs text-[#9E9E97]">출석 <b class="y" id="attend-count">0</b> / <span id="attend-total">0</span></div>
+        </div>
+
+        <div class="text-xs font-bold text-[#9E9E97] mb-2">🙋‍♂️ 남성</div>
+        <div id="lineup-male" class="space-y-2 mb-4"></div>
+
+        <div class="text-xs font-bold text-[#9E9E97] mb-2">🙋‍♀️ 여성</div>
+        <div id="lineup-female" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- 뷰: 문자발송 -->
+    <div id="coffee-view-sms" class="hidden">
+      <div class="space-y-3">
+        <!-- 전날 장소 안내 -->
+        <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5" id="sms-card-location">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs"><i class="fa-solid fa-map-pin"></i></span>
+            <h3 class="text-sm font-bold">전날 장소 안내</h3>
+          </div>
+          <p class="text-xs text-[#9E9E97] mb-1">입금완료된 참가자에게 장소, 준비물, 드레스코드 안내</p>
+          <p id="location-sms-history" class="text-[11px] text-[#555] mb-3"></p>
+          <button onclick="sendLocationSMS()" class="bg-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2.5 rounded-xl hover:text-white hover:border-[#FFD400] transition border border-[#242422] w-full">
+            <i class="fa-solid fa-paper-plane mr-1.5"></i>장소 안내 일괄 발송
+          </button>
+        </div>
+
+        <!-- 행사 후 전체 문자 -->
+        <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5" id="sms-card-post">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-heart"></i></span>
+            <h3 class="text-sm font-bold">행사 후 전체 문자</h3>
+          </div>
+          <p class="text-xs text-[#9E9E97] mb-1">출석 체크된 참가자에게 감사 인사 + 후기 안내</p>
+          <p id="post-sms-history" class="text-[11px] text-[#555] mb-3"></p>
+          <textarea id="post-event-msg" rows="5" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition mb-3" placeholder="문자 내용을 입력하세요">🩷📦썸류센터 재테크 관심 로테이션 커피팅📦🩷
+
+안녕하세요😊
+오늘 함께해 주셔서 정말 감사합니다!
+즐거운 시간 보내셨길 바랍니다💕
+
+혹시 좋은 인연이 있으셨다면 꼭 연락해보세요☺️
+다음 커피팅 일정은 인스타그램에서 확인하실 수 있습니다.
+
+좋은 후기도 부탁드려요🙏
+다음에 또 만나요!</textarea>
+          <button onclick="sendPostEventSMS()" class="bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-600 transition w-full">
+            <i class="fa-solid fa-paper-plane mr-1.5"></i>행사 후 전체 문자 발송
+          </button>
+        </div>
+
+        <!-- 커스텀 문자 -->
+        <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs"><i class="fa-solid fa-pen"></i></span>
+            <h3 class="text-sm font-bold">커스텀 문자</h3>
+          </div>
+          <p class="text-xs text-[#9E9E97] mb-3">원하는 대상에게 자유롭게 문자 발송</p>
+          <select id="custom-sms-target" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white focus:border-[#FFD400] focus:outline-none transition mb-2">
+            <option value="all">전체 신청자</option>
+            <option value="approved">승인된 참가자</option>
+            <option value="paid">입금완료 참가자</option>
+            <option value="attended">출석 참가자</option>
+          </select>
+          <textarea id="custom-sms-msg" rows="4" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition mb-3" placeholder="문자 내용을 입력하세요"></textarea>
+          <button onclick="sendCustomSMS()" class="bg-purple-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-purple-600 transition w-full">
+            <i class="fa-solid fa-paper-plane mr-1.5"></i>커스텀 문자 발송
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 뷰: 설정 -->
+    <div id="coffee-view-settings" class="hidden">
+      <div class="bg-[#161615] border border-[#242422] rounded-2xl p-5 space-y-4">
+        <h3 class="text-sm font-black"><i class="fa-solid fa-gear y mr-1.5"></i>회차 설정 <span class="text-[10px] text-[#555] font-normal">저장하면 화면·문자 내용에 바로 반영돼요</span></h3>
+        <div id="settings-warning" class="hidden bg-red-500/10 border border-red-500/30 rounded-xl p-3 text-xs text-red-400">
+          Airtable에 "설정" 테이블이 없어요. Airtable에서 테이블 이름 <b>설정</b>, 필드 <b>키</b>(싱글라인 텍스트) / <b>값</b>(긴 텍스트)으로 만들어주세요. 그 전까지는 기본값으로 작동해요.
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">행사 제목 (관리 화면 상단)</label>
+          <input type="text" id="set-행사제목" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">행사 부제 (장소 · 시간)</label>
+          <input type="text" id="set-행사부제" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">회차 키 (발송 이력 구분용, 예: 0724)</label>
+          <input type="text" id="set-회차키" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white focus:border-[#FFD400] focus:outline-none transition">
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">💰 입금 안내 문자 (승인 시 자동 발송)</label>
+          <textarea id="set-입금안내문자" rows="8" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white focus:border-[#FFD400] focus:outline-none transition"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">✅ 확정 안내 문자 (입금 확인 시 발송)</label>
+          <textarea id="set-확정안내문자" rows="8" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white focus:border-[#FFD400] focus:outline-none transition"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">📍 전날 장소 안내 문자</label>
+          <textarea id="set-장소안내문자" rows="8" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white focus:border-[#FFD400] focus:outline-none transition"></textarea>
+        </div>
+        <div>
+          <label class="text-[11px] text-[#9E9E97] font-bold block mb-1">💌 행사 후 문자 (기본값)</label>
+          <textarea id="set-행사후문자" rows="6" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-3 text-xs text-white focus:border-[#FFD400] focus:outline-none transition"></textarea>
+        </div>
+        <button onclick="saveSettings()" class="bg-y text-black text-xs font-extrabold px-4 py-3 rounded-xl w-full hover:bg-[#E6BE00] transition">
+          <i class="fa-solid fa-floppy-disk mr-1.5"></i>설정 저장
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /section-coffee -->
+
+</div>
+
+<!-- 신청자 등록 모달 -->
+<div id="reg-overlay" class="reg-overlay" onclick="if(event.target===this)closeRegModal()">
+  <div class="reg-modal">
+    <div class="reg-header">
+      <h2 style="font-size:18px;font-weight:900">매물 정보 추가</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="ai-toggle-btn" class="ai-toggle" onclick="toggleAI()">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> AI 자동입력
+        </button>
+        <button class="reg-close" onclick="closeRegModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <div class="reg-body">
+      <p style="font-size:12px;color:#9E9E97;margin-bottom:16px">사진은 최대 4장까지 등록할 수 있습니다.</p>
+
+      <!-- 타입 선택 -->
+      <div class="reg-type-tabs">
+        <div class="reg-type-tab active" data-type="matching" onclick="switchRegType('matching')">
+          <i class="fa-solid fa-heart mr-1"></i>1:1 매칭
+        </div>
+        <div class="reg-type-tab" data-type="coffee" onclick="switchRegType('coffee')">
+          <i class="fa-solid fa-chart-line mr-1"></i>재테크 커피팅
+        </div>
+      </div>
+
+      <!-- AI 자동입력 영역 -->
+      <div id="ai-box" class="ai-box">
+        <p>텍스트를 붙여넣으면 AI가 폼을 자동으로 채워줍니다. 학력·특기 등 폼에 없는 내용은 기타에 입력됩니다.</p>
+        <textarea id="ai-text" placeholder="예시:
+키 183
+나이 92년생
+거주지 서울 강서구
+직업 경찰
+자기관리 잘해요"></textarea>
+        <button class="ai-fill-btn" onclick="aiParse()"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> 폼 채우기</button>
+        <div style="clear:both"></div>
+      </div>
+
+      <!-- 사진 업로드 -->
+      <div id="photo-upload-area" class="photo-upload-area" onclick="document.getElementById('reg-photo-input').click()">
+        <i class="fa-solid fa-camera-retro"></i>
+        <div style="font-size:13px;font-weight:700;color:#9E9E97;margin-top:4px">사진 업로드 <span style="color:#FF4D6D">*</span></div>
+        <div id="photo-count" style="font-size:11px;color:#555;margin-top:2px">0/4</div>
+        <div style="font-size:10px;color:#555;margin-top:4px">클릭·드래그 또는 붙여넣기(Ctrl/⌘+V)</div>
+      </div>
+      <input type="file" id="reg-photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(event)">
+      <div id="photo-preview-grid" class="photo-preview-grid"></div>
+
+      <!-- 공통 필드: 주요 정보 -->
+      <fieldset style="border:1px solid #242422;border-radius:16px;padding:16px;margin-bottom:16px">
+        <legend style="font-size:12px;font-weight:700;color:#FFD400;padding:0 8px">주요 정보</legend>
+
+        <div class="reg-field">
+          <label>성별 <span class="req">*</span></label>
+          <div class="reg-gender">
+            <button type="button" onclick="setGender('여성')" id="reg-gender-f">여성</button>
+            <button type="button" onclick="setGender('남성')" id="reg-gender-m">남성</button>
+          </div>
+        </div>
+
+        <div class="reg-grid">
+          <div class="reg-field">
+            <label>이름 <span class="req">*</span></label>
+            <input type="text" id="reg-name" placeholder="이름">
+          </div>
+          <div class="reg-field">
+            <label>년생 <span class="req">*</span></label>
+            <select id="reg-birth">
+              <option value="">선택</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="reg-grid">
+          <div class="reg-field">
+            <label>키 <span class="req">*</span></label>
+            <input type="number" id="reg-height" placeholder="cm">
+          </div>
+          <div class="reg-field">
+            <label>사는 곳 <span class="req">*</span></label>
+            <input type="text" id="reg-location" placeholder="서울 강남구">
+          </div>
+        </div>
+
+        <div class="reg-field">
+          <label>연락처</label>
+          <input type="tel" id="reg-phone" placeholder="010-0000-0000">
+        </div>
+      </fieldset>
+
+      <!-- 1:1 매칭 전용 필드 -->
+      <div id="reg-matching-fields">
+        <fieldset style="border:1px solid #242422;border-radius:16px;padding:16px;margin-bottom:16px">
+          <legend style="font-size:12px;font-weight:700;color:#FFD400;padding:0 8px">매칭 정보</legend>
+
+          <div class="reg-field">
+            <label>직업 <span class="req">*</span></label>
+            <input type="text" id="reg-job" placeholder="직업">
+          </div>
+
+          <div class="reg-grid">
+            <div class="reg-field">
+              <label>종교</label>
+              <input type="text" id="reg-religion" placeholder="무교, 기독교 등">
+            </div>
+            <div class="reg-field">
+              <label>취미</label>
+              <input type="text" id="reg-hobby" placeholder="운동, 독서 등">
+            </div>
+          </div>
+
+          <div class="reg-field">
+            <label>자기소개</label>
+            <textarea id="reg-intro" rows="3" placeholder="자기소개를 입력하세요"></textarea>
+          </div>
+
+          <div class="reg-field">
+            <label>성격키워드</label>
+            <input type="text" id="reg-keywords" placeholder="쉼표로 구분 (예: 활발한, 따뜻한)">
+          </div>
+
+          <div class="reg-grid">
+            <div class="reg-field">
+              <label>선호 나이대</label>
+              <input type="text" id="reg-pref-age" placeholder="예: 90~95년생">
+            </div>
+            <div class="reg-field">
+              <label>선호 직업군</label>
+              <input type="text" id="reg-pref-job" placeholder="예: 전문직">
+            </div>
+          </div>
+
+          <div class="reg-field">
+            <label>매칭유형</label>
+            <select id="reg-match-type">
+              <option value="일반매칭">일반매칭</option>
+              <option value="슈퍼매칭">슈퍼매칭</option>
+            </select>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- 재테크 커피팅 전용 필드 -->
+      <div id="reg-coffee-fields" style="display:none">
+        <fieldset style="border:1px solid #242422;border-radius:16px;padding:16px;margin-bottom:16px">
+          <legend style="font-size:12px;font-weight:700;color:#FFD400;padding:0 8px">커피팅 정보</legend>
+
+          <div class="reg-grid">
+            <div class="reg-field">
+              <label>닉네임</label>
+              <input type="text" id="reg-nickname" placeholder="닉네임">
+            </div>
+            <div class="reg-field">
+              <label>직업/직장명 <span class="req">*</span></label>
+              <input type="text" id="reg-coffee-job" placeholder="회사명/직업">
+            </div>
+          </div>
+
+          <div class="reg-field">
+            <label>관심 재테크</label>
+            <input type="text" id="reg-fintech" placeholder="주식, 부동산, 코인 등">
+          </div>
+
+          <div class="reg-field">
+            <label>어필포인트</label>
+            <textarea id="reg-appeal" rows="3" placeholder="어필포인트를 입력하세요"></textarea>
+          </div>
+
+          <div class="reg-grid">
+            <div class="reg-field">
+              <label>음료선택</label>
+              <select id="reg-drink">
+                <option value="">선택</option>
+                <option value="아메리카노(ICE)">아메리카노(ICE)</option>
+                <option value="아메리카노(HOT)">아메리카노(HOT)</option>
+                <option value="카페라떼(ICE)">카페라떼(ICE)</option>
+                <option value="카페라떼(HOT)">카페라떼(HOT)</option>
+                <option value="녹차라떼(ICE)">녹차라떼(ICE)</option>
+                <option value="기타">기타</option>
+              </select>
+            </div>
+            <div class="reg-field">
+              <label>할인혜택</label>
+              <select id="reg-discount">
+                <option value="해당없음">해당없음</option>
+                <option value="추천할인">추천할인</option>
+                <option value="직원할인">직원할인</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="reg-grid">
+            <div class="reg-field">
+              <label>유입경로</label>
+              <input type="text" id="reg-source" placeholder="인스타그램, 소개 등">
+            </div>
+            <div class="reg-field">
+              <label>추천인</label>
+              <input type="text" id="reg-referrer" placeholder="추천인 이름">
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- 기타 (AI 파싱 잔여) -->
+      <div class="reg-field">
+        <label>기타 메모</label>
+        <textarea id="reg-etc" rows="2" placeholder="기타 정보 (학력, 특기 등)"></textarea>
+      </div>
+
+      <button class="reg-submit" id="reg-submit-btn" onclick="submitRegistration()">
+        <i class="fa-solid fa-check mr-1"></i>등록하기
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 사진 크게보기 -->
+<div id="photo-modal" onclick="this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.9);cursor:pointer;justify-content:center;align-items:center">
+  <img id="photo-modal-img" style="max-width:90%;max-height:90%;border-radius:12px;object-fit:contain">
+</div>
+
+<!-- 토스트 -->
+<div id="toast" class="fixed bottom-6 inset-x-5 max-w-md mx-auto bg-[#242422] border border-[#FFD400]/30 rounded-xl p-4 text-sm text-center translate-y-32 opacity-0 transition-all duration-300 z-50"></div>
+
+<script>
+const SITE_URL = "https://ssumcenter.vercel.app";
+
+// API 인증 헤더 (로그인한 비밀번호를 사용)
+function apiHeaders(){
+  return {"Content-Type": "application/json", "x-admin-key": localStorage.getItem("admin_key") || ""};
+}
+
+// ---- 회차 설정 (Airtable "설정" 테이블: 키/값) ----
+const SETTING_DEFAULTS = {
+  "행사제목": "7월 24일 (금) 재테크 미팅",
+  "행사부제": "삼성역 도보 3분 · 19:45 시작",
+  "회차키": "0724",
+  "입금안내문자": `🩷📦썸류센터 7/24 재테크 관심 로테이션 커피팅 입금 안내📦🩷\n\n안녕하세요😊\n썸류센터 재테크 관심 로테이션 커피팅 참여자로 최종 선발되신 것을 축하드립니다!!\n참가비 안내드립니다📦\n아래 계좌로 39,900원 입금 부탁드립니다! 입금자명과 신청서에 작성해주신 이름이 일치해야 신청이 확인됩니다.\n✔️입금은 내일 자정 전까지 가능하며 기한 내 미입금시 확정 취소 예정입니다✔️\n입금이 확인되면 최종 확정 안내드립니다.\n\n환불은 7월 20일까지만 가능하며 당일 노쇼,지각 및 기타 사유로 인한 환불 또한 불가능한 점 양해부탁드려요🥲\n\n카카오뱅크 장민 3333-34-1009531`,
+  "확정안내문자": `🩷📦썸류센터 재테크 관심 로테이션 커피팅 최종 확정 안내📦🩷\n\n안녕하세요😊\n입금 확인되시어 참가자분께 최종 확정 안내드립니다📦\n설레는 인연, 함께 만들어가보아요💕\n\n❤️일정\n2026년 7월 24일(금) 19:45\n소개팅 시작 전 나를 표현할 수 있는 프로필 카드를 쓸 수 있도록 꼭 45분까지 도착 부탁드려요☺️ 늦으실수록 나를 어필할 수 있는 시간이 줄어듭니다!\n\n❤️시간\n19:45 - 20:00 : 프로필 카드 작성\n20:00 - 22:00 : 1대 1 대화 로테이션\n"약 2시간 남짓 소요될 예정이에요!"\n(인원에 따라 2대 2 가능성 있음)\n\n❤️장소\n"삼성역 근처 도보 3분 카페"\n정확한 장소는 하루 전 안내드립니다!\n\n❤️준비물\n신분증 + 사원증 또는 명함\n\n🔥 진행방식\n▻ 최소 8:8 로테이션 소개팅🤍\n최소 8팀(남8✕여8)이 테이블을 돌며 많은 이성과 1:1로 만나고 인원에 따라 2:2 변경 될 수 있습니다 (최대 16x16)\n\n▻ 라운드 시간 ⏱️\n대화 10분 이동 (여유 있게 이동·정리시간 포함! 😉)\n\n▻ 매칭\n자리를 옮기기 전에 맘에 드는 상대에게 쪽지에 내 번호를 적어 전달!🙆‍♀️🙆‍♂️`,
+  "장소안내문자": `안녕하세요😊\n썸류센터 로테이션 커피팅 참가자분께 장소 및 숙지하실 점 안내드립니다📦\n설레는 인연, 함께 만들어가보아요💕\n최대 14:14 (최소 10:10 보장)\n\n❤️일정\n2026년 7월 24일(금) 19:45\n서로를 위해 시간 꼭 지켜주세요.\n저녁 7시 45분 입니다.ᐟ ✅️\n늦게 도착하시면 프로필지 작성할 시간이 없어요.\n\n❤️장소\n"삼성역 언더라인카페 지하 1층☕"\n서울특별시 강남구 테헤란로84길 12 지하 1층\n\n들어와서 한 층 내려오시면 지하 1층 입구에 센터장들이 기다리고 있어요.\n먼저 신분증 확인 후 음료 수령하셔서 지하 1층으로 입장해주세요\n\n* 주차는 지원되지 않습니다.\n\n❤️준비물\n신분증 지참 부탁드립니다\n\n❤️드레스코드 필수.ᐟ\n깔끔한 복장으로 부탁드립니다.ᐟ\n\n* 무늬 및 그림 그려진 티셔츠 금지\n* 뭘 입을지 고민된다면?\n남성분들께는 화이트/블루/블랙 민무늬 셔츠 추천드립니다 🫶\n\n❤️더 궁금하신 점은 언제든 말씀주세요`,
+  "행사후문자": `🩷📦썸류센터 재테크 관심 로테이션 커피팅📦🩷\n\n안녕하세요😊\n오늘 함께해 주셔서 정말 감사합니다!\n즐거운 시간 보내셨길 바랍니다💕\n\n혹시 좋은 인연이 있으셨다면 꼭 연락해보세요☺️\n다음 커피팅 일정은 인스타그램에서 확인하실 수 있습니다.\n\n좋은 후기도 부탁드려요🙏\n다음에 또 만나요!`
+};
+let settings = {};
+let settingsRecordIds = {};
+let settingsTableOk = false;
+
+function S(key){
+  return (settings[key] !== undefined && settings[key] !== "") ? settings[key] : SETTING_DEFAULTS[key];
+}
+
+async function loadSettings(){
+  try {
+    const res = await fetch("/api/airtable?table=설정", {headers: apiHeaders()});
+    if(!res.ok) throw new Error();
+    const data = await res.json();
+    settings = {}; settingsRecordIds = {};
+    (data.records || []).forEach(r => {
+      const k = r.fields["키"];
+      if(k){ settings[k] = r.fields["값"] || ""; settingsRecordIds[k] = r.id; }
+    });
+    settingsTableOk = true;
+  } catch(e){
+    settingsTableOk = false;
+  }
+  applySettings();
+}
+
+function applySettings(){
+  const t = document.getElementById("coffee-event-title");
+  const s = document.getElementById("coffee-event-sub");
+  if(t) t.textContent = S("행사제목");
+  if(s) s.textContent = S("행사부제");
+  const post = document.getElementById("post-event-msg");
+  if(post && !post.dataset.touched) post.value = S("행사후문자");
+}
+
+function fillSettingsForm(){
+  ["행사제목","행사부제","회차키","입금안내문자","확정안내문자","장소안내문자","행사후문자"].forEach(k => {
+    const el = document.getElementById("set-" + k);
+    if(el) el.value = S(k);
+  });
+  document.getElementById("settings-warning").classList.toggle("hidden", settingsTableOk);
+}
+
+async function saveSettings(){
+  if(!settingsTableOk){
+    await loadSettings();
+    if(!settingsTableOk){ toast("Airtable에 '설정' 테이블(키/값 필드)을 먼저 만들어주세요"); return; }
+  }
+  const keys = ["행사제목","행사부제","회차키","입금안내문자","확정안내문자","장소안내문자","행사후문자"];
+  const creates = [], updates = [];
+  keys.forEach(k => {
+    const v = document.getElementById("set-" + k).value;
+    if(settingsRecordIds[k]) updates.push({ id: settingsRecordIds[k], fields: { "값": v } });
+    else creates.push({ fields: { "키": k, "값": v } });
+  });
+  try {
+    if(updates.length > 0){
+      const r = await fetch("/api/airtable?table=설정", {method: "PATCH", headers: apiHeaders(), body: JSON.stringify({records: updates})});
+      if(!r.ok) throw new Error();
+    }
+    if(creates.length > 0){
+      const r = await fetch("/api/airtable?table=설정", {method: "POST", headers: apiHeaders(), body: JSON.stringify({records: creates})});
+      if(!r.ok) throw new Error();
+    }
+    await loadSettings();
+    toast("설정 저장 완료! 화면·문자에 바로 반영돼요");
+  } catch(e){
+    toast("설정 저장 실패 — Airtable '설정' 테이블(키/값)을 확인해주세요");
+  }
+}
+
+function openPhoto(url){
+  const m=document.getElementById("photo-modal");
+  document.getElementById("photo-modal-img").src=url;
+  m.style.display="flex";
+}
+
+let applicants = [];
+let matchResponses = [];
+let selected = [null, null];
+let currentFilter = "all";
+
+async function loadApplicants(){
+  try {
+    const res = await fetch("/api/airtable?table=1:1 매칭 신청&sort=신청일시", {headers: apiHeaders()});
+    if(!res.ok){
+      const list = document.getElementById("applicant-list");
+      if(res.status === 401){ list.innerHTML = '<p class="text-center text-red-400 py-10">비밀번호가 맞지 않아요.<br>새로고침(F5) 후 올바른 비밀번호로 다시 로그인해주세요.</p>'; }
+      else { list.innerHTML = '<p class="text-center text-red-400 py-10">데이터를 불러올 수 없습니다 (오류 '+res.status+')</p>'; }
+      return;
+    }
+    const data = await res.json();
+    applicants = data.records || [];
+    updateStats();
+    renderList();
+    loadResponses();
+    loadMatches();
+  } catch(err) {
+    console.error(err);
+    document.getElementById("applicant-list").innerHTML = '<p class="text-center text-red-400 py-10">데이터를 불러올 수 없습니다</p>';
+  }
+}
+
+// 💌 매칭 응답 현황 (수락/거절)
+function nameOf(id){
+  const a = applicants.find(x => x.id === id);
+  return a ? (a.fields["이름"] || a.fields["닉네임"] || "?") : "(명단밖)";
+}
+// 매칭 링크 복사 (매칭 현황에서)
+function copyLink(url){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=>toast("링크 복사됨! 카톡·문자에 붙여넣으세요"), ()=>toast("복사 실패"));
+  } else { toast("복사가 안 돼요 — 링크를 길게 눌러 복사해주세요"); }
+}
+
+// 💑 매칭 현황 (매칭 테이블) 로드·표시
+async function loadMatches(){
+  const box = document.getElementById("match-board-status");
+  if(!box) return;
+  try {
+    const res = await fetch("/api/airtable?table=매칭&sort=생성일", {headers: apiHeaders()});
+    if(!res.ok) return;
+    const data = await res.json();
+    const recs = data.records || [];
+    if(!recs.length){ box.innerHTML = ""; const s0=document.getElementById("stat-waiting"); if(s0) s0.textContent="0"; return; }
+    const order = {"소개중":0,"성사":1,"불발":2};
+    recs.sort((a,b)=> (order[(a.fields||{})["상태"]] ?? 9) - (order[(b.fields||{})["상태"]] ?? 9));
+    const cnt = s => recs.filter(r=>(r.fields||{})["상태"]===s).length;
+    const stW = document.getElementById("stat-waiting"); if(stW) stW.textContent = cnt("성사");
+    const badge = s => s==="성사" ? 'background:#22c55e;color:#000' : s==="소개중" ? 'background:#3b82f6;color:#fff' : 'background:#3a3a37;color:#9E9E97';
+    let html = '<div class="bg-[#161615] border border-[#242422] rounded-2xl p-4">';
+    html += '<div class="font-black text-sm mb-3">💑 매칭 현황 <span class="text-[11px] text-[#9E9E97] font-normal">(소개중 '+cnt("소개중")+' · 성사 '+cnt("성사")+' · 불발 '+cnt("불발")+')</span></div>';
+    html += recs.map(r=>{ const f=r.fields||{}; const s=f["상태"]||"소개중";
+      const links = (s==="소개중" && (f["남자링크"]||f["여자링크"]))
+        ? '<div style="width:100%;display:flex;gap:6px;margin-top:5px">'
+          + (f["남자링크"] ? '<button onclick="copyLink(\''+f["남자링크"]+'\')" style="flex:1;background:#0D0D0C;border:1px solid #3b82f6;color:#60a5fa;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">📋 '+(f["남자"]||"남")+'에게 링크</button>' : '')
+          + (f["여자링크"] ? '<button onclick="copyLink(\''+f["여자링크"]+'\')" style="flex:1;background:#0D0D0C;border:1px solid #f472b6;color:#f472b6;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">📋 '+(f["여자"]||"여")+'에게 링크</button>' : '')
+          + '</div>'
+        : '';
+      return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #242422;font-size:13px;flex-wrap:wrap">'
+        +'<span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;'+badge(s)+'">'+s+'</span>'
+        +'<b style="color:#60a5fa">'+(f["남자"]||"?")+'</b> <span style="color:#f472b6">❤</span> <b style="color:#f472b6">'+(f["여자"]||"?")+'</b>'
+        +(f["결과"] ? '<span style="color:#8a8070;font-size:11px;margin-left:auto">'+f["결과"]+'</span>' : '')
+        +links
+        +'</div>';
+    }).join("");
+    html += '</div>';
+    box.innerHTML = html;
+  } catch(e){ console.error(e); }
+}
+
+async function loadResponses(){
+  try {
+    const res = await fetch("/api/airtable?table=매칭 응답&sort=응답일시", {headers: apiHeaders()});
+    if(!res.ok) return;
+    const data = await res.json();
+    matchResponses = data.records || [];
+    renderResponses(matchResponses);
+    renderList(); // 카드에 매칭 이력 반영
+  } catch(e){ console.error(e); }
+}
+
+// 특정 신청자의 매칭 이력 (내가 한 응답 + 받은 응답)
+function matchHistoryFor(id){
+  if(!matchResponses || !matchResponses.length) return "";
+  const nm = (rid) => { const a = applicants.find(x=>x.id===rid); return a ? (a.fields["이름"]||"?") : "(명단밖)"; };
+  const rowHtml = (txt, ans, sup) => {
+    const c = ans==="수락" ? "#22c55e" : "#ef4444";
+    return '<div style="font-size:12.5px;padding:3px 0">'+txt+' <span style="color:'+c+';font-weight:800">'+ans+'</span>'+(sup?' <span style="color:#FFD400;font-size:10px">⚡슈퍼</span>':'')+'</div>';
+  };
+  let mine="", toMe="";
+  matchResponses.forEach(r=>{
+    const f=r.fields||{};
+    if(f["응답자ID"]===id && f["매칭ID"]) mine += rowHtml('내가 <b style="color:#fff">'+nm(f["매칭ID"])+'</b> →', f["응답"], f["매칭유형"]==="슈퍼매칭");
+    if(f["매칭ID"]===id && f["응답자ID"]) toMe += rowHtml('<b style="color:#fff">'+nm(f["응답자ID"])+'</b>가 나를 →', f["응답"], f["매칭유형"]==="슈퍼매칭");
+  });
+  if(!mine && !toMe) return "";
+  return '<div style="background:#0D0D0C;border:1px solid #3b82f6;border-radius:11px;padding:10px 12px">'
+    + '<div style="color:#60a5fa;font-size:11px;font-weight:800;margin-bottom:4px">💘 매칭 이력</div>'
+    + (mine? '<div style="color:#8a8070;font-size:10px;margin-top:2px">내가 한 응답</div>'+mine : '')
+    + (toMe? '<div style="color:#8a8070;font-size:10px;margin-top:4px">받은 응답</div>'+toMe : '')
+    + '</div>';
+}
+function renderResponses(responses){
+  const box = document.getElementById("response-status");
+  if(!box) return;
+  if(!responses.length){ box.innerHTML = ""; return; }
+  const accepts = responses.filter(r => r.fields["응답"] === "수락" && r.fields["응답자ID"] && r.fields["매칭ID"]);
+  const set = new Set(accepts.map(r => r.fields["응답자ID"] + "→" + r.fields["매칭ID"]));
+  const matched = new Set();
+  accepts.forEach(r => {
+    const a = r.fields["응답자ID"], b = r.fields["매칭ID"];
+    if(set.has(b + "→" + a)) matched.add([a, b].sort().join("|"));
+  });
+  const accCnt = responses.filter(r => r.fields["응답"] === "수락").length;
+  const rejCnt = responses.filter(r => r.fields["응답"] === "거절").length;
+  let html = '<div class="bg-[#161615] border border-[#242422] rounded-2xl p-4"><div class="font-black text-sm mb-3">💌 매칭 응답 <span class="text-[11px] text-[#9E9E97] font-normal">(성사 ' + matched.size + ' · 수락 ' + accCnt + ' · 거절 ' + rejCnt + ')</span></div>';
+  // 성사된 쌍은 항상 눈에 띄게 (바로 처리해야 하니까)
+  matched.forEach(pair => {
+    const [a, b] = pair.split("|");
+    html += '<div class="bg-[#22c55e]/10 border border-[#22c55e]/40 rounded-xl p-3 mb-2 text-sm">🎉 <b class="text-[#22c55e]">성사!</b> ' + nameOf(a) + ' ❤️ ' + nameOf(b) + '<div class="text-[11px] text-[#9E9E97] mt-1">결제 확인 후 연락처를 전달하세요</div></div>';
+  });
+  if(!matched.size) html += '<div class="text-[12px] text-[#9E9E97] mb-1">아직 성사된 매칭이 없어요.</div>';
+  // 상세 응답 기록은 접어두기 (필요할 때만 펼침)
+  html += '<details class="mt-1"><summary style="cursor:pointer;font-size:12px;color:#9E9E97;padding:6px 0;list-style:none">▸ 응답 기록 전체 보기 (' + responses.length + '건)</summary><div class="mt-1">';
+  responses.forEach(r => {
+    const f = r.fields, ans = f["응답"] || "?", sup = f["매칭유형"] === "슈퍼매칭";
+    const c = ans === "수락" ? "#22c55e" : "#ef4444";
+    html += '<div class="flex items-center gap-2 text-[12.5px] py-2 border-t border-[#242422]"><span style="color:' + c + ';font-weight:800">' + ans + '</span> <span class="text-white font-bold">' + nameOf(f["응답자ID"]) + '</span><span class="text-[#9E9E97]">→ ' + nameOf(f["매칭ID"]) + '</span>' + (sup ? ' <span style="color:#FFD400;font-size:10px">⚡슈퍼</span>' : '') + '<span class="text-[10px] text-[#555] ml-auto">' + (f["응답일시"] || "") + '</span></div>';
+  });
+  html += '</div></details></div>';
+  box.innerHTML = html;
+}
+
+function updateStats(){
+  const total = applicants.length;
+  const approved = applicants.filter(r => r.fields["매칭상태"] === "승인").length;
+  const matched = applicants.filter(r => r.fields["매칭상태"] === "소개중").length;
+  document.getElementById("stat-total").textContent = total;
+  document.getElementById("stat-approved").textContent = approved;
+  document.getElementById("stat-matched").textContent = matched;
+  // stat-waiting(성사)는 loadMatches에서 매칭 테이블 기준으로 채움
+}
+
+// ☕ 커피 궁합 (연애 테스트 결과 기반 매칭 추천)
+// 더 구체적인 키워드를 먼저 매칭 (바닐라라떼/꿀라떼가 '라떼'보다 우선)
+const COFFEE_KEYWORDS = ["바닐라라떼","꿀라떼","플랫화이트","카페모카","콜드브루","아메리카노","디카페인","에스프레소","드리퍼","오늘의커피","아아","라떼"];
+const COFFEE_MATCH = {
+  "에스프레소":["카페모카","디카페인"], "카페모카":["에스프레소"],
+  "라떼":["콜드브루"], "콜드브루":["꿀라떼","라떼"], "꿀라떼":["콜드브루"],
+  "아메리카노":["바닐라라떼"], "바닐라라떼":["아메리카노","아아"], "아아":["바닐라라떼"],
+  "디카페인":["에스프레소","드리퍼"], "드리퍼":["디카페인"], "오늘의커피":["꿀라떼"],
+  "플랫화이트":["*"]  // 올라운더: 누구나 잘 맞음
+};
+function coffeeType(s){
+  if(!s) return null;
+  for(const k of COFFEE_KEYWORDS){ if(s.indexOf(k) >= 0) return k; }
+  return null;
+}
+function coffeeMatchesFor(rec){
+  const f = rec.fields || {};
+  const myType = coffeeType(f["테스트결과"]);
+  if(!myType) return [];
+  const wants = COFFEE_MATCH[myType] || [];
+  const myGender = f["성별"];
+  return applicants.filter(o => {
+    if(o.id === rec.id) return false;
+    const of = o.fields || {};
+    if(myGender && of["성별"] && of["성별"] === myGender) return false; // 이성만
+    const ot = coffeeType(of["테스트결과"]);
+    if(!ot) return false;
+    if(wants.includes("*") || wants.includes(ot) || ot === "플랫화이트") return true;
+    const owants = COFFEE_MATCH[ot] || [];              // 상대 입장에서도 궁합이면 인정 (양방향)
+    return owants.includes("*") || owants.includes(myType);
+  });
+}
+
+function renderList(){
+  const list = document.getElementById("applicant-list");
+  let filtered = applicants;
+
+  if(currentFilter === "대기" || currentFilter === "승인" || currentFilter === "소개중" || currentFilter === "거절"){
+    filtered = applicants.filter(r => (r.fields["매칭상태"] || "대기") === currentFilter);
+  } else if(currentFilter === "남성" || currentFilter === "여성"){
+    filtered = applicants.filter(r => r.fields["성별"] === currentFilter);
+  }
+
+  // 풀 카운트 업데이트
+  document.getElementById("pool-count").textContent = filtered.length;
+
+  if(filtered.length === 0){
+    list.innerHTML = '<p class="text-center text-[#555] py-10">신청자가 없습니다</p>';
+    return;
+  }
+
+  const cardHtml = (r) => {
+    const f = r.fields;
+    const isSelected = selected[0]?.id === r.id || selected[1]?.id === r.id;
+    const status = f["매칭상태"] || "대기";
+    const statusColor = status === "대기" ? "color:#FFD400" : status === "승인" ? "color:#22c55e" : status === "소개중" ? "color:#3b82f6" : status === "거절" ? "color:#ef4444" : "color:#9E9E97";
+    const photoUrl = f["프로필사진"] && f["프로필사진"][0] ? f["프로필사진"][0].url : null;
+    const photos = f["프로필사진"] || [];
+    const gender = f["성별"] === "여성" ? "♀" : f["성별"] === "남성" ? "♂" : "";
+    const detail = [f["사는곳"], f["키"] ? f["키"]+"cm" : "", f["직업"]].filter(Boolean).join(" · ");
+    const myCoffee = coffeeType(f["테스트결과"]);
+    const coffeeBuddies = myCoffee ? coffeeMatchesFor(r) : [];
+
+    return `<div class="appcard ${isSelected ? 'sel' : ''}">
+      <div class="pool-row" onclick="toggleSelect('${r.id}')">
+        <div class="pool-info">
+          <div class="pool-birth">${f["출생연도"] || "?"}년생 <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span></div>
+          <div class="pool-detail">${detail || "-"}</div>
+          <div class="pool-status" style="${statusColor}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · <span style="color:#FFD400">⚡슈퍼</span>' : ""}</div>
+        </div>
+        <div class="pool-thumb" ${photoUrl ? `onclick="event.stopPropagation();openPhoto('${photoUrl}')"` : ""}>
+          ${photoUrl ? `<img src="${photoUrl}" alt="">` : `<i class="fa-solid fa-user"></i>`}
+        </div>
+      </div>
+      <div class="pool-expand" id="expand-${r.id}">
+        <div style="padding:10px 0 0;display:flex;flex-direction:column;gap:8px">
+          ${photos.length > 1 ? `<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">${photos.map(p => `<img src="${p.url}" onclick="openPhoto('${p.url}')" style="width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0">`).join("")}</div>` : ""}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">연락처</span><br><b>${f["연락처"] || "-"}</b></div>
+            <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">종교</span><br><b>${f["종교"] || "-"}</b></div>
+            <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">취미</span><br><b>${f["취미"] || "-"}</b></div>
+            <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
+            ${f["테스트결과"] ? `<div style="grid-column:1/-1;background:#0D0D0C;border:1px solid rgba(232,176,80,.3);border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">☕ 연애 테스트 결과</span><br><b style="color:#E8B050">${f["테스트결과"]}</b></div>` : ""}
+          </div>
+          ${matchHistoryFor(r.id)}
+          ${myCoffee ? `<div style="background:#0D0D0C;border:1px solid rgba(232,176,80,.35);border-radius:11px;padding:10px 12px">
+            <div style="color:#E8B050;font-size:11px;font-weight:800;margin-bottom:2px">☕ 커피 궁합 잘 맞는 이성 ${coffeeBuddies.length ? '('+coffeeBuddies.length+'명)' : ''}</div>
+            ${coffeeBuddies.length ? coffeeBuddies.map(o=>{const of=o.fields||{};return `<div style="font-size:12.5px;padding:4px 0;border-top:1px solid #242422;cursor:pointer" onclick="event.stopPropagation();toggleSelect('${o.id}')"><b style="color:#fff">${of["이름"]||"?"}</b> <span style="color:#9E9E97">${of["출생연도"]||"?"}년생 · ${of["성별"]||""} · ${coffeeType(of["테스트결과"])}</span></div>`;}).join("") : '<div style="font-size:12px;color:#9E9E97;padding-top:4px">아직 궁합 맞는 이성 신청자가 없어요</div>'}
+          </div>` : ""}
+          ${(f["재직증명서"] && f["재직증명서"][0] && f["재직증명서"][0].url)
+            ? `<a href="${f["재직증명서"][0].url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:8px;background:#0D0D0C;border:1px solid #22c55e;border-radius:11px;padding:10px 12px;font-size:13px;color:#22c55e;font-weight:700;text-decoration:none"><i class="fa-solid fa-file-shield"></i> 재직증명서·사업자등록증 보기</a>`
+            : `<div style="background:#0D0D0C;border:1px solid #ef4444;border-radius:11px;padding:10px 12px;font-size:12px;color:#ef4444">⚠️ 제출된 재직증명서 없음</div>`}
+          ${f["자기소개"] ? `<div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">자기소개</span><p style="color:#9E9E97;margin-top:4px;line-height:1.5">${f["자기소개"]}</p></div>` : ""}
+          ${f["성격키워드"] ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${f["성격키워드"].split(",").map(kw => kw.trim()).filter(Boolean).map(kw => `<span style="font-size:10px;background:rgba(255,212,0,.1);color:#FFD400;padding:3px 8px;border-radius:20px">${kw}</span>`).join("")}</div>` : ""}
+          <div style="font-size:11.5px;color:#8a8070;margin-top:2px">💛 선호 나이대: ${f["선호나이대"] || "-"}</div>
+          ${f["이상형"] ? `<div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">원하는 이상형</span><p style="color:#9E9E97;margin-top:4px;line-height:1.5">${f["이상형"]}</p></div>` : ""}
+          <button onclick="event.stopPropagation();sendIntakeSMS('${r.id}')" style="background:#161615;border:1px solid #FFD400;color:#FFD400;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;margin-top:4px;width:100%">📨 접수 안내 문자 보내기</button>
+          ${status === "대기" ? `
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button onclick="event.stopPropagation();approveApplicant('${r.id}')" style="flex:1;background:#22c55e;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">✅ 승인</button>
+            <button onclick="event.stopPropagation();rejectApplicant('${r.id}')" style="flex:1;background:#ef4444;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">❌ 반려</button>
+          </div>` : ""}
+          ${status !== "대기" ? `<button onclick="event.stopPropagation();excludeApplicant('${r.id}')" style="margin-top:8px;width:100%;background:#161615;border:1px solid #ef4444;color:#ef4444;font-size:11px;font-weight:700;padding:7px;border-radius:10px;cursor:pointer">🚫 소개 풀에서 제외(숨김)</button>` : ""}
+        </div>
+      </div>
+    </div>`;
+  };
+
+  // 👦👧 남/여 2단 매칭 보드 (좁은 화면에선 자동으로 위아래로 쌓임)
+  const shown = filtered.filter(r => r.fields["매칭상태"] !== "제외"); // 제외된 사람은 보드에서 숨김
+  const males = shown.filter(r => r.fields["성별"] === "남성");
+  const females = shown.filter(r => r.fields["성별"] === "여성");
+  const etc = shown.filter(r => r.fields["성별"] !== "남성" && r.fields["성별"] !== "여성");
+  const column = (emoji, title, arr, color) =>
+    `<div style="flex:1 1 320px">
+       <div style="position:sticky;top:0;z-index:2;font-weight:900;font-size:13px;color:${color};background:#0D0D0C;padding:8px 11px;border-radius:10px;margin-bottom:8px;border:1px solid #242422">${emoji} ${title} <span style="color:#8a8070;font-weight:600;font-size:12px">${arr.length}명</span></div>
+       ${arr.length ? arr.map(cardHtml).join("") : '<div style="color:#555;font-size:12px;text-align:center;padding:24px 0">없음</div>'}
+     </div>`;
+  list.innerHTML =
+    `<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start">${column("👦","남성",males,"#60a5fa")}${column("👧","여성",females,"#f472b6")}</div>`
+    + (etc.length ? `<div style="margin-top:12px">${etc.map(cardHtml).join("")}</div>` : "");
+}
+
+async function sendIntakeSMS(id){
+  const rec = applicants.find(r => r.id === id);
+  if(!rec) return;
+  const f = rec.fields;
+  const name = f["이름"] || "";
+  const to = f["연락처"];
+  if(!to){ alert("연락처가 없어요."); return; }
+  const text = `${name}님, 안녕하세요. 썸류센터입니당\n1:1 매칭 신청이 잘 접수됐어요 💛\n센터장이 ${name}님께 어울리는 분을 신중하게 찾고 있어요.\n좋은 인연이 준비되면 상대 프로필과 함께 문자로 안내드릴게요!\n설레는 마음으로 준비할게요. 조금만 기다려주세요 ✨`;
+  if(!confirm(`${name}님에게 접수 안내 문자를 보낼까요?\n\n${text}`)) return;
+  try {
+    const r = await fetch("/api/send-sms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": localStorage.getItem("admin_key") || "" },
+      body: JSON.stringify({ to: to, text: text })
+    });
+    const d = await r.json();
+    if(d.ok){ toast("접수 안내 문자를 보냈어요! 💌"); }
+    else { alert("발송 실패: " + (d.error || "")); }
+  } catch(e){ alert("오류가 났어요. 다시 시도해주세요."); }
+}
+
+function toggleSelect(id){
+  const record = applicants.find(r => r.id === id);
+  if(!record) return;
+
+  // 아코디언 토글
+  const expand = document.getElementById("expand-" + id);
+  if(expand) expand.classList.toggle("open");
+
+  if(selected[0]?.id === id){ selected[0] = null; }
+  else if(selected[1]?.id === id){ selected[1] = null; }
+  else if(!selected[0]){ selected[0] = record; }
+  else if(!selected[1]){ selected[1] = record; }
+  else { selected[0] = record; selected[1] = null; }
+
+  // UI 업데이트
+  document.getElementById("pick-1").innerHTML = selected[0]
+    ? `<b class="text-white">${selected[0].fields["이름"]}</b> <span class="text-[#9E9E97]">${selected[0].fields["출생연도"]}년생 · ${selected[0].fields["성별"]}</span>`
+    : '<span class="text-[#555]">목록에서 선택</span>';
+  document.getElementById("pick-2").innerHTML = selected[1]
+    ? `<b class="text-white">${selected[1].fields["이름"]}</b> <span class="text-[#9E9E97]">${selected[1].fields["출생연도"]}년생 · ${selected[1].fields["성별"]}</span>`
+    : '<span class="text-[#555]">목록에서 선택</span>';
+
+  document.getElementById("match-btn").disabled = !(selected[0] && selected[1]);
+  document.getElementById("match-result").classList.add("hidden");
+  if(selected[0] || selected[1]) toggleMatchTool(true);
+  renderList();
+}
+
+function toggleMatchTool(force){
+  const body = document.getElementById("match-tool-body");
+  const chev = document.getElementById("match-tool-chevron");
+  if(!body) return;
+  const willOpen = (force===true) ? true : (force===false ? false : body.classList.contains("hidden"));
+  body.classList.toggle("hidden", !willOpen);
+  if(chev) chev.style.transform = willOpen ? "rotate(180deg)" : "";
+}
+
+// 매칭 테이블에 커플 한 줄 기록 (관계형)
+function saveMatchRecord(p0, p1){
+  if(!p0 || !p1) return;
+  try {
+    const man = p0.fields["성별"] === "남성" ? p0 : p1;
+    const woman = p0.fields["성별"] === "남성" ? p1 : p0;
+    fetch("/api/airtable?table=매칭", {
+      method: "POST", headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ fields: {
+        "남자": man.fields["이름"] || "", "여자": woman.fields["이름"] || "",
+        "남자ID": man.id, "여자ID": woman.id,
+        "남자링크": `${SITE_URL}/response.html?id=${woman.id}&myId=${man.id}`,
+        "여자링크": `${SITE_URL}/response.html?id=${man.id}&myId=${woman.id}`,
+        "상태": "소개중", "남자응답": "대기", "여자응답": "대기",
+        "생성일": new Date().toLocaleString("ko-KR")
+      }}]})
+    }).catch(()=>{});
+  } catch(e){ console.error(e); }
+}
+
+function generateMatch(){
+  if(!selected[0] || !selected[1]) return;
+
+  const a = selected[0].fields;
+  const b = selected[1].fields;
+  const photoA = a["프로필사진"] && a["프로필사진"][0] ? a["프로필사진"][0].url : "";
+  const photoB = b["프로필사진"] && b["프로필사진"][0] ? b["프로필사진"][0].url : "";
+
+  // A에게 보낼 링크 (B의 프로필, myId=A의 ID)
+  const urlForA = `${SITE_URL}/response.html?id=${selected[1].id}&myId=${selected[0].id}`;
+
+  // B에게 보낼 링크 (A의 프로필, myId=B의 ID)
+  const urlForB = `${SITE_URL}/response.html?id=${selected[0].id}&myId=${selected[1].id}`;
+
+  document.getElementById("result-name-1").textContent = a["이름"];
+  document.getElementById("url-for-1").value = urlForA;
+  document.getElementById("result-name-2").textContent = b["이름"];
+  document.getElementById("url-for-2").value = urlForB;
+  document.getElementById("match-result").classList.remove("hidden");
+
+  // Airtable 매칭상태 업데이트
+  updateMatchStatus(selected[0].id);
+  updateMatchStatus(selected[1].id);
+  saveMatchRecord(selected[0], selected[1]); // 매칭 테이블에 커플 기록
+
+  // AI 추천 이유 영역 초기화
+  const aiBox = document.getElementById("ai-reason-box");
+  if (aiBox) aiBox.classList.add("hidden");
+}
+
+// AI로 "센터장이 고른 이유" 초안 생성
+async function genAiReason(){
+  if(!selected[0] || !selected[1]) return;
+  const btn = document.getElementById("ai-reason-btn");
+  const a = selected[0].fields, b = selected[1].fields;
+  const mk = (p) => ({
+    name: p["이름"] || "",
+    age: p["출생연도"] ? (p["출생연도"] + "년생") : "",
+    job: p["직업"] || "",
+    hobby: p["취미"] || "",
+    keywords: p["성격키워드"] || "",
+    pref: [p["선호나이대"], p["이상형"] || p["선호직업군"]].filter(Boolean).join(" · "),
+    intro: p["자기소개"] || ""
+  });
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>AI가 작성 중...';
+  try{
+    const r = await fetch("/api/ai-reason", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": localStorage.getItem("admin_key") || "" },
+      body: JSON.stringify({ a: mk(a), b: mk(b) })
+    });
+    const data = await r.json();
+    if(!r.ok) throw new Error(data.error || "생성 실패");
+    document.getElementById("ai-name-1").textContent = a["이름"] || "A";
+    document.getElementById("ai-name-2").textContent = b["이름"] || "B";
+    document.getElementById("ai-reason-1").value = data.reason_for_a || "";
+    document.getElementById("ai-reason-2").value = data.reason_for_b || "";
+    document.getElementById("ai-reason-box").classList.remove("hidden");
+  }catch(e){
+    document.getElementById("ai-name-1").textContent = "";
+    document.getElementById("ai-name-2").textContent = "";
+    document.getElementById("ai-reason-1").value = "⚠️ " + e.message;
+    document.getElementById("ai-reason-2").value = "";
+    document.getElementById("ai-reason-box").classList.remove("hidden");
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+
+function copyText(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const done = () => { el.classList.add("ring-2","ring-[#8B5CF6]"); setTimeout(()=>el.classList.remove("ring-2","ring-[#8B5CF6]"), 600); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(el.value).then(done, ()=>{ el.select(); document.execCommand("copy"); done(); });
+  } else { el.select(); document.execCommand("copy"); done(); }
+}
+
+async function updateMatchStatus(recordId){
+  try {
+    await fetch("/api/airtable?table=1:1 매칭 신청", {
+      method: "PATCH",
+      headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "소개중" } }] })
+    });
+  } catch(err){ console.error(err); }
+}
+
+// 1:1 매칭 가입 승인
+// 소개 풀에서 제외(숨김) — 삭제 아님, 매칭상태를 '제외'로
+async function excludeApplicant(recordId){
+  const rec = applicants.find(r => r.id === recordId);
+  if(!rec) return;
+  const name = rec.fields["이름"] || "";
+  if(!confirm(name + "님을 소개 풀에서 제외할까요?\n\n목록에서 숨겨져요. (삭제는 아니에요 — 나중에 되돌릴 수 있어요)")) return;
+  try {
+    await fetch("/api/airtable?table=1:1 매칭 신청", {
+      method: "PATCH", headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "제외" } }] })
+    });
+    toast(name + "님을 제외했어요");
+    loadApplicants();
+  } catch(e){ console.error(e); toast("제외 실패 — 다시 시도해주세요"); }
+}
+
+async function approveApplicant(recordId){
+  const record = applicants.find(r => r.id === recordId);
+  if(!record) return;
+  const name = record.fields["이름"] || "";
+  if(!confirm(`${name}님을 승인하시겠습니까?\n승인 SMS가 자동 발송됩니다.`)) return;
+
+  try {
+    await fetch("/api/airtable?table=1:1 매칭 신청", {
+      method: "PATCH",
+      headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "승인" } }] })
+    });
+
+    // 승인 SMS 발송
+    const phone = record.fields["연락처"];
+    if(phone){
+      await fetch("/api/send-sms", {
+        method: "POST",
+        headers: apiHeaders(),
+        body: JSON.stringify({
+          to: phone,
+          text: `[썸류센터] ${name}님, 1:1 매칭 프로필이 승인되었습니다! 🎉\n\n센터장이 어울리는 분을 찾아 매칭해드릴게요. 매칭 상대가 정해지면 프로필 카드를 문자로 보내드립니다.\n\n궁금한 점은 카카오채널 @썸류센터로 문의해주세요.`
+        })
+      });
+    }
+
+    record.fields["매칭상태"] = "승인";
+    updateStats();
+    renderList();
+    alert(`${name}님 승인 완료! SMS 발송됨`);
+  } catch(err){
+    console.error(err);
+    alert("승인 처리 중 오류가 발생했습니다.");
+  }
+}
+
+// 1:1 매칭 가입 반려
+async function rejectApplicant(recordId){
+  const record = applicants.find(r => r.id === recordId);
+  if(!record) return;
+  const name = record.fields["이름"] || "";
+  if(!confirm(`${name}님을 반려하시겠습니까?`)) return;
+
+  try {
+    await fetch("/api/airtable?table=1:1 매칭 신청", {
+      method: "PATCH",
+      headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "거절" } }] })
+    });
+
+    record.fields["매칭상태"] = "거절";
+    updateStats();
+    renderList();
+    alert(`${name}님 반려 처리 완료`);
+  } catch(err){
+    console.error(err);
+    alert("반려 처리 중 오류가 발생했습니다.");
+  }
+}
+
+// 매칭 링크 SMS 발송
+async function sendMatchSms(idx){
+  const record = selected[idx];
+  if(!record) return;
+  const name = record.fields["이름"] || "";
+  const phone = record.fields["연락처"];
+  const urlInput = document.getElementById("url-for-" + (idx + 1));
+  const url = urlInput.value;
+  const btn = document.getElementById("sms-btn-" + (idx + 1));
+
+  if(!phone){ alert("연락처가 없습니다."); return; }
+  if(!confirm(`${name}님에게 매칭 프로필 링크를 문자로 보내시겠습니까?`)) return;
+
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>전송 중...';
+  btn.disabled = true;
+
+  try {
+    await fetch("/api/send-sms", {
+      method: "POST",
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        to: phone,
+        text: `[썸류센터] ${name}님, 센터장이 찾은 매칭 상대 프로필이 도착했어요! 💕\n\n아래 링크에서 프로필을 확인하고 수락/거절을 선택해주세요. (48시간 내 응답)\n\n${url}`
+      })
+    });
+    btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>전송 완료!';
+    btn.classList.remove("bg-emerald-600");
+    btn.classList.add("bg-[#242422]");
+  } catch(err){
+    console.error(err);
+    btn.innerHTML = '<i class="fa-solid fa-xmark mr-1"></i>전송 실패';
+    btn.disabled = false;
+  }
+}
+
+// 양쪽 모두에게 매칭 SMS 발송
+async function sendMatchSmsAll(){
+  if(!selected[0] || !selected[1]) return;
+  const btn = document.getElementById("sms-btn-all");
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>전송 중...';
+  btn.disabled = true;
+
+  await sendMatchSms(0);
+  await sendMatchSms(1);
+
+  btn.innerHTML = '<i class="fa-solid fa-check mr-1.5"></i>양쪽 모두 전송 완료!';
+}
+
+function copyUrl(inputId){
+  const input = document.getElementById(inputId);
+  input.select();
+  navigator.clipboard.writeText(input.value);
+  toast("링크가 복사되었습니다!");
+}
+
+function filterBy(f){
+  currentFilter = f;
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    if(btn.dataset.filter === f){
+      btn.className = "filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition";
+    } else {
+      btn.className = "filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]";
+    }
+  });
+  renderList();
+}
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.remove("translate-y-32","opacity-0");
+  setTimeout(() => t.classList.add("translate-y-32","opacity-0"), 3000);
+}
+
+// 탭 전환
+let currentTab = "matching";
+function switchTab(tab){
+  currentTab = tab;
+  document.getElementById("section-matching").classList.toggle("hidden", tab !== "matching");
+  document.getElementById("section-coffee").classList.toggle("hidden", tab !== "coffee");
+  document.getElementById("tab-matching").className = tab === "matching"
+    ? "tab-btn bg-y text-black text-sm font-bold px-4 py-2 rounded-xl transition"
+    : "tab-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-sm font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]";
+  document.getElementById("tab-coffee").className = tab === "coffee"
+    ? "tab-btn bg-y text-black text-sm font-bold px-4 py-2 rounded-xl transition"
+    : "tab-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-sm font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]";
+  if(tab === "coffee" && coffeeApplicants.length === 0) loadCoffeeApplicants();
+}
+
+// 파이프라인 단계 클릭 → 해당 화면으로 이동
+function gotoStage(view, extra){
+  if(currentTab !== "coffee") switchTab("coffee");
+  switchCoffeeView(view);
+  if(view === "list" && extra){
+    coffeeFilterBy(extra);
+  }
+  if(view === "sms" && extra){
+    const target = extra === "post" ? "sms-card-post" : "sms-card-location";
+    setTimeout(() => {
+      const el = document.getElementById(target);
+      if(el) el.scrollIntoView({behavior: "smooth", block: "center"});
+    }, 100);
+  }
+}
+
+// 커피팅 신청자
+let coffeeApplicants = [];
+let coffeeFilter = "all";
+
+async function loadCoffeeApplicants(){
+  try {
+    const res = await fetch("/api/airtable?table=재테크 커피팅&sort=신청일시", {headers: apiHeaders()});
+    const data = await res.json();
+    coffeeApplicants = data.records || [];
+    updateCoffeeStats();
+    renderCoffeeList();
+  } catch(err){
+    console.error(err);
+    document.getElementById("coffee-list").innerHTML = '<p class="text-center text-red-400 py-10">데이터를 불러올 수 없습니다</p>';
+  }
+}
+
+function updateCoffeeStats(){
+  const total = coffeeApplicants.length;
+  const waiting = coffeeApplicants.filter(r => (r.fields["승인상태"] || "대기") === "대기").length;
+  const approved = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인").length;
+  document.getElementById("coffee-stat-total").textContent = total;
+  document.getElementById("coffee-stat-waiting").textContent = waiting;
+  document.getElementById("coffee-stat-approved").textContent = approved;
+  updatePipeline();
+
+  // 음료 카운트 (승인된 참가자만)
+  const drinks={};
+  coffeeApplicants.filter(r=>r.fields["승인상태"]==="승인").forEach(r=>{
+    const d=r.fields["음료선택"]||"미선택";
+    drinks[d]=(drinks[d]||0)+1;
+  });
+  const dc=document.getElementById("drink-count");
+  if(Object.keys(drinks).length===0){dc.innerHTML='<span class="text-xs text-[#555]">승인된 참가자가 없습니다</span>';}
+  else{dc.innerHTML=Object.entries(drinks).map(([k,v])=>`<span class="text-xs bg-[#242422] text-[#9E9E97] px-3 py-1.5 rounded-full">${k} <b class="y">${v}</b></span>`).join("");}
+}
+
+function renderCoffeeCard(r){
+  const f = r.fields;
+  const status = f["승인상태"] || "대기";
+  const payment = f["입금상태"] || "미입금";
+  const photos = f["프로필사진"] || [];
+  const docUrl = f["재직증명서"] && f["재직증명서"][0] ? f["재직증명서"][0].url : null;
+  const price = (f["할인혜택"] && f["할인혜택"] !== "해당없음") ? "34,900원" : "39,900원";
+
+  return `<div class="bg-[#161615] border border-[#242422] rounded-2xl overflow-hidden">
+    ${photos.length > 0 ? `
+    <div class="flex gap-1 bg-[#0D0D0C]" style="max-height:180px;overflow:hidden">
+      ${photos.map(p => `<div class="flex-1"><img src="${p.url}" onclick="event.stopPropagation();openPhoto('${p.url}')" class="w-full h-full object-cover cursor-pointer hover:opacity-80 transition" style="max-height:180px"></div>`).join("")}
+    </div>` : ""}
+    <div class="p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-bold text-base">${f["이름"] || "이름없음"}${f["닉네임"] ? `(${f["닉네임"]})` : ""}</span>
+          <span class="text-xs text-[#555]">${f["성별"] || ""}</span>
+        </div>
+        <div class="flex gap-1.5">
+          ${status === "대기" ? `
+            <button onclick="event.stopPropagation();updateCoffeeStatus('${r.id}','승인')" class="bg-y text-black text-[11px] font-bold px-3 py-1.5 rounded-lg hover:bg-[#E6BE00] transition">승인</button>
+            <button onclick="event.stopPropagation();updateCoffeeStatus('${r.id}','거절')" class="bg-[#242422] text-[#9E9E97] text-[11px] font-bold px-3 py-1.5 rounded-lg hover:text-white transition">거절</button>
+          ` : status === "승인" ? `
+            <button onclick="event.stopPropagation();togglePayment('${r.id}','${payment}')" class="${payment==="입금완료"?"bg-emerald-500 text-white":"bg-[#242422] text-[#9E9E97]"} text-[11px] font-bold px-3 py-1.5 rounded-lg transition">${payment==="입금완료"?"입금완료":"미입금"}</button>
+            <button onclick="event.stopPropagation();updateCoffeeStatus('${r.id}','거절')" title="확정 취소 (문자 발송 안 됨)" class="bg-[#242422] text-red-400 text-[11px] font-bold px-2.5 py-1.5 rounded-lg hover:bg-red-500/10 transition"><i class="fa-solid fa-xmark"></i></button>
+          ` : ""}
+          ${f["연락처"] ? `<button onclick="event.stopPropagation();smsTo('${r.id}')" title="이 사람에게 개별 문자" class="bg-[#242422] text-[#9E9E97] text-[11px] font-bold px-2.5 py-1.5 rounded-lg hover:text-[#FFD400] transition"><i class="fa-solid fa-envelope"></i></button>` : ""}
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">나이</span><br><b>${f["출생연도"] || ""}년생</b></div>
+        <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">직업</span><br><b>${f["직업_직장명"] || ""}</b></div>
+        <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">연락처</span><br><b>${f["연락처"] || "-"}</b></div>
+        <div class="bg-[#0D0D0C] rounded-lg p-2.5"><span class="text-[#555]">관심 재테크</span><br><b class="y">${f["관심재테크"] || "-"}</b></div>
+      </div>
+      ${f["어필포인트"] ? `<div class="bg-[#0D0D0C] rounded-lg p-3 text-xs mt-2"><span class="text-[#555]">어필포인트</span><p class="mt-1 text-[#9E9E97] leading-relaxed">"${f["어필포인트"]}"</p></div>` : ""}
+      <div class="flex flex-wrap gap-1.5 mt-2">
+        ${f["음료선택"] ? `<span class="text-[10px] bg-[#242422] text-[#9E9E97] px-2 py-1 rounded-full">☕ ${f["음료선택"]}</span>` : ""}
+        ${f["할인혜택"] && f["할인혜택"] !== "해당없음" ? `<span class="text-[10px] bg-emerald-400/10 text-emerald-400 px-2 py-1 rounded-full">${f["할인혜택"]} → ${price}</span>` : `<span class="text-[10px] bg-[#242422] text-[#9E9E97] px-2 py-1 rounded-full">${price}</span>`}
+        ${f["유입경로"] ? `<span class="text-[10px] bg-[#242422] text-[#9E9E97] px-2 py-1 rounded-full">${f["유입경로"]}${f["추천인이름"] ? ` (${f["추천인이름"]})` : ""}</span>` : ""}
+        ${docUrl ? `<a href="${docUrl}" target="_blank" class="text-[10px] bg-blue-400/10 text-blue-400 px-2 py-1 rounded-full hover:underline"><i class="fa-solid fa-file mr-1"></i>재직증명서</a>` : ""}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCoffeeList(){
+  const list = document.getElementById("coffee-list");
+
+  // 검색 + 필터 적용
+  let pool = coffeeApplicants;
+
+  // 검색어 필터
+  if(coffeeSearchQuery){
+    pool = pool.filter(r => {
+      const f=r.fields;
+      const searchTarget=[(f["이름"]||''),(f["닉네임"]||''),(f["연락처"]||''),(f["직업_직장명"]||'')].join(' ').toLowerCase();
+      return searchTarget.includes(coffeeSearchQuery);
+    });
+  }
+
+  // 상태 필터
+  if(coffeeFilter === "대기"){
+    pool = pool.filter(r => (r.fields["승인상태"] || "대기") === "대기");
+  } else if(coffeeFilter === "승인"){
+    pool = pool.filter(r => r.fields["승인상태"] === "승인");
+  } else if(coffeeFilter === "입금완료"){
+    pool = pool.filter(r => r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료");
+  } else if(coffeeFilter === "남성" || coffeeFilter === "여성"){
+    pool = pool.filter(r => r.fields["성별"] === coffeeFilter);
+  }
+
+  if(pool.length === 0){
+    list.innerHTML = '<p class="text-center text-[#555] py-10">해당하는 신청자가 없습니다</p>';
+    return;
+  }
+
+  const approved = pool.filter(r => r.fields["승인상태"] === "승인");
+  const waiting = pool.filter(r => (r.fields["승인상태"] || "대기") === "대기");
+  const rejected = pool.filter(r => r.fields["승인상태"] === "거절");
+
+  const approvedM = approved.filter(r => r.fields["성별"] === "남성");
+  const approvedF = approved.filter(r => r.fields["성별"] === "여성");
+  const waitingM = waiting.filter(r => r.fields["성별"] === "남성");
+  const waitingF = waiting.filter(r => r.fields["성별"] === "여성");
+
+  let html = "";
+
+  // 확정 참가자
+  if(approved.length > 0 || coffeeFilter === "all"){
+    html += `<div class="mb-2"><h3 class="text-sm font-black flex items-center gap-2 mb-3"><span class="w-6 h-6 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-check"></i></span>확정 참가자</h3></div>`;
+
+    html += `<div class="text-xs font-bold text-[#9E9E97] mb-2 mt-4">🙋‍♂️ 남성 (${approvedM.length}명)</div>`;
+    if(approvedM.length > 0) html += approvedM.map(r => renderCoffeeCard(r)).join("");
+    else html += `<p class="text-[#555] text-xs py-3 pl-2">아직 없음</p>`;
+
+    html += `<div class="text-xs font-bold text-[#9E9E97] mb-2 mt-6">🙋‍♀️ 여성 (${approvedF.length}명)</div>`;
+    if(approvedF.length > 0) html += approvedF.map(r => renderCoffeeCard(r)).join("");
+    else html += `<p class="text-[#555] text-xs py-3 pl-2">아직 없음</p>`;
+  }
+
+  // 대기 중
+  if(waiting.length > 0){
+    html += `<div class="mt-8 mb-2"><h3 class="text-sm font-black flex items-center gap-2 mb-3"><span class="w-6 h-6 rounded-md bg-[#FFD400]/20 text-[#FFD400] flex items-center justify-center text-xs"><i class="fa-solid fa-clock"></i></span>대기 중 (${waiting.length}명)</h3></div>`;
+    html += `<div class="text-xs font-bold text-[#9E9E97] mb-2">🙋‍♂️ 남성 (${waitingM.length}명)</div>`;
+    html += waitingM.map(r => renderCoffeeCard(r)).join("");
+    html += `<div class="text-xs font-bold text-[#9E9E97] mb-2 mt-4">🙋‍♀️ 여성 (${waitingF.length}명)</div>`;
+    html += waitingF.map(r => renderCoffeeCard(r)).join("");
+  }
+
+  // 거절/블랙리스트
+  if(rejected.length > 0){
+    html += `<div class="mt-8 mb-2"><h3 class="text-sm font-black flex items-center gap-2 mb-3"><span class="w-6 h-6 rounded-md bg-red-500/20 text-red-400 flex items-center justify-center text-xs"><i class="fa-solid fa-ban"></i></span>거절 / 블랙리스트 (${rejected.length}명)</h3></div>`;
+    html += rejected.map(r => renderCoffeeCard(r)).join("");
+  }
+
+  list.innerHTML = html;
+}
+
+// 문자 발송 공통 함수 (HTTP 실패도 잡아냄)
+async function sendSMS(to, text){
+  const res = await fetch("/api/send-sms", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ to, text })
+  });
+  if(!res.ok) throw new Error("SMS API 오류: " + res.status);
+  return res;
+}
+
+async function updateCoffeeStatus(recordId, status){
+  try {
+    await fetch("/api/airtable?table=재테크 커피팅", {
+      method: "PATCH",
+      headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "승인상태": status } }] })
+    });
+
+    // 승인 시 자동 문자 발송
+    if(status === "승인"){
+      const record = coffeeApplicants.find(r => r.id === recordId);
+      const phone = record?.fields["연락처"];
+      const name = record?.fields["이름"] || "";
+      if(phone){
+        try {
+          await sendSMS(phone, S("입금안내문자"));
+          toast("승인 완료 + 문자 발송!");
+        } catch(e){ toast("승인 완료! (문자 발송 실패 — 재시도 필요)"); }
+      } else { toast("승인 완료! (연락처 없어 문자 미발송)"); }
+    } else {
+      toast("거절 처리되었습니다");
+    }
+    loadCoffeeApplicants();
+  } catch(err){ console.error(err); }
+}
+
+async function togglePayment(recordId, current){
+  const next = current === "입금완료" ? "미입금" : "입금완료";
+  try {
+    await fetch("/api/airtable?table=재테크 커피팅", {
+      method: "PATCH",
+      headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "입금상태": next } }] })
+    });
+
+    // 입금완료로 변경 시 확정 문자 발송 (이미 보냈으면 건너뛸 수 있음)
+    if(next === "입금완료"){
+      const record = coffeeApplicants.find(r => r.id === recordId);
+      const phone = record?.fields["연락처"];
+      const wantSMS = phone && confirm("확정 안내 문자도 함께 보낼까요?\n(이미 따로 보냈다면 '취소'를 누르세요 — 입금완료 표시만 됩니다)");
+      if(phone && wantSMS){
+        try {
+          await sendSMS(phone, S("확정안내문자"));
+          toast("입금 확인 + 확정 문자 발송!");
+        } catch(e){ toast("입금 확인! (문자 발송 실패 — 재시도 필요)"); }
+      } else if(phone && !wantSMS){ toast("입금완료 표시만 했어요 (문자 미발송)"); }
+      else { toast("입금 확인! (연락처 없어 문자 미발송)"); }
+    } else {
+      toast("미입금으로 변경");
+    }
+    loadCoffeeApplicants();
+  } catch(err){ console.error(err); }
+}
+
+// 발송 이력 (중복 발송 방지)
+function getSMSLog(key){
+  return JSON.parse(localStorage.getItem("sms_log_" + key) || "null");
+}
+function setSMSLog(key, count){
+  localStorage.setItem("sms_log_" + key, JSON.stringify({ at: new Date().toLocaleString("ko-KR"), count }));
+  renderSMSHistory();
+}
+function renderSMSHistory(){
+  const loc = getSMSLog("location_" + S("회차키"));
+  const post = getSMSLog("post_" + S("회차키"));
+  const locEl = document.getElementById("location-sms-history");
+  const postEl = document.getElementById("post-sms-history");
+  if(locEl) locEl.textContent = loc ? `✅ 마지막 발송: ${loc.at} (${loc.count}명)` : "";
+  if(postEl) postEl.textContent = post ? `✅ 마지막 발송: ${post.at} (${post.count}명)` : "";
+}
+
+// 전날 장소 안내 일괄 발송 (입금완료된 참가자만)
+async function sendLocationSMS(){
+  const confirmed = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료");
+  if(confirmed.length === 0){ toast("입금완료된 참가자가 없습니다"); return; }
+
+  const prev = getSMSLog("location_" + S("회차키"));
+  if(prev && !confirm(`⚠️ 이미 ${prev.at}에 ${prev.count}명에게 발송했어요.\n정말 다시 보내시겠어요?`)) return;
+  if(!confirm(`입금완료된 ${confirmed.length}명에게 장소 안내 문자를 보내시겠어요?`)) return;
+
+  const msg = S("장소안내문자");
+
+  let success = 0, fail = 0;
+  for(const r of confirmed){
+    const phone = r.fields["연락처"];
+    if(!phone){ fail++; continue; }
+    try {
+      await sendSMS(phone, msg);
+      success++;
+    } catch(e){ fail++; }
+  }
+  if(success > 0) setSMSLog("location_" + S("회차키"), success);
+  toast(`장소 안내 발송 완료! 성공 ${success}명${fail > 0 ? ` / 실패 ${fail}명` : ""}`);
+}
+
+let coffeeSearchQuery='';
+function coffeeSearchFilter(){
+  coffeeSearchQuery=(document.getElementById('coffeeSearch')?.value||'').trim().toLowerCase();
+  renderCoffeeList();
+}
+
+function coffeeFilterBy(f){
+  coffeeFilter = f;
+  document.querySelectorAll(".coffee-filter-btn").forEach(btn => {
+    btn.className = btn.dataset.filter === f
+      ? "coffee-filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition"
+      : "coffee-filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]";
+  });
+  renderCoffeeList();
+}
+
+// 커피팅 서브탭 전환
+let currentCoffeeView = "list";
+function switchCoffeeView(view){
+  currentCoffeeView = view;
+  document.getElementById("coffee-view-list").classList.toggle("hidden", view !== "list");
+  document.getElementById("coffee-view-lineup").classList.toggle("hidden", view !== "lineup");
+  document.getElementById("coffee-view-sms").classList.toggle("hidden", view !== "sms");
+  document.getElementById("coffee-view-settings").classList.toggle("hidden", view !== "settings");
+  document.querySelectorAll(".cv-btn").forEach(btn => {
+    const id = btn.id.replace("cv-","");
+    btn.className = id === view
+      ? "cv-btn bg-y text-black text-xs font-bold px-4 py-2 rounded-xl transition"
+      : "cv-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-4 py-2 rounded-xl transition hover:border-[#FFD400]";
+  });
+  if(view === "lineup") renderLineup();
+  if(view === "sms") renderSMSHistory();
+  if(view === "settings") fillSettingsForm();
+}
+
+// 파이프라인 업데이트
+function updatePipeline(){
+  const approved = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인").length;
+  const paid = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료").length;
+  document.getElementById("pipe-approve").textContent = approved;
+  document.getElementById("pipe-paid").textContent = paid;
+  document.getElementById("coffee-stat-paid").textContent = paid;
+}
+
+// 출석부 (Airtable "출석" 체크박스 필드에 저장 → 폰/컴퓨터 어디서든 공유)
+function isAttended(r){
+  return !!r.fields["출석"];
+}
+
+async function toggleAttendance(recordId){
+  const record = coffeeApplicants.find(r => r.id === recordId);
+  if(!record) return;
+  const next = !isAttended(record);
+  try {
+    const res = await fetch("/api/airtable?table=재테크 커피팅", {
+      method: "PATCH",
+      headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "출석": next } }] })
+    });
+    if(!res.ok) throw new Error();
+    record.fields["출석"] = next;
+    renderLineup();
+  } catch(e){
+    toast("저장 실패 — Airtable '재테크 커피팅'에 체크박스 필드 '출석'을 추가해주세요");
+  }
+}
+
+function renderLineup(){
+  const confirmed = coffeeApplicants.filter(r =>
+    r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료"
+  );
+  const males = confirmed.filter(r => r.fields["성별"] === "남성");
+  const females = confirmed.filter(r => r.fields["성별"] === "여성");
+
+  function renderRow(r, idx){
+    const f = r.fields;
+    const attended = isAttended(r);
+    const nickname = f["닉네임"] ? `(${f["닉네임"]})` : '';
+    const drink = f["음료선택"] || '';
+    return `<div class="flex items-center gap-3 bg-[#0D0D0C] rounded-xl p-3 ${attended ? 'border border-emerald-500/30' : 'border border-[#242422]'}">
+      <div class="text-xs font-bold text-[#555] w-5 text-center">${idx + 1}</div>
+      <button onclick="toggleAttendance('${r.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition ${attended ? 'bg-emerald-500 text-white' : 'bg-[#242422] text-[#555]'}">
+        <i class="fa-solid fa-check text-xs"></i>
+      </button>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-bold">${f["이름"] || "이름없음"}${nickname} <span class="text-[10px] text-[#555] font-normal">${f["출생연도"] || ""}년생</span></div>
+        <div class="text-[11px] text-[#9E9E97]">${f["직업_직장명"] || ""} · ${f["연락처"] || ""}</div>
+        ${drink ? `<div class="text-[10px] text-[#9E9E97] mt-0.5">☕ ${drink}</div>` : ''}
+      </div>
+      <div class="text-[10px] ${attended ? 'text-emerald-400' : 'text-[#555]'} font-bold">${attended ? '출석' : '미출석'}</div>
+    </div>`;
+  }
+
+  document.getElementById("lineup-male").innerHTML = males.length > 0
+    ? males.map((r, i) => renderRow(r, i)).join("")
+    : '<p class="text-[#555] text-xs py-2 pl-2">입금완료된 남성 참가자가 없습니다</p>';
+  document.getElementById("lineup-female").innerHTML = females.length > 0
+    ? females.map((r, i) => renderRow(r, i)).join("")
+    : '<p class="text-[#555] text-xs py-2 pl-2">입금완료된 여성 참가자가 없습니다</p>';
+
+  const totalAttend = confirmed.length;
+  const checkedAttend = confirmed.filter(r => isAttended(r)).length;
+  document.getElementById("attend-count").textContent = checkedAttend;
+  document.getElementById("attend-total").textContent = totalAttend;
+
+  // 출석부 음료 카운트 (입금완료 기준)
+  const lineupDrinks={};
+  confirmed.forEach(r=>{
+    const d=r.fields["음료선택"]||"미선택";
+    lineupDrinks[d]=(lineupDrinks[d]||0)+1;
+  });
+  const ldc=document.getElementById("lineup-drink-count");
+  if(ldc){
+    if(Object.keys(lineupDrinks).length===0){ldc.innerHTML='<span class="text-xs text-[#555]">입금완료된 참가자가 없습니다</span>';}
+    else{ldc.innerHTML=Object.entries(lineupDrinks).map(([k,v])=>`<span class="text-xs bg-[#242422] text-[#9E9E97] px-3 py-1.5 rounded-full">☕ ${k} <b class="y">${v}</b></span>`).join("");}
+  }
+}
+
+// 행사 후 전체 문자 발송
+async function sendPostEventSMS(){
+  const attended = coffeeApplicants.filter(r =>
+    r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료" && isAttended(r)
+  );
+  if(attended.length === 0){ toast("출석 체크된 참가자가 없습니다"); return; }
+
+  const msg = document.getElementById("post-event-msg").value.trim();
+  if(!msg){ toast("문자 내용을 입력해주세요"); return; }
+
+  const prev = getSMSLog("post_" + S("회차키"));
+  if(prev && !confirm(`⚠️ 이미 ${prev.at}에 ${prev.count}명에게 발송했어요.\n정말 다시 보내시겠어요?`)) return;
+  if(!confirm(`출석 참가자 ${attended.length}명에게 문자를 보내시겠어요?`)) return;
+
+  let success = 0, fail = 0;
+  for(const r of attended){
+    const phone = r.fields["연락처"];
+    if(!phone){ fail++; continue; }
+    try {
+      await sendSMS(phone, msg);
+      success++;
+    } catch(e){ fail++; }
+  }
+  if(success > 0) setSMSLog("post_" + S("회차키"), success);
+  toast(`행사 후 문자 발송 완료! 성공 ${success}명${fail > 0 ? ` / 실패 ${fail}명` : ""}`);
+}
+
+// 개별 문자: 카드의 ✉️ 버튼 → 커스텀 문자 화면에 그 사람을 대상으로 세팅
+let individualTarget = null;
+function smsTo(recordId){
+  const record = coffeeApplicants.find(r => r.id === recordId);
+  if(!record) return;
+  individualTarget = recordId;
+  switchCoffeeView("sms");
+  const sel = document.getElementById("custom-sms-target");
+  let opt = sel.querySelector('option[value="individual"]');
+  if(!opt){
+    opt = document.createElement("option");
+    opt.value = "individual";
+    sel.appendChild(opt);
+  }
+  opt.textContent = `개인: ${record.fields["이름"] || "이름없음"} (${record.fields["연락처"]})`;
+  sel.value = "individual";
+  setTimeout(() => {
+    document.getElementById("custom-sms-msg").scrollIntoView({behavior: "smooth", block: "center"});
+    document.getElementById("custom-sms-msg").focus();
+  }, 100);
+}
+
+// 커스텀 문자 발송
+async function sendCustomSMS(){
+  const target = document.getElementById("custom-sms-target").value;
+  const msg = document.getElementById("custom-sms-msg").value.trim();
+  if(!msg){ toast("문자 내용을 입력해주세요"); return; }
+
+  let recipients = [];
+  if(target === "individual") recipients = coffeeApplicants.filter(r => r.id === individualTarget);
+  else if(target === "all") recipients = coffeeApplicants;
+  else if(target === "approved") recipients = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인");
+  else if(target === "paid") recipients = coffeeApplicants.filter(r => r.fields["승인상태"] === "승인" && r.fields["입금상태"] === "입금완료");
+  else if(target === "attended") recipients = coffeeApplicants.filter(r => isAttended(r));
+
+  if(recipients.length === 0){ toast("발송 대상이 없습니다"); return; }
+  if(!confirm(`${recipients.length}명에게 문자를 보내시겠어요?`)) return;
+
+  let success = 0, fail = 0;
+  for(const r of recipients){
+    const phone = r.fields["연락처"];
+    if(!phone){ fail++; continue; }
+    try {
+      await sendSMS(phone, msg);
+      success++;
+    } catch(e){ fail++; }
+  }
+  toast(`문자 발송 완료! 성공 ${success}명${fail > 0 ? ` / 실패 ${fail}명` : ""}`);
+}
+
+// 비밀번호 잠금
+var pwFailCount = 0;
+var pwLockUntil = 0;
+async function checkPw(){
+  var now = Date.now();
+  if(now < pwLockUntil){
+    var sec = Math.ceil((pwLockUntil - now) / 1000);
+    document.getElementById("pw-error").textContent = sec + "초 후에 다시 시도해주세요";
+    document.getElementById("pw-error").classList.remove("hidden");
+    return;
+  }
+  const input = document.getElementById("pw-input").value;
+  try {
+    const res = await fetch("/api/admin-auth", {
+      method: "POST",
+      headers: apiHeaders(),
+      body: JSON.stringify({ password: input })
+    });
+    const data = await res.json();
+    if(data.ok){
+      pwFailCount = 0;
+      document.getElementById("lock-screen").classList.add("hidden");
+      localStorage.setItem("admin_key", input);
+      loadApplicants();
+      loadSettings();
+    } else {
+      pwFailCount++;
+      if(pwFailCount >= 5){
+        pwLockUntil = Date.now() + 30000;
+        document.getElementById("pw-error").textContent = "5회 실패! 30초 후에 다시 시도해주세요";
+        pwFailCount = 0;
+      } else {
+        document.getElementById("pw-error").textContent = "비밀번호가 틀렸습니다 (" + pwFailCount + "/5)";
+      }
+      document.getElementById("pw-error").classList.remove("hidden");
+      document.getElementById("pw-input").value = "";
+      document.getElementById("pw-input").focus();
+    }
+  } catch(err){
+    document.getElementById("pw-error").classList.remove("hidden");
+  }
+}
+
+// 로그인 유지 (기기에 저장 — 모바일에서도 매번 로그인 안 해도 됨)
+if(localStorage.getItem("admin_key")){
+  document.getElementById("lock-screen").classList.add("hidden");
+  loadApplicants();
+  loadSettings();
+}
+
+// 행사 후 문자: 직접 수정하면 설정 기본값으로 덮어쓰지 않음
+document.getElementById("post-event-msg").addEventListener("input", function(){ this.dataset.touched = "1"; });
+
+// ===== 신청자 등록 모달 =====
+let regType = "matching";
+let regPhotos = []; // {file, preview}
+let regGender = "";
+let aiMode = false;
+
+// 년생 옵션 생성
+(function(){
+  const sel = document.getElementById("reg-birth");
+  for(let y = 2006; y >= 1970; y--){
+    const opt = document.createElement("option");
+    opt.value = y;
+    opt.textContent = y + "년생";
+    sel.appendChild(opt);
+  }
+})();
+
+function openRegModal(type){
+  regType = type || "matching";
+  resetRegForm();
+  switchRegType(regType);
+  document.getElementById("reg-overlay").classList.add("show");
+}
+
+function closeRegModal(){
+  document.getElementById("reg-overlay").classList.remove("show");
+}
+
+function switchRegType(type){
+  regType = type;
+  document.querySelectorAll(".reg-type-tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.type === type);
+  });
+  document.getElementById("reg-matching-fields").style.display = type === "matching" ? "block" : "none";
+  document.getElementById("reg-coffee-fields").style.display = type === "coffee" ? "block" : "none";
+}
+
+function setGender(g){
+  regGender = g;
+  document.getElementById("reg-gender-f").classList.toggle("active", g === "여성");
+  document.getElementById("reg-gender-m").classList.toggle("active", g === "남성");
+}
+
+function resetRegForm(){
+  regGender = "";
+  regPhotos = [];
+  aiMode = false;
+  document.getElementById("ai-box").classList.remove("show");
+  document.getElementById("ai-toggle-btn").classList.remove("active");
+  document.getElementById("ai-text").value = "";
+  document.getElementById("reg-gender-f").classList.remove("active");
+  document.getElementById("reg-gender-m").classList.remove("active");
+  document.getElementById("photo-preview-grid").innerHTML = "";
+  document.getElementById("photo-count").textContent = "0/4";
+  ["reg-name","reg-birth","reg-height","reg-location","reg-phone",
+   "reg-job","reg-religion","reg-hobby","reg-intro","reg-keywords","reg-pref-age","reg-pref-job","reg-match-type",
+   "reg-nickname","reg-coffee-job","reg-fintech","reg-appeal","reg-drink","reg-discount","reg-source","reg-referrer",
+   "reg-etc"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.tagName === "SELECT" ? el.selectedIndex = 0 : el.value = "";
+  });
+}
+
+// AI 토글
+function toggleAI(){
+  aiMode = !aiMode;
+  document.getElementById("ai-box").classList.toggle("show", aiMode);
+  document.getElementById("ai-toggle-btn").classList.toggle("active", aiMode);
+}
+
+// AI 텍스트 파싱
+function aiParse(){
+  const text = document.getElementById("ai-text").value.trim();
+  if(!text){ toast("텍스트를 붙여넣어주세요"); return; }
+
+  const lines = text.split("\n").map(l => l.trim()).filter(l => l);
+  const etcLines = [];
+
+  for(const line of lines){
+    const lower = line.toLowerCase();
+
+    // 키 파싱
+    const heightMatch = line.match(/키\s*[:\s]?\s*(\d{2,3})/);
+    if(heightMatch){
+      document.getElementById("reg-height").value = heightMatch[1];
+      continue;
+    }
+
+    // 나이/년생 파싱
+    const birthMatch = line.match(/(나이|년생|생년|출생)\s*[:\s]?\s*(\d{2,4})/) || line.match(/(\d{2,4})\s*년?\s*생/);
+    if(birthMatch){
+      let year = parseInt(birthMatch[2] || birthMatch[1]);
+      if(year < 100) year += 1900;
+      if(year >= 1970 && year <= 2006){
+        document.getElementById("reg-birth").value = year;
+      }
+      continue;
+    }
+
+    // 성별 파싱
+    if(/^성별\s*[:\s]?\s*(여|여성|여자)/.test(line) || line === "여성" || line === "여자"){
+      setGender("여성"); continue;
+    }
+    if(/^성별\s*[:\s]?\s*(남|남성|남자)/.test(line) || line === "남성" || line === "남자"){
+      setGender("남성"); continue;
+    }
+
+    // 거주지/사는곳 파싱
+    const locMatch = line.match(/(거주지|사는\s*곳|사는곳|지역|거주)\s*[:\s]?\s*(.+)/);
+    if(locMatch){
+      document.getElementById("reg-location").value = locMatch[2].trim();
+      continue;
+    }
+
+    // 직업 파싱
+    const jobMatch = line.match(/(직업|직장|회사|업종)\s*[:\s]?\s*(.+)/);
+    if(jobMatch){
+      if(regType === "matching") document.getElementById("reg-job").value = jobMatch[2].trim();
+      else document.getElementById("reg-coffee-job").value = jobMatch[2].trim();
+      continue;
+    }
+
+    // 이름 파싱
+    const nameMatch = line.match(/(이름|성명)\s*[:\s]?\s*(.+)/);
+    if(nameMatch){
+      document.getElementById("reg-name").value = nameMatch[2].trim();
+      continue;
+    }
+
+    // 연락처 파싱
+    const phoneMatch = line.match(/(연락처|전화|번호|핸드폰|휴대폰)\s*[:\s]?\s*([\d\-]+)/) || line.match(/(010[\-\s]?\d{4}[\-\s]?\d{4})/);
+    if(phoneMatch){
+      document.getElementById("reg-phone").value = (phoneMatch[2] || phoneMatch[1]).trim();
+      continue;
+    }
+
+    // 종교 파싱
+    const relMatch = line.match(/(종교)\s*[:\s]?\s*(.+)/);
+    if(relMatch){
+      document.getElementById("reg-religion").value = relMatch[2].trim();
+      continue;
+    }
+
+    // 취미 파싱
+    const hobbyMatch = line.match(/(취미|관심사)\s*[:\s]?\s*(.+)/);
+    if(hobbyMatch){
+      document.getElementById("reg-hobby").value = hobbyMatch[2].trim();
+      continue;
+    }
+
+    // 닉네임 파싱
+    const nickMatch = line.match(/(닉네임|별명)\s*[:\s]?\s*(.+)/);
+    if(nickMatch){
+      document.getElementById("reg-nickname").value = nickMatch[2].trim();
+      continue;
+    }
+
+    // 매칭 안 된 것 → 기타로
+    etcLines.push(line);
+  }
+
+  // 나머지 기타 텍스트
+  if(etcLines.length > 0){
+    const etcEl = document.getElementById("reg-etc");
+    etcEl.value = (etcEl.value ? etcEl.value + "\n" : "") + etcLines.join("\n");
+  }
+
+  toast("AI 자동입력 완료! 나머지 필드를 확인해주세요");
+}
+
+// ===== 사진 업로드 =====
+function handlePhotoSelect(event){
+  const files = Array.from(event.target.files);
+  addPhotos(files);
+  event.target.value = "";
+}
+
+function addPhotos(files){
+  const remaining = 4 - regPhotos.length;
+  if(remaining <= 0){ toast("사진은 최대 4장까지 등록 가능합니다"); return; }
+  const toAdd = files.slice(0, remaining);
+
+  for(const file of toAdd){
+    if(!file.type.startsWith("image/")) continue;
+    if(file.size > 10 * 1024 * 1024){ toast("10MB 이하 사진만 가능합니다"); continue; }
+    const reader = new FileReader();
+    reader.onload = function(e){
+      regPhotos.push({ file, preview: e.target.result });
+      renderPhotoPreview();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function renderPhotoPreview(){
+  const grid = document.getElementById("photo-preview-grid");
+  document.getElementById("photo-count").textContent = regPhotos.length + "/4";
+
+  if(regPhotos.length === 0){
+    grid.innerHTML = "";
+    return;
+  }
+
+  grid.innerHTML = regPhotos.map((p, i) => `
+    <div class="photo-preview-item" draggable="true" data-idx="${i}"
+      ondragstart="dragPhoto(event,${i})" ondragover="event.preventDefault()" ondrop="dropPhoto(event,${i})">
+      <div class="photo-drag"><i class="fa-solid fa-grip-dots-vertical"></i></div>
+      <img src="${p.preview}">
+      <button class="photo-del" onclick="removePhoto(${i})"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  `).join("");
+}
+
+function removePhoto(idx){
+  regPhotos.splice(idx, 1);
+  renderPhotoPreview();
+}
+
+let dragIdx = null;
+function dragPhoto(e, idx){ dragIdx = idx; }
+function dropPhoto(e, idx){
+  e.preventDefault();
+  if(dragIdx === null || dragIdx === idx) return;
+  const item = regPhotos.splice(dragIdx, 1)[0];
+  regPhotos.splice(idx, 0, item);
+  dragIdx = null;
+  renderPhotoPreview();
+}
+
+// 드래그 앤 드롭 (파일)
+const uploadArea = document.getElementById("photo-upload-area");
+uploadArea.addEventListener("dragover", e => { e.preventDefault(); uploadArea.style.borderColor = "#FFD400"; });
+uploadArea.addEventListener("dragleave", () => { uploadArea.style.borderColor = "#333"; });
+uploadArea.addEventListener("drop", e => {
+  e.preventDefault();
+  uploadArea.style.borderColor = "#333";
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+  if(files.length > 0) addPhotos(files);
+});
+
+// 붙여넣기로 사진 추가
+document.addEventListener("paste", e => {
+  if(!document.getElementById("reg-overlay").classList.contains("show")) return;
+  const items = Array.from(e.clipboardData.items).filter(i => i.type.startsWith("image/"));
+  if(items.length > 0){
+    e.preventDefault();
+    const files = items.map(i => i.getAsFile()).filter(Boolean);
+    addPhotos(files);
+  }
+});
+
+// 이미지 압축 (1200px)
+async function compressForUpload(file){
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if(w > MAX){ h = h * MAX / w; w = MAX; }
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      c.toBlob(blob => resolve(blob), "image/jpeg", 0.85);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// Cloudinary 업로드
+const CN = "ddvmmvcei";
+const CP = "ml_default";
+
+async function uploadPhotoToCloud(file){
+  const compressed = await compressForUpload(file);
+  const fd = new FormData();
+  fd.append("file", compressed);
+  fd.append("upload_preset", CP);
+  fd.append("folder", "ssumcenter/photos");
+  const r = await fetch("https://api.cloudinary.com/v1_1/" + CN + "/image/upload", { method: "POST", body: fd });
+  if(!r.ok) throw new Error("업로드 실패");
+  const data = await r.json();
+  return data.secure_url;
+}
+
+// 등록 제출
+async function submitRegistration(){
+  // 유효성 체크
+  const name = document.getElementById("reg-name").value.trim();
+  const birth = document.getElementById("reg-birth").value;
+  const height = document.getElementById("reg-height").value;
+  const location = document.getElementById("reg-location").value.trim();
+
+  if(!regGender){ toast("성별을 선택해주세요"); return; }
+  if(!name){ toast("이름을 입력해주세요"); return; }
+  if(!birth){ toast("년생을 선택해주세요"); return; }
+
+  if(regType === "matching"){
+    const job = document.getElementById("reg-job").value.trim();
+    if(!job){ toast("직업을 입력해주세요"); return; }
+  } else {
+    const coffeeJob = document.getElementById("reg-coffee-job").value.trim();
+    if(!coffeeJob){ toast("직업/직장명을 입력해주세요"); return; }
+  }
+
+  const btn = document.getElementById("reg-submit-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>등록 중...';
+
+  try {
+    // 사진 업로드
+    let photoUrls = [];
+    for(const p of regPhotos){
+      const url = await uploadPhotoToCloud(p.file);
+      photoUrls.push({ url });
+    }
+
+    // Airtable 레코드 생성
+    let fields = {};
+    const phone = document.getElementById("reg-phone").value.trim();
+    const etc = document.getElementById("reg-etc").value.trim();
+
+    if(regType === "matching"){
+      fields = {
+        "이름": name,
+        "성별": regGender,
+        "출생연도": birth,
+        "키": height,
+        "사는곳": location,
+        "직업": document.getElementById("reg-job").value.trim(),
+        "종교": document.getElementById("reg-religion").value.trim(),
+        "취미": document.getElementById("reg-hobby").value.trim(),
+        "자기소개": document.getElementById("reg-intro").value.trim() + (etc ? "\n\n[기타] " + etc : ""),
+        "성격키워드": document.getElementById("reg-keywords").value.trim(),
+        "선호나이대": document.getElementById("reg-pref-age").value.trim(),
+        "선호직업군": document.getElementById("reg-pref-job").value.trim(),
+        "매칭유형": document.getElementById("reg-match-type").value,
+        "매칭상태": "대기"
+      };
+      if(phone) fields["연락처"] = phone;
+      if(photoUrls.length > 0) fields["프로필사진"] = photoUrls;
+
+      await fetch("/api/airtable?table=1:1 매칭 신청", {
+        method: "POST",
+        headers: apiHeaders(),
+        body: JSON.stringify({ records: [{ fields }] })
+      });
+
+      toast("1:1 매칭 신청자 등록 완료!");
+      closeRegModal();
+      loadApplicants();
+
+    } else {
+      fields = {
+        "이름": name,
+        "성별": regGender,
+        "출생연도": birth,
+        "직업_직장명": document.getElementById("reg-coffee-job").value.trim(),
+        "닉네임": document.getElementById("reg-nickname").value.trim(),
+        "관심재테크": document.getElementById("reg-fintech").value.trim(),
+        "어필포인트": document.getElementById("reg-appeal").value.trim() + (etc ? "\n\n[기타] " + etc : ""),
+        "음료선택": document.getElementById("reg-drink").value,
+        "할인혜택": document.getElementById("reg-discount").value,
+        "유입경로": document.getElementById("reg-source").value.trim(),
+        "추천인이름": document.getElementById("reg-referrer").value.trim(),
+        "승인상태": "대기",
+        "입금상태": "미입금"
+      };
+      if(phone) fields["연락처"] = phone;
+      if(photoUrls.length > 0) fields["프로필사진"] = photoUrls;
+
+      await fetch("/api/airtable?table=재테크 커피팅", {
+        method: "POST",
+        headers: apiHeaders(),
+        body: JSON.stringify({ records: [{ fields }] })
+      });
+
+      toast("재테크 커피팅 신청자 등록 완료!");
+      closeRegModal();
+      loadCoffeeApplicants();
+    }
+
+  } catch(err){
+    console.error(err);
+    toast("등록 실패: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>등록하기';
+  }
+}
+
+// ===== 소팅 =====
+let matchingSort = "date-desc";
+let coffeeSortOrder = "date-desc";
+
+function sortMatching(order){
+  matchingSort = order;
+  document.querySelectorAll(".sort-tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.sort === order);
+  });
+  sortApplicantsArray(applicants, order, "matching");
+  renderList();
+}
+
+function sortCoffee(order){
+  coffeeSortOrder = order;
+  sortApplicantsArray(coffeeApplicants, order, "coffee");
+  renderCoffeeList();
+}
+
+function sortApplicantsArray(arr, order, type){
+  const birthField = "출생연도";
+  const nameField = "이름";
+  const dateField = "신청일시";
+
+  arr.sort((a, b) => {
+    const fa = a.fields, fb = b.fields;
+    switch(order){
+      case "name":
+        return (fa[nameField] || "").localeCompare(fb[nameField] || "", "ko");
+      case "age-asc": // 나이 많은순 = 년생 작은순
+        return (parseInt(fa[birthField]) || 9999) - (parseInt(fb[birthField]) || 9999);
+      case "age-desc": // 나이 적은순 = 년생 큰순
+        return (parseInt(fb[birthField]) || 0) - (parseInt(fa[birthField]) || 0);
+      case "date-asc":
+        return (fa[dateField] || "").localeCompare(fb[dateField] || "");
+      case "date-desc":
+      default:
+        return (fb[dateField] || "").localeCompare(fa[dateField] || "");
+    }
+  });
+}
+</script>
+</body>
+</html>
