@@ -92,7 +92,7 @@
   <!-- 콘솔 -->
   <div id="console" class="hide">
     <h1>📋 로테이션 신청 관리</h1>
-    <div class="sub">회차별로 신청자를 보고 승인해요 · <a class="home" href="/attendance">📋 출석부 →</a> · <a class="home" href="/admin">1:1·재테크 →</a> · <a class="home" href="/vote-admin">투표 →</a></div>
+    <div class="sub">회차별로 신청자를 보고 승인해요 · <a class="home" href="/lineup">🎬 라인업 →</a> · <a class="home" href="/attendance">📋 출석부 →</a> · <a class="home" href="/admin">1:1·재테크 →</a> · <a class="home" href="/vote-admin">투표 →</a></div>
 
     <div class="card feecard">
       <label class="f">참가비</label>
@@ -217,7 +217,7 @@
       + '<button class="cfmbtn" style="width:100%;margin-top:8px;background:#22c55e;color:#fff;border:none;border-radius:12px;padding:9px;font-weight:800;font-size:13px;cursor:pointer">💰 입금확인 → 확정문자 발송</button>'
       + '<button class="btn g sm smsbtn" style="width:100%;margin-top:7px">📨 문자 직접 보내기</button>';
     el.querySelector(".smsbtn").addEventListener("click",function(){ openSms(f); });
-    el.querySelector(".cfmbtn").addEventListener("click",function(){ sendConfirm(f); });
+    el.querySelector(".cfmbtn").addEventListener("click",function(){ sendConfirm(x); });
     el.querySelectorAll(".acts button").forEach(function(btn){
       btn.addEventListener("click",function(){
         var ns=btn.dataset.s;
@@ -339,10 +339,12 @@
     return fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({to:to,text:text})}).then(function(r){return r.json();});
   }
   // 입금확인 → 확정 문자 (개별)
-  window.sendConfirm=function(f){
-    var to=f["연락처"]; if(!to){ alert("연락처가 없어요."); return; }
-    if(!confirm((f["닉네임"]||f["이름"]||"")+"님께 '최종 확정 안내' 문자를 보낼까요?\n(입금 확인된 분께 보내세요)")) return;
-    sendSmsTo(to, TPLS["확정"](f)).then(function(r){ alert(r&&r.ok?"✅ 확정 문자 발송됨":"❌ "+((r&&r.error)||"발송 실패")); });
+  window.sendConfirm=function(x){
+    var f=x.fields||{}; var to=f["연락처"]; if(!to){ alert("연락처가 없어요."); return; }
+    if(!confirm((f["닉네임"]||f["이름"]||"")+"님\n→ 입금확정 처리 + '최종 확정 안내' 문자를 보낼까요?\n(라인업에도 자동 등록돼요)")) return;
+    // 입금확정 표시 → 라인업 자동 등록
+    api("PATCH",{records:[{id:x.id,fields:{"입금확정":"O"}}]}).then(function(){ f["입금확정"]="O"; });
+    sendSmsTo(to, TPLS["확정"](f)).then(function(r){ alert(r&&r.ok?"✅ 입금확정 처리 + 확정문자 발송됨\n(라인업에 자동 등록됐어요)":"입금확정 표시는 됐어요. 문자는 실패: "+((r&&r.error)||"")); });
   };
   // 전날 안내 일괄 발송 (현재 회차 · 승인자 전원)
   document.getElementById("reminderBtn").addEventListener("click",function(){

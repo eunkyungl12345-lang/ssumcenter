@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8/27 라인업 | 썸류센터</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--ink-on-amber:#171208;--male:#7EA6E0;--female:#E88FB0;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em}
+  .wrap{max-width:640px;margin:0 auto;padding:22px 16px 70px}
+  h1{font-size:22px;font-weight:800}
+  .sub{font-size:12.5px;color:var(--muted);margin:3px 0 18px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px}
+  input{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
+  input:focus{outline:none;border-color:var(--amber)}
+  .btn{border:none;border-radius:11px;padding:12px 16px;font-size:14px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;width:100%}
+  .btn.g{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong);width:auto;padding:9px 14px;font-size:12.5px;font-weight:750}
+  .hide{display:none}
+  .cols{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+  .col{flex:1 1 280px}
+  .col-h{position:sticky;top:0;font-weight:900;font-size:14px;padding:9px 12px;border-radius:11px;margin-bottom:10px;background:var(--surface);border:1px solid var(--line)}
+  .col-h.m{color:var(--male)} .col-h.f{color:var(--female)}
+  .lu{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:10px}
+  .lu .hd{display:flex;align-items:center;gap:7px;font-weight:800;font-size:15px}
+  .lu.m .hd{color:var(--male)} .lu.f .hd{color:var(--female)}
+  .lu .job{font-size:13px;color:var(--ink);margin-top:7px}
+  .lu .job b{color:var(--muted);font-weight:600;font-size:11.5px;display:block;margin-bottom:1px}
+  .lu .appeal{font-size:13px;color:var(--muted);margin-top:9px;line-height:1.6;border-top:1px solid var(--line);padding-top:9px;white-space:pre-wrap}
+  .empty{text-align:center;color:var(--muted);padding:44px 0;font-size:13px}
+  .spin{width:26px;height:26px;border:3px solid var(--line-strong);border-top-color:var(--amber);border-radius:50%;margin:34px auto;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  a.home{font-size:12px;color:var(--muted);text-decoration:none}
+  .privacy{font-size:11.5px;color:var(--faint);text-align:center;margin:16px 0;line-height:1.5}
+  .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+  .toolbar .cnt{font-size:12.5px;color:var(--muted);margin-left:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- 로그인 (지금은 어드민 전용) -->
+  <div id="login">
+    <h1>🎬 라인업</h1>
+    <div class="sub">센터장 전용 (공개 전) · 관리자 비밀번호</div>
+    <div class="card">
+      <input id="pw" type="password" placeholder="admin 비밀번호">
+      <div style="margin-top:12px"><button class="btn" id="loginBtn">로그인</button></div>
+      <div id="login-msg" style="font-size:12.5px;color:#E8828A;margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- 콘솔 -->
+  <div id="console" class="hide">
+    <h1>🎬 8/27 라인업</h1>
+    <div class="sub">입금 확정된 분이 자동으로 올라와요 · <a class="home" href="/rotation-admin">← 로테이션 관리</a></div>
+    <div class="toolbar">
+      <button class="btn g" id="refreshBtn">새로고침</button>
+      <span class="cnt" id="cnt"></span>
+    </div>
+    <div class="privacy">🔒 실명·연락처·사진은 비공개 · 나이대/키/직업/어필포인트만 표시돼요</div>
+    <div id="list"></div>
+  </div>
+</div>
+<script>
+  var KEY="admin_key";
+  function key(){ return localStorage.getItem(KEY)||""; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function ageBand(y){ y=parseInt(y,10); if(!y) return ""; var a=2026-y;
+    if(a<=23) return "20대 초반"; if(a<=26) return "20대 중반"; if(a<=29) return "20대 후반";
+    if(a<=33) return "30대 초반"; if(a<=36) return "30대 중반"; return "30대 후반"; }
+
+  document.getElementById("loginBtn").addEventListener("click",doLogin);
+  document.getElementById("pw").addEventListener("keydown",function(e){ if(e.key==="Enter") doLogin(); });
+  function doLogin(){
+    var pw=document.getElementById("pw").value;
+    fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ localStorage.setItem(KEY,pw); showConsole(); }
+        else { document.getElementById("login-msg").textContent="비밀번호가 틀렸어요"; }
+      }).catch(function(){ document.getElementById("login-msg").textContent="오류가 났어요."; });
+  }
+  function showConsole(){ document.getElementById("login").classList.add("hide"); document.getElementById("console").classList.remove("hide"); load(); }
+  if(key()){ showConsole(); }
+
+  document.getElementById("refreshBtn").addEventListener("click",load);
+  function load(){
+    document.getElementById("list").innerHTML='<div class="spin"></div>';
+    fetch("/api/airtable?table="+encodeURIComponent("로테이션 신청"),{headers:{"x-admin-key":key()}}).then(function(r){return r.json();}).then(function(r){
+      if(r.error){ document.getElementById("list").innerHTML='<div class="empty">'+esc(r.error)+'</div>'; return; }
+      var recs=(r.records||[]).filter(function(x){ var f=x.fields||{}; return f["입금확정"]==="O" && String(f["회차"]||"").indexOf("8/27")>=0; });
+      render(recs);
+    }).catch(function(){ document.getElementById("list").innerHTML='<div class="empty">불러오기 오류</div>'; });
+  }
+  function luCard(f, cls){
+    var appeal=(f["어필포인트"]||"").trim();
+    return '<div class="lu '+cls+'">'
+      + '<div class="hd">'+(cls==="m"?"🧑":"👩")+' '+esc(ageBand(f["출생연도"]))+(f["키"]?' · '+esc(f["키"])+'cm':'')+'</div>'
+      + '<div class="job"><b>직업</b>'+esc(f["직업_직장명"]||"—")+'</div>'
+      + (appeal?'<div class="appeal">'+esc(appeal)+'</div>':'')
+      + '</div>';
+  }
+  function render(recs){
+    var males=recs.filter(function(x){return (x.fields||{})["성별"]==="남성";});
+    var females=recs.filter(function(x){return (x.fields||{})["성별"]==="여성";});
+    document.getElementById("cnt").textContent="확정 "+recs.length+"명 (남 "+males.length+" · 여 "+females.length+")";
+    if(!recs.length){ document.getElementById("list").innerHTML='<div class="empty">아직 입금 확정된 참가자가 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 자동으로 올라와요.</div>'; return; }
+    var html='<div class="cols">'
+      + '<div class="col"><div class="col-h m">🧑 남성 '+males.length+'</div>'+(males.length?males.map(function(x){return luCard(x.fields||{},"m");}).join(""):'<div class="empty" style="padding:20px 0">없음</div>')+'</div>'
+      + '<div class="col"><div class="col-h f">👩 여성 '+females.length+'</div>'+(females.length?females.map(function(x){return luCard(x.fields||{},"f");}).join(""):'<div class="empty" style="padding:20px 0">없음</div>')+'</div>'
+      + '</div>';
+    document.getElementById("list").innerHTML=html;
+  }
+</script>
+</body>
+</html>
