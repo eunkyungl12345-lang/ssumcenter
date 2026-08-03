@@ -214,10 +214,10 @@
       + '<button class="a-ok'+(st==="승인"?" on":"")+'" data-s="승인">승인</button>'
       + '<button class="a-no'+(st==="거절"?" on":"")+'" data-s="거절">거절</button>'
       + '</div>'
-      + '<button class="cfmbtn" style="width:100%;margin-top:8px;background:#22c55e;color:#fff;border:none;border-radius:12px;padding:9px;font-weight:800;font-size:13px;cursor:pointer">💰 입금확인 → 확정문자 발송</button>'
+      + (st==="승인" ? '<button class="cfmbtn" style="width:100%;margin-top:8px;background:#22c55e;color:#fff;border:none;border-radius:12px;padding:9px;font-weight:800;font-size:13px;cursor:pointer">💰 입금확인 → 확정문자 발송</button>' : '')
       + '<button class="btn g sm smsbtn" style="width:100%;margin-top:7px">📨 문자 직접 보내기</button>';
     el.querySelector(".smsbtn").addEventListener("click",function(){ openSms(f); });
-    el.querySelector(".cfmbtn").addEventListener("click",function(){ sendConfirm(x); });
+    var _cb=el.querySelector(".cfmbtn"); if(_cb) _cb.addEventListener("click",function(){ sendConfirm(x); });
     el.querySelectorAll(".acts button").forEach(function(btn){
       btn.addEventListener("click",function(){
         var ns=btn.dataset.s;

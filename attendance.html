@@ -89,7 +89,7 @@
     document.getElementById("list").innerHTML='<div class="spin"></div>';
     fetch(apiUrl(true),{headers:{"x-admin-key":key()}}).then(function(r){return r.json();}).then(function(r){
       if(r.error){ document.getElementById("list").innerHTML='<div class="empty">'+esc(r.error)+'<br>(비밀번호 확인 · 새로고침)</div>'; return; }
-      records=(r.records||[]).filter(function(x){ var f=x.fields||{}; return f["승인상태"]==="승인" && String(f["회차"]||"").indexOf("8/27")>=0; });
+      records=(r.records||[]).filter(function(x){ var f=x.fields||{}; return f["입금확정"]==="O" && String(f["회차"]||"").indexOf("8/27")>=0; });
       render();
     }).catch(function(){ document.getElementById("list").innerHTML='<div class="empty">불러오기 오류</div>'; });
   }
@@ -102,7 +102,7 @@
     document.getElementById("s-gender").textContent=m+" / "+fw;
     document.getElementById("cnt").textContent="출석 "+present+"/"+records.length+"명";
     var list=document.getElementById("list"); list.innerHTML="";
-    if(!records.length){ list.innerHTML='<div class="empty">8/27 승인된 참가자가 아직 없어요.</div>'; return; }
+    if(!records.length){ list.innerHTML='<div class="empty">8/27 입금확정된 참가자가 아직 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 떠요.</div>'; return; }
     records.forEach(function(x){
       var f=x.fields||{}, on=f["출석"]==="O";
       var el=document.createElement("div"); el.className="row"+(on?" present":"");
