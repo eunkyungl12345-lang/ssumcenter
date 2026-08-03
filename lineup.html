@@ -57,6 +57,7 @@
       <button class="btn g" id="refreshBtn">새로고침</button>
       <span class="cnt" id="cnt"></span>
     </div>
+    <div id="drinks"></div>
     <div class="privacy">🔒 실명·연락처·사진은 비공개 · 나이대/키/직업/어필포인트만 표시돼요</div>
     <div id="list"></div>
   </div>
@@ -103,6 +104,14 @@
     var males=recs.filter(function(x){return (x.fields||{})["성별"]==="남성";});
     var females=recs.filter(function(x){return (x.fields||{})["성별"]==="여성";});
     document.getElementById("cnt").textContent="확정 "+recs.length+"명 (남 "+males.length+" · 여 "+females.length+")";
+    // ☕ 음료 자동 집계
+    var drinks={}; recs.forEach(function(x){ var d=(x.fields||{})["음료선택"]||"기타"; drinks[d]=(drinks[d]||0)+1; });
+    var dkeys=Object.keys(drinks);
+    document.getElementById("drinks").innerHTML = recs.length && dkeys.length
+      ? '<div class="card" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 15px"><b style="color:var(--amber);font-size:13px">☕ 음료 집계</b>'
+        + dkeys.map(function(k){return '<span style="font-size:13px;color:var(--ink)">'+esc(k)+' <b style="color:var(--amber)">'+drinks[k]+'잔</b></span>';}).join('<span style="color:var(--line-strong)">·</span>')
+        + '</div>'
+      : '';
     if(!recs.length){ document.getElementById("list").innerHTML='<div class="empty">아직 입금 확정된 참가자가 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 자동으로 올라와요.</div>'; return; }
     var html='<div class="cols">'
       + '<div class="col"><div class="col-h m">🧑 남성 '+males.length+'</div>'+(males.length?males.map(function(x){return luCard(x.fields||{},"m");}).join(""):'<div class="empty" style="padding:20px 0">없음</div>')+'</div>'
