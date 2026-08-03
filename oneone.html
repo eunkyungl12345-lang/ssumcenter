@@ -18,8 +18,10 @@
   a{text-decoration:none;color:inherit}
   .y{color:#FFBE2E}.bg-y{background:#FFBE2E}
   ::selection{background:#FFBE2E;color:#000}
-  .card{background:#16140f;border-radius:20px;border:1px solid rgba(255,200,100,.06);transition:all .35s}
-  .card:hover{border-color:rgba(255,190,46,.2);box-shadow:0 8px 40px rgba(255,190,46,.06)}
+  .card{background:#1b1813;border-radius:18px;border:1px solid rgba(255,200,100,.12);transition:all .35s}
+  .card:hover{border-color:rgba(255,190,46,.28);box-shadow:0 8px 40px rgba(255,190,46,.08)}
+  h1,h2,h3{letter-spacing:-.01em}
+  .sec-inner p{word-break:keep-all}
   .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,190,46,.08);border:1px solid rgba(255,190,46,.18);color:#FFBE2E;padding:6px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px}
   .sec{padding:64px 20px}
   @media(max-width:768px){.sec{padding:48px 16px}}
@@ -36,7 +38,7 @@
 <nav class="sticky top-0 z-50 backdrop-blur-xl bg-[#0e0c0a]/80 border-b border-white/[.04] px-5 py-3.5">
   <div class="max-w-[720px] mx-auto flex items-center justify-between">
     <a href="index.html" class="flex items-center gap-2"><img src="logo.png" alt="썸류센터" class="h-7"></a>
-    <a href="index.html" class="text-sm font-semibold text-[#9a9080] hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i>홈으로</a>
+    <a href="index.html" class="text-sm font-semibold text-[#beb4a2] hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i>홈으로</a>
   </div>
 </nav>
 
@@ -46,8 +48,8 @@
     <span class="badge mb-5"><i class="fa-solid fa-gift"></i> 특급 배송</span>
     <div class="text-5xl mb-4">🎁</div>
     <h1 class="text-[28px] md:text-[42px] font-black leading-[1.2] tracking-tight">나만을 위한 맞춤 한 건,<br><span class="y">1:1 온라인 매칭</span></h1>
-    <p class="text-[13px] text-[#b0a590] font-bold mt-3">장소 · 시간 자유 · 슈퍼매칭 가능</p>
-    <p class="text-[15px] text-[#9a9080] mt-3 leading-relaxed">센터장이 당신의 이상형 조건에 맞는 단 한 사람을 찾아<br>설렘을 특급 배송해 드려요.</p>
+    <p class="text-[13px] text-[#cabda7] font-bold mt-3">장소 · 시간 자유 · 슈퍼매칭 가능</p>
+    <p class="text-[15px] text-[#beb4a2] mt-3 leading-relaxed">센터장이 당신의 이상형 조건에 맞는 단 한 사람을 찾아<br>설렘을 특급 배송해 드려요.</p>
     <div class="flex flex-wrap justify-center gap-2 mt-5">
       <span class="badge"><i class="fa-solid fa-tag"></i>일반 매칭 19,900원</span>
       <span class="badge" style="background:rgba(255,190,46,.15);border-color:rgba(255,190,46,.3)"><i class="fa-solid fa-crown"></i>슈퍼매칭 39,800원</span>
@@ -62,7 +64,7 @@
 <!-- 이런 분께 -->
 <section class="sec" style="background:rgba(255,255,255,.015)">
   <div class="sec-inner">
-    <h2 class="text-xl font-black text-center mb-8" data-r>이런 분께 <span class="y">추천해요</span></h2>
+    <h2 class="text-[22px] font-black text-center mb-8" data-r>이런 분께 <span class="y">추천해요</span></h2>
     <div class="space-y-3" data-r>
       <div class="card p-5 flex gap-3 items-start"><i class="fa-solid fa-heart y mt-1 shrink-0"></i><p class="text-sm leading-relaxed">내 이상형에 딱 맞는 한 사람만 만나고 싶은 분</p></div>
       <div class="card p-5 flex gap-3 items-start"><i class="fa-solid fa-heart y mt-1 shrink-0"></i><p class="text-sm leading-relaxed">시간/장소 제약 없이 편하게 매칭받고 싶은 분</p></div>
@@ -75,8 +77,8 @@
 <!-- 일반 vs 슈퍼 비교 -->
 <section class="sec">
   <div class="sec-inner">
-    <h2 class="text-xl font-black text-center mb-3" data-r>일반 매칭 vs <span class="y">슈퍼매칭</span></h2>
-    <p class="text-center text-sm text-[#9a9080] mb-8" data-r>두 유형 모두 매칭 불발 시 비용 없음</p>
+    <h2 class="text-[22px] font-black text-center mb-3" data-r>일반 매칭 vs <span class="y">슈퍼매칭</span></h2>
+    <p class="text-center text-sm text-[#beb4a2] mb-8" data-r>두 유형 모두 매칭 불발 시 비용 없음</p>
 
     <div class="space-y-4" data-r>
       <div class="card p-6">
@@ -85,7 +87,7 @@
           <h3 class="font-bold">일반 매칭</h3>
           <span class="ml-auto text-sm y font-bold">19,900원</span>
         </div>
-        <ul class="space-y-2.5 text-sm text-[#9a9080]">
+        <ul class="space-y-2.5 text-sm text-[#beb4a2]">
           <li class="flex gap-2"><i class="fa-solid fa-check y text-xs mt-1 shrink-0"></i>센터장이 이상형 조건에 맞는 상대를 찾아드려요</li>
           <li class="flex gap-2"><i class="fa-solid fa-check y text-xs mt-1 shrink-0"></i>상대방이 수락하면 매칭 성사!</li>
           <li class="flex gap-2"><i class="fa-solid fa-check y text-xs mt-1 shrink-0"></i>양쪽 모두 각자 19,900원 결제 후 연락처 교환</li>
@@ -100,7 +102,7 @@
           <h3 class="font-bold">슈퍼매칭</h3>
           <span class="ml-auto text-sm y font-bold">39,800원</span>
         </div>
-        <ul class="space-y-2.5 text-sm text-[#9a9080]">
+        <ul class="space-y-2.5 text-sm text-[#beb4a2]">
           <li class="flex gap-2"><i class="fa-solid fa-bolt y text-xs mt-1 shrink-0"></i>상대방 비용까지 내가 부담해요</li>
           <li class="flex gap-2"><i class="fa-solid fa-bolt y text-xs mt-1 shrink-0"></i>상대방에게 <b class="text-[#f5f0ea]">"슈퍼매칭이 왔어요!"</b> 표시 → 진심 전달</li>
           <li class="flex gap-2"><i class="fa-solid fa-bolt y text-xs mt-1 shrink-0"></i>상대방은 무료로 연락처를 받아요</li>
@@ -114,23 +116,23 @@
 <!-- 진행 방식 -->
 <section class="sec" style="background:rgba(255,255,255,.015)">
   <div class="sec-inner">
-    <h2 class="text-xl font-black text-center mb-8" data-r>이렇게 <span class="y">진행돼요</span></h2>
+    <h2 class="text-[22px] font-black text-center mb-8" data-r>이렇게 <span class="y">진행돼요</span></h2>
     <div class="space-y-3" data-r>
       <div class="card p-5 flex gap-4 items-start">
         <div class="w-9 h-9 shrink-0 rounded-xl bg-y text-black font-black text-sm flex items-center justify-center">1</div>
-        <div><h3 class="font-bold text-sm">신청서 제출</h3><p class="text-sm text-[#9a9080] mt-1">프로필 사진, 자기소개, 이상형 조건을 작성해요.</p></div>
+        <div><h3 class="font-bold text-sm">신청서 제출</h3><p class="text-sm text-[#beb4a2] mt-1">프로필 사진, 자기소개, 이상형 조건을 작성해요.</p></div>
       </div>
       <div class="card p-5 flex gap-4 items-start">
         <div class="w-9 h-9 shrink-0 rounded-xl bg-y text-black font-black text-sm flex items-center justify-center">2</div>
-        <div><h3 class="font-bold text-sm">센터장이 상대 물색</h3><p class="text-sm text-[#9a9080] mt-1">이상형 조건 기반으로 딱 맞는 한 분을 찾아드려요.</p></div>
+        <div><h3 class="font-bold text-sm">센터장이 상대 물색</h3><p class="text-sm text-[#beb4a2] mt-1">이상형 조건 기반으로 딱 맞는 한 분을 찾아드려요.</p></div>
       </div>
       <div class="card p-5 flex gap-4 items-start">
         <div class="w-9 h-9 shrink-0 rounded-xl bg-y text-black font-black text-sm flex items-center justify-center">3</div>
-        <div><h3 class="font-bold text-sm">상대방에게 프로필 전달</h3><p class="text-sm text-[#9a9080] mt-1">상대방이 프로필을 확인하고 수락하면 매칭 성사!</p></div>
+        <div><h3 class="font-bold text-sm">상대방에게 프로필 전달</h3><p class="text-sm text-[#beb4a2] mt-1">상대방이 프로필을 확인하고 수락하면 매칭 성사!</p></div>
       </div>
       <div class="card p-5 flex gap-4 items-start" style="border-color:rgba(255,190,46,.15)">
         <div class="w-9 h-9 shrink-0 rounded-xl bg-y text-black font-black text-sm flex items-center justify-center">4</div>
-        <div><h3 class="font-bold text-sm y">연락처 교환</h3><p class="text-sm text-[#9a9080] mt-1">결제 후 카카오톡으로 서로의 연락처를 전달해 드려요.</p></div>
+        <div><h3 class="font-bold text-sm y">연락처 교환</h3><p class="text-sm text-[#beb4a2] mt-1">결제 후 카카오톡으로 서로의 연락처를 전달해 드려요.</p></div>
       </div>
     </div>
   </div>
@@ -139,16 +141,16 @@
 <!-- 참가 자격 -->
 <section class="sec">
   <div class="sec-inner">
-    <h2 class="text-xl font-black text-center mb-8" data-r>이런 분을 <span class="y">찾아요</span></h2>
+    <h2 class="text-[22px] font-black text-center mb-8" data-r>이런 분을 <span class="y">찾아요</span></h2>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4" data-r>
-      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">💑</div><div class="font-bold text-sm">20~30대</div><div class="text-xs text-[#9a9080] mt-1">미혼 싱글</div></div>
-      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">📸</div><div class="font-bold text-sm">프로필 사진</div><div class="text-xs text-[#9a9080] mt-1">+ 신분 인증</div></div>
-      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">📄</div><div class="font-bold text-sm">재직증명서</div><div class="text-xs text-[#9a9080] mt-1">or 사업자등록증</div></div>
-      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">🤝</div><div class="font-bold text-sm">매너</div><div class="text-xs text-[#9a9080] mt-1">성실한 분</div></div>
+      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">💑</div><div class="font-bold text-sm">20~30대</div><div class="text-xs text-[#beb4a2] mt-1">미혼 싱글</div></div>
+      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">📸</div><div class="font-bold text-sm">프로필 사진</div><div class="text-xs text-[#beb4a2] mt-1">+ 신분 인증</div></div>
+      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">📄</div><div class="font-bold text-sm">재직증명서</div><div class="text-xs text-[#beb4a2] mt-1">or 사업자등록증</div></div>
+      <div class="card p-6 text-center"><div style="font-size:36px;margin-bottom:10px">🤝</div><div class="font-bold text-sm">매너</div><div class="text-xs text-[#beb4a2] mt-1">성실한 분</div></div>
     </div>
     <div class="card p-5 flex gap-3 items-center mt-4" data-r>
       <div class="shrink-0 w-10 h-10 rounded-xl bg-y flex items-center justify-center text-black"><i class="fa-solid fa-shield-check"></i></div>
-      <p class="text-xs text-[#9a9080]">제출하신 서류는 본인 인증 목적으로만 사용되며, 확인 후 즉시 폐기됩니다.</p>
+      <p class="text-xs text-[#beb4a2]">제출하신 서류는 본인 인증 목적으로만 사용되며, 확인 후 즉시 폐기됩니다.</p>
     </div>
   </div>
 </section>
@@ -157,12 +159,12 @@
 <section class="sec text-center" style="background:radial-gradient(ellipse at 50% 50%,rgba(255,190,46,.06) 0%,transparent 70%)">
   <div class="sec-inner" data-r>
     <h2 class="text-2xl font-black">나만을 위한 설렘,<br><span class="y">특급 배송 신청하기</span> 🎁</h2>
-    <p class="text-sm text-[#9a9080] mt-3">매칭 불발 시 비용이 발생하지 않아요</p>
+    <p class="text-sm text-[#beb4a2] mt-3">매칭 불발 시 비용이 발생하지 않아요</p>
     <div class="max-w-[320px] mx-auto mt-8">
       <a href="javascript:void(0)" onclick="if(localStorage.getItem('ssumUser')){location.href='matching.html'}else{location.href='login.html?redirect=matching.html'}" class="bg-y text-black font-extrabold w-full py-[18px] rounded-2xl text-[15px] cta-glow hover:brightness-90 transition block text-center"><i class="fa-solid fa-gift mr-1.5"></i>1:1 매칭 신청하기</a>
     </div>
     <p class="text-xs text-[#6b6358] mt-4">신청 무료 · 매칭 성사 시에만 결제</p>
-    <a href="index.html" class="inline-block mt-6 text-sm text-[#9a9080] hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i>홈으로 돌아가기</a>
+    <a href="index.html" class="inline-block mt-6 text-sm text-[#beb4a2] hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i>홈으로 돌아가기</a>
   </div>
 </section>
 
