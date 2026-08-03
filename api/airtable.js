@@ -138,20 +138,7 @@ module.exports = async function handler(req, res) {
       } catch (e) { /* 명부 적립 실패는 무시 */ }
     }
 
-    // 로테이션 신청 접수(공개 폼) → 입금안내 문자 자동 발송 (실패해도 신청은 성공 처리)
-    // - 공개 폼 제출만 대상(isAdmin 제외): admin 수동 등록은 기존 딸깍 버튼 사용
-    // - 번호가 유효할 때만 발송 → 테스트/빈값 오발송 방지
-    if (req.method === "POST" && !isAdmin && table === "로테이션 신청") {
-      try {
-        const recs = (req.body && req.body.records) || [];
-        for (const rc of recs) {
-          const to = (rc && rc.fields && rc.fields["연락처"]) || "";
-          if (isValidPhone(to)) {
-            await sendSms({ to, text: 로테이션접수문자() });
-          }
-        }
-      } catch (e) { console.error("[airtable] 접수문자 발송 실패:", e.message); }
-    }
+    // (로테이션 신청 시 자동 문자는 제거됨 — 이제 rotation-admin에서 '승인' 누르면 입금안내 문자 자동 발송)
 
     // 1:1 매칭 신청 접수(공개 폼) → 접수 안내 문자 자동 발송 (실패해도 신청은 성공)
     if (req.method === "POST" && !isAdmin && table === "1:1 매칭 신청") {

@@ -226,6 +226,14 @@
           f["승인상태"]=ns;
           // 상태 뱃지/통계 갱신
           render();
+          // 승인 시 → 입금안내 문자 자동 발송
+          if(ns==="승인" && f["연락처"]){
+            fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},
+              body:JSON.stringify({to:f["연락처"],text:TPLS["입금안내"](f)})})
+              .then(function(rr){return rr.json();}).then(function(rr){
+                alert(rr.ok ? "✅ 승인 완료 · 입금안내 문자 자동 발송됨" : "승인은 됐어요. 근데 문자 실패: "+(rr.error||""));
+              }).catch(function(){ alert("승인은 됐어요. 근데 문자 발송 중 오류가 났어요."); });
+          }
         });
       });
     });
