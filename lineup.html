@@ -32,6 +32,10 @@
   @keyframes sp{to{transform:rotate(360deg)}}
   a.home{font-size:12px;color:var(--muted);text-decoration:none}
   .privacy{font-size:11.5px;color:var(--faint);text-align:center;margin:16px 0;line-height:1.5}
+  .sect-h{font-weight:900;font-size:15px;padding:8px 2px 9px;margin-bottom:8px;border-bottom:1px solid var(--line-strong)}
+  .sect-h.f{color:var(--female)} .sect-h.m{color:var(--male)}
+  .line{font-size:14px;padding:10px 13px;background:var(--surface);border:1px solid var(--line);border-radius:11px;margin-bottom:7px;word-break:keep-all;line-height:1.5}
+  .line.f{border-left:3px solid var(--female)} .line.m{border-left:3px solid var(--male)}
   .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px}
   .toolbar .cnt{font-size:12.5px;color:var(--muted);margin-left:auto}
 </style>
@@ -55,6 +59,7 @@
     <div class="sub">입금 확정된 분이 자동으로 올라와요<br><a class="home" href="/rotation-admin">← 로테이션</a> · <a class="home" href="/attendance">📋 출석부</a> · <a class="home" href="/vote-admin">🗳️ 투표</a> · <a class="home" href="/admin">1:1·재테크</a></div>
     <div class="toolbar">
       <button class="btn g" id="refreshBtn">새로고침</button>
+      <button class="btn g" onclick="copyLu()" style="background:#8B5CF6;color:#fff;border:none">📋 SNS 텍스트 복사</button>
       <span class="cnt" id="cnt"></span>
     </div>
     <div id="drinks"></div>
@@ -92,14 +97,14 @@
       render(recs);
     }).catch(function(){ document.getElementById("list").innerHTML='<div class="empty">불러오기 오류</div>'; });
   }
-  function luCard(f, cls){
-    var appeal=(f["어필포인트"]||"").trim();
-    return '<div class="lu '+cls+'">'
-      + '<div class="hd">'+(cls==="m"?"🧑":"👩")+' '+esc(ageBand(f["출생연도"]))+(f["키"]?' · '+esc(f["키"])+'cm':'')+'</div>'
-      + '<div class="job"><b>직업</b>'+esc(f["직업_직장명"]||"—")+'</div>'
-      + (appeal?'<div class="appeal">'+esc(appeal)+'</div>':'')
-      + '</div>';
+  function ageShort(y){ y=parseInt(y,10); if(!y) return "?"; var a=2026-y;
+    var b = a<=23?"20초":a<=26?"20중":a<=29?"20후":a<=33?"30초":a<=36?"30중":"30후";
+    return b+"("+String(y).slice(-2)+")"; }
+  function personLine(f){
+    var appeal=String(f["어필포인트"]||"").split("\n")[0].trim();
+    return ageShort(f["출생연도"])+" / "+(f["직업_직장명"]||"직업미정")+" / "+(f["키"]||"?")+" / "+(appeal||"-");
   }
+  var _luText="";
   function render(recs){
     var males=recs.filter(function(x){return (x.fields||{})["성별"]==="남성";});
     var females=recs.filter(function(x){return (x.fields||{})["성별"]==="여성";});
@@ -110,15 +115,25 @@
     document.getElementById("drinks").innerHTML = recs.length && dkeys.length
       ? '<div class="card" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 15px"><b style="color:var(--amber);font-size:13px">☕ 음료 집계</b>'
         + dkeys.map(function(k){return '<span style="font-size:13px;color:var(--ink)">'+esc(k)+' <b style="color:var(--amber)">'+drinks[k]+'잔</b></span>';}).join('<span style="color:var(--line-strong)">·</span>')
-        + '</div>'
-      : '';
-    if(!recs.length){ document.getElementById("list").innerHTML='<div class="empty">아직 입금 확정된 참가자가 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 자동으로 올라와요.</div>'; return; }
-    var html='<div class="cols">'
-      + '<div class="col"><div class="col-h m">🧑 남성 '+males.length+'</div>'+(males.length?males.map(function(x){return luCard(x.fields||{},"m");}).join(""):'<div class="empty" style="padding:20px 0">없음</div>')+'</div>'
-      + '<div class="col"><div class="col-h f">👩 여성 '+females.length+'</div>'+(females.length?females.map(function(x){return luCard(x.fields||{},"f");}).join(""):'<div class="empty" style="padding:20px 0">없음</div>')+'</div>'
-      + '</div>';
-    document.getElementById("list").innerHTML=html;
+        + '</div>' : '';
+    if(!recs.length){ document.getElementById("list").innerHTML='<div class="empty">아직 입금 확정된 참가자가 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 자동으로 올라와요.</div>'; _luText=""; return; }
+    // SNS 붙여넣기용 텍스트
+    _luText="🩷📦 8/27(목) 썸배달 라인업 📦🩷\n\n🙋‍♀️ 여성 라인업\n"
+      + (females.length?females.map(function(x){return personLine(x.fields||{});}).join("\n"):"(준비중)")
+      + "\n\n🙋‍♂️ 남성 라인업\n"
+      + (males.length?males.map(function(x){return personLine(x.fields||{});}).join("\n"):"(준비중)");
+    // 화면 표시 (한 줄 리스트)
+    function sect(title,arr,cls){
+      return '<div style="margin-bottom:18px"><div class="sect-h '+cls+'">'+title+' <span style="color:var(--muted);font-weight:600;font-size:12px">'+arr.length+'명</span></div>'
+        + (arr.length?arr.map(function(x){return '<div class="line '+cls+'">'+esc(personLine(x.fields||{}))+'</div>';}).join(""):'<div class="empty" style="padding:14px 0">아직 없어요</div>')+'</div>';
+    }
+    document.getElementById("list").innerHTML = sect("🙋‍♀️ 여성 라인업",females,"f")+sect("🙋‍♂️ 남성 라인업",males,"m");
   }
+  window.copyLu=function(){
+    if(!_luText){ alert("아직 라인업이 없어요."); return; }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(_luText).then(function(){ alert("✅ 라인업 복사됨!\n인스타·스레드에 붙여넣으세요 📲"); }, function(){ alert("복사 실패 — 길게 눌러 복사해주세요"); }); }
+    else alert("이 기기에선 자동복사가 안 돼요 (텍스트 직접 선택 복사)");
+  };
 </script>
 </body>
 </html>
