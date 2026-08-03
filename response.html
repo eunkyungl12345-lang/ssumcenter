@@ -671,6 +671,14 @@ async function checkMyResponse(){
 }
 
 (async function(){
+  // 🔒 안전장치: 오래된 형식(myId 없는) 링크면 경고 + 응답 버튼 잠금
+  if(matchId && !params.get("myId")){
+    var warn=document.createElement("div");
+    warn.style.cssText="position:sticky;top:0;z-index:60;background:#7a1f1f;color:#fff;font-size:12.5px;line-height:1.55;padding:11px 14px;text-align:center";
+    warn.innerHTML="⚠️ 이 링크는 오래된 형식이라 수락·거절이 저장되지 않아요.<br><b>센터장님 → 1:1 관리자의 '매칭하기'에서 새 링크를 만들어 다시 보내주세요.</b>";
+    document.body.insertBefore(warn, document.body.firstChild);
+    ["btn-accept","btn-super","btn-reject"].forEach(function(id){ var b=document.getElementById(id); if(b){ b.disabled=true; b.style.opacity=".45"; } });
+  }
   let data = null;
   if(matchId){
     try{
