@@ -92,11 +92,11 @@
   <!-- 콘솔 -->
   <div id="console" class="hide">
     <h1>📋 로테이션 신청 관리</h1>
-    <div class="sub">회차별로 신청자를 보고 승인해요 · <a class="home" href="/admin">일반 admin →</a></div>
+    <div class="sub">회차별로 신청자를 보고 승인해요 · <a class="home" href="/admin">1:1·재테크 →</a> · <a class="home" href="/vote-admin">투표 →</a></div>
 
     <div class="card feecard">
       <label class="f">참가비</label>
-      <input id="fee" placeholder="예: 39,900원 (입금안내 문자에 들어가요)">
+      <input id="fee" placeholder="예: 29,900원 (입금안내 문자에 들어가요)">
     </div>
 
     <div class="tabs" id="tabs"></div>
@@ -242,7 +242,7 @@
 
   // ---- 문자봇 ----
   var fee=document.getElementById("fee");
-  fee.value=localStorage.getItem("rot_fee")||"";
+  fee.value=localStorage.getItem("rot_fee")||"29,900원";
   fee.addEventListener("input",function(){ localStorage.setItem("rot_fee",fee.value); });
   function feeVal(){ return fee.value.trim()||"참가비"; }
   var TPLS={
