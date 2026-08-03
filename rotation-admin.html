@@ -164,7 +164,7 @@
   function render(){
     // 회차 탭
     var rounds=["전체"];
-    records.forEach(function(x){ var rd=x.fields["회차"]; if(rd && rounds.indexOf(rd)<0) rounds.push(rd); });
+    records.forEach(function(x){ var rd=x.fields["회차"]; if(rd && String(rd).indexOf("8/13")<0 && rounds.indexOf(rd)<0) rounds.push(rd); });
     if(rounds.indexOf("8/27 (목)")<0) rounds.push("8/27 (목)");
     var tabs=document.getElementById("tabs"); tabs.innerHTML="";
     rounds.forEach(function(rd){
