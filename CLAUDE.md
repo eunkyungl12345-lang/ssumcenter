@@ -12,7 +12,10 @@
 - 코드 설명보다 결과 중심으로 답변
 
 ## 배포 전 필수 체크
-1. **JS 문법 검증**: HTML 파일 수정 후 반드시 `node -e` 로 script 태그 내 JS 파싱 테스트
+0. **`npm run check` 실행**: JS 문법 · 깨진 링크 · 죽은 버튼 · 관리자 로그인 규칙 · Tailwind CDN 금지를 한 번에 검사한다.
+   push 하면 GitHub Actions(`.github/workflows/check.yml`)가 자동으로 같은 검사를 돌린다. 빨간 X가 뜨면 합치지 말 것.
+   검사 내용을 추가하려면 `scripts/check-pages.js` 를 수정한다.
+1. **JS 문법 검증**: 위 `npm run check` 에 포함됨 (개별 확인이 필요하면 `node -e` 로 script 태그 내 JS 파싱 테스트)
 2. **관리자 홈은 admin.html**: cleanUrls 설정 때문에 /admin 접속 시 `admin.html`이 서빙됨. 관리자 홈 수정은 `admin.html`을 직접 수정할 것. (`admin/index.html`은 옛날 중복본이었고, 지금은 `/1on1-admin`으로 보내는 안내 페이지만 남아 있음 — 여기에 기능을 새로 넣지 말 것)
 3. **Tailwind CDN 사용 금지**: 새 페이지에 cdn.tailwindcss.com 절대 사용하지 않음. 순수 CSS 또는 인라인 스타일 사용
 4. **Google Fonts 최소화**: 가능하면 시스템 폰트 사용. 한글 웹폰트는 로딩 느림
