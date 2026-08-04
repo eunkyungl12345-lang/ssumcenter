@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1:1 매칭 관리 | 썸류센터</title>
+<style>
+  :root{
+    --bg:#0c0a08; --surface:#161310; --surface-2:#1e1811;
+    --ink:#F0E4D0; --muted:#9a8b73; --faint:#6a5c4c; --line:#2a2117; --line-2:#3a2e1f;
+    --amber:#E8B050; --rose:#E88FB0; --male:#7EA6E0; --ok:#6FBE97; --danger:#E88A8A; --wait:#c9a24a;
+    --ink-on:#2a0d1a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:460px;margin:0 auto;padding:18px 15px 40px}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .top .h{font-size:19px;font-weight:900;display:flex;align-items:center;gap:7px}
+  .top .home{font-size:12px;color:var(--muted);font-weight:700;text-decoration:none}
+
+  input{width:100%;background:var(--surface-2);border:1.5px solid var(--line-2);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
+  input:focus{outline:none;border-color:var(--rose)}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px}
+  .loginBtn{border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:800;color:var(--ink-on);background:var(--rose);cursor:pointer;font-family:inherit;width:100%}
+  #login-msg{font-size:12.5px;color:#E8828A;margin-top:10px}
+  .hide{display:none}
+  .sub{font-size:12.5px;color:var(--muted);margin:3px 0 16px}
+
+  .hero-h{display:flex;align-items:baseline;gap:8px;margin:2px 2px 12px}
+  .hero-h .t{font-size:17px;font-weight:900}
+  .hero-h .c{font-size:13px;font-weight:800;color:var(--rose)}
+
+  .todo{border-radius:16px;padding:14px;margin-bottom:11px;border:1px solid var(--line-2);background:var(--surface)}
+  .todo.urgent{border-color:rgba(201,162,74,.4);background:linear-gradient(180deg,rgba(201,162,74,.07),transparent)}
+  .todo.pay{border-color:rgba(232,176,80,.35);background:linear-gradient(180deg,rgba(232,176,80,.06),transparent)}
+  .todo.newin{border-color:rgba(232,143,176,.32);background:linear-gradient(180deg,rgba(232,143,176,.06),transparent)}
+  .todo.succ{border-color:rgba(111,190,151,.35);background:linear-gradient(180deg,rgba(111,190,151,.06),transparent)}
+  .todo .l1{display:flex;align-items:center;gap:10px}
+  .todo .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:16px;flex-shrink:0}
+  .ic.u{background:rgba(201,162,74,.16)} .ic.p{background:rgba(232,176,80,.16)} .ic.n{background:rgba(232,143,176,.16)} .ic.s{background:rgba(111,190,151,.16)}
+  .todo .who{flex:1;min-width:0}
+  .todo .who .nm{font-weight:800;font-size:15px}
+  .todo .who .desc{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .todo .pill{font-size:10.5px;font-weight:900;padding:3px 9px;border-radius:999px;flex-shrink:0}
+  .pill.u{background:rgba(201,162,74,.18);color:var(--wait)} .pill.p{background:rgba(232,176,80,.18);color:var(--amber)}
+  .pill.n{background:rgba(232,143,176,.18);color:var(--rose)} .pill.s{background:rgba(111,190,151,.18);color:var(--ok)}
+  .todo .act{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .btn{flex:1;min-width:110px;text-align:center;font-family:inherit;font-size:12.5px;font-weight:800;padding:11px;border-radius:11px;border:none;cursor:pointer}
+  .btn.solid{background:var(--rose);color:var(--ink-on)}
+  .btn.solid.am{background:var(--amber);color:#171208}
+  .btn.solid.ok{background:var(--ok);color:#08351f}
+  .btn.ghost{flex:0 0 auto;min-width:0;background:var(--surface-2);border:1px solid var(--line-2);color:var(--muted);padding:11px 14px}
+
+  .done-note{text-align:center;font-size:12.5px;color:var(--ok);background:rgba(111,190,151,.07);border:1px dashed rgba(111,190,151,.3);border-radius:12px;padding:13px;margin-bottom:11px}
+  .strip{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12.5px;color:var(--muted);margin:16px 0 12px;flex-wrap:wrap}
+  .strip b{color:var(--ink);font-weight:800} .strip .sep{color:var(--faint)} .strip .rate{color:var(--ok);font-weight:800}
+
+  .cta{width:100%;border:none;font-family:inherit;background:linear-gradient(135deg,var(--rose),#d76e98);color:var(--ink-on);font-weight:900;font-size:15px;padding:16px;border-radius:15px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 8px 24px rgba(232,143,176,.18);text-decoration:none}
+
+  .fold{margin-top:11px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+  .fold>summary{list-style:none;cursor:pointer;padding:14px 15px;display:flex;align-items:center;gap:9px;font-size:14px;font-weight:800}
+  .fold>summary::-webkit-details-marker{display:none}
+  .fold>summary .n{margin-left:auto;font-size:12px;font-weight:800;color:var(--muted)}
+  .fold>summary .chev{color:var(--faint);transition:transform .2s}
+  .fold[open]>summary .chev{transform:rotate(90deg)}
+  .fold .body{padding:2px 13px 14px}
+
+  .couple{background:var(--surface-2);border:1px solid var(--line);border-radius:13px;padding:12px;margin-bottom:8px}
+  .pair{display:flex;align-items:center;gap:8px}
+  .pp{flex:1;min-width:0;background:var(--surface);border-radius:9px;padding:8px 9px}
+  .pp .nm2{font-weight:800;font-size:13.5px;display:flex;align-items:center;gap:5px}
+  .pp .rs{font-size:11px;font-weight:800;margin-top:3px}
+  .rs.ok{color:var(--ok)} .rs.wait{color:var(--wait)} .rs.no{color:var(--danger)}
+  .gd{font-size:10px;font-weight:800;padding:1px 6px;border-radius:999px}
+  .gd.f{color:var(--rose);background:rgba(232,143,176,.13)} .gd.m{color:var(--male);background:rgba(126,166,224,.13)}
+  .heart{color:var(--rose);font-size:14px}
+  .cfoot{display:flex;gap:6px;margin-top:9px}
+  .mini{flex:1;text-align:center;font-size:11px;font-weight:800;padding:8px;border-radius:8px;background:rgba(232,176,80,.1);border:1px solid rgba(232,176,80,.25);color:var(--amber);cursor:pointer;border:none;font-family:inherit}
+
+  .day-h{font-size:12px;font-weight:900;color:var(--amber);margin:8px 0 7px}
+  .tl{border-left:2px solid var(--line-2);margin-left:4px;padding-left:13px;margin-bottom:4px}
+  .ev{position:relative;padding:5px 0}
+  .ev::before{content:"";position:absolute;left:-18px;top:10px;width:7px;height:7px;border-radius:50%;background:var(--muted)}
+  .ev.g::before{background:var(--ok)} .ev.a::before{background:var(--amber)} .ev.r::before{background:var(--rose)} .ev.x::before{background:var(--danger)}
+  .ev .t{font-size:12.5px} .ev .t b{font-weight:800}
+  .ev .tm{font-size:10px;color:var(--faint)}
+  .empty{text-align:center;color:var(--muted);font-size:12.5px;padding:16px 0}
+  .spin{width:26px;height:26px;border:3px solid var(--line-2);border-top-color:var(--rose);border-radius:50%;margin:40px auto;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#241d14;border:1px solid var(--line-2);color:var(--ink);font-size:13px;font-weight:700;padding:11px 18px;border-radius:12px;opacity:0;transition:opacity .2s;z-index:99;max-width:90%;text-align:center}
+  .toast.on{opacity:1}
+  .toolbtn{display:flex;gap:8px;margin-top:12px}
+  .toolbtn a{flex:1;text-align:center;font-size:12.5px;font-weight:800;padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--line-2);color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- 로그인 -->
+  <div id="login">
+    <div class="top"><div class="h">💘 1:1 매칭 관리</div></div>
+    <div class="sub">센터장 전용 · 관리자 비밀번호</div>
+    <div class="card">
+      <input id="pw" type="password" placeholder="admin 비밀번호">
+      <div style="margin-top:12px"><button class="loginBtn" id="loginBtn">로그인</button></div>
+      <div id="login-msg"></div>
+    </div>
+  </div>
+
+  <!-- 콘솔 -->
+  <div id="console" class="hide">
+    <div class="top">
+      <div class="h">💘 1:1 매칭 관리</div>
+      <a class="home" href="/admin">🏠 홈</a>
+    </div>
+    <div id="content"><div class="spin"></div></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  var KEY="admin_key";
+  function key(){ return localStorage.getItem(KEY)||""; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function toast(m){ var t=document.getElementById("toast"); t.textContent=m; t.classList.add("on"); setTimeout(function(){t.classList.remove("on");},2200); }
+
+  document.getElementById("loginBtn").addEventListener("click",doLogin);
+  document.getElementById("pw").addEventListener("keydown",function(e){ if(e.key==="Enter") doLogin(); });
+  function doLogin(){
+    var pw=document.getElementById("pw").value;
+    fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ localStorage.setItem(KEY,pw); showConsole(); }
+        else { document.getElementById("login-msg").textContent="비밀번호가 틀렸어요"; }
+      }).catch(function(){ document.getElementById("login-msg").textContent="오류가 났어요."; });
+  }
+  function showConsole(){ document.getElementById("login").classList.add("hide"); document.getElementById("console").classList.remove("hide"); loadAll(); }
+  if(key()){ showConsole(); }
+
+  // ---------- 데이터 로딩 (페이지네이션) ----------
+  var APPS=[], MATCHES=[], byId={};
+  function fetchAll(table, cb){
+    var out=[];
+    (function page(offset){
+      var u="/api/airtable?table="+encodeURIComponent(table)+(offset?"&offset="+encodeURIComponent(offset):"");
+      fetch(u,{headers:{"x-admin-key":key()}}).then(function(r){return r.json();}).then(function(r){
+        if(r.error){ document.getElementById("content").innerHTML='<div class="empty">'+esc(r.error)+'</div>'; return; }
+        out=out.concat(r.records||[]);
+        if(r.offset) page(r.offset); else cb(out);
+      }).catch(function(){ document.getElementById("content").innerHTML='<div class="empty">불러오기 오류</div>'; });
+    })("");
+  }
+  function loadAll(){
+    document.getElementById("content").innerHTML='<div class="spin"></div>';
+    fetchAll("1:1 매칭 신청", function(apps){
+      APPS=apps; byId={}; apps.forEach(function(a){ byId[a.id]=a; });
+      fetchAll("매칭", function(ms){ MATCHES=ms; render(); });
+    });
+  }
+
+  // ---------- 날짜 파서 (한국식) ----------
+  function parseK(s){
+    if(!s||typeof s!=="string") return null;
+    var m=s.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(오전|오후)?\s*(\d{1,2}):(\d{2})/);
+    if(!m) return null;
+    var h=+m[5]; if(m[4]==="오후"&&h<12)h+=12; if(m[4]==="오전"&&h===12)h=0;
+    return new Date(+m[1],+m[2]-1,+m[3],h,+m[6]);
+  }
+  function dayKey(s){ var m=s&&s.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})/); return m?(+m[1])+"."+(+m[2])+"."+(+m[3]):null; }
+  function ampm(d){ var h=d.getHours(),mi=d.getMinutes(); var ap=h<12?"오전":"오후"; var hh=h%12; if(hh===0)hh=12; return ap+" "+hh+":"+(mi<10?"0":"")+mi; }
+  function gd(g){ return g==="남성"?"m":g==="여성"?"f":""; }
+  function gLabel(g){ return g==="남성"?"남":g==="여성"?"여":""; }
+  function ageJob(a){ var f=a?a.fields||{}:{}; var y=f["출생연도"]; var age=y?("'"+String(y).slice(-2)):""; var job=f["직업_직장명"]||""; return [age,job].filter(Boolean).join(" · "); }
+
+  // ---------- 렌더 ----------
+  function render(){
+    var active={}; // id -> 소개중/성사 여부
+    var ongoing=[], done=[], failed=[];
+    MATCHES.forEach(function(m){
+      var s=(m.fields||{})["상태"];
+      if(s==="소개중"){ ongoing.push(m); active[(m.fields||{})["남자ID"]]=1; active[(m.fields||{})["여자ID"]]=1; }
+      else if(s==="성사"){ done.push(m); active[(m.fields||{})["남자ID"]]=1; active[(m.fields||{})["여자ID"]]=1; }
+      else if(s==="불발"){ failed.push(m); }
+    });
+    // 신규 대기 = 승인 상태 & 현재 소개중/성사 매칭 없음 & 제외 아님
+    var waiting=APPS.filter(function(a){ var st=(a.fields||{})["매칭상태"]; return st!=="제외" && !active[a.id]; });
+
+    // ===== 오늘 처리 =====
+    var todos=[];
+    // 1) 성사 → 연락처 전달
+    done.forEach(function(m){ var f=m.fields||{};
+      todos.push({cls:"succ",ic:"s",icc:"s",pill:"s",pillt:"성사",nm:esc(f["여자"]||"")+" ♥ "+esc(f["남자"]||""),
+        desc:"🎉 양쪽 수락 · <b style=\"color:var(--ok)\">연락처 전달</b>하기",
+        act:'<a class="btn solid ok" href="/1on1-admin">💚 연락처 전달하기</a>'});
+    });
+    // 2) 소개중 → 응답 재촉 (대기 있는 쪽)
+    ongoing.forEach(function(m){ var f=m.fields||{};
+      var mWait=(f["남자응답"]||"대기")==="대기", wWait=(f["여자응답"]||"대기")==="대기";
+      if(mWait||wWait){
+        var who=(mWait&&wWait)?"양쪽 다":(mWait?esc(f["남자"])+"(남)":esc(f["여자"])+"(여)");
+        var link=mWait? f["남자링크"] : f["여자링크"];
+        todos.push({cls:"urgent",ic:"⏰",icc:"u",pill:"u",pillt:"응답대기",nm:esc(f["여자"]||"")+" ♥ "+esc(f["남자"]||""),
+          desc:who+" 아직 무응답 · 재촉해요",
+          act:(link?'<button class="btn solid am" onclick="copyRemind(\''+esc(link)+'\',\''+esc(mWait?f["남자"]:f["여자"])+'\')">📩 재촉 문구+링크 복사</button>':'')
+            +'<a class="btn ghost" href="/1on1-admin">현황</a>'});
+      }
+    });
+    // 3) 최근 신규 신청 (미매칭) — 최근 4일
+    var now=new Date(), recent=[];
+    waiting.forEach(function(a){ var d=parseK((a.fields||{})["신청일시"]); if(d && (now-d)/86400000<=4) recent.push({a:a,d:d}); });
+    recent.sort(function(x,y){return y.d-x.d;});
+    recent.slice(0,6).forEach(function(o){ var f=o.a.fields||{};
+      todos.push({cls:"newin",ic:"🆕",icc:"n",pill:"n",pillt:"신규",nm:esc(f["이름"]||"?")+' <span class="gd '+gd(f["성별"])+'">'+gLabel(f["성별"])+'</span>',
+        desc:"새 신청 · "+esc(ageJob(o.a)||"정보 확인"),
+        act:'<a class="btn solid" href="/1on1-admin">💘 매칭 상대 찾기</a><a class="btn ghost" href="/1on1-admin">프로필</a>'});
+    });
+
+    var html="";
+    html+='<div class="hero-h"><span class="t">📋 오늘 처리</span><span class="c">'+(todos.length?todos.length+"건":"0건")+'</span></div>';
+    if(!todos.length){
+      html+='<div class="done-note">✅ 오늘 급한 일이 없어요! 새 신청이 오거나 응답이 오면 여기 떠요 😊</div>';
+    } else {
+      todos.forEach(function(t){
+        html+='<div class="todo '+t.cls+'"><div class="l1">'
+          +'<div class="ic '+t.icc+'">'+(t.ic.length<=2?t.ic:t.ic)+'</div>'
+          +'<div class="who"><div class="nm">'+t.nm+'</div><div class="desc">'+t.desc+'</div></div>'
+          +'<span class="pill '+t.pill+'">'+t.pillt+'</span></div>'
+          +'<div class="act">'+t.act+'</div></div>';
+      });
+    }
+
+    // ===== 통계 =====
+    var decided=done.length+failed.length;
+    var rate=decided? Math.round(done.length/decided*100):0;
+    html+='<div class="strip">신규대기 <b>'+waiting.length+'</b><span class="sep">·</span>소개중 <b>'+ongoing.length+'</b><span class="sep">·</span>성사 <b>'+done.length+'</b><span class="sep">·</span>성사율 <span class="rate">'+rate+'%</span></div>';
+
+    // ===== 매칭하기 =====
+    html+='<a class="cta" href="/1on1-admin">＋ 두 사람 골라 매칭하기</a>';
+
+    // ===== 진행중 커플 =====
+    html+='<details class="fold"'+(ongoing.length?' open':'')+'><summary>💌 진행중 커플 <span class="n">'+ongoing.length+'쌍</span> <span class="chev">▸</span></summary><div class="body">';
+    if(!ongoing.length) html+='<div class="empty">지금 소개중인 커플이 없어요.<br>＋매칭하기로 소개를 시작해보세요!</div>';
+    else ongoing.forEach(function(m){ var f=m.fields||{};
+      function side(nm,resp,link,who){ var r=resp||"대기"; var cls=r==="수락"?"ok":r==="거절"?"no":"wait"; var mark=r==="수락"?"✓ 수락":r==="거절"?"✕ 거절":"⏳ 대기";
+        return '<div class="pp"><div class="nm2">'+esc(nm||"?")+'</div><div class="rs '+cls+'">'+mark+'</div></div>'; }
+      html+='<div class="couple"><div class="pair">'
+        +side(f["여자"],f["여자응답"])+'<span class="heart">♥</span>'+side(f["남자"],f["남자응답"])
+        +'</div><div class="cfoot">'
+        +(f["여자링크"]?'<button class="mini" onclick="copyLink(\''+esc(f["여자링크"])+'\')">📋 '+esc(f["여자"]||"여")+' 링크</button>':'')
+        +(f["남자링크"]?'<button class="mini" onclick="copyLink(\''+esc(f["남자링크"])+'\')">📋 '+esc(f["남자"]||"남")+' 링크</button>':'')
+        +'</div></div>';
+    });
+    html+='</div></details>';
+
+    // ===== 매칭 일지 =====
+    html+='<details class="fold"><summary>📔 매칭 일지 <span class="n">날짜별</span> <span class="chev">▸</span></summary><div class="body">'+buildLog()+'</div></details>';
+
+    // ===== 전체 신청자 =====
+    html+='<details class="fold"><summary>🗂️ 전체 신청자 <span class="n">'+APPS.length+'명</span> <span class="chev">▸</span></summary><div class="body">'
+      +'<div class="empty" style="padding:10px 0">이름·나이·직업으로 검색하고 프로필·매칭이력을 봐요.</div>'
+      +'<div class="toolbtn"><a href="/1on1-admin">🛠️ 신청자·매칭 도구</a><a href="/participants">🎯 참가자 마스터</a></div>'
+      +'</div></details>';
+
+    document.getElementById("content").innerHTML=html;
+  }
+
+  function buildLog(){
+    var events=[]; // {day, date, cls, text}
+    MATCHES.forEach(function(m){ var f=m.fields||{}; var dk=dayKey(f["생성일"]); var d=parseK(f["생성일"]); if(!dk) return;
+      var s=f["상태"], cls=s==="성사"?"g":s==="불발"?"x":"a";
+      var label=s==="성사"?"🎉 성사":s==="불발"?"불발":"소개중";
+      events.push({day:dk,date:d,cls:cls,text:'<b>'+esc(f["여자"]||"")+" ♥ "+esc(f["남자"]||"")+'</b> — '+label,tm:d?ampm(d):""});
+    });
+    APPS.forEach(function(a){ var f=a.fields||{}; var dk=dayKey(f["신청일시"]); var d=parseK(f["신청일시"]); if(!dk) return;
+      events.push({day:dk,date:d,cls:"r",text:esc(f["이름"]||"?")+' <span class="gd '+gd(f["성별"])+'">'+gLabel(f["성별"])+'</span> 신청 접수',tm:d?ampm(d):""});
+    });
+    if(!events.length) return '<div class="empty">아직 기록이 없어요.</div>';
+    // 그룹
+    var byDay={};
+    events.forEach(function(e){ (byDay[e.day]=byDay[e.day]||[]).push(e); });
+    var days=Object.keys(byDay).sort(function(a,b){ return keyNum(b)-keyNum(a); }).slice(0,7);
+    var today=(new Date()).getFullYear()+"."+((new Date()).getMonth()+1)+"."+(new Date()).getDate();
+    var out="";
+    days.forEach(function(dk){
+      var evs=byDay[dk].sort(function(a,b){ return (b.date||0)-(a.date||0); });
+      out+='<div class="day-h">📅 '+dk.replace(/\./g," ").trim().replace(/ /,"년 ").replace(/ /," ")+(dk===today?" (오늘)":"")+'</div><div class="tl">';
+      evs.forEach(function(e){ out+='<div class="ev '+e.cls+'"><div class="t">'+e.text+'</div>'+(e.tm?'<div class="tm">'+e.tm+'</div>':'')+'</div>'; });
+      out+='</div>';
+    });
+    return out;
+  }
+  function keyNum(dk){ var p=dk.split("."); return (+p[0])*10000+(+p[1])*100+(+p[2]); }
+
+  // ---------- 액션 ----------
+  window.copyLink=function(url){
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(function(){toast("링크 복사됨! 카톡·문자에 붙여넣으세요 📲");},function(){toast("복사 실패 — 길게 눌러 복사");});
+    else toast("이 기기에선 자동복사가 안 돼요");
+  };
+  window.copyRemind=function(url,name){
+    var msg="[썸류센터] "+(name||"")+"님, 센터장이 찾은 매칭 상대 프로필이 도착했어요 💕\n아래 링크에서 확인하고 수락/거절을 선택해주세요! (가급적 48시간 내)\n\n"+url;
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(msg).then(function(){toast("재촉 문구+링크 복사됨! 카톡에 붙여넣으세요 📩");},function(){toast("복사 실패");});
+    else toast("이 기기에선 자동복사가 안 돼요");
+  };
+</script>
+</body>
+</html>
