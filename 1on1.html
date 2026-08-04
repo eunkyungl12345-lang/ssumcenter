@@ -282,7 +282,8 @@
     var out="";
     days.forEach(function(dk){
       var evs=byDay[dk].sort(function(a,b){ return (b.date||0)-(a.date||0); });
-      out+='<div class="day-h">📅 '+dk.replace(/\./g," ").trim().replace(/ /,"년 ").replace(/ /," ")+(dk===today?" (오늘)":"")+'</div><div class="tl">';
+      var pp=dk.split("."); var dlabel=pp[1]+"월 "+pp[2]+"일";
+      out+='<div class="day-h">📅 '+dlabel+(dk===today?" (오늘)":"")+'</div><div class="tl">';
       evs.forEach(function(e){ out+='<div class="ev '+e.cls+'"><div class="t">'+e.text+'</div>'+(e.tm?'<div class="tm">'+e.tm+'</div>':'')+'</div>'; });
       out+='</div>';
     });
