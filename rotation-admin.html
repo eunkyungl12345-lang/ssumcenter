@@ -134,7 +134,8 @@
   "use strict";
   var TABLE="로테이션 신청", KEY="admin_key";
   var records=[], curRound="전체";
-  function key(){ return sessionStorage.getItem(KEY)||""; }
+  // 로그인 정보는 localStorage에 저장 (다른 관리자 페이지와 동일 — 한 번 로그인하면 전부 열림)
+  function key(){ return localStorage.getItem(KEY)||""; }
   function api(method,body){
     return fetch("/api/airtable?table="+encodeURIComponent(TABLE)+(method==="GET"?"&sort=신청일시":""),{
       method:method,headers:{"Content-Type":"application/json","x-admin-key":key()},
@@ -149,11 +150,11 @@
   document.getElementById("pw").addEventListener("keydown",function(e){ if(e.key==="Enter") doLogin(); });
   function doLogin(){
     var pw=document.getElementById("pw").value; if(!pw) return;
-    sessionStorage.setItem(KEY,pw);
-    api("GET").then(function(r){
-      if(r.error){ sessionStorage.removeItem(KEY); document.getElementById("login-msg").textContent="비밀번호가 틀렸어요."; }
-      else { records=r.records||[]; showConsole(); render(); }
-    });
+    fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ localStorage.setItem(KEY,pw); showConsole(); load(); }
+        else { document.getElementById("login-msg").textContent="비밀번호가 틀렸어요."; }
+      }).catch(function(){ document.getElementById("login-msg").textContent="오류가 났어요. 잠시 후 다시 해주세요."; });
   }
   document.getElementById("refreshBtn").addEventListener("click",load);
   function load(){

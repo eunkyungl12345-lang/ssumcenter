@@ -13,7 +13,7 @@
 
 ## 배포 전 필수 체크
 1. **JS 문법 검증**: HTML 파일 수정 후 반드시 `node -e` 로 script 태그 내 JS 파싱 테스트
-2. **admin.html 동기화**: admin/index.html과 admin.html 이 별도 파일임. cleanUrls 설정 때문에 /admin 접속 시 admin.html이 서빙됨. 수정 시 admin.html을 직접 수정할 것
+2. **관리자 홈은 admin.html**: cleanUrls 설정 때문에 /admin 접속 시 `admin.html`이 서빙됨. 관리자 홈 수정은 `admin.html`을 직접 수정할 것. (`admin/index.html`은 옛날 중복본이었고, 지금은 `/1on1-admin`으로 보내는 안내 페이지만 남아 있음 — 여기에 기능을 새로 넣지 말 것)
 3. **Tailwind CDN 사용 금지**: 새 페이지에 cdn.tailwindcss.com 절대 사용하지 않음. 순수 CSS 또는 인라인 스타일 사용
 4. **Google Fonts 최소화**: 가능하면 시스템 폰트 사용. 한글 웹폰트는 로딩 느림
 
@@ -24,10 +24,21 @@
 - `apply.html` — 재테크 미팅 신청 폼 (→ Airtable 재테크 커피팅)
 - `matching.html` — 1:1 매칭 신청 폼 (→ Airtable 1:1 매칭 신청)
 - `oneone.html` — 1:1 매칭 소개 페이지
-- `admin.html` — 관리자 페이지 (승인/입금/문자 발송)
+- `admin.html` — 관리자 홈 (`/admin`, 메뉴 + 로그아웃)
+- `rotation-admin.html` — 로테이션 신청 승인 · 입금확인 · 문자 발송
+- `lineup.html` / `attendance.html` / `vote-admin.html` / `participants.html` — 라인업 · 출석부 · 투표 · 참가자 마스터
+- `1on1-admin.html` — 1:1 매칭 관리 (신청 승인 · 상대 매칭 · 응답 관리)
 - `api/airtable.js` — Airtable 프록시 API
 - `api/send-sms.js` — 솔라피 문자 발송 API
+- `api/admin-auth.js` — 관리자 비밀번호 확인 API
 - `api/kakao-auth.js` — 카카오 로그인 API
+
+## 관리자 로그인 규칙
+- 모든 관리자 페이지는 **`/api/admin-auth`로 비밀번호를 확인**한 뒤,
+  **`localStorage`의 `admin_key`** 에 저장한다. (`sessionStorage` 쓰지 말 것)
+- API 호출 시 `x-admin-key` 헤더에 이 값을 실어 보낸다.
+- 이 규칙 덕분에 한 번 로그인하면 모든 관리자 페이지가 열린다. 새 관리자 페이지를 만들 때도 동일하게 맞출 것.
+- 로그아웃(저장된 비밀번호 삭제)은 관리자 홈 `admin.html`에 있다.
 
 ## Airtable 테이블
 - 1:1 매칭 신청 (tblRcERfvQz7jN5xc)
