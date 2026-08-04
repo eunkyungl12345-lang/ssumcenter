@@ -175,14 +175,21 @@
   function render(){
     var active={}; // id -> 소개중/성사 여부
     var ongoing=[], done=[], failed=[];
+    var matchCount={}; // 사람별 소개 받은 횟수
     MATCHES.forEach(function(m){
-      var s=(m.fields||{})["상태"];
-      if(s==="소개중"){ ongoing.push(m); active[(m.fields||{})["남자ID"]]=1; active[(m.fields||{})["여자ID"]]=1; }
-      else if(s==="성사"){ done.push(m); active[(m.fields||{})["남자ID"]]=1; active[(m.fields||{})["여자ID"]]=1; }
+      var f=m.fields||{}, s=f["상태"];
+      if(f["남자ID"]) matchCount[f["남자ID"]]=(matchCount[f["남자ID"]]||0)+1;
+      if(f["여자ID"]) matchCount[f["여자ID"]]=(matchCount[f["여자ID"]]||0)+1;
+      if(s==="소개중"){ ongoing.push(m); active[f["남자ID"]]=1; active[f["여자ID"]]=1; }
+      else if(s==="성사"){ done.push(m); active[f["남자ID"]]=1; active[f["여자ID"]]=1; }
       else if(s==="불발"){ failed.push(m); }
     });
-    // 신규 대기 = 승인 상태 & 현재 소개중/성사 매칭 없음 & 제외 아님
-    var waiting=APPS.filter(function(a){ var st=(a.fields||{})["매칭상태"]; return st!=="제외" && !active[a.id]; });
+    var LIMIT=3; // 일반 매칭 3회까지 소개
+    // 매칭 기회 소진 = 3회 이상 소개받고 성사·소개중 아닌 분
+    var exhausted=APPS.filter(function(a){ return !active[a.id] && (a.fields||{})["매칭상태"]!=="제외" && (matchCount[a.id]||0)>=LIMIT; });
+    var exSet={}; exhausted.forEach(function(a){ exSet[a.id]=1; });
+    // 신규 대기 = 승인 & 소개중·성사·소진 아님 & 제외 아님
+    var waiting=APPS.filter(function(a){ var st=(a.fields||{})["매칭상태"]; return st!=="제외" && !active[a.id] && !exSet[a.id]; });
 
     // ===== 오늘 처리 =====
     var todos=[];
@@ -231,7 +238,7 @@
     // ===== 통계 =====
     var decided=done.length+failed.length;
     var rate=decided? Math.round(done.length/decided*100):0;
-    html+='<div class="strip">신규대기 <b>'+waiting.length+'</b><span class="sep">·</span>소개중 <b>'+ongoing.length+'</b><span class="sep">·</span>성사 <b>'+done.length+'</b><span class="sep">·</span>성사율 <span class="rate">'+rate+'%</span></div>';
+    html+='<div class="strip">신규대기 <b>'+waiting.length+'</b><span class="sep">·</span>소개중 <b>'+ongoing.length+'</b><span class="sep">·</span>성사 <b>'+done.length+'</b><span class="sep">·</span>소진 <b>'+exhausted.length+'</b><span class="sep">·</span>성사율 <span class="rate">'+rate+'%</span></div>';
 
     // ===== 매칭하기 =====
     html+='<a class="cta" href="/1on1-admin">＋ 두 사람 골라 매칭하기</a>';
@@ -253,6 +260,20 @@
 
     // ===== 매칭 일지 =====
     html+='<details class="fold"><summary>📔 매칭 일지 <span class="n">날짜별</span> <span class="chev">▸</span></summary><div class="body">'+buildLog()+'</div></details>';
+
+    // ===== 매칭 기회 소진 (3회) =====
+    html+='<details class="fold"'+(exhausted.length?' open':'')+'><summary>⛔ 매칭 기회 소진 <span class="n">'+exhausted.length+'명</span> <span class="chev">▸</span></summary><div class="body">';
+    if(!exhausted.length) html+='<div class="empty">아직 없어요.<br>3회 소개받고도 성사 안 된 분이 여기 자동으로 떠요.</div>';
+    else {
+      html+='<div style="font-size:11.5px;color:var(--muted);margin:2px 2px 9px">일반 매칭은 3회까지 소개해요. 아래 분들은 <b style="color:var(--danger)">3회 소개 완료 · 추가 매칭 종료</b>예요.</div>';
+      exhausted.forEach(function(a){ var f=a.fields||{};
+        html+='<div class="couple" style="padding:11px 12px"><div style="display:flex;align-items:center;gap:8px">'
+          +'<span class="nm2">'+esc(f["이름"]||"?")+' <span class="gd '+gd(f["성별"])+'">'+gLabel(f["성별"])+'</span></span>'
+          +'<span style="margin-left:auto;font-size:11px;font-weight:800;color:var(--danger);background:rgba(232,138,138,.13);padding:3px 9px;border-radius:999px">'+(matchCount[a.id]||0)+'회 소진</span>'
+          +'</div><div style="font-size:11.5px;color:var(--faint);margin-top:5px">추가 소개 원하면 → 매칭하기로 새로 진행</div></div>';
+      });
+    }
+    html+='</div></details>';
 
     // ===== 전체 신청자 =====
     html+='<details class="fold"><summary>🗂️ 전체 신청자 <span class="n">'+APPS.length+'명</span> <span class="chev">▸</span></summary><div class="body">'
