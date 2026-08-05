@@ -40,6 +40,16 @@
   .b-wait{background:var(--amber-soft);color:var(--amber)}
   .b-ok{background:var(--ok-soft);color:var(--ok)}
   .b-no{background:var(--rose-soft);color:var(--rose)}
+  /* 프로필 사진 전체 보기 (신청 폼에서 최소 2장·최대 3장을 받는다) */
+  .p .phs{margin-top:11px;border-top:1px solid var(--line);padding-top:11px}
+  .p .phs .phs-hd{font-size:11.5px;color:var(--muted);margin-bottom:7px}
+  .p .phs .phs-grid{display:flex;gap:6px}
+  .p .phs img{flex:1;min-width:0;aspect-ratio:3/4;object-fit:cover;border-radius:10px;
+              border:1px solid var(--line-strong);cursor:pointer}
+  .p .phs img:active{opacity:.75}
+  #photo-modal{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);
+               cursor:pointer;justify-content:center;align-items:center;padding:14px}
+  #photo-modal img{max-width:100%;max-height:100%;border-radius:12px}
   .p .rows{margin-top:11px;border-top:1px solid var(--line);padding-top:11px;display:grid;gap:5px}
   .p .r{display:flex;font-size:12.5px}
   .p .r .rk{color:var(--muted);width:66px;flex-shrink:0}
@@ -133,6 +143,9 @@
   </div>
 </div>
 
+<!-- 사진 크게 보기 (아무 데나 탭하면 닫힘) -->
+<div id="photo-modal"><img id="photo-modal-img" alt=""></div>
+
 <script>
 (function(){
   "use strict";
@@ -149,6 +162,11 @@
     }).then(function(r){return r.json();});
   }
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+  // ---- 사진 크게 보기 ----
+  var photoModal=document.getElementById("photo-modal"), photoModalImg=document.getElementById("photo-modal-img");
+  function openPhoto(url){ photoModalImg.src=url; photoModal.style.display="flex"; }
+  photoModal.addEventListener("click",function(){ photoModal.style.display="none"; photoModalImg.src=""; });
 
   function showConsole(){ document.getElementById("login").classList.add("hide"); document.getElementById("console").classList.remove("hide"); }
   if(key()) { showConsole(); load(); }
@@ -194,7 +212,9 @@
 
   function cardEl(x){
     var f=x.fields, st=f["승인상태"]||"대기";
-    var photo=(f["프로필사진"]&&f["프로필사진"][0]&&f["프로필사진"][0].url)||"";
+    // 신청 폼은 사진을 최소 2장·최대 3장 받는다 → 첫 장만 말고 전부 보여준다
+    var photos=(f["프로필사진"]||[]).map(function(p){ return p&&p.url; }).filter(Boolean);
+    var photo=photos[0]||"";
     var doc=(f["재직증명서"]&&f["재직증명서"][0]&&f["재직증명서"][0].url)||"";
     var badge = st==="승인"?'<span class="badge b-ok">승인</span>':st==="거절"?'<span class="badge b-no">거절</span>':'<span class="badge b-wait">대기</span>';
     var el=document.createElement("div"); el.className="p";
@@ -207,6 +227,10 @@
       + '<div class="meta">'+esc(meta)+'</div>'
       + '<div style="margin-top:7px">'+badge+' <span class="badge" style="background:var(--surface-2);color:var(--muted)">'+esc(f["회차"]||"회차?")+'</span></div>'
       + '</div></div>'
+      + (photos.length
+          ? '<div class="phs"><div class="phs-hd">📷 프로필 사진 '+photos.length+'장 <span style="color:var(--faint)">— 탭하면 크게 보여요</span></div>'
+            + '<div class="phs-grid">'+photos.map(function(u){ return '<img src="'+esc(u)+'" loading="lazy">'; }).join("")+'</div></div>'
+          : '')
       + '<div class="rows">'
       + row("직업",esc(f["직업_직장명"]))
       + row("어필",esc(f["어필포인트"]))
@@ -235,6 +259,11 @@
       nosmsBox.classList.toggle("on",silent());
       var b=el.querySelector(".cfmbtn");
       if(b) b.textContent = silent() ? "💰 입금확정만 표시 (문자 없음)" : "💰 입금확인 → 확정문자 발송";
+    });
+
+    // 사진 탭 → 크게 보기
+    el.querySelectorAll(".phs img").forEach(function(im){
+      im.addEventListener("click",function(){ openPhoto(im.src); });
     });
 
     el.querySelector(".smsbtn").addEventListener("click",function(){ openSms(f); });
