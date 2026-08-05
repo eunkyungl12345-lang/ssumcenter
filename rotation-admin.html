@@ -45,7 +45,11 @@
   .p .r .rk{color:var(--muted);width:66px;flex-shrink:0}
   .p .r .rv{color:var(--ink);flex:1}
   .p .r .rv a{color:var(--amber)}
-  .p .acts{display:flex;gap:7px;margin-top:12px}
+  .p .nosms{display:flex;align-items:center;gap:7px;margin-top:12px;padding:8px 10px;border-radius:10px;
+            background:var(--surface-2);border:1px solid var(--line-strong);font-size:12px;color:var(--muted);cursor:pointer}
+  .p .nosms input{width:15px;height:15px;accent-color:var(--amber);cursor:pointer;flex:none;margin:0}
+  .p .nosms.on{border-color:var(--amber);color:var(--amber)}
+  .p .acts{display:flex;gap:7px;margin-top:8px}
   .p .acts button{flex:1;border-radius:10px;padding:9px;font-size:12.5px;font-weight:750;font-family:inherit;cursor:pointer;border:1.5px solid var(--line-strong);background:transparent;color:var(--muted)}
   .p .acts button.a-ok.on{background:var(--ok);color:#062;border-color:transparent}
   .p .acts button.a-wait.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
@@ -134,6 +138,8 @@
   "use strict";
   var TABLE="로테이션 신청", KEY="admin_key";
   var records=[], curRound="전체";
+  // 🔕 "문자 안 보내기"를 켠 신청자 (화면이 새로고침돼도 유지되도록 기억)
+  var quietSet={};
   // 로그인 정보는 localStorage에 저장 (다른 관리자 페이지와 동일 — 한 번 로그인하면 전부 열림)
   function key(){ return localStorage.getItem(KEY)||""; }
   function api(method,body){
@@ -210,27 +216,44 @@
       + row("유입",[f["유입경로"],f["추천인이름"]].filter(Boolean).map(esc).join(" · "))
       + row("서류",doc?'<a href="'+esc(doc)+'" target="_blank">재직증명서 보기 →</a>':"—")
       + '</div>'
+      + '<label class="nosms'+(quietSet[x.id]?" on":"")+'"><input type="checkbox" class="nosms-cb"'+(quietSet[x.id]?" checked":"")+'>🔕 문자 안 보내기 <span style="font-size:11px">— 이미 직접 보냈을 때 체크</span></label>'
       + '<div class="acts">'
       + '<button class="a-wait'+(st==="대기"?" on":"")+'" data-s="대기">대기</button>'
       + '<button class="a-ok'+(st==="승인"?" on":"")+'" data-s="승인">승인</button>'
       + '<button class="a-no'+(st==="거절"?" on":"")+'" data-s="거절">거절</button>'
       + '</div>'
-      + (st==="승인" ? '<button class="cfmbtn" style="width:100%;margin-top:8px;background:#22c55e;color:#fff;border:none;border-radius:12px;padding:9px;font-weight:800;font-size:13px;cursor:pointer">💰 입금확인 → 확정문자 발송</button>' : '')
+      + (st==="승인" ? '<button class="cfmbtn" style="width:100%;margin-top:8px;background:#22c55e;color:#fff;border:none;border-radius:12px;padding:9px;font-weight:800;font-size:13px;cursor:pointer">'+(quietSet[x.id]?"💰 입금확정만 표시 (문자 없음)":"💰 입금확인 → 확정문자 발송")+'</button>' : '')
       + '<button class="btn g sm smsbtn" style="width:100%;margin-top:7px">📨 문자 직접 보내기</button>';
+
+    // 🔕 "문자 안 보내기"가 켜져 있으면 승인·입금확정 시 문자를 발송하지 않는다.
+    // 승인하면 화면이 새로고침되므로, 체크 상태를 quietSet에 기억해 둔다
+    // (안 그러면 체크가 풀린 채로 입금확인을 눌러 확정문자가 나가버린다)
+    var nosmsBox=el.querySelector(".nosms"), nosmsCb=el.querySelector(".nosms-cb");
+    function silent(){ return nosmsCb.checked; }
+    nosmsCb.addEventListener("change",function(){
+      if(silent()) quietSet[x.id]=true; else delete quietSet[x.id];
+      nosmsBox.classList.toggle("on",silent());
+      var b=el.querySelector(".cfmbtn");
+      if(b) b.textContent = silent() ? "💰 입금확정만 표시 (문자 없음)" : "💰 입금확인 → 확정문자 발송";
+    });
+
     el.querySelector(".smsbtn").addEventListener("click",function(){ openSms(f); });
-    var _cb=el.querySelector(".cfmbtn"); if(_cb) _cb.addEventListener("click",function(){ sendConfirm(x); });
+    var _cb=el.querySelector(".cfmbtn"); if(_cb) _cb.addEventListener("click",function(){ sendConfirm(x,silent()); });
     el.querySelectorAll(".acts button").forEach(function(btn){
       btn.addEventListener("click",function(){
         var ns=btn.dataset.s;
         el.querySelectorAll(".acts button").forEach(function(b){ b.classList.remove("on"); });
         btn.classList.add("on");
+        var quiet=silent();
         api("PATCH",{records:[{id:x.id,fields:{승인상태:ns}}]}).then(function(r){
           if(r.error){ alert(r.error); return; }
           f["승인상태"]=ns;
           // 상태 뱃지/통계 갱신
           render();
+          if(ns!=="승인") return;
+          if(quiet){ alert("✅ 승인 완료 (문자는 보내지 않았어요)"); return; }
           // 승인 시 → 입금안내 문자 자동 발송
-          if(ns==="승인" && f["연락처"]){
+          if(f["연락처"]){
             fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},
               body:JSON.stringify({to:f["연락처"],text:TPLS["입금안내"](f)})})
               .then(function(rr){return rr.json();}).then(function(rr){
@@ -340,9 +363,23 @@
     return fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({to:to,text:text})}).then(function(r){return r.json();});
   }
   // 입금확인 → 확정 문자 (개별)
-  window.sendConfirm=function(x){
-    var f=x.fields||{}; var to=f["연락처"]; if(!to){ alert("연락처가 없어요."); return; }
-    if(!confirm((f["닉네임"]||f["이름"]||"")+"님\n→ 입금확정 처리 + '최종 확정 안내' 문자를 보낼까요?\n(라인업에도 자동 등록돼요)")) return;
+  window.sendConfirm=function(x,quiet){
+    var f=x.fields||{}; var to=f["연락처"];
+    var who=(f["닉네임"]||f["이름"]||"");
+
+    // 🔕 문자 없이 입금확정만 표시 (이미 직접 확정 문자를 보냈을 때)
+    if(quiet){
+      if(!confirm(who+"님\n→ 입금확정으로만 표시할까요?\n\n문자는 보내지 않습니다.\n(라인업에는 자동 등록돼요)")) return;
+      api("PATCH",{records:[{id:x.id,fields:{"입금확정":"O"}}]}).then(function(r){
+        if(r && r.error){ alert("실패했어요: "+r.error); return; }
+        f["입금확정"]="O";
+        alert("✅ 입금확정 처리됨 (문자는 보내지 않았어요)\n(라인업에 자동 등록됐어요)");
+      });
+      return;
+    }
+
+    if(!to){ alert("연락처가 없어요."); return; }
+    if(!confirm(who+"님\n→ 입금확정 처리 + '최종 확정 안내' 문자를 보낼까요?\n(라인업에도 자동 등록돼요)")) return;
     // 입금확정 표시 → 라인업 자동 등록
     api("PATCH",{records:[{id:x.id,fields:{"입금확정":"O"}}]}).then(function(){ f["입금확정"]="O"; });
     sendSmsTo(to, TPLS["확정"](f)).then(function(r){ alert(r&&r.ok?"✅ 입금확정 처리 + 확정문자 발송됨\n(라인업에 자동 등록됐어요)":"입금확정 표시는 됐어요. 문자는 실패: "+((r&&r.error)||"")); });
