@@ -41,7 +41,7 @@ const files = htmlFiles(ROOT).sort();
 
 // 관리자 페이지 (로그인 규칙을 지켜야 하는 페이지)
 const ADMIN_PAGES = new Set([
-  "admin.html", "rotation-admin.html", "1on1-admin.html",
+  "admin.html", "rotation-admin.html", "1on1-admin.html", "1on1.html",
   "vote-admin.html", "lineup.html", "attendance.html", "participants.html",
 ]);
 

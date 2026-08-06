@@ -471,6 +471,7 @@ async function respond(action, isSuper){
   ["btn-accept","btn-super","btn-reject"].forEach(function(id){ var b=document.getElementById(id); if(b) b.disabled=true; });
   var clicked = action === "accept" ? (isSuper ? "btn-super" : "btn-accept") : "btn-reject";
   var cb = document.getElementById(clicked);
+  var cbLabel = cb ? cb.innerHTML : "";
   if(cb) cb.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>처리 중...';
 
   var fields = {
@@ -481,6 +482,7 @@ async function respond(action, isSuper){
   };
   if(action === "accept") fields["매칭유형"] = isSuper ? "슈퍼매칭" : "일반매칭";
 
+  var saved = false;
   try {
     // 없는 필드(예: 매칭유형)는 자동으로 빼고 재시도 → 전송이 통째로 실패하지 않게
     var attempt = Object.assign({}, fields), ok = false;
@@ -497,9 +499,19 @@ async function respond(action, isSuper){
       if(m && Object.prototype.hasOwnProperty.call(attempt, m[1])){ delete attempt[m[1]]; continue; }
       break;
     }
-    if(!ok) throw new Error("전송 실패");
+    saved = ok;
   } catch(err) {
     console.error(err);
+  }
+
+  // ⚠️ 저장에 실패했으면 완료 화면을 띄우면 안 된다.
+  // 예전에는 실패해도 "수락 완료!"가 떠서, 본인은 응답했다고 믿는데
+  // 센터장 화면에는 아무것도 안 뜨는 어긋남이 생겼다.
+  if(!saved){
+    ["btn-accept","btn-super","btn-reject"].forEach(function(id){ var b=document.getElementById(id); if(b) b.disabled=false; });
+    if(cb) cb.innerHTML = cbLabel;
+    alert("응답을 저장하지 못했어요 😢\n\n인터넷 상태를 확인하고 한 번 더 눌러주세요.\n계속 안 되면 센터장에게 알려주세요!");
+    return;
   }
 
   if(action === "accept"){
