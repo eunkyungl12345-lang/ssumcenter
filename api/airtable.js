@@ -1,5 +1,14 @@
 const { upsertMember } = require("./member.js");
 const { sendSms, isValidPhone } = require("./_sms.js");
+const { notify } = require("./_notify.js");
+
+const SITE = "https://ssumcenter.vercel.app";
+// 신청 종류별로 바로 가야 할 관리자 페이지
+const ADMIN_LINK = {
+  "1:1 매칭 신청": SITE + "/1on1-admin",
+  "로테이션 신청": SITE + "/rotation-admin",
+  "재테크 커피팅": SITE + "/1on1-admin",
+};
 
 // 로테이션 접수 → 자동 입금안내 문자 (센터장 확정 문구)
 function 로테이션접수문자() {
@@ -139,6 +148,22 @@ module.exports = async function handler(req, res) {
       } catch (e) { /* 명부 적립 실패는 무시 */ }
     }
 
+    // 새 신청 접수 → 센터장 폰으로 알림 (실패해도 신청은 성공)
+    if (req.method === "POST" && !isAdmin && ADMIN_LINK[table]) {
+      try {
+        const recs = (req.body && req.body.records) || [];
+        for (const rc of recs) {
+          const f = (rc && rc.fields) || {};
+          const who = [f["이름"], f["성별"], f["출생연도"] ? f["출생연도"] + "년생" : ""]
+            .filter(Boolean).join(" · ");
+          await notify(
+            `🆕 새 신청 — ${table}\n\n${who || "이름 없음"}\n${f["연락처"] || "연락처 없음"}\n\n` +
+            `👉 ${ADMIN_LINK[table]}`
+          );
+        }
+      } catch (e) { console.error("[airtable] 신청 알림 실패:", e.message); }
+    }
+
     // (로테이션 신청 시 자동 문자는 제거됨 — 이제 rotation-admin에서 '승인' 누르면 입금안내 문자 자동 발송)
 
     // 1:1 매칭 신청 접수(공개 폼) → 접수 안내 문자 자동 발송 (실패해도 신청은 성공)
@@ -192,20 +217,32 @@ module.exports = async function handler(req, res) {
           const fr = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${MTBL}?filterByFormula=${encodeURIComponent(formula)}&pageSize=1`, { headers: AUTH });
           const fd = await fr.json();
           const rec = (fd.records || [])[0];
-          if (!rec) continue;
+          if (!rec) {
+            // 매칭 테이블에 짝이 없는 경우(손으로 만든 링크 등)에도 응답 사실은 알린다
+            await notify(`${ans === "거절" ? "🙅" : "💛"} 매칭 응답: ${ans}\n\n(매칭 목록에 없는 짝이라 이름을 못 찾았어요)\n\n👉 ${SITE}/1on1-admin`);
+            continue;
+          }
           const mf = rec.fields || {};
           const responderIsMan = mf["남자ID"] === responder;
           const upd = responderIsMan ? { "남자응답": ans } : { "여자응답": ans };
           const manAns = responderIsMan ? ans : mf["남자응답"];
           const womanAns = responderIsMan ? mf["여자응답"] : ans;
+          const whoResponded = (responderIsMan ? mf["남자"] : mf["여자"]) || "?";
+          const pair = `${mf["남자"] || "?"} ❤️ ${mf["여자"] || "?"}`;
+          let alarm = "";
           if (ans === "거절") {
             upd["상태"] = "불발";
             upd["결과"] = (responderIsMan ? mf["남자"] : mf["여자"]) + " 거절 → 불발";
+            alarm = `🙅 거절 — ${pair}\n\n${whoResponded}님이 거절했어요. (불발)\n다음 상대를 찾아주세요.\n\n👉 ${SITE}/1on1`;
           } else if (manAns === "수락" && womanAns === "수락") {
             upd["상태"] = "성사";
             upd["결과"] = "양쪽 수락 → 성사 🎉";
+            alarm = `🎉 성사! — ${pair}\n\n양쪽 다 수락했어요!\n입금 확인하고 연락처를 전달해주세요.\n\n👉 ${SITE}/1on1-admin`;
+          } else {
+            alarm = `💛 수락 — ${pair}\n\n${whoResponded}님이 수락했어요.\n상대방 응답을 기다리는 중이에요.\n\n👉 ${SITE}/1on1`;
           }
           await fetch(`https://api.airtable.com/v0/${BASE_ID}/${MTBL}/${rec.id}`, { method: "PATCH", headers: AUTH, body: JSON.stringify({ fields: upd }) });
+          await notify(alarm);
         }
       } catch (e) { console.error("[airtable] 매칭 테이블 갱신 실패:", e.message); }
     }

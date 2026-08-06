@@ -48,6 +48,16 @@
 - 매칭 응답 (tblQKhTTmbieXVg6o)
 - 재테크 커피팅 (tbl5rTbnwfdmFt878)
 
+## 센터장 폰 알림 (텔레그램)
+- `api/_notify.js` 의 `notify(text)` 로 보낸다. 환경변수 2개가 있어야 동작한다.
+  - `TELEGRAM_BOT_TOKEN` — @BotFather 에서 받은 봇 토큰
+  - `TELEGRAM_CHAT_ID` — 알림 받을 채팅 ID
+- 환경변수가 없으면 조용히 아무것도 안 한다. **알림 실패가 신청·응답을 절대 막지 않는다.**
+- 알림이 나가는 시점 (`api/airtable.js`)
+  - 새 신청 접수 (1:1 매칭 신청 · 로테이션 신청 · 재테크 커피팅)
+  - 매칭 응답 수락 / 거절 / 양쪽 수락(성사)
+- 알림 문구를 바꿀 땐 `api/airtable.js` 의 `notify(...)` 호출부를 수정한다.
+
 ## 주의사항
 - 어드민 페이지 수정 시 반드시 JS 문법 검증 후 push
 - 환경변수는 Vercel CLI(`npx vercel env`)로 관리
