@@ -145,7 +145,8 @@
 (function(){
   "use strict";
   var API="/api/vote", KEY="admin_key";
-  function key(){ return sessionStorage.getItem(KEY)||""; }
+  // 로그인 정보는 localStorage에 저장 (다른 관리자 페이지와 동일 — 한 번 로그인하면 전부 열림)
+  function key(){ return localStorage.getItem(KEY)||""; }
   function post(action,data){
     return fetch(API,{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},
       body:JSON.stringify(Object.assign({action:action},data||{}))}).then(function(r){return r.json();});
@@ -156,7 +157,7 @@
     [].forEach.call(this.querySelectorAll(".evbtn"),function(x){ x.classList.add("g"); });
     b.classList.remove("g");
     document.getElementById("event").value=b.dataset.ev;
-    if(sessionStorage.getItem(KEY)) refresh();
+    if(key()) refresh();
   });
   function setMsg(id,txt,cls){ var e=document.getElementById(id); e.textContent=txt; e.className="msg "+(cls||""); }
 
@@ -168,12 +169,12 @@
   function doLogin(){
     var pw=document.getElementById("pw").value;
     if(!pw){ return; }
-    sessionStorage.setItem(KEY,pw);
-    // 검증: adminData 호출
-    post("adminData",{event:ev()||"__test__"}).then(function(r){
-      if(r.error && /관리자/.test(r.error)){ sessionStorage.removeItem(KEY); document.getElementById("login-msg").textContent="비밀번호가 틀렸어요."; }
-      else { showConsole(); refresh(); }
-    });
+    // 비밀번호를 서버에 직접 확인 (다른 관리자 페이지와 동일한 방식)
+    fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ localStorage.setItem(KEY,pw); showConsole(); refresh(); }
+        else { document.getElementById("login-msg").textContent="비밀번호가 틀렸어요."; }
+      }).catch(function(){ document.getElementById("login-msg").textContent="오류가 났어요. 잠시 후 다시 해주세요."; });
   }
 
   // ---- 1. 테이블 생성 ----

@@ -1,0 +1,17 @@
+name: 배포 전 검사
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    name: 페이지 검사
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: 페이지 검사 실행
+        run: node scripts/check-pages.js

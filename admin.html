@@ -28,6 +28,10 @@
   .lk.mainone{background:linear-gradient(135deg,rgba(232,143,176,.16),rgba(232,143,176,.05));border-color:rgba(232,143,176,.35);color:var(--rose)}
   .foot{text-align:center;font-size:11.5px;color:var(--faint);margin-top:22px;line-height:1.7}
   .foot a{color:var(--muted)}
+  .logout{display:block;width:100%;margin-top:4px;background:transparent;border:1px solid var(--line-strong);color:var(--muted);
+          border-radius:13px;padding:12px;font-size:13px;font-weight:750;cursor:pointer;font-family:inherit}
+  .logout:hover{border-color:var(--rose);color:var(--rose)}
+  .logout:active{transform:scale(.98)}
 </style>
 </head>
 <body>
@@ -61,9 +65,26 @@
     </div>
   </div>
 
+  <!-- 로그아웃 -->
+  <div class="group">
+    <div class="gh" style="font-size:15px">🔒 로그인</div>
+    <div class="gd">비밀번호는 이 기기에 저장돼요. 한 번 로그인하면 위 페이지 전부 열립니다.<br>
+      남의 폰이나 공용 컴퓨터에서 봤다면 꼭 로그아웃해주세요.</div>
+    <button class="logout" id="logoutBtn">🚪 로그아웃 (저장된 비밀번호 지우기)</button>
+  </div>
+
   <div class="foot">
     문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener">카카오톡 채널</a>
   </div>
 </div>
+<script>
+  document.getElementById("logoutBtn").addEventListener("click", function(){
+    if(!confirm("이 기기에 저장된 관리자 비밀번호를 지울까요?\n다음에 관리자 페이지를 열면 다시 입력해야 해요.")) return;
+    try{ localStorage.removeItem("admin_key"); }catch(e){}
+    try{ sessionStorage.removeItem("admin_key"); }catch(e){}
+    this.textContent = "✅ 로그아웃 됐어요";
+    this.disabled = true;
+  });
+</script>
 </body>
 </html>
