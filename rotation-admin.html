@@ -30,8 +30,19 @@
   .toolbar .cnt{font-size:12.5px;color:var(--muted);font-weight:650;margin-left:auto}
   .p{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:11px}
   .p .top{display:flex;gap:12px}
-  .p .ph{width:64px;height:64px;border-radius:13px;object-fit:cover;background:var(--surface-2);border:1px solid var(--line-strong);flex-shrink:0}
+  .p .ph{width:64px;height:64px;border-radius:13px;object-fit:cover;background:var(--surface-2);border:1px solid var(--line-strong);flex-shrink:0;display:block}
   .p .ph.none{display:grid;place-items:center;font-size:26px;color:var(--faint)}
+  .p .phwrap{position:relative;flex-shrink:0;cursor:pointer}
+  .p .phwrap .phcount{position:absolute;bottom:3px;right:3px;background:rgba(0,0,0,.72);color:#fff;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:7px}
+  .p .phwrap .phzoom{position:absolute;top:3px;left:3px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:1px 5px;border-radius:6px}
+  /* 사진 크게 보기 (라이트박스) */
+  #lb{position:fixed;inset:0;background:rgba(0,0,0,.93);display:none;z-index:200;align-items:center;justify-content:center}
+  #lb.on{display:flex}
+  #lb img{max-width:94vw;max-height:82vh;object-fit:contain;border-radius:10px}
+  #lb .lb-close{position:absolute;top:14px;right:18px;color:#fff;font-size:30px;cursor:pointer;font-weight:700;line-height:1}
+  #lb .lb-nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:40px;cursor:pointer;padding:10px 14px;user-select:none;-webkit-tap-highlight-color:transparent}
+  #lb .lb-prev{left:2px} #lb .lb-next{right:2px}
+  #lb .lb-count{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;font-weight:700;background:rgba(0,0,0,.5);padding:4px 12px;border-radius:999px}
   .p .hd{flex:1;min-width:0}
   .p .nm{font-size:15.5px;font-weight:800}
   .p .nm .nick{font-size:12.5px;color:var(--amber);font-weight:700;margin-left:6px}
@@ -40,16 +51,6 @@
   .b-wait{background:var(--amber-soft);color:var(--amber)}
   .b-ok{background:var(--ok-soft);color:var(--ok)}
   .b-no{background:var(--rose-soft);color:var(--rose)}
-  /* 프로필 사진 전체 보기 (신청 폼에서 최소 2장·최대 3장을 받는다) */
-  .p .phs{margin-top:11px;border-top:1px solid var(--line);padding-top:11px}
-  .p .phs .phs-hd{font-size:11.5px;color:var(--muted);margin-bottom:7px}
-  .p .phs .phs-grid{display:flex;gap:6px}
-  .p .phs img{flex:1;min-width:0;aspect-ratio:3/4;object-fit:cover;border-radius:10px;
-              border:1px solid var(--line-strong);cursor:pointer}
-  .p .phs img:active{opacity:.75}
-  #photo-modal{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);
-               cursor:pointer;justify-content:center;align-items:center;padding:14px}
-  #photo-modal img{max-width:100%;max-height:100%;border-radius:12px}
   .p .rows{margin-top:11px;border-top:1px solid var(--line);padding-top:11px;display:grid;gap:5px}
   .p .r{display:flex;font-size:12.5px}
   .p .r .rk{color:var(--muted);width:66px;flex-shrink:0}
@@ -143,9 +144,6 @@
   </div>
 </div>
 
-<!-- 사진 크게 보기 (아무 데나 탭하면 닫힘) -->
-<div id="photo-modal"><img id="photo-modal-img" alt=""></div>
-
 <script>
 (function(){
   "use strict";
@@ -162,11 +160,6 @@
     }).then(function(r){return r.json();});
   }
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
-
-  // ---- 사진 크게 보기 ----
-  var photoModal=document.getElementById("photo-modal"), photoModalImg=document.getElementById("photo-modal-img");
-  function openPhoto(url){ photoModalImg.src=url; photoModal.style.display="flex"; }
-  photoModal.addEventListener("click",function(){ photoModal.style.display="none"; photoModalImg.src=""; });
 
   function showConsole(){ document.getElementById("login").classList.add("hide"); document.getElementById("console").classList.remove("hide"); }
   if(key()) { showConsole(); load(); }
@@ -207,14 +200,16 @@
 
     var list=document.getElementById("list"); list.innerHTML="";
     if(!filtered.length){ list.innerHTML='<div class="empty">아직 신청자가 없어요.</div>'; return; }
+    PHSETS=[];
     filtered.forEach(function(x){ list.appendChild(cardEl(x)); });
   }
 
+  var PHSETS=[];
   function cardEl(x){
     var f=x.fields, st=f["승인상태"]||"대기";
-    // 신청 폼은 사진을 최소 2장·최대 3장 받는다 → 첫 장만 말고 전부 보여준다
-    var photos=(f["프로필사진"]||[]).map(function(p){ return p&&p.url; }).filter(Boolean);
-    var photo=photos[0]||"";
+    // 신청 폼은 사진을 최소 2장·최대 3장 받는다 → 전부 라이트박스로 넘겨볼 수 있게
+    var photos=(f["프로필사진"]||[]).map(function(p){return p&&p.url;}).filter(Boolean);
+    var pid=PHSETS.length; PHSETS.push(photos);
     var doc=(f["재직증명서"]&&f["재직증명서"][0]&&f["재직증명서"][0].url)||"";
     var badge = st==="승인"?'<span class="badge b-ok">승인</span>':st==="거절"?'<span class="badge b-no">거절</span>':'<span class="badge b-wait">대기</span>';
     var el=document.createElement("div"); el.className="p";
@@ -222,15 +217,13 @@
     function row(k,v){ return v?'<div class="r"><div class="rk">'+k+'</div><div class="rv">'+v+'</div></div>':""; }
     el.innerHTML=
       '<div class="top">'
-      + (photo?'<img class="ph" src="'+esc(photo)+'">':'<div class="ph none">🙂</div>')
+      + (photos.length
+          ? '<div class="phwrap" onclick="openLB('+pid+')"><img class="ph" src="'+esc(photos[0])+'">'+(photos.length>1?'<span class="phcount">📷 '+photos.length+'</span>':'')+'<span class="phzoom">🔍 크게</span></div>'
+          : '<div class="ph none">🙂</div>')
       + '<div class="hd"><div class="nm">'+esc(f["이름"]||"이름없음")+'<span class="nick">'+esc(f["닉네임"]||"")+'</span></div>'
       + '<div class="meta">'+esc(meta)+'</div>'
       + '<div style="margin-top:7px">'+badge+' <span class="badge" style="background:var(--surface-2);color:var(--muted)">'+esc(f["회차"]||"회차?")+'</span></div>'
       + '</div></div>'
-      + (photos.length
-          ? '<div class="phs"><div class="phs-hd">📷 프로필 사진 '+photos.length+'장 <span style="color:var(--faint)">— 탭하면 크게 보여요</span></div>'
-            + '<div class="phs-grid">'+photos.map(function(u){ return '<img src="'+esc(u)+'" loading="lazy">'; }).join("")+'</div></div>'
-          : '')
       + '<div class="rows">'
       + row("직업",esc(f["직업_직장명"]))
       + row("어필",esc(f["어필포인트"]))
@@ -259,11 +252,6 @@
       nosmsBox.classList.toggle("on",silent());
       var b=el.querySelector(".cfmbtn");
       if(b) b.textContent = silent() ? "💰 입금확정만 표시 (문자 없음)" : "💰 입금확인 → 확정문자 발송";
-    });
-
-    // 사진 탭 → 크게 보기
-    el.querySelectorAll(".phs img").forEach(function(im){
-      im.addEventListener("click",function(){ openPhoto(im.src); });
     });
 
     el.querySelector(".smsbtn").addEventListener("click",function(){ openSms(f); });
@@ -457,7 +445,23 @@
         else { msgEl.textContent="❌ "+(r.error||"발송 실패"); msgEl.style.color="var(--rose)"; }
       }).catch(function(){ btn.disabled=false; msgEl.textContent="❌ 오류가 났어요."; msgEl.style.color="var(--rose)"; });
   });
+
+  // ===== 사진 크게 보기 =====
+  var LB={photos:[],i:0};
+  window.openLB=function(pid){ LB.photos=PHSETS[pid]||[]; LB.i=0; if(!LB.photos.length) return; showLB(); document.getElementById("lb").classList.add("on"); };
+  function showLB(){ document.getElementById("lb-img").src=LB.photos[LB.i]; document.getElementById("lb-count").textContent=(LB.i+1)+" / "+LB.photos.length; var nav=LB.photos.length>1?"block":"none"; Array.prototype.forEach.call(document.querySelectorAll("#lb .lb-nav"),function(e){ e.style.display=nav; }); }
+  window.lbNav=function(d){ if(LB.photos.length<2) return; LB.i=(LB.i+d+LB.photos.length)%LB.photos.length; showLB(); };
+  window.closeLB=function(){ document.getElementById("lb").classList.remove("on"); };
 })();
 </script>
+
+<!-- 사진 크게보기 라이트박스 -->
+<div id="lb" onclick="if(event.target.id==='lb')closeLB()">
+  <span class="lb-close" onclick="closeLB()">✕</span>
+  <span class="lb-nav lb-prev" onclick="lbNav(-1)">‹</span>
+  <img id="lb-img" src="" alt="프로필 사진">
+  <span class="lb-nav lb-next" onclick="lbNav(1)">›</span>
+  <span class="lb-count" id="lb-count"></span>
+</div>
 </body>
 </html>
