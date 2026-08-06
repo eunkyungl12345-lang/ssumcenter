@@ -526,11 +526,16 @@ async function checkOtherResponse(){
   if(!myId || !matchId) return null;
 
   try {
-    // 상대방이 나(myId)에 대해 응답했는지 확인
-    const res = await fetch(`/api/airtable?table=매칭 응답&filter={매칭ID}="${myId}"`);
+    // ⚠️ 반드시 "이번 상대(matchId)가 나(myId)에 대해" 한 응답만 봐야 한다.
+    // 예전에는 {매칭ID}=나 로만 걸러서, 나에 대한 '아무 사람의' 응답 중 첫 번째를
+    // 집어왔다. 그래서 예전 매칭에서 누가 거절한 기록이 있으면, 이번 상대가
+    // 수락했는데도 "상대가 거절했어요" 화면이 떴다.
+    const filter = `AND({응답자ID}="${matchId}",{매칭ID}="${myId}")`;
+    const res = await fetch("/api/airtable?table=매칭 응답&filter=" + encodeURIComponent(filter));
     const data = await res.json();
     if(data.records && data.records.length > 0){
-      const response = data.records[0].fields["응답"];
+      // 같은 사람이 여러 번 응답했으면 가장 마지막 응답이 진짜 의사
+      const response = data.records[data.records.length - 1].fields["응답"];
       if(response === "수락") return true;
       if(response === "거절") return false;
     }
@@ -550,11 +555,11 @@ async function getMatchTypes(){
     var f1 = encodeURIComponent('AND({응답자ID}="'+myId+'",{매칭ID}="'+matchId+'")');
     var r1 = await fetch("/api/airtable?table=매칭 응답&filter=" + f1);
     var d1 = await r1.json();
-    if(d1.records && d1.records.length) out.mine = d1.records[0].fields["매칭유형"] || "";
+    if(d1.records && d1.records.length) out.mine = d1.records[d1.records.length-1].fields["매칭유형"] || "";
     var f2 = encodeURIComponent('AND({응답자ID}="'+matchId+'",{매칭ID}="'+myId+'")');
     var r2 = await fetch("/api/airtable?table=매칭 응답&filter=" + f2);
     var d2 = await r2.json();
-    if(d2.records && d2.records.length) out.other = d2.records[0].fields["매칭유형"] || "";
+    if(d2.records && d2.records.length) out.other = d2.records[d2.records.length-1].fields["매칭유형"] || "";
   } catch(e){ console.error(e); }
   return out;
 }
@@ -665,7 +670,8 @@ async function checkMyResponse(){
     const filter = `AND({응답자ID}="${myId}",{매칭ID}="${matchId}")`;
     const res = await fetch("/api/airtable?table=매칭 응답&filter=" + encodeURIComponent(filter));
     const d = await res.json();
-    if(d.records && d.records.length){ return d.records[0].fields["응답"]; }
+    // 여러 번 눌렀으면 가장 마지막 응답이 진짜 의사
+    if(d.records && d.records.length){ return d.records[d.records.length - 1].fields["응답"]; }
   } catch(e){}
   return null;
 }
