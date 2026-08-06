@@ -903,6 +903,53 @@ async function loadApplicants(){
   }
 }
 
+// 💌 성사된 두 분에게 서로의 연락처를 문자로 전달
+function contactMsg(other){
+  const f = other.fields || {};
+  return "띵동🎵 당신의 썸이 배달되었습니다.\n\n"
+       + (f["이름"] || "") + " " + (f["연락처"] || "") + "\n"
+       + "예쁜 썸 만들어가시고 다시한번 감사드립니다🙌";
+}
+
+async function sendContacts(idA, idB, btn){
+  const a = applicants.find(x => x.id === idA);
+  const b = applicants.find(x => x.id === idB);
+  if(!a || !b){ alert("신청자 정보를 찾을 수 없어요.\n새로고침(F5) 후 다시 시도해주세요."); return; }
+
+  const pa = (a.fields || {})["연락처"], pb = (b.fields || {})["연락처"];
+  if(!pa || !pb){
+    alert("연락처가 비어 있는 분이 있어요.\n" + (!pa ? nameOf(idA) : nameOf(idB)) + "님 연락처를 먼저 채워주세요.");
+    return;
+  }
+
+  // 보내기 전에 실제 문자 내용을 그대로 보여준다 (잘못 나가면 되돌릴 수 없으므로)
+  if(!confirm(
+    "두 분에게 서로의 연락처를 문자로 보낼까요?\n\n"
+    + "─ " + nameOf(idA) + "님께 ─\n" + contactMsg(b) + "\n\n"
+    + "─ " + nameOf(idB) + "님께 ─\n" + contactMsg(a)
+  )) return;
+
+  const orig = btn ? btn.innerHTML : "";
+  if(btn){ btn.disabled = true; btn.innerHTML = "보내는 중…"; }
+
+  const send = (to, text) => fetch("/api/send-sms", {
+    method: "POST", headers: apiHeaders(), body: JSON.stringify({ to: to, text: text })
+  }).then(r => r.json()).catch(() => ({ ok: false, error: "발송 오류" }));
+
+  const results = await Promise.all([ send(pa, contactMsg(b)), send(pb, contactMsg(a)) ]);
+  const fails = [];
+  if(!(results[0] && results[0].ok)) fails.push(nameOf(idA) + "님 (" + ((results[0] && results[0].error) || "실패") + ")");
+  if(!(results[1] && results[1].ok)) fails.push(nameOf(idB) + "님 (" + ((results[1] && results[1].error) || "실패") + ")");
+
+  if(!fails.length){
+    if(btn){ btn.innerHTML = "✅ 연락처 전달 완료"; }
+    toast("💌 두 분께 연락처를 보냈어요!");
+  } else {
+    if(btn){ btn.disabled = false; btn.innerHTML = orig; }
+    alert("일부 발송에 실패했어요:\n" + fails.join("\n") + "\n\n실패한 분께는 다시 눌러주세요.");
+  }
+}
+
 // 💌 매칭 응답 현황 (수락/거절)
 function nameOf(id){
   const a = applicants.find(x => x.id === id);
@@ -1072,7 +1119,10 @@ function renderResponses(responses){
   // 성사된 쌍은 항상 눈에 띄게 (바로 처리해야 하니까)
   matched.forEach(pair => {
     const [a, b] = pair.split("|");
-    html += '<div class="bg-[#22c55e]/10 border border-[#22c55e]/40 rounded-xl p-3 mb-2 text-sm">🎉 <b class="text-[#22c55e]">성사!</b> ' + nameOf(a) + ' ❤️ ' + nameOf(b) + '<div class="text-[11px] text-[#9E9E97] mt-1">결제 확인 후 연락처를 전달하세요</div></div>';
+    html += '<div class="bg-[#22c55e]/10 border border-[#22c55e]/40 rounded-xl p-3 mb-2 text-sm">🎉 <b class="text-[#22c55e]">성사!</b> ' + nameOf(a) + ' ❤️ ' + nameOf(b)
+      + '<div class="text-[11px] text-[#9E9E97] mt-1">입금 확인되면 아래 버튼으로 양쪽에 연락처를 보내세요</div>'
+      + '<button onclick="sendContacts(\'' + a + '\',\'' + b + '\',this)" class="w-full mt-2 bg-[#22c55e] text-black text-xs font-extrabold px-3 py-2 rounded-lg transition hover:bg-[#1ea952]">💌 연락처 전달 (양쪽 문자)</button>'
+      + '</div>';
   });
   if(!matched.size) html += '<div class="text-[12px] text-[#9E9E97] mb-1">아직 성사된 매칭이 없어요.</div>';
   // 상세 응답 기록은 접어두기 (필요할 때만 펼침)
