@@ -122,7 +122,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
       <a href="#reviews" class="nav-link">후기</a>
       <a href="#faq" class="nav-link">FAQ</a>
       <a href="test/ideal.html" class="nav-link">유형 테스트</a>
-      <a href="login.html" class="nav-link">로그인</a>
+      <a href="login.html" class="nav-link auth-link">로그인</a>
       <button class="nav-cta" onclick="openModal()"><i class="fa-solid fa-truck-fast" style="margin-right:4px"></i>신청하기</button>
     </div>
     <button class="burger" onclick="document.getElementById('mob').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
@@ -131,7 +131,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
       <a href="#reviews" class="nav-link" onclick="this.parentElement.classList.remove('open')">후기</a>
       <a href="#faq" class="nav-link" onclick="this.parentElement.classList.remove('open')">FAQ</a>
       <a href="test/ideal.html" class="nav-link">유형 테스트</a>
-      <a href="login.html" class="nav-link">로그인</a>
+      <a href="login.html" class="nav-link auth-link">로그인</a>
       <button class="nav-cta" onclick="openModal()" style="width:100%;padding:14px;font-size:14px;border-radius:14px;margin-top:4px"><i class="fa-solid fa-truck-fast" style="margin-right:6px"></i>신청하기</button>
     </div>
   </div>
@@ -463,6 +463,21 @@ document.querySelectorAll('[data-r]').forEach(el=>io.observe(el));
   function open(){ panel.classList.add("on"); if(!opened){ add("bot","안녕하세요! 썸류센터예요 💛 궁금한 걸 눌러보세요."); chipsRender(); opened=true; } }
   document.getElementById("askbot-fab").addEventListener("click",function(){ panel.classList.contains("on")?panel.classList.remove("on"):open(); });
   document.getElementById("askbot-close").addEventListener("click",function(){ panel.classList.remove("on"); });
+})();
+</script>
+<script>
+// 로그인 상태 표시 (카카오 로그인 시 "OO님" + 로그아웃)
+(function(){
+  try{
+    var u=JSON.parse(localStorage.getItem('ssumUser')||'null');
+    if(u&&u.name){
+      Array.prototype.forEach.call(document.querySelectorAll('.auth-link'),function(a){
+        a.textContent=u.name+'님 · 로그아웃';
+        a.setAttribute('href','javascript:void(0)');
+        a.addEventListener('click',function(){ if(confirm('로그아웃할까요?')){ localStorage.removeItem('ssumUser'); location.reload(); } });
+      });
+    }
+  }catch(e){}
 })();
 </script>
 </body>
