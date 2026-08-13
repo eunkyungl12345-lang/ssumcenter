@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 프로필 | 썸류센터</title>
+<style>
+  :root{--bg:#0e0c0a;--surface:#161310;--surface-2:#1e1811;--ink:#F0E4D0;--muted:#9a8b73;--faint:#6a5c4c;--line:#2a2117;--line-2:#3a2e1f;--amber:#E8B050;--gold:#FFD37A;--ok:#6FBE97;--ink-on:#171208;--female:#E88FB0;--male:#7EA6E0;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.6;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:520px;margin:0 auto;padding:18px 15px 50px}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+  .top .h{font-size:19px;font-weight:900;display:flex;align-items:center;gap:7px}
+  .top a{font-size:12px;color:var(--muted);text-decoration:none;font-weight:700}
+  .hello{background:linear-gradient(135deg,rgba(232,176,80,.1),transparent);border:1px solid var(--line-2);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+  .hello img{width:46px;height:46px;border-radius:50%;object-fit:cover;background:var(--surface-2)}
+  .hello .nm{font-weight:800;font-size:16px}
+  .hello .sub{font-size:12px;color:var(--muted)}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:14px}
+  .card .ch{font-size:15px;font-weight:900;margin-bottom:13px;display:flex;align-items:center;gap:7px}
+  .ro{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13.5px;margin-bottom:14px}
+  .ro .k{color:var(--muted)} .ro .v{color:var(--ink);font-weight:600}
+  .lock{font-size:11px;color:var(--faint)}
+  .fld{margin-bottom:14px}
+  .fld label{display:block;font-size:12.5px;font-weight:800;color:var(--gold);margin-bottom:6px}
+  textarea{width:100%;background:var(--surface-2);border:1.5px solid var(--line-2);border-radius:12px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit;line-height:1.6;resize:vertical;min-height:80px}
+  textarea:focus{outline:none;border-color:var(--amber)}
+  .photos{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
+  .photos img{width:74px;height:92px;border-radius:11px;object-fit:cover;border:1px solid var(--line-2)}
+  .photos .none{width:74px;height:92px;border-radius:11px;display:grid;place-items:center;background:var(--surface-2);color:var(--faint);font-size:22px;border:1px solid var(--line-2)}
+  .pbtn{display:inline-block;font-size:12.5px;font-weight:700;color:var(--amber);background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:9px 13px;cursor:pointer}
+  .pnew{font-size:11.5px;color:var(--ok);margin-top:5px}
+  .save{width:100%;border:none;border-radius:13px;padding:14px;font-size:14.5px;font-weight:900;background:var(--amber);color:var(--ink-on);cursor:pointer;font-family:inherit;margin-top:4px}
+  .save:disabled{opacity:.5}
+  .msg{font-size:12.5px;text-align:center;margin-top:9px;min-height:16px}
+  .empty{text-align:center;color:var(--muted);font-size:13.5px;padding:30px 10px}
+  .empty a{display:inline-block;margin:8px 5px 0;background:var(--surface-2);border:1px solid var(--line-2);color:var(--amber);text-decoration:none;font-weight:800;padding:11px 16px;border-radius:12px;font-size:13px}
+  .spin{width:26px;height:26px;border:3px solid var(--line-2);border-top-color:var(--amber);border-radius:50%;margin:44px auto;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .gd{font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:999px}
+  .gd.f{color:var(--female);background:rgba(232,143,176,.13)} .gd.m{color:var(--male);background:rgba(126,166,224,.13)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="h">🙋 내 프로필</div>
+    <div><a href="index.html">🏠 홈</a> <a href="javascript:void(0)" id="logoutLink" style="margin-left:10px">로그아웃</a></div>
+  </div>
+  <div id="content"><div class="spin"></div></div>
+</div>
+
+<script>
+  var CN="ddvmmvcei", CP="ml_default";
+  var user=null;
+  try{ user=JSON.parse(localStorage.getItem("ssumUser")||"null"); }catch(e){}
+  if(!user||!user.id){ location.replace("login.html?redirect=my.html"); }
+  var KID=user?user.id:"";
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function gd(g){ return g==="남성"?"m":g==="여성"?"f":""; }
+  function gl(g){ return g==="남성"?"남":g==="여성"?"여":""; }
+  function photosOf(f){ return (f["프로필사진"]||[]).map(function(p){return p&&p.url;}).filter(Boolean); }
+
+  var TYPES=[
+    { table:"1:1 매칭 신청", label:"💘 1:1 매칭 신청",
+      ro:[["이름","이름"],["성별","성별"],["나이","출생연도"],["연락처","연락처"],["직업","직업_직장명","직업"],["키","키"],["사는곳","사는곳"]],
+      edit:[{key:"자기소개",label:"자기소개",ph:"나를 소개해주세요 :)"},{key:"이상형",label:"이상형",ph:"어떤 분을 만나고 싶으세요?"}] },
+    { table:"로테이션 신청", label:"🎡 커피팅 신청",
+      ro:[["이름","이름"],["닉네임","닉네임"],["성별","성별"],["나이","출생연도"],["연락처","연락처"],["키","키"],["직업","직업_직장명"],["회차","회차"]],
+      edit:[{key:"어필포인트",label:"어필포인트",ph:"나의 매력을 어필해주세요!"}] }
+  ];
+
+  var newPhotos={}; // recordId -> [File]
+
+  function load(){
+    var got=[];
+    var done=0;
+    TYPES.forEach(function(t){
+      fetch("/api/airtable?table="+encodeURIComponent(t.table)+"&kakaoId="+encodeURIComponent(KID))
+        .then(function(r){return r.json();}).then(function(r){
+          (r.records||[]).forEach(function(rec){ got.push({t:t, rec:rec}); });
+        }).catch(function(){}).then(function(){
+          done++; if(done===TYPES.length) render(got);
+        });
+    });
+  }
+
+  function render(list){
+    var c=document.getElementById("content");
+    if(!list.length){
+      c.innerHTML='<div class="hello">'+avatar()+'<div><div class="nm">'+esc(user.name||"회원")+'님</div><div class="sub">환영해요 💛</div></div></div>'
+        +'<div class="card"><div class="empty">아직 신청 내역이 없어요.<br>신청하면 여기서 내 정보를 보고 수정할 수 있어요!'
+        +'<div><a href="oneone.html">💘 1:1 신청</a><a href="rotation-0827.html">🎡 커피팅 신청</a></div></div></div>';
+      return;
+    }
+    var html='<div class="hello">'+avatar()+'<div><div class="nm">'+esc(user.name||"회원")+'님</div><div class="sub">내 신청 정보를 보고 수정할 수 있어요 ✏️</div></div></div>';
+    list.forEach(function(it,idx){ html+=cardHtml(it.t, it.rec, idx); });
+    c.innerHTML=html;
+    // 파일 input 이벤트
+    list.forEach(function(it,idx){
+      var inp=document.getElementById("file-"+idx);
+      if(inp){ inp.addEventListener("change",function(){ onPickPhotos(it.rec.id, idx, inp.files); }); }
+    });
+  }
+  function avatar(){ return user.profileImage?'<img src="'+esc(user.profileImage)+'">':'<div class="hello" style="width:46px;height:46px;padding:0;justify-content:center;margin:0;border:none"><span style="font-size:24px">🙂</span></div>'; }
+
+  function cardHtml(t, rec, idx){
+    var f=rec.fields||{};
+    var ro="";
+    t.ro.forEach(function(row){
+      var label=row[0]; var val="";
+      for(var i=1;i<row.length;i++){ if(f[row[i]]){ val=f[row[i]]; break; } }
+      if(label==="나이"&&val) val=val+"년생";
+      if(label==="성별"&&val) val='<span class="gd '+gd(val)+'">'+gl(val)+'</span>';
+      if(val) ro+='<div class="k">'+label+'</div><div class="v">'+ (label==="성별"?val:esc(val)) +'</div>';
+    });
+    var ph=photosOf(f);
+    var phHtml=ph.length?ph.map(function(u){return '<img src="'+esc(u)+'">';}).join(""):'<div class="none">🙂</div>';
+    var edits="";
+    t.edit.forEach(function(e){
+      edits+='<div class="fld"><label>'+e.label+'</label><textarea data-rid="'+rec.id+'" data-key="'+e.key+'" placeholder="'+e.ph+'">'+esc(f[e.key]||"")+'</textarea></div>';
+    });
+    return '<div class="card">'
+      + '<div class="ch">'+t.label+'</div>'
+      + '<div class="ro">'+ro+'</div>'
+      + '<div class="lock">🔒 이름·연락처·나이는 수정할 수 없어요 (센터 확인용)</div>'
+      + '<div class="fld" style="margin-top:14px"><label>프로필 사진</label>'
+      +   '<div class="photos" id="ph-'+idx+'">'+phHtml+'</div>'
+      +   '<label class="pbtn" for="file-'+idx+'">📷 사진 교체하기</label>'
+      +   '<input id="file-'+idx+'" type="file" accept="image/*" multiple style="display:none">'
+      +   '<div class="pnew" id="pnew-'+idx+'"></div>'
+      + '</div>'
+      + edits
+      + '<button class="save" onclick="save(\''+rec.id+'\',\''+esc(t.table)+'\','+idx+')">저장하기</button>'
+      + '<div class="msg" id="msg-'+idx+'"></div>'
+      + '</div>';
+  }
+
+  function onPickPhotos(rid, idx, files){
+    var arr=Array.prototype.slice.call(files||[]).slice(0,3);
+    newPhotos[rid]=arr;
+    var box=document.getElementById("ph-"+idx);
+    box.innerHTML="";
+    arr.forEach(function(file){
+      var img=document.createElement("img");
+      var rd=new FileReader(); rd.onload=function(e){ img.src=e.target.result; }; rd.readAsDataURL(file);
+      box.appendChild(img);
+    });
+    document.getElementById("pnew-"+idx).textContent="새 사진 "+arr.length+"장으로 교체 예정 (저장 눌러야 반영돼요)";
+  }
+
+  function compress(file){
+    return new Promise(function(resolve){
+      var img=new Image(); var rd=new FileReader();
+      rd.onload=function(e){ img.onload=function(){
+        var MAX=1200,w=img.width,h=img.height;
+        if(w>h&&w>MAX){h=h*MAX/w;w=MAX;} else if(h>MAX){w=w*MAX/h;h=MAX;}
+        var c=document.createElement("canvas");c.width=w;c.height=h;
+        c.getContext("2d").drawImage(img,0,0,w,h);
+        c.toBlob(function(b){resolve(new File([b],file.name,{type:"image/jpeg"}));},"image/jpeg",0.7);
+      }; img.src=e.target.result; }; rd.readAsDataURL(file);
+    });
+  }
+  function up(file){
+    var fd=new FormData(); fd.append("file",file); fd.append("upload_preset",CP); fd.append("folder","ssumcenter/my");
+    return fetch("https://api.cloudinary.com/v1_1/"+CN+"/auto/upload",{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(d){return d.secure_url;});
+  }
+
+  window.save=async function(rid, table, idx){
+    var btn=event.target; var msg=document.getElementById("msg-"+idx);
+    btn.disabled=true; btn.textContent="저장 중..."; msg.textContent=""; msg.style.color="var(--muted)";
+    try{
+      var fields={};
+      // 텍스트 필드
+      Array.prototype.forEach.call(document.querySelectorAll('textarea[data-rid="'+rid+'"]'),function(ta){
+        fields[ta.getAttribute("data-key")]=ta.value;
+      });
+      // 사진 교체
+      if(newPhotos[rid]&&newPhotos[rid].length){
+        btn.textContent="사진 올리는 중...";
+        var urls=[];
+        for(var i=0;i<newPhotos[rid].length;i++){ var cf=await compress(newPhotos[rid][i]); urls.push({url:await up(cf)}); }
+        fields["프로필사진"]=urls;
+      }
+      var res=await fetch("/api/airtable?table="+encodeURIComponent(table)+"&kakaoId="+encodeURIComponent(KID),{
+        method:"PATCH",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({records:[{id:rid,fields:fields}]})
+      });
+      var d=await res.json();
+      if(res.ok&&!d.error){ msg.style.color="var(--ok)"; msg.textContent="✅ 저장됐어요! 센터에도 반영됐어요."; delete newPhotos[rid]; document.getElementById("pnew-"+idx).textContent=""; }
+      else { msg.style.color="var(--female)"; msg.textContent="❌ "+(d.error||"저장 실패"); }
+    }catch(e){ msg.style.color="var(--female)"; msg.textContent="❌ 오류가 났어요. 다시 시도해주세요."; }
+    btn.disabled=false; btn.textContent="저장하기";
+  };
+
+  document.getElementById("logoutLink").addEventListener("click",function(){
+    if(confirm("로그아웃할까요?")){ localStorage.removeItem("ssumUser"); location.href="index.html"; }
+  });
+
+  if(user&&user.id) load();
+</script>
+</body>
+</html>

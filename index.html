@@ -472,9 +472,8 @@ document.querySelectorAll('[data-r]').forEach(el=>io.observe(el));
     var u=JSON.parse(localStorage.getItem('ssumUser')||'null');
     if(u&&u.name){
       Array.prototype.forEach.call(document.querySelectorAll('.auth-link'),function(a){
-        a.textContent=u.name+'님 · 로그아웃';
-        a.setAttribute('href','javascript:void(0)');
-        a.addEventListener('click',function(){ if(confirm('로그아웃할까요?')){ localStorage.removeItem('ssumUser'); location.reload(); } });
+        a.textContent=u.name+'님';
+        a.setAttribute('href','my.html');
       });
     }
   }catch(e){}

@@ -59,10 +59,22 @@ module.exports = async function handler(req, res) {
   // 비인증(신청폼·매칭응답 페이지): 아래 허용 범위만
   const isAdmin = ADMIN_PW && req.headers["x-admin-key"] === ADMIN_PW;
 
+  // ---- 고객 본인 모드: 카카오 로그인 회원이 자기 신청 정보만 조회/수정 ----
+  const kakaoId = req.query.kakaoId;
+  const CUST_TABLES = ["1:1 매칭 신청", "로테이션 신청"];
+  const CUST_EDITABLE = {
+    "1:1 매칭 신청": ["프로필사진", "자기소개", "이상형"],
+    "로테이션 신청": ["프로필사진", "어필포인트"]
+  };
+  const isCustomer = !isAdmin && !!kakaoId && CUST_TABLES.includes(table);
+  let custFilter = null;
+
   if (!isAdmin) {
     if (req.method === "GET") {
-      // 개인정보(연락처·사진) 노출 방지: 매칭 응답 테이블만 조회 허용
-      if (table !== "매칭 응답") {
+      // 개인정보(연락처·사진) 노출 방지: 매칭 응답 테이블 + 고객 본인 조회만 허용
+      if (isCustomer) {
+        custFilter = `{카카오ID}="${String(kakaoId).replace(/["\\]/g, "")}"`;
+      } else if (table !== "매칭 응답") {
         return res.status(401).json({ error: "인증이 필요합니다" });
       }
     } else if (req.method === "POST") {
@@ -79,12 +91,30 @@ module.exports = async function handler(req, res) {
           const keys = Object.keys(r.fields || {});
           return keys.length === 1 && keys[0] === "매칭상태" && r.fields["매칭상태"] === "수락";
         });
-      if (!onlyAcceptStatus) {
+      if (!isCustomer && !onlyAcceptStatus) {
         return res.status(401).json({ error: "인증이 필요합니다" });
       }
     } else {
       return res.status(401).json({ error: "인증이 필요합니다" });
     }
+  }
+
+  // 고객 PATCH: 본인 레코드인지 확인 + 허용 필드(사진·자기소개·이상형/어필)만 수정
+  if (isCustomer && req.method === "PATCH") {
+    const editable = CUST_EDITABLE[table] || [];
+    const recs = (req.body && req.body.records) || [];
+    const base2 = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}`;
+    const H2 = { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" };
+    for (const r of recs) {
+      const chk = await (await fetch(`${base2}/${r.id}`, { headers: H2 })).json();
+      if (!chk || !chk.fields || chk.fields["카카오ID"] !== kakaoId) {
+        return res.status(403).json({ error: "본인 신청서만 수정할 수 있어요" });
+      }
+      const clean = {};
+      Object.keys(r.fields || {}).forEach(k => { if (editable.includes(k)) clean[k] = r.fields[k]; });
+      r.fields = clean;
+    }
+    req.body.records = recs;
   }
 
   // POST 요청 시 필수 필드 검증 (빈 데이터 차단) — 비인증 신청 폼만
@@ -105,7 +135,7 @@ module.exports = async function handler(req, res) {
   if (recordId) url += `/${recordId}`;
 
   const params = new URLSearchParams();
-  if (filter) params.set("filterByFormula", filter);
+  if (custFilter || filter) params.set("filterByFormula", custFilter || filter);
   if (sort) {
     params.set("sort[0][field]", sort);
     params.set("sort[0][direction]", "desc");

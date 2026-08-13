@@ -824,6 +824,7 @@ async function handleSubmit(e){
       "촬영동의":!!document.getElementById("agree2").checked,
       "승인상태":"대기","신청일시":new Date().toLocaleString("ko-KR")
     };
+    try{ var _u=JSON.parse(localStorage.getItem("ssumUser")||"null"); if(_u&&_u.id) fields["카카오ID"]=_u.id; }catch(e){}
     if(photoUrls.length>0)fields["프로필사진"]=photoUrls;
     if(docUrl)fields["재직증명서"]=[{url:docUrl}];
 

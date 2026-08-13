@@ -1086,6 +1086,7 @@ async function handleSubmit(e){
       "테스트결과": payload.testResult || "", "매칭유형": payload.matchType || "일반매칭", "매칭상태": "승인",
       "신청일시": new Date().toLocaleString("ko-KR")
     };
+    try{ var _u=JSON.parse(localStorage.getItem("ssumUser")||"null"); if(_u&&_u.id) fields["카카오ID"]=_u.id; }catch(e){}
     if(photoUrls.length > 0) fields["프로필사진"] = photoUrls;
     if(docJobUrl) fields["재직증명서"] = [{url: docJobUrl}];
 
