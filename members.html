@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회원 명부 | 썸류센터</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--gold:#FFD37A;--kakao:#F5D400;--male:#7EA6E0;--female:#E88FB0;--ink-on-amber:#171208;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em}
+  .wrap{max-width:680px;margin:0 auto;padding:20px 15px 70px}
+  h1{font-size:21px;font-weight:900}
+  .sub{font-size:12.5px;color:var(--muted);margin:3px 0 16px}
+  a.home{color:var(--muted);text-decoration:none}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px}
+  input{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
+  input:focus{outline:none;border-color:var(--amber)}
+  .btn{border:none;border-radius:11px;padding:12px 16px;font-size:14px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;width:100%}
+  .hide{display:none}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px 6px;text-align:center}
+  .stat .k{font-size:10.5px;color:var(--muted)}
+  .stat .v{font-size:20px;font-weight:900;margin-top:3px}
+  .stat.kko .v{color:var(--kakao)} .stat.one .v{color:var(--female)} .stat.rot .v{color:var(--amber)}
+  .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{background:var(--surface);border:1px solid var(--line-strong);color:var(--muted);border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:750;cursor:pointer;transition:all .15s}
+  .chip.on{background:var(--amber);border-color:var(--amber);color:var(--ink-on-amber)}
+  .search{margin-bottom:12px}
+  .cnt{font-size:12px;color:var(--muted);margin:0 2px 10px}
+  .m{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:9px;display:flex;gap:12px}
+  .m .ph{width:52px;height:52px;border-radius:12px;object-fit:cover;background:var(--surface-2);border:1px solid var(--line-strong);flex-shrink:0}
+  .m .ph.none{display:grid;place-items:center;font-size:22px;color:var(--faint)}
+  .m .bd{flex:1;min-width:0}
+  .m .top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .m .nm{font-weight:800;font-size:15px}
+  .gd{font-size:10px;font-weight:800;padding:1px 6px;border-radius:999px}
+  .gd.m2{color:var(--male);background:rgba(126,166,224,.13)} .gd.f{color:var(--female);background:rgba(232,143,176,.13)}
+  .src{font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;margin-left:auto}
+  .src.kko{background:rgba(245,212,0,.14);color:var(--kakao)} .src.one{background:rgba(232,143,176,.13);color:var(--female)} .src.rot{background:rgba(232,176,80,.13);color:var(--amber)} .src.etc{background:var(--surface-2);color:var(--muted)}
+  .m .meta{font-size:12px;color:var(--muted);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap}
+  .m .hist{font-size:11.5px;color:var(--faint);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line-strong);white-space:pre-wrap;line-height:1.5}
+  .empty{text-align:center;color:var(--muted);padding:44px 0;font-size:13px}
+  .spin{width:26px;height:26px;border:3px solid var(--line-strong);border-top-color:var(--amber);border-radius:50%;margin:34px auto;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  #login-msg{font-size:12.5px;color:#E8828A;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="login">
+    <h1>👥 회원 명부</h1>
+    <div class="sub">센터장 전용 · 관리자 비밀번호</div>
+    <div class="card">
+      <input id="pw" type="password" placeholder="admin 비밀번호">
+      <div style="margin-top:12px"><button class="btn" id="loginBtn">로그인</button></div>
+      <div id="login-msg"></div>
+    </div>
+  </div>
+
+  <div id="console" class="hide">
+    <h1>👥 회원 명부</h1>
+    <div class="sub">카카오 가입자 + 신청자 통합 명부 · 유입경로별로 봐요<br>
+      <a class="home" href="/admin">🏠 홈</a> · <a class="home" href="/participants">🎯 참가자 마스터</a></div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">전체</div><div class="v" id="s-all">–</div></div>
+      <div class="stat kko"><div class="k">💛 카카오</div><div class="v" id="s-kko">–</div></div>
+      <div class="stat one"><div class="k">💘 1:1</div><div class="v" id="s-one">–</div></div>
+      <div class="stat rot"><div class="k">🎡 로테이션</div><div class="v" id="s-rot">–</div></div>
+    </div>
+
+    <div class="search"><input id="q" placeholder="🔍 이름·연락처 검색"></div>
+    <div class="filters" id="filters">
+      <span class="chip on" data-f="all">전체</span>
+      <span class="chip" data-f="kko">💛 카카오가입</span>
+      <span class="chip" data-f="one">💘 1:1신청</span>
+      <span class="chip" data-f="rot">🎡 로테이션</span>
+    </div>
+    <div class="cnt" id="cnt"></div>
+    <div id="list"><div class="spin"></div></div>
+  </div>
+</div>
+<script>
+  var KEY="admin_key";
+  function key(){ return localStorage.getItem(KEY)||""; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  var ALL=[], curFilter="all", curQ="";
+
+  document.getElementById("loginBtn").addEventListener("click",doLogin);
+  document.getElementById("pw").addEventListener("keydown",function(e){ if(e.key==="Enter") doLogin(); });
+  function doLogin(){
+    var pw=document.getElementById("pw").value;
+    fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ localStorage.setItem(KEY,pw); showConsole(); }
+        else { document.getElementById("login-msg").textContent="비밀번호가 틀렸어요"; }
+      }).catch(function(){ document.getElementById("login-msg").textContent="오류가 났어요."; });
+  }
+  function showConsole(){ document.getElementById("login").classList.add("hide"); document.getElementById("console").classList.remove("hide"); load(); }
+  if(key()){ showConsole(); }
+
+  document.getElementById("q").addEventListener("input",function(e){ curQ=e.target.value.trim(); render(); });
+  Array.prototype.forEach.call(document.querySelectorAll("#filters .chip"),function(c){
+    c.addEventListener("click",function(){
+      document.querySelectorAll("#filters .chip").forEach(function(x){x.classList.remove("on");});
+      c.classList.add("on"); curFilter=c.getAttribute("data-f"); render();
+    });
+  });
+
+  function load(){ ALL=[]; fetchPage(""); }
+  function fetchPage(offset){
+    var url="/api/airtable?table="+encodeURIComponent("회원")+"&sort=가입일"+(offset?"&offset="+encodeURIComponent(offset):"");
+    fetch(url,{headers:{"x-admin-key":key()}}).then(function(r){return r.json();}).then(function(r){
+      if(r.error){ document.getElementById("list").innerHTML='<div class="empty">'+esc(r.error)+'</div>'; return; }
+      ALL=ALL.concat(r.records||[]);
+      if(r.offset) fetchPage(r.offset); else ready();
+    }).catch(function(){ document.getElementById("list").innerHTML='<div class="empty">불러오기 오류</div>'; });
+  }
+
+  function srcType(f){ var s=f["유입경로"]||""; if(s.indexOf("카카오")>=0) return "kko"; if(s.indexOf("1:1")>=0) return "one"; if(s.indexOf("로테이션")>=0) return "rot"; return "etc"; }
+
+  function ready(){
+    var kko=0,one=0,rot=0;
+    ALL.forEach(function(x){ var t=srcType(x.fields||{}); if(t==="kko")kko++; else if(t==="one")one++; else if(t==="rot")rot++; });
+    document.getElementById("s-all").textContent=ALL.length;
+    document.getElementById("s-kko").textContent=kko;
+    document.getElementById("s-one").textContent=one;
+    document.getElementById("s-rot").textContent=rot;
+    render();
+  }
+
+  function render(){
+    var q=curQ.toLowerCase();
+    var rows=ALL.filter(function(x){
+      var f=x.fields||{}, t=srcType(f);
+      if(curFilter!=="all" && t!==curFilter) return false;
+      if(q){ var hay=((f["이름"]||"")+" "+(f["전화번호"]||"")).toLowerCase(); if(hay.indexOf(q)<0) return false; }
+      return true;
+    });
+    document.getElementById("cnt").textContent=rows.length+"명"+(curFilter==="all"&&!q?"":" (필터 적용)");
+    var list=document.getElementById("list");
+    if(!rows.length){ list.innerHTML='<div class="empty">해당하는 회원이 없어요.</div>'; return; }
+    list.innerHTML=rows.map(function(x){
+      var f=x.fields||{};
+      var g=f["성별"]==="남성"?"m2":f["성별"]==="여성"?"f":"";
+      var gl=f["성별"]==="남성"?"남":f["성별"]==="여성"?"여":"";
+      var t=srcType(f);
+      var srcLabel={kko:"💛 카카오",one:"💘 1:1",rot:"🎡 로테이션",etc:esc(f["유입경로"]||"기타")}[t];
+      var ph=(f["프로필사진"]&&f["프로필사진"][0]&&f["프로필사진"][0].url)||"";
+      var age=f["출생연도"]?esc(f["출생연도"])+"년생":"";
+      var meta=[];
+      if(age) meta.push(age);
+      if(f["직업"]) meta.push(esc(f["직업"]));
+      if(f["전화번호"]) meta.push("📞 "+esc(f["전화번호"]));
+      if(f["가입일"]) meta.push("가입 "+esc(f["가입일"]));
+      return '<div class="m">'
+        + (ph?'<img class="ph" src="'+esc(ph)+'">':'<div class="ph none">🙂</div>')
+        + '<div class="bd"><div class="top"><span class="nm">'+esc(f["이름"]||"이름없음")+'</span>'
+        +   (gl?'<span class="gd '+g+'">'+gl+'</span>':'')
+        +   '<span class="src '+t+'">'+srcLabel+'</span></div>'
+        +   (meta.length?'<div class="meta">'+meta.map(function(m){return '<span>'+m+'</span>';}).join("")+'</div>':'')
+        +   (f["참여이력"]?'<div class="hist">📌 '+esc(f["참여이력"])+'</div>':'')
+        + '</div></div>';
+    }).join("");
+  }
+</script>
+</body>
+</html>

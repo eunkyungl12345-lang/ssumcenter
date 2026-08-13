@@ -3,13 +3,13 @@
   "trailingSlash": false,
   "headers": [
     {
-      "source": "/(admin|1on1|1on1-admin|rotation-admin|lineup|attendance|vote-admin|participants|response|matching|login|auth-callback|my)",
+      "source": "/(admin|1on1|1on1-admin|rotation-admin|lineup|attendance|vote-admin|participants|response|matching|login|auth-callback|my|members)",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, must-revalidate" }
       ]
     },
     {
-      "source": "/(admin|1on1|1on1-admin|rotation-admin|lineup|attendance|vote-admin|participants|response|matching|login|auth-callback|my).html",
+      "source": "/(admin|1on1|1on1-admin|rotation-admin|lineup|attendance|vote-admin|participants|response|matching|login|auth-callback|my|members).html",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, must-revalidate" }
       ]
