@@ -43,30 +43,31 @@ module.exports = async function handler(req, res) {
     const nickname = userData.properties?.nickname || userData.kakao_account?.profile?.nickname || "카카오 유저";
     const profileImage = userData.properties?.profile_image || userData.kakao_account?.profile?.profile_image_url || "";
 
-    // 3. Supabase에 사용자 저장/조회
-    const SUPA_URL = process.env.SUPABASE_URL || "https://nvqlguhzsucrcnmjlxoe.supabase.co";
-    const SUPA_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
-
-    if (SUPA_SERVICE_KEY) {
-      // Supabase에 프로필 upsert
-      const upsertRes = await fetch(SUPA_URL + "/rest/v1/profiles", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + SUPA_SERVICE_KEY,
-          "apikey": SUPA_SERVICE_KEY,
-          "Content-Type": "application/json",
-          "Prefer": "resolution=merge-duplicates"
-        },
-        body: JSON.stringify({
-          id: "kakao_" + kakaoId,
-          name: nickname,
-          phone: "",
-          gender: "",
-          birth_year: "",
-          created_at: new Date().toISOString()
-        })
-      });
-    }
+    // 3. 회원 명부(Airtable)에 카카오 로그인 기록 — 카카오ID 기준, 없으면 새로 생성
+    const kid = "kakao_" + kakaoId;
+    try {
+      const AT_TOKEN = process.env.AIRTABLE_TOKEN;
+      const AT_BASE = process.env.AIRTABLE_BASE_ID;
+      if (AT_TOKEN && AT_BASE) {
+        const base = `https://api.airtable.com/v0/${AT_BASE}/${encodeURIComponent("회원")}`;
+        const H = { "Authorization": "Bearer " + AT_TOKEN, "Content-Type": "application/json" };
+        const findUrl = `${base}?filterByFormula=${encodeURIComponent(`{카카오ID}="${kid}"`)}&pageSize=1`;
+        const found = await (await fetch(findUrl, { headers: H })).json();
+        if (!((found.records || []).length)) {
+          const today = new Date().toISOString().slice(0, 10);
+          const fields = {
+            "이름": nickname,
+            "카카오ID": kid,
+            "유입경로": "카카오로그인",
+            "상태": "활성",
+            "가입일": today,
+            "참여이력": "카카오 로그인 (" + today + ")"
+          };
+          if (profileImage) fields["프로필사진"] = [{ url: profileImage }];
+          await fetch(base, { method: "POST", headers: H, body: JSON.stringify({ fields, typecast: true }) });
+        }
+      }
+    } catch (e) { /* 명부 저장 실패해도 로그인은 성공 처리 */ }
 
     return res.status(200).json({
       ok: true,
