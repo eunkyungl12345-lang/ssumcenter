@@ -90,13 +90,17 @@
     var c=document.getElementById("content");
     if(!list.length){
       c.innerHTML='<div class="hello">'+avatar()+'<div><div class="nm">'+esc(user.name||"회원")+'님</div><div class="sub">환영해요 💛</div></div></div>'
+        + claimCardHtml(true)
         +'<div class="card"><div class="empty">아직 신청 내역이 없어요.<br>신청하면 여기서 내 정보를 보고 수정할 수 있어요!'
         +'<div><a href="oneone.html">💘 1:1 신청</a><a href="rotation-0827.html">🎡 커피팅 신청</a></div></div></div>';
+      bindClaim();
       return;
     }
     var html='<div class="hello">'+avatar()+'<div><div class="nm">'+esc(user.name||"회원")+'님</div><div class="sub">내 신청 정보를 보고 수정할 수 있어요 ✏️</div></div></div>';
     list.forEach(function(it,idx){ html+=cardHtml(it.t, it.rec, idx); });
+    html+=claimCardHtml(false);
     c.innerHTML=html;
+    bindClaim();
     // 파일 input 이벤트
     list.forEach(function(it,idx){
       var inp=document.getElementById("file-"+idx);
@@ -193,6 +197,30 @@
     }catch(e){ msg.style.color="var(--female)"; msg.textContent="❌ 오류가 났어요. 다시 시도해주세요."; }
     btn.disabled=false; btn.textContent="저장하기";
   };
+
+  function claimCardHtml(prominent){
+    return '<div class="card">'
+      + '<div style="font-weight:800;font-size:14px;margin-bottom:4px">📞 예전에 (로그인 없이) 신청하셨나요?</div>'
+      + '<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">신청할 때 쓴 <b>전화번호</b>를 넣으면 그 신청서를 내 계정으로 불러와요.</div>'
+      + '<input id="claimPhone" type="tel" placeholder="010-1234-5678" style="width:100%;background:var(--surface-2);border:1.5px solid var(--line-2);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit;margin-bottom:9px">'
+      + '<button class="save" id="claimBtn" style="background:var(--surface-2);color:var(--gold);border:1px solid var(--line-2)">기존 신청 불러오기</button>'
+      + '<div class="msg" id="claimMsg"></div>'
+      + '</div>';
+  }
+  function bindClaim(){ var b=document.getElementById("claimBtn"); if(b) b.addEventListener("click", claimByPhone); }
+  async function claimByPhone(){
+    var inp=document.getElementById("claimPhone"), msg=document.getElementById("claimMsg"), btn=document.getElementById("claimBtn");
+    var phone=(inp.value||"").trim();
+    if(phone.replace(/[^0-9]/g,"").length<9){ msg.style.color="var(--female)"; msg.textContent="전화번호를 정확히 입력해주세요"; return; }
+    btn.disabled=true; btn.textContent="찾는 중..."; msg.textContent="";
+    try{
+      var res=await fetch("/api/airtable?claim=1&kakaoId="+encodeURIComponent(KID),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:phone})});
+      var d=await res.json();
+      if(res.ok&&d.ok&&d.linked>0){ msg.style.color="var(--ok)"; msg.textContent="✅ "+d.linked+"건 연결됐어요! 불러오는 중..."; setTimeout(function(){ document.getElementById("content").innerHTML='<div class="spin"></div>'; load(); },900); }
+      else if(res.ok&&d.ok){ msg.style.color="var(--female)"; msg.textContent="그 번호로 낸 기존 신청을 못 찾았어요 (이미 연결됐거나 번호가 다를 수 있어요)."; btn.disabled=false; btn.textContent="기존 신청 불러오기"; }
+      else { msg.style.color="var(--female)"; msg.textContent="❌ "+(d.error||"오류"); btn.disabled=false; btn.textContent="기존 신청 불러오기"; }
+    }catch(e){ msg.style.color="var(--female)"; msg.textContent="❌ 오류가 났어요."; btn.disabled=false; btn.textContent="기존 신청 불러오기"; }
+  }
 
   document.getElementById("logoutLink").addEventListener("click",function(){
     if(confirm("로그아웃할까요?")){ localStorage.removeItem("ssumUser"); location.href="index.html"; }

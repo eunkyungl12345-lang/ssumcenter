@@ -51,6 +51,30 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: "서버 환경변수가 설정되지 않았습니다" });
   }
 
+  // ---- 고객: 전화번호로 기존(로그인 전) 신청을 내 계정에 연결 (카카오ID 없는 것만) ----
+  if (req.method === "POST" && req.query.claim === "1") {
+    const claimKakao = req.query.kakaoId;
+    const rawPhone = (req.body && req.body.phone) || "";
+    const np = String(rawPhone).replace(/[^0-9]/g, "");
+    if (!claimKakao || np.length < 9) return res.status(400).json({ error: "카카오 로그인 후, 올바른 전화번호를 입력해주세요" });
+    const H = { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" };
+    const tables = ["1:1 매칭 신청", "로테이션 신청"];
+    let linked = 0;
+    try {
+      for (const t of tables) {
+        const base = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(t)}`;
+        const formula = `AND(SUBSTITUTE(SUBSTITUTE({연락처},"-","")," ","")="${np}",{카카오ID}="")`;
+        const findUrl = `${base}?filterByFormula=${encodeURIComponent(formula)}&pageSize=50`;
+        const found = await (await fetch(findUrl, { headers: H })).json();
+        for (const r of (found.records || [])) {
+          await fetch(`${base}/${r.id}`, { method: "PATCH", headers: H, body: JSON.stringify({ fields: { "카카오ID": claimKakao } }) });
+          linked++;
+        }
+      }
+    } catch (e) { return res.status(500).json({ error: "연결 중 오류가 났어요" }); }
+    return res.status(200).json({ ok: true, linked });
+  }
+
   const { table, recordId, filter, sort, offset } = req.query;
   if (!table) return res.status(400).json({ error: "table 파라미터 필요" });
 
