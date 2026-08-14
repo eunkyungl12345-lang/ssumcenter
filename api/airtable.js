@@ -36,6 +36,21 @@ function 일대일접수문자(name) {
   ].join("\n");
 }
 
+// 1:1 매칭 성사 → 먼저 수락한 사람에게 입금 안내
+function 매칭입금문자(name, amount) {
+  return [
+    "🩷 썸류센터 1:1 매칭 성사 안내 🩷",
+    (name ? name + "님, " : "") + "축하드려요! 상대방도 수락하셨어요 🎉",
+    "아래 계좌로 참가비를 입금해주시면 서로의 연락처를 전달해 드려요.",
+    "",
+    "▸ 참가비 " + amount,
+    "▸ 카카오뱅크 장민 3333-34-1009531",
+    "",
+    "입금자명과 신청서에 쓰신 이름이 일치해야 확인돼요.",
+    "입금 확인 후 바로 연락처를 전달해 드릴게요 💛",
+  ].join("\n");
+}
+
 module.exports = async function handler(req, res) {
   // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -260,6 +275,24 @@ module.exports = async function handler(req, res) {
             upd["결과"] = "양쪽 수락 → 성사 🎉";
           }
           await fetch(`https://api.airtable.com/v0/${BASE_ID}/${MTBL}/${rec.id}`, { method: "PATCH", headers: AUTH, body: JSON.stringify({ fields: upd }) });
+
+          // 🎉 성사(양쪽 수락)된 순간 → 먼저 수락한 사람(이번 응답자의 상대)에게 입금 안내 문자
+          if (upd["상태"] === "성사") {
+            try {
+              const firstId = responderIsMan ? mf["여자ID"] : mf["남자ID"];
+              const firstName = responderIsMan ? (mf["여자"] || "") : (mf["남자"] || "");
+              if (firstId && String(firstId).startsWith("rec")) {
+                const pr = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}/${firstId}`, { headers: AUTH });
+                const pd = await pr.json();
+                const pf = (pd && pd.fields) || {};
+                const to = pf["연락처"] || "";
+                const amount = (String(pf["매칭유형"] || "").indexOf("슈퍼") >= 0) ? "39,800원" : "19,900원";
+                if (isValidPhone(to)) {
+                  await sendSms({ to, text: 매칭입금문자(firstName, amount) });
+                }
+              }
+            } catch (e) { console.error("[airtable] 성사 입금문자 실패:", e.message); }
+          }
         }
       } catch (e) { console.error("[airtable] 매칭 테이블 갱신 실패:", e.message); }
     }
