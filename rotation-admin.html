@@ -239,7 +239,7 @@
       + '<button class="a-ok'+(st==="승인"?" on":"")+'" data-s="승인">승인</button>'
       + '<button class="a-no'+(st==="거절"?" on":"")+'" data-s="거절">거절</button>'
       + '</div>'
-      + (st==="승인" ? '<button class="cfmbtn" style="width:100%;margin-top:8px;background:#22c55e;color:#fff;border:none;border-radius:12px;padding:9px;font-weight:800;font-size:13px;cursor:pointer">'+(quietSet[x.id]?"💰 입금확정만 표시 (문자 없음)":"💰 입금확인 → 확정문자 발송")+'</button>' : '')
+      + (st==="승인" ? '<button class="cfmbtn" style="width:100%;margin-top:8px;background:'+(f["입금확정"]==="O"?"#2a2117":"#22c55e")+';color:'+(f["입금확정"]==="O"?"#6FBE97":"#fff")+';border:'+(f["입금확정"]==="O"?"1px solid #3a5c47":"none")+';border-radius:12px;padding:9px;font-weight:800;font-size:13px;cursor:pointer">'+(f["입금확정"]==="O"?"✅ 입금확정됨 · 다시 보내기":(quietSet[x.id]?"💰 입금확정만 표시 (문자 없음)":"💰 입금확인 → 확정문자 발송"))+'</button>' : '')
       + '<button class="btn g sm smsbtn" style="width:100%;margin-top:7px">📨 문자 직접 보내기</button>';
 
     // 🔕 "문자 안 보내기"가 켜져 있으면 승인·입금확정 시 문자를 발송하지 않는다.
@@ -251,7 +251,7 @@
       if(silent()) quietSet[x.id]=true; else delete quietSet[x.id];
       nosmsBox.classList.toggle("on",silent());
       var b=el.querySelector(".cfmbtn");
-      if(b) b.textContent = silent() ? "💰 입금확정만 표시 (문자 없음)" : "💰 입금확인 → 확정문자 발송";
+      if(b) b.textContent = (f["입금확정"]==="O") ? "✅ 입금확정됨 · 다시 보내기" : (silent() ? "💰 입금확정만 표시 (문자 없음)" : "💰 입금확인 → 확정문자 발송");
     });
 
     el.querySelector(".smsbtn").addEventListener("click",function(){ openSms(f); });
@@ -396,7 +396,11 @@
     }
 
     if(!to){ alert("연락처가 없어요."); return; }
-    if(!confirm(who+"님\n→ 입금확정 처리 + '최종 확정 안내' 문자를 보낼까요?\n(라인업에도 자동 등록돼요)")) return;
+    var already = f["입금확정"]==="O";
+    var q = already
+      ? "⚠️ "+who+"님은 이미 입금확정 + 확정문자가 발송된 분이에요.\n\n확정문자를 '한 번 더' 보낼까요? (중복 발송됩니다)"
+      : who+"님\n→ 입금확정 처리 + '최종 확정 안내' 문자를 보낼까요?\n(라인업에도 자동 등록돼요)";
+    if(!confirm(q)) return;
     // 입금확정 표시 → 라인업 자동 등록
     api("PATCH",{records:[{id:x.id,fields:{"입금확정":"O"}}]}).then(function(){ f["입금확정"]="O"; });
     sendSmsTo(to, TPLS["확정"](f)).then(function(r){ alert(r&&r.ok?"✅ 입금확정 처리 + 확정문자 발송됨\n(라인업에 자동 등록됐어요)":"입금확정 표시는 됐어요. 문자는 실패: "+((r&&r.error)||"")); });
