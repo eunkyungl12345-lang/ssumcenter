@@ -51,6 +51,15 @@ function 매칭입금문자(name, amount) {
   ].join("\n");
 }
 
+// 슬랙 팀 알림 (실패해도 무시)
+async function notifySlack(text) {
+  const url = process.env.SLACK_WEBHOOK_URL;
+  if (!url) return;
+  try {
+    await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
+  } catch (e) { /* 알림 실패는 무시 */ }
+}
+
 module.exports = async function handler(req, res) {
   // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -208,6 +217,19 @@ module.exports = async function handler(req, res) {
       } catch (e) { /* 명부 적립 실패는 무시 */ }
     }
 
+    // 새 신청 → 슬랙 팀 알림
+    if (req.method === "POST" && !isAdmin && (table === "1:1 매칭 신청" || table === "로테이션 신청")) {
+      try {
+        const recs = (req.body && req.body.records) || [];
+        for (const rc of recs) {
+          const f = (rc && rc.fields) || {};
+          const kind = table === "1:1 매칭 신청" ? "💘 1:1 매칭" : "🎡 커피팅";
+          const info = [f["이름"], f["성별"], f["출생연도"] ? f["출생연도"] + "년생" : "", f["직업_직장명"] || f["직업"], f["연락처"]].filter(Boolean).join(" · ");
+          await notifySlack(`📮 새 ${kind} 신청!\n${info}`);
+        }
+      } catch (e) { /* 알림 실패 무시 */ }
+    }
+
     // (로테이션 신청 시 자동 문자는 제거됨 — 이제 rotation-admin에서 '승인' 누르면 입금안내 문자 자동 발송)
 
     // 1:1 매칭 신청 접수(공개 폼) → 접수 안내 문자 자동 발송 (실패해도 신청은 성공)
@@ -291,6 +313,7 @@ module.exports = async function handler(req, res) {
                   await sendSms({ to, text: 매칭입금문자(firstName, amount) });
                 }
               }
+              await notifySlack(`🎉 1:1 매칭 성사!\n${mf["여자"] || ""} ♥ ${mf["남자"] || ""}\n→ 먼저 수락한 ${firstName || ""}님께 입금 안내 문자 발송했어요`);
             } catch (e) { console.error("[airtable] 성사 입금문자 실패:", e.message); }
           }
         }
