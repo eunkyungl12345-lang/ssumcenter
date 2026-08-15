@@ -194,10 +194,10 @@
     // ===== 오늘 처리 =====
     var todos=[];
     // 1) 성사 → 연락처 전달
-    done.forEach(function(m){ var f=m.fields||{};
-      todos.push({cls:"succ",ic:"s",icc:"s",pill:"s",pillt:"성사",nm:esc(f["여자"]||"")+" ♥ "+esc(f["남자"]||""),
+    done.filter(function(m){ return (m.fields||{})["연락처전달"]!=="O"; }).forEach(function(m){ var f=m.fields||{};
+      todos.push({cls:"succ",ic:"🎉",icc:"s",pill:"s",pillt:"성사",nm:esc(f["여자"]||"")+" ♥ "+esc(f["남자"]||""),
         desc:"🎉 양쪽 수락 · <b style=\"color:var(--ok)\">연락처 전달</b>하기",
-        act:'<a class="btn solid ok" href="/1on1-admin">💚 연락처 전달하기</a>'});
+        act:'<button class="btn solid ok" onclick="markDelivered(\''+m.id+'\',this)">💚 연락처 전달 완료</button><a class="btn ghost" href="/1on1-admin">현황</a>'});
     });
     // 2) 소개중 → 응답 재촉 (대기 있는 쪽)
     ongoing.forEach(function(m){ var f=m.fields||{};
@@ -313,6 +313,13 @@
   function keyNum(dk){ var p=dk.split("."); return (+p[0])*10000+(+p[1])*100+(+p[2]); }
 
   // ---------- 액션 ----------
+  window.markDelivered=function(id, btn){
+    if(!confirm("연락처를 전달했나요?\n'완료'로 표시하면 오늘 처리에서 사라져요.")) return;
+    btn.disabled=true; btn.textContent="처리 중...";
+    fetch("/api/airtable?table="+encodeURIComponent("매칭")+"&recordId="+id,{method:"PATCH",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({fields:{"연락처전달":"O"}})})
+      .then(function(r){return r.json();}).then(function(d){ if(d && !d.error){ toast("✅ 연락처 전달 완료 처리됨!"); loadAll(); } else { toast("실패: "+((d&&d.error)||"")); btn.disabled=false; btn.textContent="💚 연락처 전달 완료"; } })
+      .catch(function(){ toast("오류가 났어요"); btn.disabled=false; btn.textContent="💚 연락처 전달 완료"; });
+  };
   window.copyLink=function(url){
     if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(function(){toast("링크 복사됨! 카톡·문자에 붙여넣으세요 📲");},function(){toast("복사 실패 — 길게 눌러 복사");});
     else toast("이 기기에선 자동복사가 안 돼요");
