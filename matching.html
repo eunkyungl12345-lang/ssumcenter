@@ -942,6 +942,70 @@ document.querySelectorAll("#keyword-chips .chip").forEach(chip => {
   });
 });
 
+// ===== 임시저장: 작성 중인 신청서 자동 저장 & 이어쓰기 =====
+var _curStep = 1;
+function draftKey(){ try{ var u=JSON.parse(localStorage.getItem("ssumUser")||"null"); return "matching_draft_"+((u&&u.id)||"anon"); }catch(e){ return "matching_draft_anon"; } }
+function _form(){ return document.getElementById("matching-form"); }
+function collectDraft(){
+  var d={ fields:{}, ages:[...selectedAges], keywords:[...selectedKeywords], step:_curStep };
+  _form().querySelectorAll("input[name],select[name],textarea[name]").forEach(function(el){
+    if(el.type==="file") return;
+    if(el.name==="prefAge"||el.name==="keywords") return;
+    if(el.type==="radio"){ if(el.checked) d.fields[el.name]=el.value; }
+    else d.fields[el.name]=el.value;
+  });
+  return d;
+}
+function draftHasContent(d){ if(!d) return false; var f=d.fields||{}; return !!(f.name||f.phone||f.job||f.location||f.idealType||f.intro||(d.ages&&d.ages.length)||(d.keywords&&d.keywords.length)); }
+var _saveT=null;
+function saveDraft(){ try{ var d=collectDraft(); if(draftHasContent(d)) localStorage.setItem(draftKey(), JSON.stringify(d)); }catch(e){} }
+function saveDraftDebounced(){ clearTimeout(_saveT); _saveT=setTimeout(saveDraft, 500); }
+function clearDraft(){ try{ localStorage.removeItem(draftKey()); }catch(e){} }
+function restoreDraft(d){
+  try{
+    var form=_form();
+    Object.keys(d.fields||{}).forEach(function(nm){
+      form.querySelectorAll('[name="'+nm+'"]').forEach(function(el){
+        if(el.type==="radio"){ el.checked=(el.value===d.fields[nm]); }
+        else el.value=d.fields[nm];
+      });
+    });
+    (d.ages||[]).forEach(function(v){ selectedAges.add(v); });
+    document.querySelectorAll("#age-chips .chip").forEach(function(c){ if(selectedAges.has(c.dataset.val)) c.classList.add("selected"); });
+    var pa=document.getElementById("pref-age-input"); if(pa) pa.value=[...selectedAges].join(",");
+    (d.keywords||[]).forEach(function(v){ selectedKeywords.add(v); });
+    document.querySelectorAll("#keyword-chips .chip").forEach(function(c){ if(selectedKeywords.has(c.dataset.kw)) c.classList.add("selected"); });
+    var kw=document.getElementById("keywords-input"); if(kw) kw.value=[...selectedKeywords].join(",");
+    var kc=document.getElementById("keyword-count"); if(kc){ kc.textContent=selectedKeywords.size+"개 선택됨"; kc.style.color=selectedKeywords.size>=1?"#E8B050":"#6b6358"; }
+    goStep(d.step||1);
+  }catch(e){}
+}
+(function(){
+  var f=_form(); if(!f) return;
+  f.addEventListener("input", saveDraftDebounced);
+  f.addEventListener("change", saveDraftDebounced);
+  var ac=document.getElementById("age-chips"); if(ac) ac.addEventListener("click", saveDraftDebounced);
+  var kc2=document.getElementById("keyword-chips"); if(kc2) kc2.addEventListener("click", saveDraftDebounced);
+})();
+window.addEventListener("load", function(){
+  try{
+    var raw=localStorage.getItem(draftKey()); if(!raw) return;
+    var d=JSON.parse(raw); if(!draftHasContent(d)) return;
+    var f=_form(); if(!f) return;
+    var b=document.createElement("div");
+    b.style.cssText="margin:0 16px 14px;background:rgba(232,176,80,.12);border:1px solid rgba(232,176,80,.4);border-radius:14px;padding:13px 15px";
+    b.innerHTML='<div style="font-size:13.5px;font-weight:800;color:#E8B050">📝 작성하던 신청서가 있어요</div>'
+      +'<div style="font-size:12px;color:#9a9080;margin-top:3px">이어서 쓸까요? (사진·서류는 다시 첨부해주세요)</div>'
+      +'<div style="display:flex;gap:8px;margin-top:10px">'
+      +'<button type="button" id="draft-resume" style="flex:1;background:#E8B050;color:#171208;border:none;border-radius:10px;padding:10px;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer">이어서 작성</button>'
+      +'<button type="button" id="draft-fresh" style="background:transparent;color:#9a9080;border:1px solid #3a2e1f;border-radius:10px;padding:10px 14px;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer">새로 작성</button>'
+      +'</div>';
+    f.parentNode.insertBefore(b, f);
+    document.getElementById("draft-resume").addEventListener("click", function(){ restoreDraft(d); b.remove(); });
+    document.getElementById("draft-fresh").addEventListener("click", function(){ clearDraft(); b.remove(); });
+  }catch(e){}
+});
+
 // 자기소개 글자수 카운터
 document.getElementById("intro").addEventListener("input", function(){
   const len = this.value.length;
@@ -989,6 +1053,8 @@ function stepFieldsValid(n){
   return true;
 }
 function goStep(n){
+  _curStep = n;
+  if(typeof saveDraftDebounced==="function") saveDraftDebounced();
   var steps=document.querySelectorAll(".fstep");
   for(var i=0;i<steps.length;i++){ var on=(+steps[i].getAttribute("data-step")===n); steps[i].classList.toggle("on",on); if(on){ var rv=steps[i].querySelectorAll("[data-reveal]"); for(var j=0;j<rv.length;j++) rv[j].classList.add("in"); } }
   var chips=document.querySelectorAll("#fsteps .fchip");
@@ -1111,6 +1177,8 @@ async function handleSubmit(e){
       break;  // 다른 종류의 에러면 중단
     }
     if(!ok) throw new Error("전송 실패: " + lastErr);
+
+    clearDraft(); // 제출 성공 → 임시저장 삭제
 
     // 성공 화면 표시 — 저장은 이미 끝났으니, 여기서 무슨 일이 있어도 오류로 빠지지 않게 안전 처리
     try {
