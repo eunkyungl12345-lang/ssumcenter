@@ -14,8 +14,8 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"></noscript>
 <style>
   body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0e0c0a;color:#F5F5F3;overflow-x:hidden}
-  .y{color:#E8B050}.bg-y{background:#E8B050}.bd-y{border-color:#E8B050}
-  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#16140f}::-webkit-scrollbar-thumb{background:#E8B050;border-radius:3px}
+  .y{color:#E3B7A0}.bg-y{background:#E3B7A0}.bd-y{border-color:#E3B7A0}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#16140f}::-webkit-scrollbar-thumb{background:#E3B7A0;border-radius:3px}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
   .fade{animation:fadeUp .5s ease both}
   .glow{background:radial-gradient(circle at 50% 0%,rgba(232,176,80,.12),transparent 60%)}
@@ -23,35 +23,35 @@
   [data-reveal].in{opacity:1;transform:none}
   /* 키워드 칩 선택 */
   .chip{cursor:pointer;transition:all .2s}
-  .chip:hover{border-color:#E8B050;color:#E8B050}
-  .chip.selected{background:#E8B050 !important;color:#0e0c0a !important;border-color:#E8B050 !important;font-weight:700}
+  .chip:hover{border-color:#E3B7A0;color:#E3B7A0}
+  .chip.selected{background:#E3B7A0 !important;color:#0e0c0a !important;border-color:#E3B7A0 !important;font-weight:700}
   /* 자기소개 카운터 */
   .counter{transition:color .2s}
   .counter.over{color:#FF4A4A}
   /* 라디오/체크 커스텀 */
   input[type="radio"],input[type="checkbox"]{display:none}
   .radio-card{cursor:pointer;transition:all .2s}
-  .radio-card:hover{border-color:#E8B050}
-  input:checked+.radio-card{background:rgba(232,176,80,.08);border-color:#E8B050}
-  input:checked+.radio-card .dot{background:#E8B050}
+  .radio-card:hover{border-color:#E3B7A0}
+  input:checked+.radio-card{background:rgba(232,176,80,.08);border-color:#E3B7A0}
+  input:checked+.radio-card .dot{background:#E3B7A0}
 
   /* AI 자동입력 */
   .ai-section{background:#16140f;border:1px solid #1e1c17;border-radius:1rem;padding:1.25rem;margin-bottom:1.5rem}
   .ai-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
   .ai-header h3{font-size:15px;font-weight:900}
-  .ai-toggle{display:flex;align-items:center;gap:5px;background:#E8B050;color:#0e0c0a;border:none;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
-  .ai-toggle:hover{transform:scale(1.03);background:#D4952A}
+  .ai-toggle{display:flex;align-items:center;gap:5px;background:#E3B7A0;color:#0e0c0a;border:none;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+  .ai-toggle:hover{transform:scale(1.03);background:#CFA089}
   .ai-toggle.active{box-shadow:0 0 14px rgba(232,176,80,.4)}
   .ai-body{display:none;margin-top:12px}
   .ai-body.show{display:block}
   .ai-hint{background:rgba(232,176,80,.06);border:1.5px solid rgba(232,176,80,.25);border-radius:12px;padding:12px;margin-bottom:10px}
-  .ai-hint p{color:#E8B050;font-size:11px;line-height:1.5}
+  .ai-hint p{color:#E3B7A0;font-size:11px;line-height:1.5}
   .ai-textarea{width:100%;background:#0e0c0a;border:1.5px solid rgba(232,176,80,.25);border-radius:12px;padding:14px;color:#F5F5F3;font-size:14px;resize:vertical;min-height:160px;font-family:inherit;line-height:1.7}
-  .ai-textarea:focus{outline:none;border-color:#E8B050}
+  .ai-textarea:focus{outline:none;border-color:#E3B7A0}
   .ai-textarea::placeholder{color:#6b6358}
-  .ai-fill-btn{background:#E8B050;color:#0e0c0a;border:none;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;float:right;margin-top:8px;font-family:inherit;display:flex;align-items:center;gap:5px}
-  .ai-fill-btn:hover{background:#D4952A}
-  .ai-result{display:none;margin-top:12px;background:rgba(232,176,80,.06);border:1px solid rgba(232,176,80,.25);border-radius:10px;padding:10px 12px;font-size:11px;color:#E8B050}
+  .ai-fill-btn{background:#E3B7A0;color:#0e0c0a;border:none;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;float:right;margin-top:8px;font-family:inherit;display:flex;align-items:center;gap:5px}
+  .ai-fill-btn:hover{background:#CFA089}
+  .ai-result{display:none;margin-top:12px;background:rgba(232,176,80,.06);border:1px solid rgba(232,176,80,.25);border-radius:10px;padding:10px 12px;font-size:11px;color:#E3B7A0}
   .ai-result.show{display:block}
 
   /* ===== 데모 디자인 시스템 재스킨 (마크업/기능은 그대로, 겉모습만) ===== */
@@ -76,7 +76,7 @@
   .chip,.radio-card{border-radius:12px}
   #keyword-chips .chip{border-radius:100px}
   /* 섹션 헤더 아이콘칩 그라데이션 */
-  .bg-\[\#E8B050\]\/10{background:linear-gradient(135deg,rgba(232,176,80,.16),rgba(212,149,42,.06))!important}
+  .bg-\[\#E3B7A0\]\/10{background:linear-gradient(135deg,rgba(232,176,80,.16),rgba(212,149,42,.06))!important}
   /* 제출 버튼 그림자 */
   .bg-y{box-shadow:0 10px 26px -8px rgba(232,176,80,.4)}
   /* 스크롤바 */
@@ -88,16 +88,16 @@
   /* 스텝 위저드 */
   .fsteps{display:flex;gap:6px;margin-bottom:8px}
   .fchip{flex:1;text-align:center;font-size:11px;font-weight:700;color:#9c8f78;background:#17120b;border:1px solid #2e2214;border-radius:100px;padding:7px 4px}
-  .fchip.on{background:#E8B050;color:#0b0906;border-color:transparent}
+  .fchip.on{background:#E3B7A0;color:#0b0906;border-color:transparent}
   .fchip b{opacity:.55;margin-right:2px}
   .fstep{display:none;flex-direction:column;gap:1.4rem}
   .fstep.on{display:flex;animation:fadeUp .35s ease both}
   .fnav{display:flex;gap:10px;margin-top:2px}
-  .fnext{flex:1;background:#E8B050;color:#0b0906;border:none;font-weight:800;font-size:15px;padding:15px;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px -8px rgba(232,176,80,.4)}
+  .fnext{flex:1;background:#E3B7A0;color:#0b0906;border:none;font-weight:800;font-size:15px;padding:15px;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px -8px rgba(232,176,80,.4)}
   .fprev{background:transparent;border:1px solid #2e2214;color:#CBB994;font-weight:700;font-size:14px;padding:15px 20px;border-radius:14px;cursor:pointer;font-family:inherit}
 </style>
 </head>
-<body class="min-h-screen selection:bg-[#E8B050] selection:text-black">
+<body class="min-h-screen selection:bg-[#E3B7A0] selection:text-black">
 
 <!-- 네비 -->
 <nav class="sticky top-0 z-50 bg-[#0e0c0a]/95 backdrop-blur-md border-b border-[#1e1c17] px-4 py-3">
@@ -115,7 +115,7 @@
 <!-- 헤더 -->
 <header class="pt-10 pb-8 px-5 glow">
   <div class="max-w-lg mx-auto text-center fade">
-    <span class="inline-flex items-center gap-2 bg-[#E8B050]/10 border border-[#E8B050]/30 y px-4 py-1.5 rounded-full text-[11px] font-bold tracking-widest uppercase mb-4">
+    <span class="inline-flex items-center gap-2 bg-[#E3B7A0]/10 border border-[#E3B7A0]/30 y px-4 py-1.5 rounded-full text-[11px] font-bold tracking-widest uppercase mb-4">
       <i class="fa-solid fa-video"></i> 1:1 온라인 매칭
     </span>
     <h1 class="text-2xl md:text-3xl font-black leading-tight">
@@ -125,10 +125,10 @@
       센터장이 직접 검토하고, 당신에게 맞는 한 사람을 매칭해 드려요.
     </p>
     <div class="flex flex-wrap items-center justify-center gap-2 mt-4">
-      <span class="inline-flex items-center gap-2 bg-[#E8B050]/10 border border-[#E8B050]/30 rounded-full px-4 py-1.5 text-xs y font-bold">
+      <span class="inline-flex items-center gap-2 bg-[#E3B7A0]/10 border border-[#E3B7A0]/30 rounded-full px-4 py-1.5 text-xs y font-bold">
         <i class="fa-solid fa-tag"></i> 일반 매칭 19,900원
       </span>
-      <span class="inline-flex items-center gap-2 bg-[#E8B050]/20 border border-[#E8B050]/50 rounded-full px-4 py-1.5 text-xs y font-bold">
+      <span class="inline-flex items-center gap-2 bg-[#E3B7A0]/20 border border-[#E3B7A0]/50 rounded-full px-4 py-1.5 text-xs y font-bold">
         <i class="fa-solid fa-crown"></i> 슈퍼매칭 39,800원
       </span>
     </div>
@@ -137,7 +137,7 @@
       <span style="font-size:12.5px;color:#7ed3a6;font-weight:650;line-height:1.45">매칭이 <b style="color:#a5e6c4">성사될 때만</b> 결제해요.<br>매칭 안 되면 <b style="color:#a5e6c4">0원</b>이에요.</span>
     </div>
     <!-- 테스트 결과 배지 (URL 파라미터로 넘어온 경우) -->
-    <div id="test-result-badge" class="hidden bg-[#16140f] border border-[#E8B050]/40 rounded-xl p-3 mt-5 text-sm">
+    <div id="test-result-badge" class="hidden bg-[#16140f] border border-[#E3B7A0]/40 rounded-xl p-3 mt-5 text-sm">
       <div class="flex items-center justify-center gap-2">
         <i class="fa-solid fa-flask y"></i>
         <span class="text-[#9a9080]">테스트 결과:</span>
@@ -194,7 +194,7 @@
       <!-- 기본 정보 -->
       <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-5" data-reveal>
         <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#E8B050]/10 border border-[#E8B050]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#E3B7A0]/10 border border-[#E3B7A0]/30 flex items-center justify-center">
             <i class="fa-solid fa-user y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">기본 정보</h2>
@@ -205,11 +205,11 @@
           <label class="block text-xs font-bold text-[#9a9080] mb-2">프로필 사진 <span class="y">*</span> <span class="text-[#6b6358] font-normal ml-1">최소 1장, 최대 3장</span></label>
           <div class="grid grid-cols-3 gap-2" id="photo-slots">
             <div class="photo-slot" data-index="0" onclick="triggerPhoto(0)">
-              <div class="aspect-square bg-[#0e0c0a] border-2 border-dashed border-[#E8B050]/40 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#E8B050] transition group relative overflow-hidden">
+              <div class="aspect-square bg-[#0e0c0a] border-2 border-dashed border-[#E3B7A0]/40 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#E3B7A0] transition group relative overflow-hidden">
                 <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
                 <div class="photo-placeholder flex flex-col items-center">
-                  <i class="fa-solid fa-camera text-[#E8B050] text-lg mb-1"></i>
-                  <span class="text-[10px] text-[#E8B050] font-bold">대표 사진</span>
+                  <i class="fa-solid fa-camera text-[#E3B7A0] text-lg mb-1"></i>
+                  <span class="text-[10px] text-[#E3B7A0] font-bold">대표 사진</span>
                 </div>
                 <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(0)">
                   <i class="fa-solid fa-xmark"></i>
@@ -217,10 +217,10 @@
               </div>
             </div>
             <div class="photo-slot" data-index="1" onclick="triggerPhoto(1)">
-              <div class="aspect-square bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#E8B050] transition group relative overflow-hidden">
+              <div class="aspect-square bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#E3B7A0] transition group relative overflow-hidden">
                 <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
                 <div class="photo-placeholder flex flex-col items-center">
-                  <i class="fa-solid fa-plus text-[#6b6358] text-lg mb-1 group-hover:text-[#E8B050] transition"></i>
+                  <i class="fa-solid fa-plus text-[#6b6358] text-lg mb-1 group-hover:text-[#E3B7A0] transition"></i>
                   <span class="text-[10px] text-[#6b6358]">추가</span>
                 </div>
                 <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(1)">
@@ -229,10 +229,10 @@
               </div>
             </div>
             <div class="photo-slot" data-index="2" onclick="triggerPhoto(2)">
-              <div class="aspect-square bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#E8B050] transition group relative overflow-hidden">
+              <div class="aspect-square bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#E3B7A0] transition group relative overflow-hidden">
                 <img class="photo-preview hidden absolute inset-0 w-full h-full object-cover" alt="">
                 <div class="photo-placeholder flex flex-col items-center">
-                  <i class="fa-solid fa-plus text-[#6b6358] text-lg mb-1 group-hover:text-[#E8B050] transition"></i>
+                  <i class="fa-solid fa-plus text-[#6b6358] text-lg mb-1 group-hover:text-[#E3B7A0] transition"></i>
                   <span class="text-[10px] text-[#6b6358]">추가</span>
                 </div>
                 <button type="button" class="photo-remove hidden absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-red-500 transition" onclick="event.stopPropagation();removePhoto(2)">
@@ -249,14 +249,14 @@
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">이름 <span class="y">*</span></label>
           <input type="text" name="name" required placeholder="실명을 입력해주세요"
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E3B7A0] focus:outline-none transition">
         </div>
 
         <!-- 연락처 -->
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">연락처 <span class="y">*</span></label>
           <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="01[0-9]-?[0-9]{3,4}-?[0-9]{4}"
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E3B7A0] focus:outline-none transition">
         </div>
 
         <!-- 성별 -->
@@ -284,7 +284,7 @@
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">출생 연도 <span class="y">*</span></label>
           <select name="birthYear" required
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#E8B050] focus:outline-none transition appearance-none">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#E3B7A0] focus:outline-none transition appearance-none">
             <option value="" disabled selected class="text-[#6b6358]">출생 연도를 선택해주세요</option>
             <option value="2006">2006년생</option>
             <option value="2005">2005년생</option>
@@ -314,35 +314,35 @@
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">직업 / 직장명 <span class="y">*</span></label>
           <input type="text" name="job" required placeholder="예: 마케터 (OO회사), 간호사 (OO병원)"
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E3B7A0] focus:outline-none transition">
         </div>
 
         <!-- 키 -->
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">키 <span class="y">*</span></label>
           <input type="text" name="height" required placeholder="예: 175"
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E3B7A0] focus:outline-none transition">
         </div>
 
         <!-- 사는 곳 -->
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">사는 곳 <span class="y">*</span></label>
           <input type="text" name="location" required placeholder="예: 서울 강남구, 경기 성남시"
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E3B7A0] focus:outline-none transition">
         </div>
 
         <!-- 취미 -->
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">취미 <span class="y">*</span></label>
           <input type="text" name="hobby" required placeholder="예: 러닝, 카페투어, 넷플릭스"
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E3B7A0] focus:outline-none transition">
         </div>
 
         <!-- 종교 -->
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">종교 <span class="y">*</span></label>
           <select name="religion" required
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#E8B050] focus:outline-none transition appearance-none">
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#E3B7A0] focus:outline-none transition appearance-none">
             <option value="" disabled selected>종교를 선택해주세요</option>
             <option value="무교">무교</option>
             <option value="기독교">기독교</option>
@@ -361,7 +361,7 @@
       <!-- 신분 인증 서류 -->
       <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-5" data-reveal>
         <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#E8B050]/10 border border-[#E8B050]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#E3B7A0]/10 border border-[#E3B7A0]/30 flex items-center justify-center">
             <i class="fa-solid fa-id-badge y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">신분 인증</h2>
@@ -372,14 +372,14 @@
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">재직증명서 또는 사업자등록증 <span class="y">*</span></label>
           <div id="doc-job-upload" onclick="document.getElementById('doc-job-input').click()"
-            class="w-full bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl p-4 text-center cursor-pointer hover:border-[#E8B050] transition group">
+            class="w-full bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl p-4 text-center cursor-pointer hover:border-[#E3B7A0] transition group">
             <div id="doc-job-done" class="hidden flex items-center justify-center gap-2">
               <i class="fa-solid fa-file-circle-check y"></i>
               <span id="doc-job-name" class="text-xs text-white truncate max-w-[200px]"></span>
               <button type="button" class="text-[#6b6358] hover:text-red-400 text-xs ml-1" onclick="event.stopPropagation();removeDoc('job')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="doc-job-placeholder" class="flex flex-col items-center">
-              <i class="fa-solid fa-cloud-arrow-up text-[#6b6358] text-lg mb-1 group-hover:text-[#E8B050] transition"></i>
+              <i class="fa-solid fa-cloud-arrow-up text-[#6b6358] text-lg mb-1 group-hover:text-[#E3B7A0] transition"></i>
               <span class="text-[10px] text-[#6b6358]">파일 선택 (PDF, JPG, PNG / 최대 10MB)</span>
             </div>
           </div>
@@ -401,7 +401,7 @@
       <!-- 이상형 조건 -->
       <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-5" data-reveal>
         <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#E8B050]/10 border border-[#E8B050]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#E3B7A0]/10 border border-[#E3B7A0]/30 flex items-center justify-center">
             <i class="fa-solid fa-heart y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">이상형 조건</h2>
@@ -448,7 +448,7 @@
           <label class="block text-xs font-bold text-[#9a9080] mb-2">어떤 분을 만나고 싶으세요? <span class="y">*</span></label>
           <textarea name="idealType" id="ideal-type" required maxlength="150" rows="3"
             placeholder="예: 대화 잘 통하고 유머 있는 분, 결혼 생각 있는 분, 운동 좋아하면 좋아요 (150자 이내)"
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition resize-none"></textarea>
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E3B7A0] focus:outline-none transition resize-none"></textarea>
         </div>
 
         <!-- 자기소개 -->
@@ -456,7 +456,7 @@
           <label class="block text-xs font-bold text-[#9a9080] mb-2">간단한 자기소개 <span class="y">*</span></label>
           <textarea name="intro" id="intro" required maxlength="100" rows="3"
             placeholder="상대방에게 보여질 자기소개를 작성해주세요 (100자 이내)"
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition resize-none"></textarea>
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E3B7A0] focus:outline-none transition resize-none"></textarea>
           <p class="text-right text-[11px] mt-1">
             <span id="intro-count" class="counter text-[#6b6358]">0</span><span class="text-[#6b6358]"> / 100자</span>
           </p>
@@ -472,13 +472,13 @@
       <!-- 연애 테스트 결과 (선택) -->
       <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5" data-reveal>
         <div class="flex items-center gap-2 mb-3">
-          <div class="w-7 h-7 rounded-lg bg-[#E8B050]/10 border border-[#E8B050]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#E3B7A0]/10 border border-[#E3B7A0]/30 flex items-center justify-center">
             <i class="fa-solid fa-flask y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">연애 테스트 결과</h2>
           <span class="text-[10px] bg-[#1e1c17] text-[#9a9080] px-2 py-0.5 rounded-full font-bold ml-auto">선택</span>
         </div>
-        <div id="test-result-filled" class="hidden bg-[#E8B050]/5 border border-[#E8B050]/30 rounded-xl p-3 mb-3">
+        <div id="test-result-filled" class="hidden bg-[#E3B7A0]/5 border border-[#E3B7A0]/30 rounded-xl p-3 mb-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-circle-check y text-sm"></i>
@@ -490,12 +490,12 @@
         <div id="test-result-empty">
           <p class="text-xs text-[#9a9080] mb-3 leading-relaxed">테스트를 하셨다면 결과를 입력해주세요. 매칭 시 참고됩니다.</p>
           <div class="grid grid-cols-2 gap-2">
-            <a href="test/ideal.html" target="_blank" class="bg-[#0e0c0a] border border-[#E8B050]/30 rounded-xl p-3 text-center hover:border-[#E8B050] transition block">
+            <a href="test/ideal.html" target="_blank" class="bg-[#0e0c0a] border border-[#E3B7A0]/30 rounded-xl p-3 text-center hover:border-[#E3B7A0] transition block">
               <div class="text-lg mb-0.5">☕</div>
               <div class="text-[11px] font-bold">연애 커피 유형</div>
               <div class="text-[10px] text-[#6b6358] mt-0.5">테스트 하러가기 →</div>
             </a>
-            <a href="test/index.html" target="_blank" class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 text-center hover:border-[#E8B050] transition block">
+            <a href="test/index.html" target="_blank" class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 text-center hover:border-[#E3B7A0] transition block">
               <div class="text-lg mb-0.5">🍺</div>
               <div class="text-[11px] font-bold">연애 향과 맛</div>
               <div class="text-[10px] text-[#6b6358] mt-0.5">테스트 하러가기 →</div>
@@ -503,7 +503,7 @@
           </div>
           <div class="mt-3">
             <input type="text" name="testResult" id="test-result-input" placeholder="테스트 결과를 입력해주세요 (예: 직진드리퍼형)"
-              class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
+              class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E3B7A0] focus:outline-none transition">
           </div>
         </div>
       </div>
@@ -511,15 +511,15 @@
       <!-- 매칭 유형 설명 -->
       <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-4" data-reveal>
         <div class="flex items-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-[#E8B050]/10 border border-[#E8B050]/30 flex items-center justify-center">
+          <div class="w-7 h-7 rounded-lg bg-[#E3B7A0]/10 border border-[#E3B7A0]/30 flex items-center justify-center">
             <i class="fa-solid fa-circle-info y text-xs"></i>
           </div>
           <h2 class="font-bold text-sm">매칭 유형 안내</h2>
         </div>
 
-        <div class="bg-[#E8B050]/8 border border-[#E8B050]/30 rounded-xl px-3.5 py-2.5 flex gap-2 items-start">
+        <div class="bg-[#E3B7A0]/8 border border-[#E3B7A0]/30 rounded-xl px-3.5 py-2.5 flex gap-2 items-start">
           <span class="text-xs">🎉</span>
-          <p class="text-[11px] text-[#c9bfa8] leading-relaxed"><b class="text-[#E8B050]">지금은 베타 오픈 특별가</b>예요. 정식 오픈 시 가격이 인상될 수 있어요.</p>
+          <p class="text-[11px] text-[#c9bfa8] leading-relaxed"><b class="text-[#E3B7A0]">지금은 베타 오픈 특별가</b>예요. 정식 오픈 시 가격이 인상될 수 있어요.</p>
         </div>
 
         <div class="space-y-3">
@@ -539,7 +539,7 @@
           </div>
 
           <!-- 슈퍼매칭 설명 -->
-          <div class="bg-[#0e0c0a] border border-[#E8B050]/30 rounded-xl p-5 relative">
+          <div class="bg-[#0e0c0a] border border-[#E3B7A0]/30 rounded-xl p-5 relative">
             <span class="absolute top-0 right-0 text-[9px] bg-y text-black font-bold px-2.5 py-1 rounded-bl-lg rounded-tr-xl">추천</span>
             <div class="flex items-center gap-2 mb-3">
               <i class="fa-solid fa-crown y"></i>
@@ -591,7 +591,7 @@
           </p>
         </div>
         <button type="submit" id="submit-btn"
-          class="bg-y text-black font-extrabold w-full px-6 py-4 rounded-2xl text-base transition hover:bg-[#D4952A] disabled:opacity-50 disabled:cursor-not-allowed">
+          class="bg-y text-black font-extrabold w-full px-6 py-4 rounded-2xl text-base transition hover:bg-[#CFA089] disabled:opacity-50 disabled:cursor-not-allowed">
           <i class="fa-solid fa-paper-plane mr-1.5"></i>신청서 제출하기
         </button>
         <p class="text-center text-[11px] text-[#6b6358] mt-3">신청 무료 · 매칭 성사 시 결제 후 연락처 전달</p>
@@ -627,12 +627,12 @@
       </div>
     </div>
     <!-- 크로스 홍보: 8/27 로테이션 -->
-    <div class="bg-[#16140f] border border-[#E8B050]/25 rounded-2xl p-4 mt-6 text-left">
+    <div class="bg-[#16140f] border border-[#E3B7A0]/25 rounded-2xl p-4 mt-6 text-left">
       <p class="text-[13px] text-[#c9bfa8] font-bold">📦 8/27(목) 로테이션 소개팅도 열려있어요!</p>
       <p class="text-[11px] text-[#8a8070] mt-1 leading-relaxed">한자리에서 여러 명과 대화하는 단체 커피팅이에요. 1:1이랑 같이 참여해도 좋아요 😊</p>
-      <a href="/rotation-0827" class="inline-block mt-2.5 text-[12px] font-bold text-[#E8B050]">→ 8/27 로테이션 신청하기</a>
+      <a href="/rotation-0827" class="inline-block mt-2.5 text-[12px] font-bold text-[#E3B7A0]">→ 8/27 로테이션 신청하기</a>
     </div>
-    <a href="index.html" class="inline-block mt-6 bg-[#16140f] border border-[#1e1c17] text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#E8B050] transition">
+    <a href="index.html" class="inline-block mt-6 bg-[#16140f] border border-[#1e1c17] text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#E3B7A0] transition">
       <i class="fa-solid fa-arrow-left mr-1.5"></i>홈으로 돌아가기
     </a>
   </div>
@@ -938,7 +938,7 @@ document.querySelectorAll("#keyword-chips .chip").forEach(chip => {
     document.getElementById("keywords-input").value = [...selectedKeywords].join(",");
     const count = selectedKeywords.size;
     document.getElementById("keyword-count").textContent = `${count}개 선택됨`;
-    document.getElementById("keyword-count").style.color = count >= 1 ? "#E8B050" : "#6b6358";
+    document.getElementById("keyword-count").style.color = count >= 1 ? "#E3B7A0" : "#6b6358";
   });
 });
 
@@ -976,7 +976,7 @@ function restoreDraft(d){
     (d.keywords||[]).forEach(function(v){ selectedKeywords.add(v); });
     document.querySelectorAll("#keyword-chips .chip").forEach(function(c){ if(selectedKeywords.has(c.dataset.kw)) c.classList.add("selected"); });
     var kw=document.getElementById("keywords-input"); if(kw) kw.value=[...selectedKeywords].join(",");
-    var kc=document.getElementById("keyword-count"); if(kc){ kc.textContent=selectedKeywords.size+"개 선택됨"; kc.style.color=selectedKeywords.size>=1?"#E8B050":"#6b6358"; }
+    var kc=document.getElementById("keyword-count"); if(kc){ kc.textContent=selectedKeywords.size+"개 선택됨"; kc.style.color=selectedKeywords.size>=1?"#E3B7A0":"#6b6358"; }
     goStep(d.step||1);
   }catch(e){}
 }
@@ -994,10 +994,10 @@ window.addEventListener("load", function(){
     var f=_form(); if(!f) return;
     var b=document.createElement("div");
     b.style.cssText="margin:0 16px 14px;background:rgba(232,176,80,.12);border:1px solid rgba(232,176,80,.4);border-radius:14px;padding:13px 15px";
-    b.innerHTML='<div style="font-size:13.5px;font-weight:800;color:#E8B050">📝 작성하던 신청서가 있어요</div>'
+    b.innerHTML='<div style="font-size:13.5px;font-weight:800;color:#E3B7A0">📝 작성하던 신청서가 있어요</div>'
       +'<div style="font-size:12px;color:#9a9080;margin-top:3px">이어서 쓸까요? (사진·서류는 다시 첨부해주세요)</div>'
       +'<div style="display:flex;gap:8px;margin-top:10px">'
-      +'<button type="button" id="draft-resume" style="flex:1;background:#E8B050;color:#171208;border:none;border-radius:10px;padding:10px;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer">이어서 작성</button>'
+      +'<button type="button" id="draft-resume" style="flex:1;background:#E3B7A0;color:#171208;border:none;border-radius:10px;padding:10px;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer">이어서 작성</button>'
       +'<button type="button" id="draft-fresh" style="background:transparent;color:#9a9080;border:1px solid #3a2e1f;border-radius:10px;padding:10px 14px;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer">새로 작성</button>'
       +'</div>';
     f.parentNode.insertBefore(b, f);
@@ -1019,8 +1019,8 @@ document.getElementById("agree").addEventListener("change", function(){
   const box = document.getElementById("agree-box");
   const check = document.getElementById("agree-check");
   if(this.checked){
-    box.style.background = "#E8B050";
-    box.style.borderColor = "#E8B050";
+    box.style.background = "#E3B7A0";
+    box.style.borderColor = "#E3B7A0";
     check.classList.remove("hidden");
   } else {
     box.style.background = "transparent";
