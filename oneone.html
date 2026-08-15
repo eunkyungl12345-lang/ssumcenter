@@ -3,213 +3,215 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>특급 배송 — 1:1 온라인 매칭 | 썸류센터</title>
-<link rel="stylesheet" href="/tailwind.css">
-<link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
+<title>1:1 매칭 | 썸류센터</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
   :root{
-    --bg:#0e0c0a; --card:#1b1813; --line:rgba(255,200,100,.12);
-    --ink:#f8f3ec;          /* 제목·강조 */
-    --body:#e0d7c9;         /* 본문 (밝게, 대비 ↑) */
-    --dim:#b9ae9b;          /* 캡션·보조 */
-    --amber:#FFBE2E;
+    --bg:#100B0E; --card:#1B141A; --card2:#241A20; --ink:#F2EAE6; --soft:#CDBDB8;
+    --muted:#9C8A88; --faint:#5f5148; --line:#291F26; --line2:#372A32;
+    --gold:#E3B7A0; --gold-soft:#F1D5C6; --rose:#C97E92; --ok:#7FBE9A;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{
-    font-family:'Apple SD Gothic Neo','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Malgun Gothic',sans-serif;
-    background:var(--bg);color:var(--body);
-    font-size:16px;line-height:1.75;letter-spacing:-.01em;
-    overflow-x:hidden;-webkit-font-smoothing:antialiased;word-break:keep-all;
-  }
+  body{background:var(--bg);font-family:'Pretendard','Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;color:var(--ink);line-height:1.6;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
   a{text-decoration:none;color:inherit}
-  .y{color:var(--amber)} .bg-y{background:var(--amber)}
-  ::selection{background:var(--amber);color:#000}
+  ::selection{background:var(--gold);color:#241019}
+  .wrap{max-width:460px;margin:0 auto;position:relative;padding-bottom:104px}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--gold)}
 
-  /* 타이포 */
-  h1{color:var(--ink);font-weight:900;letter-spacing:-.02em}
-  .h2{color:var(--ink);font-size:23px;font-weight:800;text-align:center;letter-spacing:-.02em;line-height:1.35}
-  @media(min-width:768px){.h2{font-size:26px}}
-  h3{color:var(--ink)}
-  .lead{color:var(--body);font-size:16.5px;line-height:1.8}
-  .body{color:var(--body);font-size:15.5px;line-height:1.75}
-  .cap{color:var(--dim);font-size:13.5px;line-height:1.7}
-  strong,b{color:var(--ink);font-weight:800}
+  /* 상단바 */
+  .top{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:rgba(16,11,14,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .top .logo img{height:26px;display:block}
+  .top .home{font-size:12.5px;color:var(--muted);font-weight:700}
 
-  /* 레이아웃 */
-  .sec{padding:60px 20px}
-  @media(max-width:768px){.sec{padding:46px 18px}}
-  .sec-inner{max-width:640px;margin:0 auto}
-  .alt{background:rgba(255,255,255,.02)}
+  /* 히어로 */
+  .hero{padding:30px 24px 30px;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(227,183,160,.12) 0%,transparent 62%);border-bottom:1px solid var(--line)}
+  .hero .eyebrow{display:block;margin-bottom:16px}
+  .hero .mono{width:52px;height:1px;background:var(--gold);margin:0 auto 20px;opacity:.5}
+  .hero h1{font-size:27px;font-weight:800;line-height:1.4;letter-spacing:-.02em}
+  .hero h1 .g{color:var(--gold-soft);font-weight:800}
+  .hero p{font-size:13.5px;color:var(--soft);margin-top:15px;line-height:1.75;font-weight:450}
+  .hero .stat{display:flex;justify-content:center;gap:0;margin-top:24px}
+  .hero .stat .s{padding:0 18px;position:relative}
+  .hero .stat .s+.s::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:1px;background:var(--line2)}
+  .hero .stat .v{font-size:19px;font-weight:800;color:var(--gold)}
+  .hero .stat .k{font-size:10.5px;color:var(--muted);margin-top:2px;letter-spacing:.02em}
+  /* 시그니처 카드 덱 */
+  .deck{position:relative;height:118px;max-width:300px;margin:26px auto 6px}
+  .deck .bk{position:absolute;left:50%;top:8px;width:78%;height:96px;border-radius:16px;background:var(--card2);border:1px solid var(--line2)}
+  .deck .bk.l{transform:translateX(-50%) rotate(-7deg)}
+  .deck .bk.r{transform:translateX(-50%) rotate(7deg);opacity:.55}
+  .deck .front{position:absolute;left:0;right:0;top:0;height:104px;border-radius:17px;background:linear-gradient(160deg,#2a1f26,#1a1319);border:1px solid rgba(227,183,160,.42);box-shadow:0 16px 38px rgba(0,0,0,.45);display:flex;align-items:center;gap:14px;padding:0 18px;overflow:hidden}
+  .deck .front::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 82% -10%,rgba(227,183,160,.16),transparent 58%);pointer-events:none}
+  .deck .av{width:54px;height:54px;border-radius:50%;background:#33242c;display:grid;place-items:center;font-size:27px;border:1px solid var(--line2);flex-shrink:0}
+  .deck .info{flex:1;text-align:left;position:relative}
+  .deck .info .nm{font-weight:800;font-size:15px}
+  .deck .info .mt{font-size:11.5px;color:var(--gold);margin-top:3px;font-weight:600}
+  .deck .ht{font-size:23px;position:relative}
+  .deck .ribbon{position:absolute;top:0;right:0;background:var(--gold);color:#2a1218;font-size:9.5px;font-weight:900;letter-spacing:.04em;padding:4px 11px;border-bottom-left-radius:11px}
 
-  /* 카드 */
-  .card{background:var(--card);border-radius:18px;border:1px solid var(--line);transition:border-color .3s,box-shadow .3s}
-  .card:hover{border-color:rgba(255,190,46,.3);box-shadow:0 8px 40px rgba(255,190,46,.07)}
+  /* 신뢰 */
+  .trust{display:flex;flex-direction:column;gap:1px;background:var(--line)}
+  .trust .t{background:var(--bg);display:flex;align-items:center;gap:13px;padding:15px 22px}
+  .trust .t .ic{width:34px;height:34px;border-radius:9px;border:1px solid var(--line2);display:grid;place-items:center;font-size:15px;color:var(--gold);flex-shrink:0}
+  .trust .t .l{font-size:13.5px;font-weight:700}
+  .trust .t .s{font-size:11.5px;color:var(--muted);margin-left:auto;font-weight:500}
 
-  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,190,46,.1);border:1px solid rgba(255,190,46,.22);color:var(--amber);padding:7px 16px;border-radius:100px;font-size:12.5px;font-weight:700;letter-spacing:.02em}
+  .sec{padding:30px 22px 0}
+  .sec .eyebrow{display:block;margin-bottom:9px}
+  .sec h2{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:18px}
+  .sec h2 .g{color:var(--gold-soft)}
 
-  /* 번호 스텝 */
-  .step-n{width:38px;height:38px;flex-shrink:0;border-radius:12px;background:var(--amber);color:#0e0c0a;font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center}
+  /* 추천 */
+  .rec{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .rec .r{background:var(--card);display:flex;align-items:center;gap:13px;padding:15px 16px}
+  .rec .r .n{font-size:12px;font-weight:800;color:var(--gold);width:20px;flex-shrink:0}
+  .rec .r p{font-size:13.5px;color:var(--soft);font-weight:500}
 
-  /* CTA */
-  .cta{display:inline-block;background:var(--amber);color:#0e0c0a;font-weight:900;border-radius:15px;text-align:center;transition:filter .2s,transform .1s}
-  .cta:hover{filter:brightness(.92)} .cta:active{transform:scale(.98)}
-  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,190,46,.28)}50%{box-shadow:0 0 26px 9px rgba(255,190,46,.1)}}
-  .cta-glow{animation:glow-pulse 2.6s infinite ease-in-out}
+  /* 가격 */
+  .prices{display:flex;flex-direction:column;gap:13px}
+  .pc{background:var(--card);border:1px solid var(--line2);border-radius:18px;padding:20px}
+  .pc.super{border-color:rgba(227,183,160,.5);background:linear-gradient(180deg,rgba(227,183,160,.06),transparent)}
+  .pc .ph{display:flex;align-items:baseline;gap:10px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+  .pc .ph .nm{font-weight:800;font-size:15.5px}
+  .pc .ph .badge{font-size:9.5px;font-weight:800;letter-spacing:.06em;color:#241019;background:var(--gold);padding:3px 9px;border-radius:4px}
+  .pc .ph .pr{margin-left:auto;font-weight:800;font-size:17px;color:var(--gold-soft)}
+  .pc ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .pc li{display:flex;gap:9px;font-size:12.5px;color:var(--soft);font-weight:450}
+  .pc li .ck{color:var(--gold);flex-shrink:0}
+  .free{text-align:center;font-size:11.5px;color:var(--muted);margin-top:14px;letter-spacing:.02em}
 
-  [data-r]{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
-  [data-r].in{opacity:1;transform:none}
-  @media(prefers-reduced-motion:reduce){[data-r]{opacity:1;transform:none}.cta-glow{animation:none}}
+  /* 스텝 */
+  .steps{position:relative;padding-left:6px}
+  .st{display:flex;gap:16px;padding-bottom:20px;position:relative}
+  .st:last-child{padding-bottom:0}
+  .st::before{content:"";position:absolute;left:15px;top:30px;bottom:-2px;width:1px;background:var(--line2)}
+  .st:last-child::before{display:none}
+  .st .n{width:31px;height:31px;flex-shrink:0;border-radius:50%;border:1px solid var(--gold);color:var(--gold);font-weight:800;font-size:13px;display:grid;place-items:center;background:var(--bg);z-index:1}
+  .st .n.last{background:var(--gold);color:#241019;border-color:var(--gold)}
+  .st h3{font-size:14.5px;font-weight:800}
+  .st p{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.6}
+
+  /* 후기 */
+  .quote{margin:30px 22px 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px}
+  .quote .star{color:var(--gold);font-size:12px;letter-spacing:3px}
+  .quote p{font-size:14px;line-height:1.8;color:var(--ink);margin-top:12px;font-weight:450}
+  .quote .who{font-size:11.5px;color:var(--muted);margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+
+  .foot{text-align:center;padding:30px 22px 10px;font-size:11.5px;color:var(--faint)}
+  .foot a{color:var(--gold)}
+
+  /* 하단 고정 CTA */
+  .bar{position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:460px;bottom:0;z-index:40;background:linear-gradient(180deg,transparent,var(--bg) 24%);padding:24px 22px 20px}
+  .cta{display:block;width:100%;text-align:center;background:var(--gold);color:#241019;font-weight:800;font-size:15.5px;padding:16px;border-radius:13px;border:none;cursor:pointer;letter-spacing:.02em;box-shadow:0 10px 26px rgba(227,183,160,.24)}
+  .cta:active{transform:scale(.99)}
+  .bar .fine{text-align:center;font-size:10.5px;color:var(--muted);margin-top:9px;letter-spacing:.02em}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<!-- Nav -->
-<nav class="sticky top-0 z-50 backdrop-blur-xl border-b" style="background:rgba(14,12,10,.85);border-color:rgba(255,255,255,.05);padding:13px 20px">
-  <div style="max-width:640px;margin:0 auto;display:flex;align-items:center;justify-content:space-between">
-    <a href="index.html"><img src="logo.png" alt="썸류센터" style="height:28px"></a>
-    <a href="index.html" class="body" style="font-weight:700;color:var(--dim)"><i class="fa-solid fa-arrow-left" style="margin-right:5px"></i>홈으로</a>
+  <div class="top">
+    <a class="logo" href="index.html"><img src="logo.png" alt="썸류센터"></a>
+    <a class="home" href="index.html">← 홈으로</a>
   </div>
-</nav>
 
-<!-- Hero -->
-<header class="sec" style="text-align:center;background:radial-gradient(ellipse at 50% 25%,rgba(255,190,46,.07) 0%,transparent 62%)">
-  <div class="sec-inner">
-    <span class="badge" style="margin-bottom:20px"><i class="fa-solid fa-gift"></i> 특급 배송</span>
-    <div style="font-size:52px;margin-bottom:14px">🎁</div>
-    <h1 style="font-size:30px;line-height:1.28;margin-bottom:16px">나만을 위한 맞춤 한 건,<br><span class="y">1:1 온라인 매칭</span></h1>
-    <p class="y" style="font-size:13px;font-weight:800;margin-bottom:14px">📍 장소·시간 자유 · 온라인 1:1</p>
-    <p style="font-size:18px;font-weight:700;line-height:1.65;color:var(--ink)">센터장이 <b class="y">직접 검토</b>하고,<br>당신에게 맞는 <b class="y">한 사람</b>을 매칭해 드려요.</p>
+  <!-- 히어로 -->
+  <div class="hero">
+    <span class="eyebrow">💌 1:1 프라이빗 매칭</span>
+    <div class="mono"></div>
+    <h1>여러 명이 아닌,<br><span class="g">당신에게 맞는 한 사람</span></h1>
+    <p>재직 인증된 분들 중, 센터장이 직접 검토해<br>당신의 이상형에 맞는 단 한 분만 소개해요.</p>
 
-    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:22px">
-      <span class="badge"><i class="fa-solid fa-tag"></i> 일반 매칭 19,900원</span>
-      <span class="badge" style="background:rgba(255,190,46,.16);border-color:rgba(255,190,46,.34)"><i class="fa-solid fa-crown"></i> 슈퍼매칭 39,800원</span>
+    <div class="deck">
+      <div class="bk l"></div>
+      <div class="bk r"></div>
+      <div class="front">
+        <div class="av">🙋‍♀️</div>
+        <div class="info"><div class="nm">당신의 매칭 상대</div><div class="mt">이상형 조건 100% 반영</div></div>
+        <div class="ht">💛</div>
+        <div class="ribbon">센터장 PICK</div>
+      </div>
     </div>
 
-    <div style="margin-top:32px">
-      <a href="/matching" class="cta cta-glow" style="font-size:17px;padding:17px 46px"><i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>1:1 매칭 신청하기</a>
-      <p class="cap" style="margin-top:14px">매칭 성사될 때만 결제 · 안 되면 <b class="y">0원</b></p>
+    <div class="stat">
+      <div class="s"><div class="v">1:1</div><div class="k">맞춤 매칭</div></div>
+      <div class="s"><div class="v">100%</div><div class="k">재직 인증</div></div>
+      <div class="s"><div class="v">0원</div><div class="k">불발 시 비용</div></div>
     </div>
   </div>
-</header>
 
-<!-- 이런 분께 추천 -->
-<section class="sec alt">
-  <div class="sec-inner">
-    <h2 class="h2" data-r style="margin-bottom:28px">이런 분께 <span class="y">추천해요</span></h2>
-    <div style="display:flex;flex-direction:column;gap:12px" data-r>
-      <div class="card" style="padding:18px 20px;display:flex;gap:13px;align-items:flex-start"><i class="fa-solid fa-heart y" style="margin-top:5px;flex-shrink:0"></i><p class="body">내 이상형에 딱 맞는 한 사람만 만나고 싶은 분</p></div>
-      <div class="card" style="padding:18px 20px;display:flex;gap:13px;align-items:flex-start"><i class="fa-solid fa-heart y" style="margin-top:5px;flex-shrink:0"></i><p class="body">시간·장소 제약 없이 편하게 매칭받고 싶은 분</p></div>
-      <div class="card" style="padding:18px 20px;display:flex;gap:13px;align-items:flex-start"><i class="fa-solid fa-heart y" style="margin-top:5px;flex-shrink:0"></i><p class="body">로테이션보다 조용하고 프라이빗한 만남을 원하는 분</p></div>
-      <div class="card" style="padding:18px 20px;display:flex;gap:13px;align-items:flex-start"><i class="fa-solid fa-heart y" style="margin-top:5px;flex-shrink:0"></i><p class="body">마음에 드는 상대에게 진심을 전하고 싶은 분 <span class="y" style="font-weight:700">(슈퍼매칭)</span></p></div>
+  <!-- 신뢰 -->
+  <div class="trust">
+    <div class="t"><div class="ic">👤</div><div class="l">센터장이 직접 검토·매칭</div><div class="s">자동 아님</div></div>
+    <div class="t"><div class="ic">📄</div><div class="l">재직증명 인증 회원</div><div class="s">진짜 직장인</div></div>
+    <div class="t"><div class="ic">💳</div><div class="l">성사될 때만 결제</div><div class="s">안 되면 0원</div></div>
+  </div>
+
+  <!-- 이런 분께 -->
+  <div class="sec">
+    <span class="eyebrow">추천 대상</span>
+    <h2>이런 분께 <span class="g">권해요</span></h2>
+    <div class="rec">
+      <div class="r"><div class="n">01</div><p>내 이상형에 딱 맞는 한 사람만 제대로 만나고 싶은 분</p></div>
+      <div class="r"><div class="n">02</div><p>시간·장소 제약 없이 검증된 상대를 소개받고 싶은 분</p></div>
+      <div class="r"><div class="n">03</div><p>조용하고 프라이빗한 만남을 원하는 분</p></div>
     </div>
   </div>
-</section>
 
-<!-- 일반 vs 슈퍼 -->
-<section class="sec">
-  <div class="sec-inner">
-    <h2 class="h2" data-r style="margin-bottom:8px">일반 매칭 vs <span class="y">슈퍼매칭</span></h2>
-    <p class="cap" data-r style="text-align:center;margin-bottom:26px">두 유형 모두 <b>매칭 불발 시 비용 없음</b></p>
-
-    <div style="display:flex;flex-direction:column;gap:16px" data-r>
-      <div class="card" style="padding:24px">
-        <div style="display:flex;align-items:center;gap:11px;margin-bottom:16px">
-          <i class="fa-solid fa-handshake y" style="font-size:19px"></i>
-          <h3 style="font-weight:800;font-size:17px">일반 매칭</h3>
-          <span class="y" style="margin-left:auto;font-weight:800;font-size:16px">19,900원</span>
-        </div>
-        <ul style="display:flex;flex-direction:column;gap:11px">
-          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-check y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>센터장이 이상형 조건에 맞는 상대를 찾아드려요</li>
-          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-check y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>상대방이 수락하면 매칭 성사!</li>
-          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-check y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>양쪽 모두 각자 19,900원 결제 후 연락처 교환</li>
-          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-check y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>매칭 불발 시 <b class="y">비용 없음 (무료)</b></li>
+  <!-- 가격 -->
+  <div class="sec">
+    <span class="eyebrow">요금 안내</span>
+    <h2>일반 매칭 · <span class="g">슈퍼매칭</span></h2>
+    <div class="prices">
+      <div class="pc">
+        <div class="ph"><span class="nm">일반 매칭</span><span class="pr">19,900원</span></div>
+        <ul>
+          <li><span class="ck">—</span>센터장이 이상형 조건에 맞는 상대를 찾아드려요</li>
+          <li><span class="ck">—</span>양쪽 수락 시 성사 · 각자 결제 후 연락처 교환</li>
+          <li><span class="ck">—</span>매칭 불발 시 비용 없음</li>
         </ul>
       </div>
-
-      <div class="card" style="padding:24px;position:relative;border-color:rgba(255,190,46,.28);background:rgba(255,190,46,.03)">
-        <span style="position:absolute;top:16px;right:16px;font-size:11px;background:var(--amber);color:#000;font-weight:800;padding:4px 11px;border-radius:100px">추천</span>
-        <div style="display:flex;align-items:center;gap:11px;margin-bottom:16px">
-          <i class="fa-solid fa-crown y" style="font-size:19px"></i>
-          <h3 style="font-weight:800;font-size:17px">슈퍼매칭</h3>
-          <span class="y" style="margin-left:auto;font-weight:800;font-size:16px">39,800원</span>
-        </div>
-        <ul style="display:flex;flex-direction:column;gap:11px">
-          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-bolt y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>상대방 비용까지 내가 부담해요</li>
-          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-bolt y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>상대방에게 <b>"슈퍼매칭이 왔어요!"</b> 표시 → 진심 전달</li>
-          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-bolt y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>상대방은 <b class="y">무료</b>로 연락처를 받아요</li>
-          <li class="body" style="display:flex;gap:10px"><i class="fa-solid fa-bolt y" style="font-size:12px;margin-top:6px;flex-shrink:0"></i>매칭 수락률이 눈에 띄게 UP!</li>
+      <div class="pc super">
+        <div class="ph"><span class="nm">슈퍼매칭</span><span class="badge">추천</span><span class="pr">39,800원</span></div>
+        <ul>
+          <li><span class="ck">✦</span>상대 비용까지 부담 · 진심을 먼저 전해요</li>
+          <li><span class="ck">✦</span>상대에게 '슈퍼매칭' 표시 → 수락률 상승</li>
+          <li><span class="ck">✦</span>매칭 불발 시 비용 없음</li>
         </ul>
       </div>
     </div>
+    <div class="free">매칭 불발 시 비용이 발생하지 않아요</div>
   </div>
-</section>
 
-<!-- 진행 방식 -->
-<section class="sec alt">
-  <div class="sec-inner">
-    <h2 class="h2" data-r style="margin-bottom:28px">이렇게 <span class="y">진행돼요</span></h2>
-    <div style="display:flex;flex-direction:column;gap:12px" data-r>
-      <div class="card" style="padding:18px 20px;display:flex;gap:15px;align-items:flex-start">
-        <div class="step-n">1</div>
-        <div><h3 style="font-weight:800;font-size:16px;margin-bottom:3px">신청서 제출</h3><p class="body">프로필 사진, 자기소개, 이상형 조건을 작성해요.</p></div>
-      </div>
-      <div class="card" style="padding:18px 20px;display:flex;gap:15px;align-items:flex-start">
-        <div class="step-n">2</div>
-        <div><h3 style="font-weight:800;font-size:16px;margin-bottom:3px">센터장이 상대 물색</h3><p class="body">이상형 조건 기반으로 딱 맞는 한 분을 찾아드려요.</p></div>
-      </div>
-      <div class="card" style="padding:18px 20px;display:flex;gap:15px;align-items:flex-start">
-        <div class="step-n">3</div>
-        <div><h3 style="font-weight:800;font-size:16px;margin-bottom:3px">상대방에게 프로필 전달</h3><p class="body">상대방이 프로필을 확인하고 수락하면 매칭 성사!</p></div>
-      </div>
-      <div class="card" style="padding:18px 20px;display:flex;gap:15px;align-items:flex-start;border-color:rgba(255,190,46,.28)">
-        <div class="step-n">4</div>
-        <div><h3 class="y" style="font-weight:800;font-size:16px;margin-bottom:3px">연락처 교환</h3><p class="body">결제 후 카카오톡으로 서로의 연락처를 전달해 드려요.</p></div>
-      </div>
+  <!-- 진행 -->
+  <div class="sec">
+    <span class="eyebrow">이용 방법</span>
+    <h2>진행 <span class="g">과정</span></h2>
+    <div class="steps">
+      <div class="st"><div class="n">1</div><div><h3>신청서 작성</h3><p>사진·자기소개·이상형 조건을 작성해요</p></div></div>
+      <div class="st"><div class="n">2</div><div><h3>센터장 직접 검토</h3><p>조건에 맞는 단 한 분을 신중히 골라드려요</p></div></div>
+      <div class="st"><div class="n">3</div><div><h3>프로필 확인 · 수락</h3><p>양쪽 모두 수락하면 매칭이 성사돼요</p></div></div>
+      <div class="st"><div class="n last">4</div><div><h3>연락처 전달</h3><p>결제 확인 후 카카오톡으로 연결해드려요</p></div></div>
     </div>
   </div>
-</section>
 
-<!-- 참가 자격 -->
-<section class="sec">
-  <div class="sec-inner">
-    <h2 class="h2" data-r style="margin-bottom:28px">이런 분을 <span class="y">찾아요</span></h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3" data-r>
-      <div class="card" style="padding:22px 14px;text-align:center"><div style="font-size:34px;margin-bottom:10px">💑</div><div style="font-weight:800;font-size:15px;color:var(--ink)">20~30대</div><div class="cap" style="margin-top:3px">미혼 싱글</div></div>
-      <div class="card" style="padding:22px 14px;text-align:center"><div style="font-size:34px;margin-bottom:10px">📸</div><div style="font-weight:800;font-size:15px;color:var(--ink)">프로필 사진</div><div class="cap" style="margin-top:3px">본인 확인</div></div>
-      <div class="card" style="padding:22px 14px;text-align:center"><div style="font-size:34px;margin-bottom:10px">📄</div><div style="font-weight:800;font-size:15px;color:var(--ink)">재직증명서</div><div class="cap" style="margin-top:3px">or 사업자등록증</div></div>
-      <div class="card" style="padding:22px 14px;text-align:center"><div style="font-size:34px;margin-bottom:10px">🤝</div><div style="font-weight:800;font-size:15px;color:var(--ink)">매너</div><div class="cap" style="margin-top:3px">성실한 분</div></div>
-    </div>
-    <div class="card" style="padding:18px 20px;display:flex;gap:13px;align-items:center;margin-top:14px" data-r>
-      <div style="flex-shrink:0;width:40px;height:40px;border-radius:12px;background:var(--amber);display:flex;align-items:center;justify-content:center;color:#000"><i class="fa-solid fa-shield-halved"></i></div>
-      <p class="cap">제출하신 서류는 본인 인증 목적으로만 사용되며, 확인 후 즉시 폐기됩니다.</p>
-    </div>
+  <!-- 후기 -->
+  <div class="quote">
+    <div class="star">★★★★★</div>
+    <p>"조건만 넣으면 알아서 맞는 사람을 골라주니 편했어요. 아무나 소개하는 게 아니라 정말 검토해준 느낌이라 믿음이 갔어요."</p>
+    <div class="who">— 30대 직장인 · 1:1 매칭 성사</div>
   </div>
-</section>
 
-<!-- CTA -->
-<section class="sec" style="text-align:center;background:radial-gradient(ellipse at 50% 50%,rgba(255,190,46,.07) 0%,transparent 68%)">
-  <div class="sec-inner" data-r>
-    <h2 class="h2" style="font-size:25px">나만을 위한 설렘,<br><span class="y">특급 배송 신청하기</span> 🎁</h2>
-    <p class="body" style="margin-top:14px">매칭 불발 시 비용이 발생하지 않아요</p>
-    <div style="max-width:340px;margin:32px auto 0">
-      <a href="/matching" class="cta cta-glow" style="display:block;width:100%;padding:18px;font-size:16px"><i class="fa-solid fa-gift" style="margin-right:7px"></i>1:1 매칭 신청하기</a>
-    </div>
-    <p class="cap" style="margin-top:16px">신청 무료 · 매칭 성사 시에만 결제</p>
-    <a href="index.html" class="body" style="display:inline-block;margin-top:24px;color:var(--dim);font-weight:600"><i class="fa-solid fa-arrow-left" style="margin-right:6px"></i>홈으로 돌아가기</a>
+  <div class="foot">
+    문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener">카카오톡 채널 →</a>
   </div>
-</section>
 
-<!-- Footer -->
-<footer style="border-top:1px solid rgba(255,255,255,.05);padding:32px 20px;text-align:center">
-  <img src="logo.png" alt="썸류센터" style="height:20px;margin:0 auto 12px;opacity:.4">
-  <p class="cap" style="color:#6b6358">문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" class="y" style="font-weight:700">카카오톡 채널 →</a></p>
-</footer>
+  <!-- 하단 고정 CTA -->
+  <div class="bar">
+    <a class="cta" href="/matching">💌 1:1 매칭 신청하기</a>
+    <div class="fine">신청 무료 · 매칭 성사 시에만 결제</div>
+  </div>
 
-<script>
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
-document.querySelectorAll('[data-r]').forEach(el=>io.observe(el));
-</script>
+</div>
 </body>
 </html>
