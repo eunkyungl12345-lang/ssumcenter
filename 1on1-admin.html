@@ -249,13 +249,17 @@
   <!-- 소개 풀 헤더 -->
   <div class="mb-4">
     <h2 class="text-lg font-black mb-3">소개 풀 (<span id="pool-count">0</span>명)</h2>
+    <!-- 🔍 이름·연락처 검색 -->
+    <input type="text" id="matchSearch" oninput="matchSearch()" placeholder="🔍 이름 또는 연락처로 찾기" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition mb-3">
     <!-- 필터: 상태 -->
     <div class="flex flex-wrap gap-2 mb-2 items-center">
       <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">상태</span>
       <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
+      <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#FFD400]/50 text-[#FFD400] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기 <span id="cnt-wait" class="ml-0.5">0</span></button>
       <button onclick="filterBy('승인')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
       <button onclick="filterBy('소개중')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="소개중">소개중</button>
       <button onclick="filterBy('거절')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="거절">거절</button>
+      <button onclick="filterBy('제외')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="제외">제외 <span id="cnt-excl" class="ml-0.5">0</span></button>
     </div>
     <!-- 필터: 성별 -->
     <div class="flex flex-wrap gap-2 mb-3 items-center">
@@ -265,8 +269,8 @@
     </div>
     <!-- 정렬 탭 -->
     <div class="flex gap-1.5">
-      <button onclick="sortMatching('age-asc')" class="sort-tab active text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="age-asc">나이순</button>
-      <button onclick="sortMatching('date-desc')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="date-desc">최신순</button>
+      <button onclick="sortMatching('age-asc')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="age-asc">나이순</button>
+      <button onclick="sortMatching('date-desc')" class="sort-tab active text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="date-desc">최신순</button>
       <button onclick="sortMatching('name')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="name">이름순</button>
     </div>
   </div>
@@ -881,6 +885,11 @@ let applicants = [];
 let matchResponses = [];
 let selected = [null, null];
 let currentFilter = "all";
+let matchSearchQuery = "";
+function matchSearch(){
+  matchSearchQuery = (document.getElementById("matchSearch")?.value || "").trim().toLowerCase();
+  renderList();
+}
 
 async function loadApplicants(){
   try {
@@ -894,7 +903,7 @@ async function loadApplicants(){
     const data = await res.json();
     applicants = data.records || [];
     updateStats();
-    renderList();
+    sortMatching(matchingSort); // 정렬 + 탭 하이라이트 동기화 후 렌더
     loadResponses();
     loadMatches();
   } catch(err) {
@@ -1138,11 +1147,16 @@ function renderResponses(responses){
 
 function updateStats(){
   const total = applicants.length;
+  const waiting = applicants.filter(r => (r.fields["매칭상태"] || "대기") === "대기").length;
   const approved = applicants.filter(r => r.fields["매칭상태"] === "승인").length;
   const matched = applicants.filter(r => r.fields["매칭상태"] === "소개중").length;
+  const excluded = applicants.filter(r => r.fields["매칭상태"] === "제외").length;
   document.getElementById("stat-total").textContent = total;
   document.getElementById("stat-approved").textContent = approved;
   document.getElementById("stat-matched").textContent = matched;
+  // 필터 버튼의 개수 배지 갱신
+  const cw = document.getElementById("cnt-wait"); if(cw) cw.textContent = waiting;
+  const cx = document.getElementById("cnt-excl"); if(cx) cx.textContent = excluded;
   // stat-waiting(성사)는 loadMatches에서 매칭 테이블 기준으로 채움
 }
 
@@ -1183,10 +1197,18 @@ function renderList(){
   const list = document.getElementById("applicant-list");
   let filtered = applicants;
 
-  if(currentFilter === "대기" || currentFilter === "승인" || currentFilter === "소개중" || currentFilter === "거절"){
+  if(currentFilter === "대기" || currentFilter === "승인" || currentFilter === "소개중" || currentFilter === "거절" || currentFilter === "제외"){
     filtered = applicants.filter(r => (r.fields["매칭상태"] || "대기") === currentFilter);
   } else if(currentFilter === "남성" || currentFilter === "여성"){
     filtered = applicants.filter(r => r.fields["성별"] === currentFilter);
+  }
+
+  // 🔍 이름·연락처 검색 (있으면 추가로 걸러냄)
+  if(matchSearchQuery){
+    filtered = filtered.filter(r => {
+      const f = r.fields;
+      return ((f["이름"]||"") + " " + (f["연락처"]||"")).toLowerCase().includes(matchSearchQuery);
+    });
   }
 
   // 풀 카운트 업데이트
@@ -1224,7 +1246,7 @@ function renderList(){
         <div style="padding:10px 0 0;display:flex;flex-direction:column;gap:8px">
           ${photos.length > 1 ? `<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">${photos.map(p => `<img src="${p.url}" onclick="openPhoto('${p.url}')" style="width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0">`).join("")}</div>` : ""}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-            <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">연락처</span><br><b>${f["연락처"] || "-"}</b></div>
+            <div onclick="copyPhone('${f["연락처"] || ""}', event)" style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px;cursor:pointer" title="탭하면 복사돼요"><span style="color:#8a8070;font-size:11px">연락처 <i class="fa-solid fa-copy" style="font-size:10px"></i></span><br><b>${f["연락처"] || "-"}</b></div>
             <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">종교</span><br><b>${f["종교"] || "-"}</b></div>
             <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">취미</span><br><b>${f["취미"] || "-"}</b></div>
             <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
@@ -1245,17 +1267,19 @@ function renderList(){
           <button onclick="event.stopPropagation();sendIntakeSMS('${r.id}')" style="background:#161615;border:1px solid #FFD400;color:#FFD400;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;margin-top:4px;width:100%">📨 접수 안내 문자 보내기</button>
           ${status === "대기" ? `
           <div style="display:flex;gap:6px;margin-top:8px">
-            <button onclick="event.stopPropagation();approveApplicant('${r.id}')" style="flex:1;background:#22c55e;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">✅ 승인</button>
-            <button onclick="event.stopPropagation();rejectApplicant('${r.id}')" style="flex:1;background:#ef4444;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">❌ 반려</button>
+            <button onclick="event.stopPropagation();approveApplicant('${r.id}', event)" style="flex:1;background:#22c55e;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">✅ 승인</button>
+            <button onclick="event.stopPropagation();rejectApplicant('${r.id}', event)" style="flex:1;background:#ef4444;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">❌ 거절</button>
           </div>` : ""}
-          ${status !== "대기" ? `<button onclick="event.stopPropagation();excludeApplicant('${r.id}')" style="margin-top:8px;width:100%;background:#161615;border:1px solid #ef4444;color:#ef4444;font-size:11px;font-weight:700;padding:7px;border-radius:10px;cursor:pointer">🚫 소개 풀에서 제외(숨김)</button>` : ""}
+          ${status === "제외" ? `<button onclick="event.stopPropagation();restoreApplicant('${r.id}', event)" style="margin-top:8px;width:100%;background:#161615;border:1px solid #22c55e;color:#22c55e;font-size:11px;font-weight:700;padding:7px;border-radius:10px;cursor:pointer">↩️ 복원 (소개 풀로 되돌리기)</button>` : ""}
+          ${(status !== "대기" && status !== "제외") ? `<button onclick="event.stopPropagation();excludeApplicant('${r.id}', event)" style="margin-top:8px;width:100%;background:#161615;border:1px solid #ef4444;color:#ef4444;font-size:11px;font-weight:700;padding:7px;border-radius:10px;cursor:pointer">🚫 소개 풀에서 제외(숨김)</button>` : ""}
         </div>
       </div>
     </div>`;
   };
 
   // 👦👧 남/여 2단 매칭 보드 (좁은 화면에선 자동으로 위아래로 쌓임)
-  const shown = filtered.filter(r => r.fields["매칭상태"] !== "제외"); // 제외된 사람은 보드에서 숨김
+  // 평소엔 제외자를 숨기고, '제외' 필터를 골랐을 때만 보여줌
+  const shown = currentFilter === "제외" ? filtered : filtered.filter(r => r.fields["매칭상태"] !== "제외");
   const males = shown.filter(r => r.fields["성별"] === "남성");
   const females = shown.filter(r => r.fields["성별"] === "여성");
   const etc = shown.filter(r => r.fields["성별"] !== "남성" && r.fields["성별"] !== "여성");
@@ -1347,17 +1371,27 @@ function saveMatchRecord(p0, p1){
   } catch(e){ console.error(e); }
 }
 
-function generateMatch(){
+async function generateMatch(){
   if(!selected[0] || !selected[1]) return;
 
   const a = selected[0].fields;
   const b = selected[1].fields;
-  const photoA = a["프로필사진"] && a["프로필사진"][0] ? a["프로필사진"][0].url : "";
-  const photoB = b["프로필사진"] && b["프로필사진"][0] ? b["프로필사진"][0].url : "";
+
+  // 🛡️ 같은 성별 차단 (실수로 남-남 / 여-여 매칭 방지)
+  if(a["성별"] && b["성별"] && a["성별"] === b["성별"]){
+    alert(`⚠️ ${a["이름"]||"선택1"}님과 ${b["이름"]||"선택2"}님은 둘 다 ${a["성별"]}이에요.\n이성끼리만 매칭할 수 있어요. 다시 골라주세요.`);
+    return;
+  }
+
+  // ✅ 실행 전 확인 (누구랑 누구를 매칭하는지 이름 보여주기)
+  if(!confirm(`${a["이름"]||"선택1"}님 ↔ ${b["이름"]||"선택2"}님\n두 분을 매칭할까요?\n(양쪽 모두 '소개중' 상태가 되고 매칭 기록이 만들어져요)`)) return;
+
+  const mbtn = document.getElementById("match-btn");
+  const morig = mbtn ? mbtn.innerHTML : "";
+  if(mbtn){ mbtn.disabled = true; mbtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>매칭 만드는 중...'; }
 
   // A에게 보낼 링크 (B의 프로필, myId=A의 ID)
   const urlForA = `${SITE_URL}/response.html?id=${selected[1].id}&myId=${selected[0].id}`;
-
   // B에게 보낼 링크 (A의 프로필, myId=B의 ID)
   const urlForB = `${SITE_URL}/response.html?id=${selected[0].id}&myId=${selected[1].id}`;
 
@@ -1367,10 +1401,22 @@ function generateMatch(){
   document.getElementById("url-for-2").value = urlForB;
   document.getElementById("match-result").classList.remove("hidden");
 
-  // Airtable 매칭상태 업데이트
-  updateMatchStatus(selected[0].id);
-  updateMatchStatus(selected[1].id);
-  saveMatchRecord(selected[0], selected[1]); // 매칭 테이블에 커플 기록
+  const idA = selected[0].id, idB = selected[1].id;
+  try {
+    // Airtable 매칭상태 업데이트 + 커플 기록
+    await updateMatchStatus(idA);
+    await updateMatchStatus(idB);
+    await saveMatchRecord(selected[0], selected[1]);
+  } catch(e){ console.error(e); }
+
+  // 로컬 상태도 갱신해서 화면이 바로 최신으로 (중복 매칭 방지)
+  const ra = applicants.find(r => r.id === idA); if(ra) ra.fields["매칭상태"] = "소개중";
+  const rb = applicants.find(r => r.id === idB); if(rb) rb.fields["매칭상태"] = "소개중";
+  updateStats();
+  renderList();
+  if(typeof loadMatches === "function") loadMatches(); // 💑 매칭 현황 새로고침
+
+  if(mbtn){ mbtn.disabled = false; mbtn.innerHTML = morig; }
 
   // AI 추천 이유 영역 초기화
   const aiBox = document.getElementById("ai-reason-box");
@@ -1440,27 +1486,62 @@ async function updateMatchStatus(recordId){
 
 // 1:1 매칭 가입 승인
 // 소개 풀에서 제외(숨김) — 삭제 아님, 매칭상태를 '제외'로
-async function excludeApplicant(recordId){
+async function excludeApplicant(recordId, ev){
   const rec = applicants.find(r => r.id === recordId);
   if(!rec) return;
   const name = rec.fields["이름"] || "";
-  if(!confirm(name + "님을 소개 풀에서 제외할까요?\n\n목록에서 숨겨져요. (삭제는 아니에요 — 나중에 되돌릴 수 있어요)")) return;
+  if(!confirm(name + "님을 소개 풀에서 제외할까요?\n\n목록에서 숨겨져요. (삭제는 아니에요 — '제외' 필터에서 언제든 복원할 수 있어요)")) return;
+  const btn = ev && ev.currentTarget; if(btn){ btn.disabled = true; }
   try {
     await fetch("/api/airtable?table=1:1 매칭 신청", {
       method: "PATCH", headers: apiHeaders(),
       body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "제외" } }] })
     });
-    toast(name + "님을 제외했어요");
-    loadApplicants();
-  } catch(e){ console.error(e); toast("제외 실패 — 다시 시도해주세요"); }
+    rec.fields["매칭상태"] = "제외";
+    updateStats(); renderList();
+    toast(name + "님을 제외했어요 ('제외' 필터에서 복원 가능)");
+  } catch(e){ console.error(e); if(btn) btn.disabled = false; toast("제외 실패 — 다시 시도해주세요"); }
 }
 
-async function approveApplicant(recordId){
+// 제외했던 사람을 다시 소개 풀로 복원
+async function restoreApplicant(recordId, ev){
+  const rec = applicants.find(r => r.id === recordId);
+  if(!rec) return;
+  const name = rec.fields["이름"] || "";
+  if(!confirm(name + "님을 다시 소개 풀로 되돌릴까요?")) return;
+  const btn = ev && ev.currentTarget; if(btn){ btn.disabled = true; btn.textContent = "복원 중…"; }
+  try {
+    await fetch("/api/airtable?table=1:1 매칭 신청", {
+      method: "PATCH", headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "승인" } }] })
+    });
+    rec.fields["매칭상태"] = "승인";
+    updateStats(); renderList();
+    toast(name + "님을 복원했어요 (승인 상태)");
+  } catch(e){ console.error(e); if(btn){ btn.disabled = false; btn.textContent = "↩️ 복원"; } toast("복원 실패 — 다시 시도해주세요"); }
+}
+
+// 전화번호 원터치 복사
+function copyPhone(phone, ev){
+  if(ev) ev.stopPropagation();
+  if(!phone || phone === "-"){ toast("연락처가 없어요"); return; }
+  const done = () => toast("연락처 복사됨: " + phone);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(phone).then(done, done);
+  } else {
+    const t = document.createElement("textarea"); t.value = phone; document.body.appendChild(t);
+    t.select(); try{ document.execCommand("copy"); }catch(e){} document.body.removeChild(t); done();
+  }
+}
+
+async function approveApplicant(recordId, ev){
   const record = applicants.find(r => r.id === recordId);
   if(!record) return;
   const name = record.fields["이름"] || "";
   if(!confirm(`${name}님을 승인하시겠습니까?\n승인 SMS가 자동 발송됩니다.`)) return;
 
+  const btn = ev && ev.currentTarget; const orig = btn ? btn.innerHTML : "";
+  if(btn){ btn.disabled = true; btn.innerHTML = "처리 중…"; }
   try {
     await fetch("/api/airtable?table=1:1 매칭 신청", {
       method: "PATCH",
@@ -1468,36 +1549,46 @@ async function approveApplicant(recordId){
       body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "승인" } }] })
     });
 
-    // 승인 SMS 발송
+    // 승인 SMS 발송 — 실제 발송 결과 확인
     const phone = record.fields["연락처"];
+    let smsMsg = "";
     if(phone){
-      await fetch("/api/send-sms", {
-        method: "POST",
-        headers: apiHeaders(),
-        body: JSON.stringify({
-          to: phone,
-          text: `[썸류센터] ${name}님, 1:1 매칭 프로필이 승인되었습니다! 🎉\n\n센터장이 어울리는 분을 찾아 매칭해드릴게요. 매칭 상대가 정해지면 프로필 카드를 문자로 보내드립니다.\n\n궁금한 점은 카카오채널 @썸류센터로 문의해주세요.`
-        })
-      });
+      try {
+        const sr = await fetch("/api/send-sms", {
+          method: "POST",
+          headers: apiHeaders(),
+          body: JSON.stringify({
+            to: phone,
+            text: `[썸류센터] ${name}님, 1:1 매칭 프로필이 승인되었습니다! 🎉\n\n센터장이 어울리는 분을 찾아 매칭해드릴게요. 매칭 상대가 정해지면 프로필 카드를 문자로 보내드립니다.\n\n궁금한 점은 카카오채널 @썸류센터로 문의해주세요.`
+          })
+        });
+        const sd = await sr.json();
+        smsMsg = sd.ok ? "\n승인 문자도 발송됐어요 💌" : `\n⚠️ 하지만 승인 문자는 실패했어요: ${sd.error || "알 수 없는 오류"}\n(직접 카톡으로 안내해주세요)`;
+      } catch(e){ smsMsg = "\n⚠️ 하지만 승인 문자 발송 중 오류가 났어요. 직접 안내해주세요."; }
+    } else {
+      smsMsg = "\n(연락처가 없어 문자는 못 보냈어요)";
     }
 
     record.fields["매칭상태"] = "승인";
     updateStats();
     renderList();
-    alert(`${name}님 승인 완료! SMS 발송됨`);
+    alert(`${name}님 승인 완료!` + smsMsg);
   } catch(err){
     console.error(err);
+    if(btn){ btn.disabled = false; btn.innerHTML = orig; }
     alert("승인 처리 중 오류가 발생했습니다.");
   }
 }
 
 // 1:1 매칭 가입 반려
-async function rejectApplicant(recordId){
+async function rejectApplicant(recordId, ev){
   const record = applicants.find(r => r.id === recordId);
   if(!record) return;
   const name = record.fields["이름"] || "";
-  if(!confirm(`${name}님을 반려하시겠습니까?`)) return;
+  if(!confirm(`${name}님을 거절하시겠습니까?`)) return;
 
+  const btn = ev && ev.currentTarget; const orig = btn ? btn.innerHTML : "";
+  if(btn){ btn.disabled = true; btn.innerHTML = "처리 중…"; }
   try {
     await fetch("/api/airtable?table=1:1 매칭 신청", {
       method: "PATCH",
@@ -1508,31 +1599,33 @@ async function rejectApplicant(recordId){
     record.fields["매칭상태"] = "거절";
     updateStats();
     renderList();
-    alert(`${name}님 반려 처리 완료`);
+    toast(`${name}님 거절 처리 완료`);
   } catch(err){
     console.error(err);
-    alert("반려 처리 중 오류가 발생했습니다.");
+    if(btn){ btn.disabled = false; btn.innerHTML = orig; }
+    alert("거절 처리 중 오류가 발생했습니다.");
   }
 }
 
-// 매칭 링크 SMS 발송
-async function sendMatchSms(idx){
+// 매칭 링크 SMS 발송 — 실제 발송 성공 여부를 반환 (성공 true / 실패 false)
+// skipConfirm=true 면 확인창을 띄우지 않음 (양쪽 보내기에서 재사용)
+async function sendMatchSms(idx, skipConfirm){
   const record = selected[idx];
-  if(!record) return;
+  if(!record) return false;
   const name = record.fields["이름"] || "";
   const phone = record.fields["연락처"];
   const urlInput = document.getElementById("url-for-" + (idx + 1));
   const url = urlInput.value;
   const btn = document.getElementById("sms-btn-" + (idx + 1));
 
-  if(!phone){ alert("연락처가 없습니다."); return; }
-  if(!confirm(`${name}님에게 매칭 프로필 링크를 문자로 보내시겠습니까?`)) return;
+  if(!phone){ alert(`${name}님은 연락처가 없어 문자를 못 보내요. 링크를 복사해 카톡으로 보내주세요.`); return false; }
+  if(!skipConfirm && !confirm(`${name}님에게 매칭 프로필 링크를 문자로 보내시겠습니까?`)) return false;
 
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>전송 중...';
   btn.disabled = true;
 
   try {
-    await fetch("/api/send-sms", {
+    const r = await fetch("/api/send-sms", {
       method: "POST",
       headers: apiHeaders(),
       body: JSON.stringify({
@@ -1540,27 +1633,49 @@ async function sendMatchSms(idx){
         text: `[썸류센터] ${name}님, 센터장이 찾은 매칭 상대 프로필이 도착했어요! 💕\n\n아래 링크에서 프로필을 확인하고 수락/거절을 선택해주세요. (48시간 내 응답)\n\n${url}`
       })
     });
-    btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>전송 완료!';
-    btn.classList.remove("bg-emerald-600");
-    btn.classList.add("bg-[#242422]");
+    const d = await r.json();
+    if(d.ok){
+      btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>전송 완료!';
+      btn.classList.remove("bg-emerald-600");
+      btn.classList.add("bg-[#242422]");
+      return true;
+    } else {
+      btn.innerHTML = '<i class="fa-solid fa-xmark mr-1"></i>전송 실패 — 다시';
+      btn.disabled = false;
+      if(!skipConfirm) alert(`${name}님에게 문자가 안 갔어요 😢\n사유: ${d.error || "알 수 없음"}\n\n링크를 복사해 카톡으로 보내주세요.`);
+      return false;
+    }
   } catch(err){
     console.error(err);
-    btn.innerHTML = '<i class="fa-solid fa-xmark mr-1"></i>전송 실패';
+    btn.innerHTML = '<i class="fa-solid fa-xmark mr-1"></i>전송 실패 — 다시';
     btn.disabled = false;
+    if(!skipConfirm) alert(`${name}님에게 문자 발송 중 오류가 났어요. 링크를 복사해 카톡으로 보내주세요.`);
+    return false;
   }
 }
 
-// 양쪽 모두에게 매칭 SMS 발송
+// 양쪽 모두에게 매칭 SMS 발송 — 확인 한 번, 결과 요약
 async function sendMatchSmsAll(){
   if(!selected[0] || !selected[1]) return;
+  const n1 = selected[0].fields["이름"] || "선택1";
+  const n2 = selected[1].fields["이름"] || "선택2";
+  if(!confirm(`${n1}님과 ${n2}님, 양쪽 모두에게 매칭 프로필 링크를 보낼까요?`)) return;
   const btn = document.getElementById("sms-btn-all");
+  const orig = btn.innerHTML;
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>전송 중...';
   btn.disabled = true;
 
-  await sendMatchSms(0);
-  await sendMatchSms(1);
+  const ok1 = await sendMatchSms(0, true);
+  const ok2 = await sendMatchSms(1, true);
 
-  btn.innerHTML = '<i class="fa-solid fa-check mr-1.5"></i>양쪽 모두 전송 완료!';
+  if(ok1 && ok2){
+    btn.innerHTML = '<i class="fa-solid fa-check mr-1.5"></i>양쪽 모두 전송 완료!';
+  } else {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    const fails = [!ok1 ? n1 : null, !ok2 ? n2 : null].filter(Boolean).join(", ");
+    alert(`⚠️ ${fails}님에게는 문자가 안 갔어요.\n해당 링크를 복사해 카톡으로 보내주세요.`);
+  }
 }
 
 function copyUrl(inputId){
