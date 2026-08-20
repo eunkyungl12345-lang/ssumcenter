@@ -196,6 +196,7 @@
       <button onclick="filterBy('소개중')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="소개중">소개중</button>
       <button onclick="filterBy('거절')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="거절">거절</button>
       <button onclick="filterBy('제외')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="제외">제외 <span id="cnt-excl" class="ml-0.5">0</span></button>
+      <button onclick="filterBy('휴지통')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="휴지통">🗑️ 휴지통 <span id="cnt-trash" class="ml-0.5">0</span></button>
     </div>
     <!-- 필터: 성별 -->
     <div class="flex flex-wrap gap-2 mb-3 items-center">
@@ -1173,17 +1174,19 @@ function renderResponses(responses){
 }
 
 function updateStats(){
-  const total = applicants.length;
+  const total = applicants.filter(r => r.fields["매칭상태"] !== "휴지통").length;
   const waiting = applicants.filter(r => (r.fields["매칭상태"] || "대기") === "대기").length;
   const approved = applicants.filter(r => r.fields["매칭상태"] === "승인").length;
   const matched = applicants.filter(r => r.fields["매칭상태"] === "소개중").length;
   const excluded = applicants.filter(r => r.fields["매칭상태"] === "제외").length;
+  const trashed = applicants.filter(r => r.fields["매칭상태"] === "휴지통").length;
   document.getElementById("stat-total").textContent = total;
   document.getElementById("stat-approved").textContent = approved;
   document.getElementById("stat-matched").textContent = matched;
   // 필터 버튼의 개수 배지 갱신
   const cw = document.getElementById("cnt-wait"); if(cw) cw.textContent = waiting;
   const cx = document.getElementById("cnt-excl"); if(cx) cx.textContent = excluded;
+  const ct = document.getElementById("cnt-trash"); if(ct) ct.textContent = trashed;
   const tp = document.getElementById("mtab-pool-cnt"); if(tp) tp.textContent = waiting ? ("· 대기 " + waiting) : "";
   // stat-waiting(성사)는 loadMatches에서 매칭 테이블 기준으로 채움
 }
@@ -1225,7 +1228,7 @@ function renderList(){
   const list = document.getElementById("applicant-list");
   let filtered = applicants;
 
-  if(currentFilter === "대기" || currentFilter === "승인" || currentFilter === "소개중" || currentFilter === "거절" || currentFilter === "제외"){
+  if(currentFilter === "대기" || currentFilter === "승인" || currentFilter === "소개중" || currentFilter === "거절" || currentFilter === "제외" || currentFilter === "휴지통"){
     filtered = applicants.filter(r => (r.fields["매칭상태"] || "대기") === currentFilter);
   } else if(currentFilter === "남성" || currentFilter === "여성"){
     filtered = applicants.filter(r => r.fields["성별"] === currentFilter);
@@ -1297,17 +1300,33 @@ function renderList(){
           <div style="display:flex;gap:6px;margin-top:8px">
             <button onclick="event.stopPropagation();approveApplicant('${r.id}', event)" style="flex:1;background:#22c55e;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">✅ 승인</button>
             <button onclick="event.stopPropagation();rejectApplicant('${r.id}', event)" style="flex:1;background:#ef4444;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">❌ 거절</button>
-          </div>` : ""}
-          ${status === "제외" ? `<button onclick="event.stopPropagation();restoreApplicant('${r.id}', event)" style="margin-top:8px;width:100%;background:#161615;border:1px solid #22c55e;color:#22c55e;font-size:11px;font-weight:700;padding:7px;border-radius:10px;cursor:pointer">↩️ 복원 (소개 풀로 되돌리기)</button>` : ""}
-          ${(status !== "대기" && status !== "제외") ? `<button onclick="event.stopPropagation();excludeApplicant('${r.id}', event)" style="margin-top:8px;width:100%;background:#161615;border:1px solid #ef4444;color:#ef4444;font-size:11px;font-weight:700;padding:7px;border-radius:10px;cursor:pointer">🚫 소개 풀에서 제외(숨김)</button>` : ""}
+          </div>
+          <button onclick="event.stopPropagation();deleteToTrash('${r.id}', event)" style="margin-top:6px;width:100%;background:#161615;border:1px solid #6b6358;color:#9E9E97;font-size:11px;font-weight:700;padding:7px;border-radius:10px;cursor:pointer">🗑️ 삭제 (휴지통으로)</button>` :
+          status === "휴지통" ? `
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button onclick="event.stopPropagation();restoreApplicant('${r.id}', event)" style="flex:1;background:#161615;border:1px solid #22c55e;color:#22c55e;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">↩️ 복원</button>
+            <button onclick="event.stopPropagation();deleteForever('${r.id}', event)" style="flex:1;background:#7f1d1d;border:none;color:#fff;font-size:11px;font-weight:800;padding:8px;border-radius:10px;cursor:pointer">❌ 완전 삭제</button>
+          </div>
+          <div style="font-size:10.5px;color:#8a8070;margin-top:5px;text-align:center">완전 삭제는 되돌릴 수 없어요</div>` :
+          status === "제외" ? `
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button onclick="event.stopPropagation();restoreApplicant('${r.id}', event)" style="flex:1;background:#161615;border:1px solid #22c55e;color:#22c55e;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">↩️ 복원</button>
+            <button onclick="event.stopPropagation();deleteToTrash('${r.id}', event)" style="flex:1;background:#161615;border:1px solid #6b6358;color:#9E9E97;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">🗑️ 삭제</button>
+          </div>` : `
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button onclick="event.stopPropagation();excludeApplicant('${r.id}', event)" style="flex:1;background:#161615;border:1px solid #ef4444;color:#ef4444;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">🚫 제외(숨김)</button>
+            <button onclick="event.stopPropagation();deleteToTrash('${r.id}', event)" style="flex:1;background:#161615;border:1px solid #6b6358;color:#9E9E97;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">🗑️ 삭제</button>
+          </div>`}
         </div>
       </div>
     </div>`;
   };
 
   // 👦👧 남/여 2단 매칭 보드 (좁은 화면에선 자동으로 위아래로 쌓임)
-  // 평소엔 제외자를 숨기고, '제외' 필터를 골랐을 때만 보여줌
-  const shown = currentFilter === "제외" ? filtered : filtered.filter(r => r.fields["매칭상태"] !== "제외");
+  // 평소엔 제외·휴지통을 숨기고, 해당 필터를 골랐을 때만 보여줌
+  const shown = (currentFilter === "제외" || currentFilter === "휴지통")
+    ? filtered
+    : filtered.filter(r => r.fields["매칭상태"] !== "제외" && r.fields["매칭상태"] !== "휴지통");
   const males = shown.filter(r => r.fields["성별"] === "남성");
   const females = shown.filter(r => r.fields["성별"] === "여성");
   const etc = shown.filter(r => r.fields["성별"] !== "남성" && r.fields["성별"] !== "여성");
@@ -1552,6 +1571,44 @@ async function restoreApplicant(recordId, ev){
     updateStats(); renderList();
     toast(name + "님을 복원했어요 (승인 상태)");
   } catch(e){ console.error(e); if(btn){ btn.disabled = false; btn.textContent = "↩️ 복원"; } toast("복원 실패 — 다시 시도해주세요"); }
+}
+
+// 🗑️ 휴지통으로 보내기 (숨김, 복원 가능) — 매칭상태를 '휴지통'으로
+async function deleteToTrash(recordId, ev){
+  const rec = applicants.find(r => r.id === recordId);
+  if(!rec) return;
+  const name = rec.fields["이름"] || "";
+  if(!confirm(name + "님을 휴지통으로 보낼까요?\n\n목록에서 사라지지만, '🗑️ 휴지통' 필터에서 복원할 수 있어요.")) return;
+  const btn = ev && ev.currentTarget; if(btn){ btn.disabled = true; }
+  try {
+    const r = await fetch("/api/airtable?table=1:1 매칭 신청", {
+      method: "PATCH", headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: recordId, fields: { "매칭상태": "휴지통" } }], typecast: true })
+    });
+    if(!r.ok){ const d = await r.json().catch(()=>({})); throw new Error(d.error || ("오류 " + r.status)); }
+    rec.fields["매칭상태"] = "휴지통";
+    updateStats(); renderList();
+    toast(name + "님을 휴지통으로 보냈어요 (복원 가능)");
+  } catch(e){ console.error(e); if(btn) btn.disabled = false; alert("삭제 실패: " + e.message); }
+}
+
+// ❌ 완전 삭제 (되돌릴 수 없음) — 에어테이블에서 레코드 자체를 삭제
+async function deleteForever(recordId, ev){
+  const rec = applicants.find(r => r.id === recordId);
+  if(!rec) return;
+  const name = rec.fields["이름"] || "";
+  if(!confirm("⚠️ " + name + "님을 완전히 삭제할까요?\n\n되돌릴 수 없어요. 정말 지우려면 [확인]을 눌러주세요.")) return;
+  const btn = ev && ev.currentTarget; const orig = btn ? btn.textContent : "";
+  if(btn){ btn.disabled = true; btn.textContent = "삭제 중…"; }
+  try {
+    const r = await fetch("/api/airtable?table=1:1 매칭 신청&recordId=" + recordId, {
+      method: "DELETE", headers: apiHeaders()
+    });
+    if(!r.ok){ const d = await r.json().catch(()=>({})); throw new Error(d.error || ("오류 " + r.status)); }
+    applicants = applicants.filter(x => x.id !== recordId);
+    updateStats(); renderList();
+    toast(name + "님을 완전히 삭제했어요");
+  } catch(e){ console.error(e); if(btn){ btn.disabled = false; btn.textContent = orig; } alert("삭제 실패: " + e.message); }
 }
 
 // 전화번호 원터치 복사
