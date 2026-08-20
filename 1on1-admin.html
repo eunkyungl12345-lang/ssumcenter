@@ -147,13 +147,23 @@
   <!-- 1:1 매칭 섹션 -->
   <div id="section-matching">
 
+  <!-- 서브탭: 신청자 / 매칭하기 / 현황 -->
+  <div class="grid grid-cols-3 gap-2 mb-6 sticky top-0 z-30 bg-[#0D0D0C] py-2">
+    <button type="button" onclick="showMatchTab('pool')" id="mtab-pool" class="bg-y text-black text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition">👥 신청자 <span id="mtab-pool-cnt" class="opacity-70"></span></button>
+    <button type="button" onclick="showMatchTab('make')" id="mtab-make" class="bg-[#161615] border border-[#242422] text-[#9E9E97] text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition hover:border-[#FFD400]">💘 매칭하기</button>
+    <button type="button" onclick="showMatchTab('status')" id="mtab-status" class="bg-[#161615] border border-[#242422] text-[#9E9E97] text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition hover:border-[#FFD400]">📊 현황</button>
+  </div>
+
+  <!-- ============ 탭 A: 신청자 ============ -->
+  <div id="mpane-pool">
+
   <!-- 통계 -->
-  <div class="grid grid-cols-4 gap-3 mb-8">
+  <div class="grid grid-cols-4 gap-3 mb-6">
     <button type="button" onclick="filterBy('all')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
       <div class="text-2xl font-black y" id="stat-total">-</div>
       <div class="text-[11px] text-[#9E9E97] mt-1">전체 신청</div>
     </button>
-    <button type="button" onclick="var e=document.getElementById('match-board-status'); if(e) e.scrollIntoView({behavior:'smooth'})" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
+    <button type="button" onclick="showMatchTab('status')" class="bg-[#161615] border border-[#242422] rounded-2xl py-4 text-center transition hover:border-[#FFD400] cursor-pointer">
       <div class="text-2xl font-black text-emerald-400" id="stat-waiting">-</div>
       <div class="text-[11px] text-[#9E9E97] mt-1">성사 🎉</div>
     </button>
@@ -167,33 +177,77 @@
     </button>
   </div>
 
-  <!-- 매칭 도구 -->
-  <div class="bg-[#161615] border border-[#FFD400]/20 rounded-2xl p-5 mb-8">
-    <button type="button" onclick="toggleMatchTool()" class="w-full flex items-center justify-between text-left">
-      <h2 class="font-bold text-sm"><i class="fa-solid fa-heart-circle-plus y mr-1.5"></i>매칭하기 <span class="text-[11px] text-[#9E9E97] font-normal">— 두 사람 골라 링크 만들기</span></h2>
-      <i id="match-tool-chevron" class="fa-solid fa-chevron-down text-[#9E9E97] text-xs"></i>
-    </button>
-    <div id="match-tool-body" class="hidden mt-4">
-    <p class="text-xs text-[#9E9E97] mb-4">아래 목록에서 매칭할 두 사람을 클릭하세요</p>
+  <!-- 신청자 등록 버튼 -->
+  <button onclick="openRegModal('matching')" class="w-full bg-[#161615] border border-dashed border-[#FFD400]/40 rounded-2xl py-4 text-sm font-bold text-[#FFD400] hover:bg-[#FFD400]/5 transition mb-6">
+    <i class="fa-solid fa-user-plus mr-2"></i>신청자 등록
+  </button>
 
-    <div class="grid grid-cols-2 gap-3 mb-4">
-      <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-3 min-h-[60px]">
-        <div class="text-[10px] text-[#9E9E97] font-bold uppercase tracking-wider mb-1">선택 1</div>
-        <div id="pick-1" class="text-sm text-[#555]">목록에서 선택</div>
+  <!-- 소개 풀 헤더 -->
+  <div class="mb-4">
+    <h2 class="text-lg font-black mb-3">소개 풀 (<span id="pool-count">0</span>명)</h2>
+    <!-- 🔍 이름·연락처 검색 -->
+    <input type="text" id="matchSearch" oninput="matchSearch()" placeholder="🔍 이름 또는 연락처로 찾기" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition mb-3">
+    <!-- 필터: 상태 -->
+    <div class="flex flex-wrap gap-2 mb-2 items-center">
+      <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">상태</span>
+      <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
+      <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#FFD400]/50 text-[#FFD400] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기 <span id="cnt-wait" class="ml-0.5">0</span></button>
+      <button onclick="filterBy('승인')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
+      <button onclick="filterBy('소개중')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="소개중">소개중</button>
+      <button onclick="filterBy('거절')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="거절">거절</button>
+      <button onclick="filterBy('제외')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="제외">제외 <span id="cnt-excl" class="ml-0.5">0</span></button>
+    </div>
+    <!-- 필터: 성별 -->
+    <div class="flex flex-wrap gap-2 mb-3 items-center">
+      <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">성별</span>
+      <button onclick="filterBy('남성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
+      <button onclick="filterBy('여성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
+    </div>
+    <!-- 정렬 탭 -->
+    <div class="flex gap-1.5">
+      <button onclick="sortMatching('age-asc')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="age-asc">나이순</button>
+      <button onclick="sortMatching('date-desc')" class="sort-tab active text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="date-desc">최신순</button>
+      <button onclick="sortMatching('name')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="name">이름순</button>
+    </div>
+  </div>
+
+  <!-- 신청자 목록 (소개 풀) -->
+  <div id="applicant-list" class="space-y-0" style="padding-bottom:120px">
+    <div class="text-center py-10 text-[#555]">
+      <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
+      <p class="text-sm">신청자 목록 불러오는 중...</p>
+    </div>
+  </div>
+
+  <!-- 💘 매칭 트레이 (화면 하단 고정) -->
+  <div id="match-tray" class="sticky bottom-0 z-20 -mx-1 mt-2 bg-[#141310] border-t border-[#3a2f14] px-3 pt-3 pb-3 rounded-t-2xl">
+    <div class="grid grid-cols-2 gap-2 mb-2">
+      <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl px-3 py-2 min-h-[44px]">
+        <div class="text-[9px] text-[#9E9E97] font-bold uppercase tracking-wider">선택 1</div>
+        <div id="pick-1" class="text-[13px] text-[#555]">카드 톡 선택</div>
       </div>
-      <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl p-3 min-h-[60px]">
-        <div class="text-[10px] text-[#9E9E97] font-bold uppercase tracking-wider mb-1">선택 2</div>
-        <div id="pick-2" class="text-sm text-[#555]">목록에서 선택</div>
+      <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl px-3 py-2 min-h-[44px]">
+        <div class="text-[9px] text-[#9E9E97] font-bold uppercase tracking-wider">선택 2</div>
+        <div id="pick-2" class="text-[13px] text-[#555]">카드 톡 선택</div>
       </div>
     </div>
-
     <button onclick="generateMatch()" id="match-btn" disabled
       class="bg-y text-black font-extrabold w-full px-6 py-3 rounded-xl text-sm transition hover:bg-[#E6BE00] disabled:opacity-30 disabled:cursor-not-allowed">
-      <i class="fa-solid fa-link mr-1.5"></i>매칭 URL 생성
+      <i class="fa-solid fa-heart mr-1.5"></i>두 사람 매칭 만들기
     </button>
+  </div>
+
+  </div><!-- /mpane-pool -->
+
+  <!-- ============ 탭 B: 매칭하기 ============ -->
+  <div id="mpane-make" class="hidden">
+    <div id="make-hint" class="text-center text-[#888] text-sm py-12 leading-relaxed">
+      👈 먼저 <b class="y">신청자</b> 탭에서<br>매칭할 두 사람을 골라주세요.<br>
+      <span class="text-[12px] text-[#555]">(카드를 톡 누르면 아래 트레이에 담겨요)</span>
+    </div>
 
     <!-- 매칭 결과 -->
-    <div id="match-result" class="hidden mt-4 space-y-3">
+    <div id="match-result" class="hidden space-y-3">
       <div class="bg-[#0D0D0C] border border-[#FFD400]/30 rounded-xl p-4">
         <div class="text-[10px] y font-bold uppercase tracking-wider mb-2"><span id="result-name-1"></span>에게 보낼 링크</div>
         <div class="flex gap-2">
@@ -238,71 +292,30 @@
       </button>
       <p class="text-[11px] text-[#555] text-center">문자 또는 링크 복사 후 카카오톡으로 보내주세요</p>
     </div>
-    </div><!-- /match-tool-body -->
-  </div>
 
-  <!-- 신청자 등록 버튼 -->
-  <button onclick="openRegModal('matching')" class="w-full bg-[#161615] border border-dashed border-[#FFD400]/40 rounded-2xl py-4 text-sm font-bold text-[#FFD400] hover:bg-[#FFD400]/5 transition mb-6">
-    <i class="fa-solid fa-user-plus mr-2"></i>신청자 등록
-  </button>
-
-  <!-- 소개 풀 헤더 -->
-  <div class="mb-4">
-    <h2 class="text-lg font-black mb-3">소개 풀 (<span id="pool-count">0</span>명)</h2>
-    <!-- 🔍 이름·연락처 검색 -->
-    <input type="text" id="matchSearch" oninput="matchSearch()" placeholder="🔍 이름 또는 연락처로 찾기" class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-4 py-2.5 text-xs text-white placeholder-[#555] focus:border-[#FFD400] focus:outline-none transition mb-3">
-    <!-- 필터: 상태 -->
-    <div class="flex flex-wrap gap-2 mb-2 items-center">
-      <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">상태</span>
-      <button onclick="filterBy('all')" class="filter-btn active bg-y text-black text-xs font-bold px-3 py-1.5 rounded-full transition" data-filter="all">전체</button>
-      <button onclick="filterBy('대기')" class="filter-btn bg-[#161615] border border-[#FFD400]/50 text-[#FFD400] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="대기">대기 <span id="cnt-wait" class="ml-0.5">0</span></button>
-      <button onclick="filterBy('승인')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="승인">승인</button>
-      <button onclick="filterBy('소개중')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="소개중">소개중</button>
-      <button onclick="filterBy('거절')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="거절">거절</button>
-      <button onclick="filterBy('제외')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="제외">제외 <span id="cnt-excl" class="ml-0.5">0</span></button>
+    <!-- 🔎 링크 점검 (보내기 전에 확인) -->
+    <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mt-5">
+      <div class="font-black text-sm mb-1">🔎 링크 점검</div>
+      <div class="text-[11px] text-[#9E9E97] mb-3 leading-relaxed">
+        문자로 보내기 <b>전에</b> 링크를 여기 붙여넣어 보세요.<br>
+        누가 받는 링크인지, 누구 프로필이 뜨는지 알려드려요.
+      </div>
+      <textarea id="linkcheck-input" rows="2" placeholder="https://ssumcenter.vercel.app/response?id=...&myId=..."
+        class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-3 py-2.5 text-[12px] text-[#F5F5F3] outline-none focus:border-[#FFD400]"
+        style="font-family:inherit;resize:vertical"></textarea>
+      <button type="button" onclick="checkMatchLink()"
+        class="w-full mt-2 bg-[#FFD400] text-black font-extrabold text-[13px] py-2.5 rounded-xl">링크 점검하기</button>
+      <div id="linkcheck-result" class="mt-3 text-[12px] leading-relaxed"></div>
     </div>
-    <!-- 필터: 성별 -->
-    <div class="flex flex-wrap gap-2 mb-3 items-center">
-      <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">성별</span>
-      <button onclick="filterBy('남성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="남성">남성</button>
-      <button onclick="filterBy('여성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
-    </div>
-    <!-- 정렬 탭 -->
-    <div class="flex gap-1.5">
-      <button onclick="sortMatching('age-asc')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="age-asc">나이순</button>
-      <button onclick="sortMatching('date-desc')" class="sort-tab active text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="date-desc">최신순</button>
-      <button onclick="sortMatching('name')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="name">이름순</button>
-    </div>
-  </div>
+  </div><!-- /mpane-make -->
 
-  <!-- 🔎 링크 점검 (보내기 전에 확인) -->
-  <div class="bg-[#161615] border border-[#242422] rounded-2xl p-4 mb-5">
-    <div class="font-black text-sm mb-1">🔎 링크 점검</div>
-    <div class="text-[11px] text-[#9E9E97] mb-3 leading-relaxed">
-      문자로 보내기 <b>전에</b> 링크를 여기 붙여넣어 보세요.<br>
-      누가 받는 링크인지, 누구 프로필이 뜨는지 알려드려요.
-    </div>
-    <textarea id="linkcheck-input" rows="2" placeholder="https://ssumcenter.vercel.app/response?id=...&myId=..."
-      class="w-full bg-[#0D0D0C] border border-[#242422] rounded-xl px-3 py-2.5 text-[12px] text-[#F5F5F3] outline-none focus:border-[#FFD400]"
-      style="font-family:inherit;resize:vertical"></textarea>
-    <button type="button" onclick="checkMatchLink()"
-      class="w-full mt-2 bg-[#FFD400] text-black font-extrabold text-[13px] py-2.5 rounded-xl">링크 점검하기</button>
-    <div id="linkcheck-result" class="mt-3 text-[12px] leading-relaxed"></div>
-  </div>
-
-  <!-- 매칭 응답 현황 -->
-  <div id="response-status" class="mb-5"></div>
-
-  <!-- 💑 매칭 현황 (매칭 테이블) -->
-  <div id="match-board-status" class="mb-5"></div>
-
-  <!-- 신청자 목록 (소개 풀) -->
-  <div id="applicant-list" class="space-y-0">
-    <div class="text-center py-10 text-[#555]">
-      <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
-      <p class="text-sm">신청자 목록 불러오는 중...</p>
-    </div>
-  </div>
+  <!-- ============ 탭 C: 현황 ============ -->
+  <div id="mpane-status" class="hidden">
+    <!-- 💑 매칭 현황 (매칭 테이블) -->
+    <div id="match-board-status" class="mb-5"></div>
+    <!-- 매칭 응답 현황 -->
+    <div id="response-status" class="mb-5"></div>
+  </div><!-- /mpane-status -->
 
   </div><!-- /section-matching -->
 
@@ -891,6 +904,18 @@ function matchSearch(){
   renderList();
 }
 
+// 서브탭 전환: 신청자(pool) / 매칭하기(make) / 현황(status)
+function showMatchTab(t){
+  const panes = { pool:"mpane-pool", make:"mpane-make", status:"mpane-status" };
+  const onCls = "bg-y text-black text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition";
+  const offCls = "bg-[#161615] border border-[#242422] text-[#9E9E97] text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition hover:border-[#FFD400]";
+  Object.keys(panes).forEach(k => {
+    const pane = document.getElementById(panes[k]); if(pane) pane.classList.toggle("hidden", k !== t);
+    const tab = document.getElementById("mtab-" + k); if(tab) tab.className = (k === t) ? onCls : offCls;
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 async function loadApplicants(){
   try {
     const res = await fetch("/api/airtable?table=1:1 매칭 신청&sort=신청일시", {headers: apiHeaders()});
@@ -1157,6 +1182,7 @@ function updateStats(){
   // 필터 버튼의 개수 배지 갱신
   const cw = document.getElementById("cnt-wait"); if(cw) cw.textContent = waiting;
   const cx = document.getElementById("cnt-excl"); if(cx) cx.textContent = excluded;
+  const tp = document.getElementById("mtab-pool-cnt"); if(tp) tp.textContent = waiting ? ("· 대기 " + waiting) : "";
   // stat-waiting(성사)는 loadMatches에서 매칭 테이블 기준으로 채움
 }
 
@@ -1338,7 +1364,7 @@ function toggleSelect(id){
 
   document.getElementById("match-btn").disabled = !(selected[0] && selected[1]);
   document.getElementById("match-result").classList.add("hidden");
-  if(selected[0] || selected[1]) toggleMatchTool(true);
+  const _mh2 = document.getElementById("make-hint"); if(_mh2) _mh2.classList.remove("hidden");
   renderList();
 }
 
@@ -1400,6 +1426,9 @@ async function generateMatch(){
   document.getElementById("result-name-2").textContent = b["이름"];
   document.getElementById("url-for-2").value = urlForB;
   document.getElementById("match-result").classList.remove("hidden");
+  // 결과가 나오는 '매칭하기' 탭으로 자동 이동
+  const _mh = document.getElementById("make-hint"); if(_mh) _mh.classList.add("hidden");
+  if(typeof showMatchTab === "function") showMatchTab("make");
 
   const idA = selected[0].id, idB = selected[1].id;
   try {
