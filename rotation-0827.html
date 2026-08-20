@@ -327,7 +327,8 @@
           <label class="field-label">출생 연도 <span class="y">*</span></label>
           <select name="birthYear" required class="text-input">
             <option value="" disabled selected>출생 연도를 선택해주세요</option>
-            <option value="2000">2000년생</option><option value="1999">1999년생</option>
+            <option value="2003">2003년생</option><option value="2002">2002년생</option>
+            <option value="2001">2001년생</option><option value="2000">2000년생</option><option value="1999">1999년생</option>
             <option value="1998">1998년생</option><option value="1997">1997년생</option>
             <option value="1996">1996년생</option><option value="1995">1995년생</option>
             <option value="1994">1994년생</option><option value="1993">1993년생</option>
@@ -337,7 +338,7 @@
 
         <div>
           <label class="field-label">연락처 <span class="y">*</span></label>
-          <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="01[0-9]{1}[0-9\-]{7,9}"
+          <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="01[0-9]-?[0-9]{3,4}-?[0-9]{4}"
             class="text-input">
         </div>
 
