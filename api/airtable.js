@@ -298,6 +298,17 @@ module.exports = async function handler(req, res) {
           }
           await fetch(`https://api.airtable.com/v0/${BASE_ID}/${MTBL}/${rec.id}`, { method: "PATCH", headers: AUTH, body: JSON.stringify({ fields: upd }) });
 
+          // 💬 슬랙 알림: 이번 응답(수락/거절)을 실시간으로 알림 (성사는 아래에서 별도 알림)
+          try {
+            const responderName = responderIsMan ? (mf["남자"] || "") : (mf["여자"] || "");
+            const targetName = responderIsMan ? (mf["여자"] || "") : (mf["남자"] || "");
+            if (ans === "거절") {
+              await notifySlack(`🙅 1:1 매칭 거절\n${responderName}님이 ${targetName}님을 거절했어요 → 불발`);
+            } else if (ans === "수락" && upd["상태"] !== "성사") {
+              await notifySlack(`💌 1:1 매칭 수락\n${responderName}님이 ${targetName}님을 수락했어요 (상대 응답 대기 중)`);
+            }
+          } catch (e) { console.error("[airtable] 응답 슬랙 알림 실패:", e.message); }
+
           // 🎉 성사(양쪽 수락)된 순간 → 먼저 수락한 사람(이번 응답자의 상대)에게 입금 안내 문자
           if (upd["상태"] === "성사") {
             try {
