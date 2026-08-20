@@ -219,22 +219,24 @@
     </div>
   </div>
 
-  <!-- 💘 매칭 트레이 (화면 하단 고정) -->
-  <div id="match-tray" class="sticky bottom-0 z-20 -mx-1 mt-2 bg-[#141310] border-t border-[#3a2f14] px-3 pt-3 pb-3 rounded-t-2xl">
-    <div class="grid grid-cols-2 gap-2 mb-2">
-      <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl px-3 py-2 min-h-[44px]">
-        <div class="text-[9px] text-[#9E9E97] font-bold uppercase tracking-wider">선택 1</div>
-        <div id="pick-1" class="text-[13px] text-[#555]">카드 톡 선택</div>
+  <!-- 💘 매칭 트레이 (사람을 고르면 화면 하단에 고정으로 뜸) -->
+  <div id="match-tray" class="hidden fixed bottom-0 inset-x-0 z-40 bg-[#141310] border-t border-[#3a2f14] shadow-[0_-8px_24px_rgba(0,0,0,.55)]">
+    <div class="max-w-4xl mx-auto px-4 py-3">
+      <div class="grid grid-cols-2 gap-2 mb-2">
+        <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl px-3 py-2 min-h-[44px]">
+          <div class="text-[9px] text-[#9E9E97] font-bold uppercase tracking-wider">선택 1</div>
+          <div id="pick-1" class="text-[13px] text-[#555]">카드 톡 선택</div>
+        </div>
+        <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl px-3 py-2 min-h-[44px]">
+          <div class="text-[9px] text-[#9E9E97] font-bold uppercase tracking-wider">선택 2</div>
+          <div id="pick-2" class="text-[13px] text-[#555]">카드 톡 선택</div>
+        </div>
       </div>
-      <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl px-3 py-2 min-h-[44px]">
-        <div class="text-[9px] text-[#9E9E97] font-bold uppercase tracking-wider">선택 2</div>
-        <div id="pick-2" class="text-[13px] text-[#555]">카드 톡 선택</div>
-      </div>
+      <button onclick="generateMatch()" id="match-btn" disabled
+        class="bg-y text-black font-extrabold w-full px-6 py-3 rounded-xl text-sm transition hover:bg-[#E6BE00] disabled:opacity-30 disabled:cursor-not-allowed">
+        <i class="fa-solid fa-heart mr-1.5"></i>두 사람 매칭 만들기
+      </button>
     </div>
-    <button onclick="generateMatch()" id="match-btn" disabled
-      class="bg-y text-black font-extrabold w-full px-6 py-3 rounded-xl text-sm transition hover:bg-[#E6BE00] disabled:opacity-30 disabled:cursor-not-allowed">
-      <i class="fa-solid fa-heart mr-1.5"></i>두 사람 매칭 만들기
-    </button>
   </div>
 
   </div><!-- /mpane-pool -->
@@ -1365,6 +1367,8 @@ function toggleSelect(id){
   document.getElementById("match-btn").disabled = !(selected[0] && selected[1]);
   document.getElementById("match-result").classList.add("hidden");
   const _mh2 = document.getElementById("make-hint"); if(_mh2) _mh2.classList.remove("hidden");
+  // 매칭 트레이: 한 명이라도 고르면 하단에 띄우고, 아무도 없으면 숨김
+  const _tray = document.getElementById("match-tray"); if(_tray) _tray.classList.toggle("hidden", !(selected[0] || selected[1]));
   renderList();
 }
 
