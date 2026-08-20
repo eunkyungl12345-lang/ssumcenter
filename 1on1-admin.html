@@ -147,8 +147,8 @@
   <!-- 1:1 매칭 섹션 -->
   <div id="section-matching">
 
-  <!-- 서브탭: 신청자 / 매칭하기 / 현황 -->
-  <div class="grid grid-cols-3 gap-2 mb-6 sticky top-0 z-30 bg-[#0D0D0C] py-2">
+  <!-- 서브탭: 신청자 / 매칭하기 / 현황 (스크롤해도 상단 고정) -->
+  <div class="grid grid-cols-3 gap-2 mb-6" style="position:sticky;top:0;z-index:30;background:#0D0D0C;padding-top:8px;padding-bottom:8px">
     <button type="button" onclick="showMatchTab('pool')" id="mtab-pool" class="bg-y text-black text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition">👥 신청자 <span id="mtab-pool-cnt" class="opacity-70"></span></button>
     <button type="button" onclick="showMatchTab('make')" id="mtab-make" class="bg-[#161615] border border-[#242422] text-[#9E9E97] text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition hover:border-[#FFD400]">💘 매칭하기</button>
     <button type="button" onclick="showMatchTab('status')" id="mtab-status" class="bg-[#161615] border border-[#242422] text-[#9E9E97] text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition hover:border-[#FFD400]">📊 현황</button>
@@ -219,9 +219,9 @@
     </div>
   </div>
 
-  <!-- 💘 매칭 트레이 (사람을 고르면 화면 하단에 고정으로 뜸) -->
-  <div id="match-tray" class="hidden fixed bottom-0 inset-x-0 z-40 bg-[#141310] border-t border-[#3a2f14] shadow-[0_-8px_24px_rgba(0,0,0,.55)]">
-    <div class="max-w-4xl mx-auto px-4 py-3">
+  <!-- 💘 매칭 트레이 (사람을 고르면 화면 하단에 고정으로 뜸) — 위치는 인라인 스타일(빌드된 Tailwind에 bottom-0/z-40 없음) -->
+  <div id="match-tray" class="hidden" style="position:fixed;left:0;right:0;bottom:0;z-index:45;background:#141310;border-top:1px solid #3a2f14;box-shadow:0 -8px 24px rgba(0,0,0,.55)">
+    <div style="max-width:56rem;margin:0 auto;padding:12px 16px">
       <div class="grid grid-cols-2 gap-2 mb-2">
         <div class="bg-[#0D0D0C] border border-[#242422] rounded-xl px-3 py-2 min-h-[44px]">
           <div class="text-[9px] text-[#9E9E97] font-bold uppercase tracking-wider">선택 1</div>
