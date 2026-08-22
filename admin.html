@@ -5,95 +5,199 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>관리자 홈 | 썸류센터</title>
 <style>
-  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--rose:#E88FB0;--male:#7EA6E0;}
+  :root{
+    --bg:#eef1f5; --panel:#ffffff; --side:#141b26; --side2:#1b2432;
+    --ink:#1d2430; --mut:#7b8494; --faint:#a3abb8; --line:#e7eaf0;
+    --gold:#d99a2b; --gold-soft:#f6ead2; --rose:#d95f83; --rose-soft:#fbe3ea;
+    --blue:#4f83e8; --blue-soft:#e5edfd; --shadow:0 1px 2px rgba(20,27,38,.04),0 6px 20px rgba(20,27,38,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0f1319; --panel:#171e29; --side:#0c1119; --side2:#141b26;
+      --ink:#eef1f6; --mut:#9aa4b3; --faint:#6b7484; --line:#232c3a;
+      --gold:#e8b050; --gold-soft:#2a2416; --rose:#e88aa4; --rose-soft:#2c1a20;
+      --blue:#7fb0f0; --blue-soft:#16233a; --shadow:0 8px 28px rgba(0,0,0,.4); }
+  }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;letter-spacing:-.01em}
   a{text-decoration:none;color:inherit}
-  .wrap{max-width:600px;margin:0 auto;padding:32px 18px 70px}
-  .top{text-align:center;margin-bottom:28px}
-  .top .badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--amber);background:rgba(232,176,80,.1);border:1px solid rgba(232,176,80,.3);padding:5px 14px;border-radius:999px}
-  .top h1{font-size:25px;font-weight:900;margin-top:14px}
-  .top p{font-size:13px;color:var(--muted);margin-top:6px}
-  .group{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px}
-  .group .gh{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:900;margin-bottom:4px}
-  .group .gd{font-size:12px;color:var(--muted);margin-bottom:15px}
-  .rot .gh{color:var(--amber)} .one .gh{color:var(--rose)}
-  .links{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-  .links.solo{grid-template-columns:1fr}
-  .lk{display:flex;align-items:center;gap:9px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:13px;padding:14px 15px;font-size:14px;font-weight:750;transition:border-color .15s,transform .1s}
-  .lk:hover{border-color:var(--amber)} .lk:active{transform:scale(.98)}
-  .lk .ico{font-size:19px}
-  .lk .ar{margin-left:auto;color:var(--faint);font-size:13px}
-  .lk.main{background:linear-gradient(135deg,rgba(232,176,80,.16),rgba(232,176,80,.05));border-color:rgba(232,176,80,.35);color:var(--amber);font-weight:800;grid-column:1/-1}
-  .lk.mainone{background:linear-gradient(135deg,rgba(232,143,176,.16),rgba(232,143,176,.05));border-color:rgba(232,143,176,.35);color:var(--rose)}
-  .foot{text-align:center;font-size:11.5px;color:var(--faint);margin-top:22px;line-height:1.7}
-  .foot a{color:var(--muted)}
-  .logout{display:block;width:100%;margin-top:4px;background:transparent;border:1px solid var(--line-strong);color:var(--muted);
-          border-radius:13px;padding:12px;font-size:13px;font-weight:750;cursor:pointer;font-family:inherit}
-  .logout:hover{border-color:var(--rose);color:var(--rose)}
-  .logout:active{transform:scale(.98)}
+  .app{display:flex;min-height:100vh}
+
+  /* 사이드바 */
+  .side{width:240px;flex:none;background:var(--side);color:#c7cfdb;padding:22px 15px;display:flex;flex-direction:column;gap:6px}
+  @media(max-width:760px){ .side{width:100%;flex-direction:row;align-items:center;gap:10px;padding:12px 16px;overflow-x:auto} .side .nav{flex-direction:row} .side .foot{display:none} .side .brand{padding:0;margin-right:6px} }
+  .brand{display:flex;align-items:center;gap:11px;padding:6px 8px 20px}
+  .brand .logo{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--gold),var(--rose));display:grid;place-items:center;color:#20170a;font-weight:900;font-size:17px;flex:none}
+  .brand .nm{font-weight:800;font-size:15px;color:#fff;line-height:1.2}
+  .brand .subn{font-size:11.5px;color:#8590a2;margin-top:2px}
+  .nav{display:flex;flex-direction:column;gap:3px}
+  .nav a,.nav button{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#aeb7c6;background:none;border:none;font:inherit;text-align:left;cursor:pointer;font-size:13.5px;font-weight:600;transition:.15s;white-space:nowrap}
+  .nav a .i,.nav button .i{width:18px;text-align:center;font-size:14px;opacity:.9}
+  .nav a:hover,.nav button:hover{background:var(--side2);color:#fff}
+  .nav a.on{background:var(--side2);color:#fff}
+  .nav a.on .i{color:var(--gold)}
+  .side .foot{margin-top:auto;background:var(--side2);border-radius:12px;padding:12px 13px}
+  .side .foot .r{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:#e7ebf1}
+  .dot{width:8px;height:8px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 3px rgba(61,220,132,.18)}
+  .side .foot .s{font-size:11px;color:#8590a2;margin-top:3px}
+
+  /* 메인 */
+  .main{flex:1;padding:34px clamp(18px,4vw,44px) 60px;min-width:0}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+  .h1{font-size:clamp(24px,4vw,36px);font-weight:900;letter-spacing:-.02em;margin:10px 0 0}
+  .sub{color:var(--mut);font-size:15px;margin-top:10px}
+  .toprow{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+  .newbtn{display:inline-block;background:linear-gradient(135deg,var(--gold),#eab94f);color:#20170a;border:none;font-weight:800;font-size:14px;padding:13px 20px;border-radius:13px;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap}
+  .newbtn:hover{filter:brightness(1.04)}
+
+  .sectlabel{display:flex;align-items:baseline;gap:9px;margin:32px 0 13px}
+  .sectlabel h2{font-size:16px;font-weight:900;margin:0}
+  .sectlabel span{font-size:12.5px;color:var(--faint);font-weight:600}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+  @media(max-width:1080px){ .grid{grid-template-columns:repeat(2,1fr)} }
+  @media(max-width:560px){ .grid{grid-template-columns:1fr} }
+  .card{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px 18px;box-shadow:var(--shadow);transition:transform .12s,border-color .12s}
+  .card:hover{transform:translateY(-2px);border-color:var(--gold)}
+  .card:active{transform:scale(.99)}
+  .badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:20px;flex:none}
+  .b-rose{background:var(--rose-soft)} .b-blue{background:var(--blue-soft)} .b-gold{background:var(--gold-soft)}
+  .card .cbody{flex:1;min-width:0}
+  .card .t{font-weight:800;font-size:14.5px}
+  .card .d{font-size:12px;color:var(--mut);margin-top:3px;line-height:1.4}
+  .card .meta{display:flex;align-items:center;gap:8px;flex:none}
+  .count{font-size:12px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--gold-soft);color:var(--gold);display:none}
+  .count.rose{background:var(--rose-soft);color:var(--rose)}
+  .count.blue{background:var(--blue-soft);color:var(--blue)}
+  .count.show{display:inline-block}
+  .chev{color:var(--faint);font-size:15px}
+  .foot2{margin-top:34px;font-size:12px;color:var(--faint);text-align:center;line-height:1.8}
+  .foot2 a{color:var(--mut);text-decoration:underline}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top">
-    <span class="badge">SSUMLYU · ADMIN</span>
-    <h1>썸류센터 관리자</h1>
-    <p>관리할 걸 골라주세요</p>
-  </div>
-
-  <!-- 로테이션 그룹 -->
-  <div class="group rot">
-    <div class="gh">🎡 로테이션 (썸배달) · 8/27</div>
-    <div class="gd">신청 승인 → 입금 → 확정 → 라인업 · 출석까지</div>
-    <div class="links">
-      <a class="lk main" href="/rotation-admin"><span class="ico">📋</span> 신청 승인 · 문자 <span class="ar">→</span></a>
-      <a class="lk" href="/lineup"><span class="ico">🎬</span> 라인업 <span class="ar">→</span></a>
-      <a class="lk" href="/attendance"><span class="ico">✅</span> 출석부 <span class="ar">→</span></a>
-      <a class="lk" href="/vote-admin"><span class="ico">🗳️</span> 투표 <span class="ar">→</span></a>
-      <a class="lk" href="/participants" style="grid-column:1/-1"><span class="ico">🎯</span> 참가자 마스터 <span style="font-size:11px;color:var(--faint);font-weight:600">— 누가 겹치게 왔는지 · 단골</span> <span class="ar">→</span></a>
+<div class="app">
+  <!-- 사이드바 -->
+  <aside class="side">
+    <div class="brand">
+      <div class="logo">썸</div>
+      <div><div class="nm">썸류센터</div><div class="subn">센터장 관리실</div></div>
     </div>
-  </div>
-
-  <!-- 1:1 매칭 그룹 -->
-  <div class="group one">
-    <div class="gh">💘 1:1 매칭</div>
-    <div class="gd">신청 승인 · 상대 매칭 · 응답/성사 관리</div>
-    <div class="links">
-      <a class="lk mainone" href="/1on1-admin" style="grid-column:1/-1"><span class="ico">💑</span> 1:1 매칭 관리 <span class="ar">→</span></a>
-      <a class="lk" href="/1on1" style="grid-column:1/-1"><span class="ico">📊</span> 1:1 대시보드 <span style="font-size:11px;color:var(--faint);font-weight:600">— 오늘 처리·매칭 일지 한눈에</span> <span class="ar">→</span></a>
+    <nav class="nav">
+      <a class="on"><span class="i">🏠</span> 홈</a>
+      <a href="/1on1-admin"><span class="i">💑</span> 1:1 매칭</a>
+      <a href="/rotation-admin"><span class="i">🍹</span> 썸배달</a>
+      <a href="/members"><span class="i">👥</span> 회원 명부</a>
+      <button id="logoutBtn"><span class="i">🚪</span> 로그아웃</button>
+    </nav>
+    <div class="foot">
+      <div class="r"><span class="dot"></span> 센터장 로그인</div>
+      <div class="s">이 기기에 안전하게 연결됨</div>
     </div>
-  </div>
+  </aside>
 
-  <!-- 회원 명부 -->
-  <div class="group">
-    <div class="gh" style="font-size:16px;color:var(--kakao,#F5D400)">👥 회원 명부</div>
-    <div class="gd">카카오 가입자 + 신청자 통합 명부</div>
-    <div class="links solo">
-      <a class="lk" href="/members"><span class="ico">👥</span> 회원 명부 <span style="font-size:11px;color:var(--faint);font-weight:600">— 유입경로별 · 검색</span> <span class="ar">→</span></a>
+  <!-- 메인 -->
+  <main class="main">
+    <div class="toprow">
+      <div>
+        <div class="eyebrow">SSUM CENTER · 관리실</div>
+        <h1 class="h1">오늘 뭐부터 볼까요?</h1>
+        <p class="sub" id="subline">신청 · 매칭 · 회원 관리를 한곳에서.</p>
+      </div>
+      <a class="newbtn" href="/1on1-admin">＋ 새 신청 확인</a>
     </div>
-  </div>
 
-  <!-- 로그아웃 -->
-  <div class="group">
-    <div class="gh" style="font-size:15px">🔒 로그인</div>
-    <div class="gd">비밀번호는 이 기기에 저장돼요. 한 번 로그인하면 위 페이지 전부 열립니다.<br>
-      남의 폰이나 공용 컴퓨터에서 봤다면 꼭 로그아웃해주세요.</div>
-    <button class="logout" id="logoutBtn">🚪 로그아웃 (저장된 비밀번호 지우기)</button>
-  </div>
+    <!-- 1:1 매칭 -->
+    <div class="sectlabel"><h2>💘 1:1 매칭</h2><span>중매식 소개</span></div>
+    <div class="grid">
+      <a class="card" href="/1on1-admin">
+        <div class="badge b-rose">💑</div>
+        <div class="cbody"><div class="t">1:1 매칭 관리</div><div class="d">신청 승인 · 상대 매칭 · 응답</div></div>
+        <div class="meta"><span class="count rose" id="c-wait"></span><span class="chev">›</span></div>
+      </a>
+      <a class="card" href="/1on1">
+        <div class="badge b-rose">📊</div>
+        <div class="cbody"><div class="t">1:1 대시보드</div><div class="d">오늘 처리 · 매칭 일지 한눈에</div></div>
+        <div class="meta"><span class="count rose" id="c-done"></span><span class="chev">›</span></div>
+      </a>
+      <a class="card" href="/members">
+        <div class="badge b-rose">👥</div>
+        <div class="cbody"><div class="t">회원 명부</div><div class="d">유입경로별 · 검색</div></div>
+        <div class="meta"><span class="count rose" id="c-total"></span><span class="chev">›</span></div>
+      </a>
+    </div>
 
-  <div class="foot">
-    문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener">카카오톡 채널</a>
-  </div>
+    <!-- 썸배달 -->
+    <div class="sectlabel"><h2>🍹 썸배달</h2><span>단체 소개팅 (로테이션)</span></div>
+    <div class="grid">
+      <a class="card" href="/rotation-admin">
+        <div class="badge b-blue">📋</div>
+        <div class="cbody"><div class="t">신청 승인 · 문자</div><div class="d">회차 승인 · 입금 확인 · 문자 발송</div></div>
+        <div class="meta"><span class="chev">›</span></div>
+      </a>
+      <a class="card" href="/lineup">
+        <div class="badge b-blue">🎬</div>
+        <div class="cbody"><div class="t">라인업</div><div class="d">회차별 참가자 라인업</div></div>
+        <div class="meta"><span class="chev">›</span></div>
+      </a>
+      <a class="card" href="/attendance">
+        <div class="badge b-blue">✅</div>
+        <div class="cbody"><div class="t">출석부</div><div class="d">당일 출석 체크</div></div>
+        <div class="meta"><span class="chev">›</span></div>
+      </a>
+      <a class="card" href="/vote-admin">
+        <div class="badge b-blue">🗳️</div>
+        <div class="cbody"><div class="t">투표</div><div class="d">현장 QR 투표 · 매칭</div></div>
+        <div class="meta"><span class="chev">›</span></div>
+      </a>
+      <a class="card" href="/participants">
+        <div class="badge b-blue">🎯</div>
+        <div class="cbody"><div class="t">참가자 마스터</div><div class="d">겹침 · 단골 관리</div></div>
+        <div class="meta"><span class="chev">›</span></div>
+      </a>
+    </div>
+
+    <div class="foot2">
+      🔒 로그인은 이 기기에 저장돼요. 공용 컴퓨터라면 왼쪽 <b>로그아웃</b>을 눌러주세요.<br>
+      문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener">카카오톡 채널</a>
+    </div>
+  </main>
 </div>
+
 <script>
+  // 로그아웃
   document.getElementById("logoutBtn").addEventListener("click", function(){
     if(!confirm("이 기기에 저장된 관리자 비밀번호를 지울까요?\n다음에 관리자 페이지를 열면 다시 입력해야 해요.")) return;
     try{ localStorage.removeItem("admin_key"); }catch(e){}
     try{ sessionStorage.removeItem("admin_key"); }catch(e){}
-    this.textContent = "✅ 로그아웃 됐어요";
-    this.disabled = true;
+    alert("✅ 로그아웃 됐어요");
   });
+
+  // 실시간 숫자 (로그인돼 있으면 대기·성사·전체 표시, 아니면 생략)
+  (async function(){
+    var key = null; try{ key = localStorage.getItem("admin_key"); }catch(e){}
+    if(!key) return;
+    var H = { "x-admin-key": key };
+    function show(id, txt){ var el=document.getElementById(id); if(el && txt){ el.textContent=txt; el.classList.add("show"); } }
+    try{
+      var r = await fetch("/api/airtable?table=1:1 매칭 신청", { headers:H });
+      if(r.ok){
+        var recs = ((await r.json()).records)||[];
+        var live = recs.filter(function(x){ var s=(x.fields||{})["매칭상태"]; return s!=="휴지통"; });
+        var wait = recs.filter(function(x){ return (((x.fields||{})["매칭상태"])||"대기")==="대기"; }).length;
+        if(wait) show("c-wait", "대기 "+wait);
+        show("c-total", live.length+"명");
+        var sub=document.getElementById("subline");
+        if(sub && wait) sub.innerHTML='신청 · 매칭 · 회원 관리를 한곳에서. 오늘 <b style="color:var(--gold)">대기 '+wait+'건</b> 있어요.';
+      }
+      var r2 = await fetch("/api/airtable?table=매칭", { headers:H });
+      if(r2.ok){
+        var m = ((await r2.json()).records)||[];
+        var done = m.filter(function(x){ return ((x.fields||{})["상태"])==="성사"; }).length;
+        if(done) show("c-done", "성사 "+done);
+      }
+    }catch(e){}
+  })();
 </script>
 </body>
 </html>
