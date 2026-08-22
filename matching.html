@@ -846,6 +846,40 @@ document.querySelectorAll("#age-chips .chip").forEach(chip => {
 const photoFiles = [null, null, null];
 let activeSlot = 0;
 
+// ===== 사진 미리 업로드(속도↑): 고르는 즉시 백그라운드로 Cloudinary 업로드 =====
+const CLOUDINARY_NAME = "ddvmmvcei";
+const CLOUDINARY_PRESET = "ml_default";
+function compressImage(file){
+  return new Promise((resolve)=>{
+    if(!file.type || !file.type.startsWith("image/")){resolve(file);return;}
+    const img=new Image();
+    img.onload=function(){
+      const MAX=1200;let w=img.width,h=img.height;
+      if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX}else{w=Math.round(w*MAX/h);h=MAX}}
+      const c=document.createElement("canvas");c.width=w;c.height=h;
+      c.getContext("2d").drawImage(img,0,0,w,h);
+      c.toBlob(function(blob){resolve(new File([blob],file.name,{type:"image/jpeg"}));},"image/jpeg",0.7);
+    };
+    img.onerror=function(){resolve(file);};
+    img.src=URL.createObjectURL(file);
+  });
+}
+async function uploadToCloudinary(file, folder){
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("upload_preset", CLOUDINARY_PRESET);
+  fd.append("folder", folder);
+  const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/auto/upload`, {method:"POST",body:fd});
+  if(!r.ok) throw new Error("파일 업로드 실패");
+  return (await r.json()).secure_url;
+}
+const photoUploads = [null, null, null]; // 슬롯별 Promise<url> (미리 업로드 결과)
+function startPhotoUpload(slot, file){
+  const p = (async()=> await uploadToCloudinary(await compressImage(file), "ssumcenter/photos"))();
+  p.catch(function(){}); // 미리 업로드 실패는 제출 때 다시 시도하므로 여기선 무시
+  photoUploads[slot] = p;
+}
+
 function triggerPhoto(index){
   activeSlot = index;
   document.getElementById("photo-input").click();
@@ -853,6 +887,7 @@ function triggerPhoto(index){
 
 function removePhoto(index){
   photoFiles[index] = null;
+  photoUploads[index] = null; // 미리 업로드 결과도 폐기
   const slot = document.querySelectorAll(".photo-slot")[index];
   slot.querySelector(".photo-preview").classList.add("hidden");
   slot.querySelector(".photo-preview").src = "";
@@ -867,6 +902,7 @@ document.getElementById("photo-input").addEventListener("change", function(){
     if(slot > 2) break;
     if(f.size > 5 * 1024 * 1024){ alert(f.name + " : 5MB 이하만 가능합니다."); continue; }
     photoFiles[slot] = f;
+    startPhotoUpload(slot, f); // 고르는 즉시 백그라운드 업로드 시작
     const reader = new FileReader();
     const s = slot;
     reader.onload = function(e){
@@ -1089,41 +1125,19 @@ async function handleSubmit(e){
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>사진 업로드 중...';
 
-  const CLOUDINARY_NAME = "ddvmmvcei";
-  const CLOUDINARY_PRESET = "ml_default";
-
   try {
-    function compressImage(file){
-      return new Promise((resolve)=>{
-        if(!file.type.startsWith("image/")){resolve(file);return;}
-        const img=new Image();
-        img.onload=function(){
-          const MAX=1200;let w=img.width,h=img.height;
-          if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX}else{w=Math.round(w*MAX/h);h=MAX}}
-          const c=document.createElement("canvas");c.width=w;c.height=h;
-          c.getContext("2d").drawImage(img,0,0,w,h);
-          c.toBlob(function(blob){resolve(new File([blob],file.name,{type:"image/jpeg"}));},"image/jpeg",0.7);
-        };
-        img.src=URL.createObjectURL(file);
-      });
+    // 사진: 고를 때 미리 올려둔 결과를 사용 (거의 즉시). 없거나 실패했으면 지금 업로드.
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>제출 중...';
+    const photoUrls = [];
+    for(let s=0;s<3;s++){
+      if(!photoFiles[s]) continue;
+      let url = null;
+      if(photoUploads[s]){ try{ url = await photoUploads[s]; }catch(e){ url = null; } }
+      if(!url){ url = await uploadToCloudinary(await compressImage(photoFiles[s]), "ssumcenter/photos"); }
+      photoUrls.push({ url });
     }
-
-    async function uploadToCloudinary(file, folder){
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("upload_preset", CLOUDINARY_PRESET);
-      fd.append("folder", folder);
-      const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/auto/upload`, {method:"POST",body:fd});
-      if(!r.ok) throw new Error("파일 업로드 실패");
-      return (await r.json()).secure_url;
-    }
-
-    // 사진·서류 업로드를 동시에 진행 (속도 ↑)
-    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>사진·서류 업로드 중...';
-    const photoTasks = photoFiles.filter(Boolean).map(async (file) => ({ url: await uploadToCloudinary(await compressImage(file), "ssumcenter/photos") }));
-    // 서류도 사진일 땐 압축해서 올림(속도↑). PDF 등은 compressImage가 원본 그대로 통과시킴.
-    const docJobTask = docFiles.job ? compressImage(docFiles.job).then(f => uploadToCloudinary(f, "ssumcenter/docs")) : Promise.resolve(null);
-    const [photoUrls, docJobUrl] = await Promise.all([ Promise.all(photoTasks), docJobTask ]);
+    // 서류는 제출 시 업로드 (사진이면 압축, PDF 등은 원본)
+    const docJobUrl = docFiles.job ? await uploadToCloudinary(await compressImage(docFiles.job), "ssumcenter/docs") : null;
 
     submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>신청서 제출 중...';
 
