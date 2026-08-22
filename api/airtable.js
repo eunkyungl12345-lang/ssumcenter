@@ -51,12 +51,15 @@ function 매칭입금문자(name, amount) {
   ].join("\n");
 }
 
-// 슬랙 팀 알림 (실패해도 무시)
-async function notifySlack(text) {
+// 슬랙 팀 알림 (실패해도 무시). imageUrl 있으면 사진 썸네일도 함께 표시
+async function notifySlack(text, imageUrl) {
   const url = process.env.SLACK_WEBHOOK_URL;
   if (!url) return;
   try {
-    await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
+    const body = (imageUrl && /^https:\/\//.test(imageUrl))
+      ? { text, blocks: [{ type: "section", text: { type: "mrkdwn", text }, accessory: { type: "image", image_url: imageUrl, alt_text: "프로필 사진" } }] }
+      : { text };
+    await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   } catch (e) { /* 알림 실패는 무시 */ }
 }
 
@@ -225,7 +228,8 @@ module.exports = async function handler(req, res) {
           const f = (rc && rc.fields) || {};
           const kind = table === "1:1 매칭 신청" ? "💘 1:1 매칭" : "🎡 커피팅";
           const info = [f["이름"], f["성별"], f["출생연도"] ? f["출생연도"] + "년생" : "", f["직업_직장명"] || f["직업"], f["연락처"]].filter(Boolean).join(" · ");
-          await notifySlack(`📮 새 ${kind} 신청!\n${info}`);
+          const photo = (Array.isArray(f["프로필사진"]) && f["프로필사진"][0] && f["프로필사진"][0].url) ? f["프로필사진"][0].url : null;
+          await notifySlack(`📮 새 ${kind} 신청!\n${info}`, photo);
         }
       } catch (e) { /* 알림 실패 무시 */ }
     }
