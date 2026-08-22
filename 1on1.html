@@ -54,6 +54,13 @@
   .done-note{text-align:center;font-size:12.5px;color:var(--ok);background:rgba(111,190,151,.07);border:1px dashed rgba(111,190,151,.3);border-radius:12px;padding:13px;margin-bottom:11px}
   .strip{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12.5px;color:var(--muted);margin:16px 0 12px;flex-wrap:wrap}
   .strip b{color:var(--ink);font-weight:800} .strip .sep{color:var(--faint)} .strip .rate{color:var(--ok);font-weight:800}
+  /* 상단 통계 타일 (대시보드 느낌) */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:2px 0 18px}
+  .tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center}
+  .tile .v{font-size:23px;font-weight:900;line-height:1}
+  .tile .k{font-size:10.5px;color:var(--muted);font-weight:700;margin-top:6px}
+  .tile.wait .v{color:var(--rose)} .tile.ing .v{color:var(--male)} .tile.done .v{color:var(--ok)} .tile.rate .v{color:var(--amber)}
+  @media(max-width:400px){ .tiles{grid-template-columns:repeat(2,1fr)} }
 
   .cta{width:100%;border:none;font-family:inherit;background:linear-gradient(135deg,var(--rose),#d76e98);color:var(--ink-on);font-weight:900;font-size:15px;padding:16px;border-radius:15px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 8px 24px rgba(232,143,176,.18);text-decoration:none}
 
@@ -221,7 +228,16 @@
         act:'<a class="btn solid" href="/1on1-admin">💘 매칭 상대 찾기</a><a class="btn ghost" href="/1on1-admin">프로필</a>'});
     });
 
+    var decided=done.length+failed.length;
+    var rate=decided? Math.round(done.length/decided*100):0;
     var html="";
+    // ===== 통계 타일 (상단) =====
+    html+='<div class="tiles">'
+      +'<div class="tile wait"><div class="v">'+waiting.length+'</div><div class="k">신규 대기</div></div>'
+      +'<div class="tile ing"><div class="v">'+ongoing.length+'</div><div class="k">소개중</div></div>'
+      +'<div class="tile done"><div class="v">'+done.length+'</div><div class="k">성사</div></div>'
+      +'<div class="tile rate"><div class="v">'+rate+'%</div><div class="k">성사율</div></div>'
+      +'</div>';
     html+='<div class="hero-h"><span class="t">📋 오늘 처리</span><span class="c">'+(todos.length?todos.length+"건":"0건")+'</span></div>';
     if(!todos.length){
       html+='<div class="done-note">✅ 오늘 급한 일이 없어요! 새 신청이 오거나 응답이 오면 여기 떠요 😊</div>';
@@ -234,11 +250,6 @@
           +'<div class="act">'+t.act+'</div></div>';
       });
     }
-
-    // ===== 통계 =====
-    var decided=done.length+failed.length;
-    var rate=decided? Math.round(done.length/decided*100):0;
-    html+='<div class="strip">신규대기 <b>'+waiting.length+'</b><span class="sep">·</span>소개중 <b>'+ongoing.length+'</b><span class="sep">·</span>성사 <b>'+done.length+'</b><span class="sep">·</span>소진 <b>'+exhausted.length+'</b><span class="sep">·</span>성사율 <span class="rate">'+rate+'%</span></div>';
 
     // ===== 매칭하기 =====
     html+='<a class="cta" href="/1on1-admin">＋ 두 사람 골라 매칭하기</a>';
