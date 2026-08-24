@@ -2764,6 +2764,22 @@ function sortCoffee(order){
   renderCoffeeList();
 }
 
+// 신청일시가 한글 형식("2026. 8. 25. 오후 3:30:00")이라 글자 비교로는 정렬이 깨진다.
+// 진짜 시간(타임스탬프)으로 바꿔서 비교한다.
+function toTs(s){
+  if(!s) return 0;
+  s = String(s).trim();
+  const m = s.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.?(?:\s*(오전|오후))?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if(m){
+    let h = parseInt(m[5]) || 0;
+    if(m[4] === "오후" && h < 12) h += 12;
+    if(m[4] === "오전" && h === 12) h = 0;
+    return new Date(+m[1], (+m[2]) - 1, +m[3], h, +m[6] || 0, +m[7] || 0).getTime();
+  }
+  const t = Date.parse(s);
+  return isNaN(t) ? 0 : t;
+}
+
 function sortApplicantsArray(arr, order, type){
   const birthField = "출생연도";
   const nameField = "이름";
@@ -2779,10 +2795,10 @@ function sortApplicantsArray(arr, order, type){
       case "age-desc": // 나이 적은순 = 년생 큰순
         return (parseInt(fb[birthField]) || 0) - (parseInt(fa[birthField]) || 0);
       case "date-asc":
-        return (fa[dateField] || "").localeCompare(fb[dateField] || "");
+        return toTs(fa[dateField]) - toTs(fb[dateField]);
       case "date-desc":
       default:
-        return (fb[dateField] || "").localeCompare(fa[dateField] || "");
+        return toTs(fb[dateField]) - toTs(fa[dateField]);
     }
   });
 }
