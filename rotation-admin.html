@@ -188,6 +188,9 @@
   var TABLE="로테이션 신청", KEY="admin_key";
   var records=[], curRound="전체", curStatus="전체", searchQ="";
   window.rotSearch=function(v){ searchQ=(v||"").trim().toLowerCase(); render(); };
+  // 🔁 가장 최신 회차 자동 감지 (문토 추가 기본값 등에 사용)
+  function roundKey(rd){ var m=String(rd||"").match(/(\d{1,2})\s*\/\s*(\d{1,2})/); return m?(parseInt(m[1])*100+parseInt(m[2])):0; }
+  function latestRound(){ var best="", bk=-1; records.forEach(function(x){ var rd=(x.fields||{})["회차"]; if(rd){ var k=roundKey(rd); if(k>bk){bk=k; best=rd;} } }); return best||"8/27 (목)"; }
   function matchStatus(f, s){
     var st=f["승인상태"]||"대기", paid=f["입금확정"]==="O";
     if(s==="전체") return true;
@@ -232,7 +235,8 @@
     // 회차 탭
     var rounds=["전체"];
     records.forEach(function(x){ var rd=x.fields["회차"]; if(rd && String(rd).indexOf("8/13")<0 && rounds.indexOf(rd)<0) rounds.push(rd); });
-    if(rounds.indexOf("8/27 (목)")<0) rounds.push("8/27 (목)");
+    // 최신 회차가 앞쪽에 오도록 정렬 ("전체"는 항상 맨 앞)
+    rounds=["전체"].concat(rounds.filter(function(r){return r!=="전체";}).sort(function(a,b){return roundKey(b)-roundKey(a);}));
     var tabs=document.getElementById("tabs"); tabs.innerHTML="";
     rounds.forEach(function(rd){
       var b=document.createElement("button"); b.className="tab"+(rd===curRound?" on":""); b.textContent=rd;
@@ -393,7 +397,7 @@
     function v(id){ return (g(id).value||"").trim(); }
     function msg(t){ g("m-msg").textContent=t||""; }
     g("muntoBtn").addEventListener("click",function(){
-      g("m-round").value=(curRound&&curRound!=="전체")?curRound:"8/27 (목)";
+      g("m-round").value=(curRound&&curRound!=="전체")?curRound:latestRound();
       msg(""); sheet.classList.add("on");
     });
     g("m-cancel").addEventListener("click",function(){ sheet.classList.remove("on"); });

@@ -42,7 +42,13 @@ module.exports = async function handler(req, res) {
       fetchAll("재테크 커피팅", TOKEN, BASE_ID),
     ]);
 
-    const round = rot.filter(x => String((x.fields || {})["회차"] || "").indexOf("8/27") >= 0);
+    // 🔁 가장 최신 회차를 자동으로 골라서 요약 (예: 8/27 → 9/10 자동 전환)
+    const roundKey = rd => { const m = String(rd || "").match(/(\d{1,2})\s*\/\s*(\d{1,2})/); return m ? (parseInt(m[1]) * 100 + parseInt(m[2])) : 0; };
+    let latestRound = "", bestKey = -1;
+    rot.forEach(x => { const rd = (x.fields || {})["회차"]; if (rd) { const k = roundKey(rd); if (k > bestKey) { bestKey = k; latestRound = rd; } } });
+    if (!latestRound) latestRound = "(회차 없음)";
+
+    const round = rot.filter(x => (x.fields || {})["회차"] === latestRound);
     const rApproved = round.filter(x => (x.fields || {})["승인상태"] === "승인").length;
     const rPaid = round.filter(x => (x.fields || {})["입금확정"] === "O").length;
     const rWait = round.filter(x => ((x.fields || {})["승인상태"] || "대기") === "대기").length;
@@ -55,7 +61,7 @@ module.exports = async function handler(req, res) {
     const text = [
       "🌅 썸류센터 아침 요약",
       "",
-      `🎡 로테이션(8/27): 신청 ${round.length} · 승인 ${rApproved} · 입금확정(라인업) ${rPaid} · 대기 ${rWait}`,
+      `🎡 로테이션(${latestRound}): 신청 ${round.length} · 승인 ${rApproved} · 입금확정(라인업) ${rPaid} · 대기 ${rWait}`,
       `💘 1:1 매칭: 전체 ${o1Active.length} · 대기 ${o1Wait}`,
       `☕ 재테크 커피팅: 대기 ${cWait}`,
     ].join("\n");
