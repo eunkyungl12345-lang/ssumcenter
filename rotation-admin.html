@@ -84,6 +84,8 @@
   .tpl.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
   .sheetbox textarea{width:100%;min-height:158px;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:12px;padding:13px;font-size:13.5px;color:var(--ink);font-family:inherit;line-height:1.7;resize:vertical}
   .sheetbox textarea:focus{outline:none;border-color:var(--amber)}
+  .mform input,.mform select{width:100%;box-sizing:border-box;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:12px;padding:12px;font-size:13.5px;color:var(--ink);font-family:inherit}
+  .mform input:focus,.mform select:focus{outline:none;border-color:var(--amber)}
   .sheet-acts{display:flex;gap:8px;margin-top:12px}
   .sheet-acts button{flex:1;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer}
   .sheet-acts .cancel{background:var(--surface-2);color:var(--muted);border:1px solid var(--line-strong)}
@@ -123,9 +125,40 @@
     <div class="toolbar">
       <button class="btn g sm" id="refreshBtn">새로고침</button>
       <button class="btn g sm" id="reminderBtn" style="background:#8B5CF6;color:#fff;border:none">📢 전날 안내 일괄발송</button>
+      <button class="btn g sm" id="muntoBtn" style="background:#22c55e;color:#fff;border:none">➕ 문토 신청자 추가</button>
       <span class="cnt" id="cnt"></span>
     </div>
     <div id="list"></div>
+  </div>
+</div>
+
+<!-- 문토 신청자 수기 추가 시트 -->
+<div class="sheet" id="munto-sheet">
+  <div class="sheetbox">
+    <h3>➕ 문토 신청자 라인업 추가</h3>
+    <div class="who">문토로 신청한 분을 라인업(입금확정)에 바로 올려요. * 는 필수예요.</div>
+    <div class="mform" style="display:flex;flex-direction:column;gap:9px">
+      <div style="display:flex;gap:9px">
+        <input id="m-name" placeholder="이름 *" style="flex:1">
+        <select id="m-gender" style="width:120px"><option value="">성별 *</option><option value="여성">여성</option><option value="남성">남성</option></select>
+      </div>
+      <div style="display:flex;gap:9px">
+        <input id="m-birth" placeholder="출생연도 (예:1995)" inputmode="numeric" style="flex:1">
+        <input id="m-height" placeholder="키 (예:170)" inputmode="numeric" style="width:140px">
+      </div>
+      <input id="m-job" placeholder="직업 / 직장명">
+      <input id="m-appeal" placeholder="어필포인트 (라인업에 보여요)">
+      <div style="display:flex;gap:9px">
+        <input id="m-drink" placeholder="음료 (예:아메리카노)" style="flex:1">
+        <input id="m-round" placeholder="회차" style="width:150px">
+      </div>
+      <input id="m-phone" placeholder="연락처 (선택)" inputmode="tel">
+    </div>
+    <div class="sheet-acts">
+      <button class="cancel" id="m-cancel">닫기</button>
+      <button class="send" id="m-save">라인업에 추가</button>
+    </div>
+    <div class="msg" id="m-msg" style="text-align:center;color:#ef6b6b;margin-top:8px"></div>
   </div>
 </div>
 
@@ -300,6 +333,40 @@
        alert("✅ "+name+"님 신청을 삭제했어요.");
      }).catch(function(){ if(btn){ btn.disabled=false; btn.textContent=orig; } alert("오류가 났어요. 다시 시도해주세요."); });
   }
+
+  // ➕ 문토 신청자 수기 추가 → 라인업(입금확정)에 바로 등록
+  (function(){
+    var sheet=document.getElementById("munto-sheet");
+    if(!sheet) return;
+    function g(id){ return document.getElementById(id); }
+    function v(id){ return (g(id).value||"").trim(); }
+    function msg(t){ g("m-msg").textContent=t||""; }
+    g("muntoBtn").addEventListener("click",function(){
+      g("m-round").value=(curRound&&curRound!=="전체")?curRound:"8/27 (목)";
+      msg(""); sheet.classList.add("on");
+    });
+    g("m-cancel").addEventListener("click",function(){ sheet.classList.remove("on"); });
+    sheet.addEventListener("click",function(e){ if(e.target===sheet) sheet.classList.remove("on"); });
+    g("m-save").addEventListener("click",function(){
+      var name=v("m-name"), gender=g("m-gender").value;
+      if(!name){ msg("이름을 입력해주세요."); return; }
+      if(!gender){ msg("성별을 선택해주세요."); return; }
+      var fields={ "이름":name, "성별":gender, "회차":v("m-round")||"8/27 (목)",
+        "승인상태":"승인", "입금확정":"O", "신청일시":new Date().toLocaleString("ko-KR") };
+      var opt={"출생연도":"m-birth","키":"m-height","직업_직장명":"m-job","어필포인트":"m-appeal","음료선택":"m-drink","연락처":"m-phone"};
+      Object.keys(opt).forEach(function(fk){ var val=v(opt[fk]); if(val) fields[fk]=val; });
+      var btn=g("m-save"), orig=btn.textContent; btn.disabled=true; btn.textContent="추가 중…";
+      api("POST",{records:[{fields:fields}]}).then(function(r){
+        btn.disabled=false; btn.textContent=orig;
+        if(r.error){ msg("추가 실패: "+r.error); return; }
+        sheet.classList.remove("on");
+        ["m-name","m-birth","m-height","m-job","m-appeal","m-drink","m-phone"].forEach(function(id){ g(id).value=""; });
+        g("m-gender").value="";
+        load();
+        alert("✅ "+name+"님을 라인업에 추가했어요!\n라인업 페이지에서 확인하세요 🎬");
+      }).catch(function(){ btn.disabled=false; btn.textContent=orig; msg("오류가 났어요. 다시 시도해주세요."); });
+    });
+  })();
 
   // ---- 문자봇 ----
   var fee=document.getElementById("fee");
