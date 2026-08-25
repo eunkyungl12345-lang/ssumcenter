@@ -1312,7 +1312,7 @@ function renderList(){
       <div class="pool-row" onclick="onCardTap('${r.id}')">
         ${shareMode ? `<div class="share-check ${shareSel[r.id] ? 'on' : ''}">✓</div>` : ""}
         <div class="pool-info">
-          <div class="pool-birth">${f["출생연도"] || "?"}년생${f["키"] ? ` / ${f["키"]}cm` : ""} <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span>${tagBadge(r.id)}</div>
+          <div class="pool-birth">${f["출생연도"] || "?"}년생${f["키"] ? ` / ${f["키"]}cm` : ""} <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span></div>
           <div class="pool-detail">${detail || "-"}</div>
           <div class="pool-status" style="${statusColor}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · <span style="color:#FFD400">⚡슈퍼</span>' : ""}</div>
         </div>
@@ -1322,7 +1322,6 @@ function renderList(){
       </div>
       <div class="pool-expand" id="expand-${r.id}">
         <div style="padding:10px 0 0;display:flex;flex-direction:column;gap:8px">
-          ${tagPicker(r.id)}
           ${photos.length > 1 ? `<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">${photos.map(p => `<img src="${p.url}" onclick="openPhoto('${p.url}')" style="width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0">`).join("")}</div>` : ""}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
             <div onclick="copyPhone('${f["연락처"] || ""}', event)" style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px;cursor:pointer" title="탭하면 복사돼요"><span style="color:#8a8070;font-size:11px">연락처 <i class="fa-solid fa-copy" style="font-size:10px"></i></span><br><b>${f["연락처"] || "-"}</b></div>
@@ -1401,28 +1400,6 @@ function renderList(){
 let viewMode = "detail";   // detail | compact
 let shareMode = false;
 let shareSel = {};         // id -> true
-
-const TAGS = { "추천":"#22c55e", "보류":"#f59e0b", "VIP":"#a855f7", "재문의":"#3b82f6", "제외예정":"#ef4444" };
-let tagMap = {};
-try { tagMap = JSON.parse(localStorage.getItem("oneone_tags") || "{}") || {}; } catch(e){ tagMap = {}; }
-function saveTags(){ try { localStorage.setItem("oneone_tags", JSON.stringify(tagMap)); } catch(e){} }
-
-function tagBadge(id){
-  const t = tagMap[id];
-  if(!t || !TAGS[t]) return "";
-  return `<span style="display:inline-block;font-size:10px;font-weight:800;color:#fff;background:${TAGS[t]};padding:2px 7px;border-radius:20px;margin-left:6px">${t}</span>`;
-}
-function tagPicker(id){
-  const cur = tagMap[id] || "";
-  const btns = Object.keys(TAGS).map(t =>
-    `<button onclick="event.stopPropagation();setTag('${id}','${t}')" style="font-size:11px;font-weight:700;padding:5px 10px;border-radius:16px;cursor:pointer;border:1px solid ${TAGS[t]};background:${cur===t?TAGS[t]:'transparent'};color:${cur===t?'#fff':TAGS[t]}">${t}</button>`
-  ).join("");
-  return `<div onclick="event.stopPropagation()" style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">
-    <span style="font-size:11px;color:#8a8070;font-weight:700">🏷 라벨</span>${btns}
-    ${cur ? `<button onclick="event.stopPropagation();setTag('${id}','')" style="font-size:11px;color:#9E9E97;background:#161615;border:1px solid #6b6358;padding:5px 10px;border-radius:16px;cursor:pointer">지우기</button>` : ""}
-  </div>`;
-}
-function setTag(id, t){ if(t) tagMap[id]=t; else delete tagMap[id]; saveTags(); renderList(); }
 
 function setViewMode(m){
   viewMode = m;

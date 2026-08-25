@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>패치 내역 | 썸류센터</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--ok:#6FBE97;--rose:#E8828A;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.55;letter-spacing:-.01em}
+  .wrap{max-width:680px;margin:0 auto;padding:26px 18px 80px}
+  h1{font-size:24px;font-weight:900}
+  .sub{font-size:13px;color:var(--muted);margin:5px 0 4px}
+  a.home{font-size:12.5px;color:var(--muted);text-decoration:none}
+  a.home:hover{color:var(--amber)}
+  .rel{margin-top:26px;border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:18px 18px 8px;box-shadow:0 8px 26px rgba(0,0,0,.28)}
+  .rel-date{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:#171208;background:var(--amber);padding:5px 12px;border-radius:100px}
+  .rel-note{font-size:12.5px;color:var(--muted);margin:9px 0 4px}
+  .grp{margin-top:16px}
+  .grp-h{font-size:15px;font-weight:900;color:var(--amber);padding-bottom:7px;border-bottom:1px solid var(--line-strong);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+  ul{list-style:none;display:flex;flex-direction:column;gap:7px;padding-bottom:6px}
+  li{position:relative;padding-left:19px;font-size:14px;color:var(--ink)}
+  li::before{content:"";position:absolute;left:3px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--amber)}
+  li b{font-weight:700}
+  li .d{color:var(--muted);font-size:12.5px}
+  .tag{display:inline-block;font-size:10px;font-weight:800;padding:1px 7px;border-radius:100px;margin-left:5px;vertical-align:middle}
+  .t-fix{background:rgba(232,130,138,.16);color:var(--rose)}
+  .t-new{background:rgba(111,190,151,.16);color:var(--ok)}
+  .t-up{background:rgba(232,176,80,.16);color:var(--amber)}
+  .foot{text-align:center;color:var(--faint);font-size:12px;margin-top:26px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🛠 패치 내역</h1>
+  <div class="sub">썸류센터 관리자에 적용된 업데이트 기록이에요.</div>
+  <a class="home" href="/admin">🏠 관리자 홈</a> · <a class="home" href="/1on1-admin">💘 1:1</a> · <a class="home" href="/rotation-admin">🎡 로테이션</a> · <a class="home" href="/lineup">🎬 라인업</a> · <a class="home" href="/attendance">📋 출석부</a>
+
+  <!-- ▼▼ 새 업데이트는 이 아래에 새 .rel 블록으로 추가 ▼▼ -->
+
+  <div class="rel">
+    <span class="rel-date">📅 2026. 8. 25</span>
+    <div class="rel-note">1:1·로테이션·라인업·출석부 대규모 개선 + 슬랙 자동화</div>
+
+    <div class="grp">
+      <div class="grp-h">💘 1:1 매칭 관리자</div>
+      <ul>
+        <li><b>정렬 버그 수정</b><span class="tag t-fix">수정</span><div class="d">신청일시가 한글 날짜라 최신순이 뒤죽박죽이던 문제 해결</div></li>
+        <li><b>2단 정렬</b><span class="tag t-new">신규</span><div class="d">기준(기본/나이/키/등록일/이름) + 오름·내림차순 방향</div></li>
+        <li><b>선택한 사람 상단 고정</b><span class="tag t-new">신규</span><div class="d">스크롤해도 사진·프로필이 위에 계속 붙어있음</div></li>
+        <li><b>자유 문구 문자 보내기 칸</b><span class="tag t-new">신규</span><div class="d">정해진 문구 말고 직접 쓴 내용을 그대로 발송</div></li>
+        <li><b>상세보기 / 작게보기 전환</b><span class="tag t-new">신규</span></li>
+        <li><b>여러 명 선택 → 명단 복사(공유)</b><span class="tag t-new">신규</span></li>
+        <li><b>카드 정보 정돈</b><span class="tag t-up">개선</span><div class="d">나이/키를 크게, 지역·직업을 한 줄로 — 한눈에 보이게</div></li>
+      </ul>
+    </div>
+
+    <div class="grp">
+      <div class="grp-h">🎡 로테이션 관리자</div>
+      <ul>
+        <li><b>신청자 삭제 버튼</b><span class="tag t-new">신규</span><div class="d">확인 후 삭제</div></li>
+        <li><b>문토 신청자 수기 추가</b><span class="tag t-new">신규</span><div class="d">유입경로 '문토' 표시 · 입금확정 상태로 등록</div></li>
+        <li><b>상태별 필터</b><span class="tag t-new">신규</span><div class="d">전체 / 대기 / 승인 / 입금전 / 입금완료 / 거절</div></li>
+        <li><b>남 / 여 2단 분리</b><span class="tag t-up">개선</span></li>
+      </ul>
+    </div>
+
+    <div class="grp">
+      <div class="grp-h">🎬 라인업</div>
+      <ul>
+        <li><b>문토/현장 수기 추가</b><span class="tag t-new">신규</span><div class="d">음료 선택 포함 → 음료 집계에 자동 반영</div></li>
+        <li><b>회차 선택 탭</b><span class="tag t-new">신규</span><div class="d">한 페이지로 과거·현재 회차 모두 관리 (새 페이지 안 만들어도 됨)</div></li>
+      </ul>
+    </div>
+
+    <div class="grp">
+      <div class="grp-h">📋 출석부</div>
+      <ul>
+        <li><b>현장 참가자 수기 추가</b><span class="tag t-new">신규</span><div class="d">음료 선택 포함</div></li>
+        <li><b>회차 선택 탭</b><span class="tag t-new">신규</span></li>
+        <li><b>남 / 여 2단 분리 + 본명·닉네임·음료 표시</b><span class="tag t-up">개선</span></li>
+      </ul>
+    </div>
+
+    <div class="grp">
+      <div class="grp-h">💬 슬랙 자동 알림</div>
+      <ul>
+        <li><b>승인·입금확정·수기추가 알림</b><span class="tag t-new">신규</span><div class="d">로테이션에서 처리하면 슬랙으로 바로 알림</div></li>
+        <li><b>매일 아침 9시 요약</b><span class="tag t-new">신규</span><div class="d">신청/대기/입금 현황을 슬랙으로 자동 발송</div></li>
+      </ul>
+    </div>
+
+    <div class="grp">
+      <div class="grp-h">🔗 자동 연동</div>
+      <ul>
+        <li><b>문토(선결제) → 라인업·출석부 자동 반영</b><span class="tag t-up">개선</span><div class="d">한 곳에서 추가하면 라인업·출석부에 자동으로 뜸</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot">✍️ 새 업데이트가 있을 때마다 여기에 기록돼요.</div>
+</div>
+</body>
+</html>
