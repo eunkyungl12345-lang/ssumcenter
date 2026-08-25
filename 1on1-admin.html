@@ -1304,7 +1304,7 @@ function renderList(){
     const photoUrl = f["프로필사진"] && f["프로필사진"][0] ? f["프로필사진"][0].url : null;
     const photos = f["프로필사진"] || [];
     const gender = f["성별"] === "여성" ? "♀" : f["성별"] === "남성" ? "♂" : "";
-    const detail = [f["사는곳"], f["키"] ? f["키"]+"cm" : "", f["직업"]].filter(Boolean).join(" · ");
+    const detail = [f["사는곳"], f["직업"]].filter(Boolean).join(" · ");
     const myCoffee = coffeeType(f["테스트결과"]);
     const coffeeBuddies = myCoffee ? coffeeMatchesFor(r) : [];
 
@@ -1312,7 +1312,7 @@ function renderList(){
       <div class="pool-row" onclick="onCardTap('${r.id}')">
         ${shareMode ? `<div class="share-check ${shareSel[r.id] ? 'on' : ''}">✓</div>` : ""}
         <div class="pool-info">
-          <div class="pool-birth">${f["출생연도"] || "?"}년생 <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span>${tagBadge(r.id)}</div>
+          <div class="pool-birth">${f["출생연도"] || "?"}년생${f["키"] ? ` / ${f["키"]}cm` : ""} <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span>${tagBadge(r.id)}</div>
           <div class="pool-detail">${detail || "-"}</div>
           <div class="pool-status" style="${statusColor}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · <span style="color:#FFD400">⚡슈퍼</span>' : ""}</div>
         </div>
