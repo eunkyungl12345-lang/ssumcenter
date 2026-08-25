@@ -22,6 +22,9 @@
   .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
   .tab{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);font-size:13px;font-weight:750;padding:8px 15px;border-radius:100px;cursor:pointer;font-family:inherit}
   .tab.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
+  .stabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+  .stab{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);font-size:12px;font-weight:700;padding:6px 12px;border-radius:100px;cursor:pointer;font-family:inherit}
+  .stab.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
   .stat{display:flex;gap:9px;margin-bottom:14px}
   .stat .b{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px;text-align:center}
   .stat .b .k{font-size:11px;color:var(--muted)}.stat .b .v{font-size:19px;font-weight:800;margin-top:2px}
@@ -128,6 +131,7 @@
       <button class="btn g sm" id="muntoBtn" style="background:#22c55e;color:#fff;border:none">➕ 문토 신청자 추가</button>
       <span class="cnt" id="cnt"></span>
     </div>
+    <div class="stabs" id="status-tabs"></div>
     <div id="list"></div>
   </div>
 </div>
@@ -181,7 +185,17 @@
 (function(){
   "use strict";
   var TABLE="로테이션 신청", KEY="admin_key";
-  var records=[], curRound="전체";
+  var records=[], curRound="전체", curStatus="전체";
+  function matchStatus(f, s){
+    var st=f["승인상태"]||"대기", paid=f["입금확정"]==="O";
+    if(s==="전체") return true;
+    if(s==="대기") return st==="대기";
+    if(s==="승인") return st==="승인";
+    if(s==="입금전") return st==="승인" && !paid;
+    if(s==="입금완료") return st==="승인" && paid;
+    if(s==="거절") return st==="거절";
+    return true;
+  }
   // 🔕 "문자 안 보내기"를 켠 신청자 (화면이 새로고침돼도 유지되도록 기억)
   var quietSet={};
   // 로그인 정보는 localStorage에 저장 (다른 관리자 페이지와 동일 — 한 번 로그인하면 전부 열림)
@@ -225,16 +239,47 @@
     });
 
     var filtered=records.filter(function(x){ return curRound==="전체" || x.fields["회차"]===curRound; });
-    // 통계 (현재 탭 기준)
+    // 통계 (현재 회차 기준)
     document.getElementById("st-all").textContent=filtered.length;
     document.getElementById("st-wait").textContent=filtered.filter(function(x){return (x.fields["승인상태"]||"대기")==="대기";}).length;
     document.getElementById("st-ok").textContent=filtered.filter(function(x){return x.fields["승인상태"]==="승인";}).length;
-    document.getElementById("cnt").textContent=curRound+" · "+filtered.length+"명";
+
+    // 상태별 필터 칩 (대기/승인/입금전/입금완료/거절) — 회차 기준 개수 표시
+    var statusList=["전체","대기","승인","입금전","입금완료","거절"];
+    var sTabs=document.getElementById("status-tabs"); sTabs.innerHTML="";
+    statusList.forEach(function(s){
+      var cnt=filtered.filter(function(x){ return matchStatus(x.fields||{}, s); }).length;
+      var b=document.createElement("button"); b.className="stab"+(s===curStatus?" on":"");
+      b.textContent=s+" "+cnt;
+      b.addEventListener("click",function(){ curStatus=s; render(); });
+      sTabs.appendChild(b);
+    });
+
+    var shown=filtered.filter(function(x){ return matchStatus(x.fields||{}, curStatus); });
+    document.getElementById("cnt").textContent=curRound+" · "+curStatus+" "+shown.length+"명";
 
     var list=document.getElementById("list"); list.innerHTML="";
-    if(!filtered.length){ list.innerHTML='<div class="empty">아직 신청자가 없어요.</div>'; return; }
+    if(!shown.length){ list.innerHTML='<div class="empty">해당하는 신청자가 없어요.</div>'; return; }
     PHSETS=[];
-    filtered.forEach(function(x){ list.appendChild(cardEl(x)); });
+
+    // 👦👧 남/여 2단 분리 (좁은 화면에선 자동으로 위아래로 쌓임)
+    var males=shown.filter(function(x){return (x.fields||{})["성별"]==="남성";});
+    var females=shown.filter(function(x){return (x.fields||{})["성별"]==="여성";});
+    var etc=shown.filter(function(x){var g=(x.fields||{})["성별"]; return g!=="남성"&&g!=="여성";});
+    function col(title,arr,color){
+      var c=document.createElement("div"); c.style.cssText="flex:1 1 300px;min-width:280px";
+      var h=document.createElement("div"); h.style.cssText="position:sticky;top:0;z-index:2;font-weight:900;font-size:13px;color:"+color+";background:var(--bg);padding:8px 11px;border-radius:10px;margin-bottom:8px;border:1px solid var(--line-strong)";
+      h.innerHTML=title+' <span style="color:var(--muted);font-weight:600;font-size:12px">'+arr.length+'명</span>';
+      c.appendChild(h);
+      if(arr.length){ arr.forEach(function(x){ c.appendChild(cardEl(x)); }); }
+      else { var e=document.createElement("div"); e.className="empty"; e.style.padding="18px 0"; e.textContent="없음"; c.appendChild(e); }
+      return c;
+    }
+    var wrap=document.createElement("div"); wrap.style.cssText="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start";
+    wrap.appendChild(col("👦 남성",males,"#7EA6E0"));
+    wrap.appendChild(col("👧 여성",females,"#E88FB0"));
+    list.appendChild(wrap);
+    if(etc.length){ var ew=document.createElement("div"); ew.style.marginTop="12px"; etc.forEach(function(x){ ew.appendChild(cardEl(x)); }); list.appendChild(ew); }
   }
 
   var PHSETS=[];
