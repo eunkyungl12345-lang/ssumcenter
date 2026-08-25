@@ -19,6 +19,18 @@
   .rtabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
   .rtab{background:var(--surface);border:1px solid var(--line-strong);color:var(--muted);font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;cursor:pointer;font-family:inherit}
   .rtab.on{background:var(--amber);border-color:var(--amber);color:var(--ink-on-amber)}
+  .tbl-input{width:66px;flex:none;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:9px;padding:9px 6px;font-size:14px;font-weight:800;color:var(--amber);font-family:inherit;text-align:center}
+  .tbl-input:focus{outline:none;border-color:var(--amber)}
+  .tbl-input::placeholder{color:var(--faint);font-weight:600;font-size:11px}
+  .dcbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:12px}
+  .dc-title{font-size:13px;font-weight:800;color:var(--amber);margin-bottom:9px}
+  .dc-hint{font-size:11px;color:var(--muted);font-weight:600}
+  .dc-row{display:flex;align-items:center;gap:11px;padding:6px 0}
+  .dc-name{font-size:14.5px;font-weight:700;flex:1}
+  .dc-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);font-size:19px;font-weight:800;cursor:pointer;font-family:inherit;line-height:1;flex:none}
+  .dc-btn:active{transform:scale(.94)}
+  .dc-num{min-width:36px;text-align:center;font-size:19px;font-weight:900;font-variant-numeric:tabular-nums}
+  .dc-auto{font-size:11px;color:var(--muted);min-width:46px;text-align:right}
   .btn{border:none;border-radius:11px;padding:12px 16px;font-size:14px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;width:100%}
   .btn.g{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong);width:auto;padding:9px 14px;font-size:12.5px;font-weight:750}
   .hide{display:none}
@@ -87,6 +99,7 @@
         <div id="a-msg" style="font-size:12px;color:#E8828A;text-align:center"></div>
       </div>
     </div>
+    <div id="drink-counter" class="dcbox hide"></div>
     <div id="list"></div>
   </div>
 </div>
@@ -96,6 +109,36 @@
   var records=[];
   function apiUrl(sort){ return "/api/airtable?table="+encodeURIComponent("로테이션 신청")+(sort?"&sort=신청일시":""); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+  // 🪑 테이블 번호 · ☕ 음료 카운터 (이 기기에 저장)
+  function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||"{}")||{}; }catch(e){ return {}; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+  var TBL_KEY="att_tables", tableMap=lsGet(TBL_KEY);
+  window.setTable=function(id,val){ val=(val||"").trim(); if(val) tableMap[id]=val; else delete tableMap[id]; lsSet(TBL_KEY,tableMap); };
+  var DRINKS=["아이스 아메리카노","아이스티"];
+  function drinkKey(){ return "att_drinks_"+curRound; }
+  function autoDrink(d){ return records.filter(function(x){ return (x.fields||{})["음료선택"]===d; }).length; }
+  function renderDrinkCounter(){
+    var box=document.getElementById("drink-counter"); if(!box) return;
+    if(!records.length){ box.classList.add("hide"); return; }
+    box.classList.remove("hide");
+    var stored=lsGet(drinkKey());
+    box.innerHTML='<div class="dc-title">☕ 음료 카운터 <span class="dc-hint">− / + 로 조절 (이 기기에 저장)</span></div>'+
+      DRINKS.map(function(d,i){
+        var auto=autoDrink(d); var val=(d in stored)?stored[d]:auto;
+        return '<div class="dc-row"><span class="dc-name">'+esc(d)+'</span>'+
+          '<button class="dc-btn" onclick="dcAdj('+i+',-1)">−</button>'+
+          '<span class="dc-num" id="dc-num-'+i+'">'+val+'</span>'+
+          '<button class="dc-btn" onclick="dcAdj('+i+',1)">+</button>'+
+          '<span class="dc-auto">신청 '+auto+'</span></div>';
+      }).join("");
+  }
+  window.dcAdj=function(i,delta){
+    var d=DRINKS[i]; var stored=lsGet(drinkKey());
+    var cur=(d in stored)?stored[d]:autoDrink(d);
+    cur=Math.max(0,cur+delta); stored[d]=cur; lsSet(drinkKey(),stored);
+    var el=document.getElementById("dc-num-"+i); if(el) el.textContent=cur;
+  };
 
   document.getElementById("loginBtn").addEventListener("click",doLogin);
   document.getElementById("pw").addEventListener("keydown",function(e){ if(e.key==="Enter") doLogin(); });
@@ -145,6 +188,7 @@
     document.getElementById("s-all").textContent=records.length;
     document.getElementById("s-gender").textContent=m+" / "+fw;
     document.getElementById("cnt").textContent="출석 "+present+"/"+records.length+"명";
+    renderDrinkCounter();
     var list=document.getElementById("list"); list.innerHTML="";
     if(!records.length){ list.innerHTML='<div class="empty">'+esc(curRound)+' 입금확정된 참가자가 아직 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 떠요.</div>'; return; }
 
@@ -153,7 +197,8 @@
       var el=document.createElement("div"); el.className="row"+(on?" present":"");
       var nick=f["닉네임"]?' <span style="font-size:11px;color:var(--muted);font-weight:600">('+esc(f["닉네임"])+')</span>':'';
       var drink=f["음료선택"]?' · ☕'+esc(f["음료선택"]):'';
-      el.innerHTML='<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div><div class="meta">'+esc(f["연락처"]||"")+drink+'</div></div>';
+      el.innerHTML='<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div><div class="meta">'+esc(f["연락처"]||"")+drink+'</div></div>'+
+        '<input class="tbl-input" value="'+esc(tableMap[x.id]||"")+'" placeholder="테이블" onclick="event.stopPropagation()" onchange="setTable(\''+x.id+'\',this.value)">';
       el.addEventListener("click",function(){ toggle(x, el); });
       return el;
     }
