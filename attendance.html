@@ -79,6 +79,7 @@
           <input id="a-birth" placeholder="출생연도(예:1995)" inputmode="numeric" style="flex:1">
           <input id="a-phone" placeholder="연락처(선택)" inputmode="tel" style="flex:1">
         </div>
+        <select id="a-drink"><option value="">음료 선택 (선택)</option><option value="아이스 아메리카노">아이스 아메리카노</option><option value="아이스티">아이스티</option></select>
         <div style="display:flex;gap:8px;margin-top:2px">
           <button class="btn g" id="a-cancel" style="flex:1">닫기</button>
           <button class="btn" id="a-save" style="flex:2">출석부에 추가</button>
@@ -146,13 +147,35 @@
     document.getElementById("cnt").textContent="출석 "+present+"/"+records.length+"명";
     var list=document.getElementById("list"); list.innerHTML="";
     if(!records.length){ list.innerHTML='<div class="empty">'+esc(curRound)+' 입금확정된 참가자가 아직 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 떠요.</div>'; return; }
-    records.forEach(function(x){
+
+    function rowEl(x){
       var f=x.fields||{}, on=f["출석"]==="O";
       var el=document.createElement("div"); el.className="row"+(on?" present":"");
-      el.innerHTML='<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["닉네임"]||f["이름"]||"?")+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div><div class="meta">'+esc(f["연락처"]||"")+'</div></div>';
+      var nick=f["닉네임"]?' <span style="font-size:11px;color:var(--muted);font-weight:600">('+esc(f["닉네임"])+')</span>':'';
+      var drink=f["음료선택"]?' · ☕'+esc(f["음료선택"]):'';
+      el.innerHTML='<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div><div class="meta">'+esc(f["연락처"]||"")+drink+'</div></div>';
       el.addEventListener("click",function(){ toggle(x, el); });
-      list.appendChild(el);
-    });
+      return el;
+    }
+    // 👦👧 남/여 2단 분리 (좁은 화면에선 자동으로 위아래로 쌓임)
+    var males=records.filter(function(x){return (x.fields||{})["성별"]==="남성";});
+    var females=records.filter(function(x){return (x.fields||{})["성별"]==="여성";});
+    var etc=records.filter(function(x){var g=(x.fields||{})["성별"];return g!=="남성"&&g!=="여성";});
+    function col(title,arr,color){
+      var c=document.createElement("div"); c.style.cssText="flex:1 1 300px;min-width:280px";
+      var pres=arr.filter(function(x){return (x.fields||{})["출석"]==="O";}).length;
+      var h=document.createElement("div"); h.style.cssText="position:sticky;top:0;z-index:2;font-weight:900;font-size:13px;color:"+color+";background:var(--bg);padding:8px 11px;border-radius:10px;margin-bottom:8px;border:1px solid var(--line-strong)";
+      h.innerHTML=title+' <span style="color:var(--muted);font-weight:600;font-size:12px">출석 '+pres+'/'+arr.length+'</span>';
+      c.appendChild(h);
+      if(arr.length){ arr.forEach(function(x){ c.appendChild(rowEl(x)); }); }
+      else { var e=document.createElement("div"); e.className="empty"; e.style.padding="18px 0"; e.textContent="없음"; c.appendChild(e); }
+      return c;
+    }
+    var wrap=document.createElement("div"); wrap.style.cssText="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start";
+    wrap.appendChild(col("👦 남성",males,"#7EA6E0"));
+    wrap.appendChild(col("👧 여성",females,"#E88FB0"));
+    list.appendChild(wrap);
+    if(etc.length){ var ew=document.createElement("div"); ew.style.marginTop="12px"; etc.forEach(function(x){ ew.appendChild(rowEl(x)); }); list.appendChild(ew); }
   }
   // ➕ 현장 참가자 수기 추가 (문토 선결제 등 → 입금확정 상태로 명단에 올림)
   document.getElementById("addBtn").addEventListener("click",function(){
@@ -170,6 +193,7 @@
     var fields={ "이름":name, "성별":gender, "회차":curRound||"8/27 (목)", "승인상태":"승인", "입금확정":"O", "신청일시":new Date().toLocaleString("ko-KR") };
     var birth=aval("a-birth"); if(birth) fields["출생연도"]=birth;
     var phone=aval("a-phone"); if(phone) fields["연락처"]=phone;
+    var drink=document.getElementById("a-drink").value; if(drink) fields["음료선택"]=drink;
     fields["유입경로"]="문토";
     var btn=document.getElementById("a-save"), orig=btn.textContent; btn.disabled=true; btn.textContent="추가 중…";
     function errText(e){ if(!e) return ""; if(typeof e==="string") return e; return e.message||e.type||JSON.stringify(e); }
@@ -182,7 +206,7 @@
           }
           btn.disabled=false; btn.textContent=orig;
           ["a-name","a-birth","a-phone"].forEach(function(id){ document.getElementById(id).value=""; });
-          document.getElementById("a-gender").value=""; msgEl.textContent="";
+          document.getElementById("a-gender").value=""; document.getElementById("a-drink").selectedIndex=0; msgEl.textContent="";
           document.getElementById("add-form").classList.add("hide");
           load();
         }).catch(function(){ btn.disabled=false; btn.textContent=orig; msgEl.textContent="오류가 났어요. 다시 시도해주세요."; });
