@@ -48,6 +48,14 @@
   .couple-f{font-weight:800;color:#E88FB0;flex:1;text-align:right}
   .couple-heart{color:var(--rose);font-size:15px;flex:none}
   .couple-m{font-weight:800;color:#7EA6E0;flex:1}
+  .vtable{width:100%;border-collapse:collapse;font-size:12px;min-width:600px}
+  .vtable th,.vtable td{border:1px solid var(--line-strong);padding:7px 8px;text-align:center;white-space:nowrap}
+  .vtable th{background:var(--surface-2);color:var(--amber);font-weight:800;font-size:11px;position:sticky;top:0}
+  .vtable td.nick{font-weight:800;color:var(--ink)}
+  .vtable .sec{text-align:left;font-weight:800;padding:8px 10px;background:rgba(232,143,176,.1);color:#E88FB0}
+  .vtable .sec.m{background:rgba(126,166,224,.1);color:#7EA6E0}
+  .vtable .match{color:var(--ok);font-weight:800}
+  .vtable .novote{color:var(--faint)}
   .hide{display:none}
   a.home{font-size:12px;color:var(--muted);text-decoration:none}
 </style>
@@ -113,6 +121,12 @@
       <h2>💘 성사된 커플</h2>
       <div class="desc">서로 뽑은(양쪽이 서로 찍은) 쌍이에요. 투표가 들어오면 자동으로 채워져요.</div>
       <div id="couple-list"></div>
+    </div>
+
+    <div class="card" id="sheet-card" style="display:none">
+      <h2>📋 투표 현황표</h2>
+      <div class="desc">구글시트처럼 누가 누굴 찍었는지·성사됐는지 한눈에. (표를 ← → 옆으로 밀어보세요)</div>
+      <div id="sheet-body" style="overflow-x:auto;-webkit-overflow-scrolling:touch"></div>
     </div>
 
     <div class="card">
@@ -285,6 +299,24 @@
       clist.innerHTML = couples.length
         ? couples.map(function(c,i){ return '<div class="couple-row"><span class="couple-no">'+(i+1)+'커플</span><span class="couple-f">'+(c.여자||"?")+'</span><span class="couple-heart">♥</span><span class="couple-m">'+(c.남자||"?")+'</span></div>'; }).join("")
         : '<div class="desc" style="padding:8px 0">아직 성사된 커플이 없어요. (양쪽이 서로 뽑으면 여기 떠요)</div>';
+      // 📋 구글시트식 현황표
+      var rows=r.rows||[];
+      var scard=document.getElementById("sheet-card"), sbody=document.getElementById("sheet-body");
+      if(rows.length){
+        scard.style.display="block";
+        function byNum(a,b){ return (a.순번||0)-(b.순번||0); }
+        var females=rows.filter(function(x){return x.성별==="여성";}).sort(byNum);
+        var males=rows.filter(function(x){return x.성별==="남성";}).sort(byNum);
+        var etc=rows.filter(function(x){return x.성별!=="여성"&&x.성별!=="남성";});
+        function rowHtml(x){
+          var match=x.성사&&x.성사.length ? '<span class="match">'+x.성사.join(", ")+'</span>' : (x.voted?'<span class="novote">-</span>':'<span class="novote">미투표</span>');
+          var forme=x.날찍은사람&&x.날찍은사람.length ? x.날찍은사람.join(", ") : '-';
+          return '<tr><td>'+(x.순번||"")+'</td><td class="nick">'+x.닉네임+'</td><td>'+(x.음료||"")+'</td><td>'+(x.p1||"-")+'</td><td>'+(x.p2||"-")+'</td><td>'+match+'</td><td>'+forme+'</td></tr>';
+        }
+        function sec(title,arr,cls){ return arr.length ? '<tr><td colspan="7" class="sec '+cls+'">'+title+' ('+arr.length+'명)</td></tr>'+arr.map(rowHtml).join("") : ""; }
+        sbody.innerHTML='<table class="vtable"><thead><tr><th>순번</th><th>닉네임</th><th>음료</th><th>1순위</th><th>2순위</th><th>성사</th><th>날 찍은 사람</th></tr></thead><tbody>'
+          +sec("🙋‍♀️ 여성",females,"")+sec("🙋‍♂️ 남성",males,"m")+sec("기타",etc,"")+'</tbody></table>';
+      } else { scard.style.display="none"; }
       if(!r.participants||!r.participants.length){
         pl.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>';
         al.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>'; return;

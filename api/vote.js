@@ -396,6 +396,21 @@ module.exports = async function handler(req, res) {
         });
       });
 
+      // 📋 구글시트식 현황표 (참가자별 1·2순위 / 성사 / 날 찍은 사람)
+      const votersOf = {};
+      Object.keys(pickMap).forEach(voter => { pickMap[voter].forEach(pick => { (votersOf[pick] = votersOf[pick] || []).push(voter); }); });
+      const rows = people.map(p => {
+        const nick = p.fields["닉네임"] || "";
+        const myPicks = pickMap[nick] || [];
+        const forMe = votersOf[nick] || [];
+        const mutual = myPicks.filter(x => forMe.indexOf(x) >= 0);
+        return {
+          순번: p.fields["순번"] || 0, 닉네임: nick, 성별: p.fields["성별"] || "", 음료: p.fields["음료"] || "",
+          voted: !!pickMap[nick], p1: myPicks[0] || "", p2: myPicks[1] || "",
+          성사: mutual, 날찍은사람: forMe, 피드백: p.fields["피드백"] || "",
+        };
+      });
+
       return res.status(200).json({
         revealed,
         participants: people.map(p => ({
@@ -405,6 +420,7 @@ module.exports = async function handler(req, res) {
           음료: p.fields["음료"] || "", 피드백: p.fields["피드백"] || "",
         })),
         couples,
+        rows,
         voteCount: votes.length,
         attendCount: people.filter(p => p.fields["출석"] === true).length,
         drinks,
