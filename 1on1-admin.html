@@ -66,6 +66,12 @@
   .sort-tab{background:#161615;border:1px solid #242422;color:#9E9E97;cursor:pointer}
   .sort-tab:hover{border-color:#FFD400;color:#FFD400}
   .sort-tab.active{background:#FFD400;border-color:#FFD400;color:#000}
+  .appcard.share-on{outline:2px solid #FFD400;outline-offset:-2px;border-radius:12px}
+  .share-check{width:22px;height:22px;border-radius:7px;border:2px solid #3a3a38;display:grid;place-items:center;color:transparent;font-weight:900;font-size:12px;flex:none;margin-right:2px}
+  .share-check.on{background:#FFD400;border-color:#FFD400;color:#000}
+  #applicant-list.vm-compact .pool-thumb{width:40px !important;height:40px !important}
+  #applicant-list.vm-compact .pool-detail{display:none}
+  #applicant-list.vm-compact .pool-status{font-size:11px}
 
   /* 소개 풀 카드 */
   .appcard{background:#161615;border:1px solid #242422;border-radius:16px;padding:4px 15px 14px;margin-bottom:12px;transition:border-color .15s}
@@ -214,6 +220,20 @@
       <button onclick="setMatchSortField('name')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-field="name">이름순</button>
       <button onclick="toggleMatchSortDir()" id="sort-dir-btn" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" style="margin-left:auto;min-width:82px">↓ 내림차순</button>
     </div>
+  </div>
+
+  <!-- 👁 보기 전환 + 📤 공유 선택 -->
+  <div class="flex gap-1.5 items-center flex-wrap" style="margin-bottom:10px">
+    <span class="text-[10px] text-[#6b6358] font-bold mr-0.5">보기</span>
+    <button onclick="setViewMode('detail')" class="sort-tab active text-[11px] font-bold px-3 py-1.5 rounded-lg" data-vm="detail">상세보기</button>
+    <button onclick="setViewMode('compact')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg" data-vm="compact">작게보기</button>
+    <button onclick="toggleShareMode()" id="share-toggle" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg" style="margin-left:auto">📤 공유 선택</button>
+  </div>
+  <!-- 공유 선택 바 -->
+  <div id="share-bar" class="hidden" style="position:sticky;top:54px;z-index:41;background:#141310;border:1px solid #3a2f14;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.45);margin-bottom:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span style="font-size:12.5px;font-weight:800;color:#FFD400">📤 <span id="share-count">0</span>명 선택됨</span>
+    <button onclick="copyShare()" style="margin-left:auto;background:#FFD400;border:none;color:#000;font-size:12px;font-weight:800;padding:8px 16px;border-radius:9px;cursor:pointer">📋 명단 복사</button>
+    <button onclick="clearShare()" style="background:#161615;border:1px solid #6b6358;color:#9E9E97;font-size:11px;font-weight:700;padding:8px 12px;border-radius:9px;cursor:pointer">선택 해제</button>
   </div>
 
   <!-- 💘 선택한 사람 (스크롤해도 목록 위에 고정) -->
@@ -1251,6 +1271,7 @@ function coffeeMatchesFor(rec){
 
 function renderList(){
   const list = document.getElementById("applicant-list");
+  list.classList.toggle("vm-compact", viewMode === "compact");
   let filtered = applicants;
 
   if(currentFilter === "대기" || currentFilter === "승인" || currentFilter === "소개중" || currentFilter === "거절" || currentFilter === "제외" || currentFilter === "휴지통"){
@@ -1287,10 +1308,11 @@ function renderList(){
     const myCoffee = coffeeType(f["테스트결과"]);
     const coffeeBuddies = myCoffee ? coffeeMatchesFor(r) : [];
 
-    return `<div class="appcard ${isSelected ? 'sel' : ''}">
-      <div class="pool-row" onclick="toggleSelect('${r.id}')">
+    return `<div class="appcard ${isSelected ? 'sel' : ''} ${shareMode && shareSel[r.id] ? 'share-on' : ''}">
+      <div class="pool-row" onclick="onCardTap('${r.id}')">
+        ${shareMode ? `<div class="share-check ${shareSel[r.id] ? 'on' : ''}">✓</div>` : ""}
         <div class="pool-info">
-          <div class="pool-birth">${f["출생연도"] || "?"}년생 <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span></div>
+          <div class="pool-birth">${f["출생연도"] || "?"}년생 <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span>${tagBadge(r.id)}</div>
           <div class="pool-detail">${detail || "-"}</div>
           <div class="pool-status" style="${statusColor}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · <span style="color:#FFD400">⚡슈퍼</span>' : ""}</div>
         </div>
@@ -1300,6 +1322,7 @@ function renderList(){
       </div>
       <div class="pool-expand" id="expand-${r.id}">
         <div style="padding:10px 0 0;display:flex;flex-direction:column;gap:8px">
+          ${tagPicker(r.id)}
           ${photos.length > 1 ? `<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">${photos.map(p => `<img src="${p.url}" onclick="openPhoto('${p.url}')" style="width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0">`).join("")}</div>` : ""}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
             <div onclick="copyPhone('${f["연락처"] || ""}', event)" style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px;cursor:pointer" title="탭하면 복사돼요"><span style="color:#8a8070;font-size:11px">연락처 <i class="fa-solid fa-copy" style="font-size:10px"></i></span><br><b>${f["연락처"] || "-"}</b></div>
@@ -1371,6 +1394,76 @@ function renderList(){
   list.innerHTML =
     `<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start">${column("👦","남성",males,"#60a5fa")}${column("👧","여성",females,"#f472b6")}</div>`
     + (etc.length ? `<div style="margin-top:12px">${etc.map(cardHtml).join("")}</div>` : "");
+  updateShareBar();
+}
+
+/* ========== 보기 전환 / 태그 라벨 / 공유 선택 ========== */
+let viewMode = "detail";   // detail | compact
+let shareMode = false;
+let shareSel = {};         // id -> true
+
+const TAGS = { "추천":"#22c55e", "보류":"#f59e0b", "VIP":"#a855f7", "재문의":"#3b82f6", "제외예정":"#ef4444" };
+let tagMap = {};
+try { tagMap = JSON.parse(localStorage.getItem("oneone_tags") || "{}") || {}; } catch(e){ tagMap = {}; }
+function saveTags(){ try { localStorage.setItem("oneone_tags", JSON.stringify(tagMap)); } catch(e){} }
+
+function tagBadge(id){
+  const t = tagMap[id];
+  if(!t || !TAGS[t]) return "";
+  return `<span style="display:inline-block;font-size:10px;font-weight:800;color:#fff;background:${TAGS[t]};padding:2px 7px;border-radius:20px;margin-left:6px">${t}</span>`;
+}
+function tagPicker(id){
+  const cur = tagMap[id] || "";
+  const btns = Object.keys(TAGS).map(t =>
+    `<button onclick="event.stopPropagation();setTag('${id}','${t}')" style="font-size:11px;font-weight:700;padding:5px 10px;border-radius:16px;cursor:pointer;border:1px solid ${TAGS[t]};background:${cur===t?TAGS[t]:'transparent'};color:${cur===t?'#fff':TAGS[t]}">${t}</button>`
+  ).join("");
+  return `<div onclick="event.stopPropagation()" style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">
+    <span style="font-size:11px;color:#8a8070;font-weight:700">🏷 라벨</span>${btns}
+    ${cur ? `<button onclick="event.stopPropagation();setTag('${id}','')" style="font-size:11px;color:#9E9E97;background:#161615;border:1px solid #6b6358;padding:5px 10px;border-radius:16px;cursor:pointer">지우기</button>` : ""}
+  </div>`;
+}
+function setTag(id, t){ if(t) tagMap[id]=t; else delete tagMap[id]; saveTags(); renderList(); }
+
+function setViewMode(m){
+  viewMode = m;
+  document.querySelectorAll("[data-vm]").forEach(b => b.classList.toggle("active", b.dataset.vm === m));
+  renderList();
+}
+function toggleShareMode(){
+  shareMode = !shareMode;
+  const btn = document.getElementById("share-toggle");
+  if(btn){ btn.classList.toggle("active", shareMode); btn.textContent = shareMode ? "✅ 공유 선택중" : "📤 공유 선택"; }
+  if(shareMode){ clearSelection(); } else { shareSel = {}; }  // 매칭 선택과 충돌 방지
+  updateShareBar();
+  renderList();
+}
+function onCardTap(id){ if(shareMode) toggleShare(id); else toggleSelect(id); }
+function toggleShare(id){
+  if(shareSel[id]) delete shareSel[id]; else shareSel[id] = true;
+  updateShareBar();
+  renderList();
+}
+function clearShare(){ shareSel = {}; updateShareBar(); renderList(); }
+function updateShareBar(){
+  const cnt = Object.keys(shareSel).length;
+  const c = document.getElementById("share-count"); if(c) c.textContent = cnt;
+  const bar = document.getElementById("share-bar"); if(bar) bar.classList.toggle("hidden", !(shareMode && cnt > 0));
+}
+function copyShare(){
+  const picked = applicants.filter(r => shareSel[r.id]);
+  if(!picked.length){ toast("선택된 사람이 없어요"); return; }
+  const line = r => {
+    const f = r.fields;
+    return [f["출생연도"] ? f["출생연도"]+"년생" : "", f["키"] ? f["키"]+"cm" : "", f["사는곳"], f["직업"]].filter(Boolean).join(" / ");
+  };
+  const males = picked.filter(r => r.fields["성별"] === "남성");
+  const females = picked.filter(r => r.fields["성별"] === "여성");
+  let txt = "🩷 썸류센터 소개 명단\n";
+  if(females.length) txt += "\n🙋‍♀️ 여성\n" + females.map(line).join("\n");
+  if(males.length) txt += "\n\n🙋‍♂️ 남성\n" + males.map(line).join("\n");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(() => toast(picked.length + "명 명단을 복사했어요 📋"), () => alert("복사 실패 — 길게 눌러 복사해주세요"));
+  } else { alert(txt); }
 }
 
 async function sendIntakeSMS(id){
