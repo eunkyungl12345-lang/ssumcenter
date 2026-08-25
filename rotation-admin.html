@@ -240,7 +240,8 @@
       + '<button class="a-no'+(st==="거절"?" on":"")+'" data-s="거절">거절</button>'
       + '</div>'
       + (st==="승인" ? '<button class="cfmbtn" style="width:100%;margin-top:8px;background:'+(f["입금확정"]==="O"?"#2a2117":"#22c55e")+';color:'+(f["입금확정"]==="O"?"#6FBE97":"#fff")+';border:'+(f["입금확정"]==="O"?"1px solid #3a5c47":"none")+';border-radius:12px;padding:9px;font-weight:800;font-size:13px;cursor:pointer">'+(f["입금확정"]==="O"?"✅ 입금확정됨 · 다시 보내기":(quietSet[x.id]?"💰 입금확정만 표시 (문자 없음)":"💰 입금확인 → 확정문자 발송"))+'</button>' : '')
-      + '<button class="btn g sm smsbtn" style="width:100%;margin-top:7px">📨 문자 직접 보내기</button>';
+      + '<button class="btn g sm smsbtn" style="width:100%;margin-top:7px">📨 문자 직접 보내기</button>'
+      + '<button class="delbtn" style="width:100%;margin-top:7px;background:#161615;border:1px solid #7f1d1d;color:#ef6b6b;font-weight:700;font-size:12px;padding:9px;border-radius:12px;cursor:pointer">🗑️ 신청자 삭제</button>';
 
     // 🔕 "문자 안 보내기"가 켜져 있으면 승인·입금확정 시 문자를 발송하지 않는다.
     // 승인하면 화면이 새로고침되므로, 체크 상태를 quietSet에 기억해 둔다
@@ -255,6 +256,7 @@
     });
 
     el.querySelector(".smsbtn").addEventListener("click",function(){ openSms(f); });
+    var _delb=el.querySelector(".delbtn"); if(_delb) _delb.addEventListener("click",function(){ delApplicant(x,_delb); });
     var _cb=el.querySelector(".cfmbtn"); if(_cb) _cb.addEventListener("click",function(){ sendConfirm(x,silent()); });
     el.querySelectorAll(".acts button").forEach(function(btn){
       btn.addEventListener("click",function(){
@@ -281,6 +283,22 @@
       });
     });
     return el;
+  }
+
+  // 🗑️ 신청자 삭제 (한 번 확인받고 영구 삭제)
+  function delApplicant(x,btn){
+    var f=x.fields, name=f["이름"]||"이름없음";
+    if(!confirm("⚠️ "+name+"님 신청을 삭제할까요?\n\n되돌릴 수 없어요. 정말 지우려면 [확인]을 눌러주세요.")) return;
+    var orig=btn?btn.textContent:""; if(btn){ btn.disabled=true; btn.textContent="삭제 중…"; }
+    fetch("/api/airtable?table="+encodeURIComponent(TABLE)+"&recordId="+x.id,{
+      method:"DELETE",headers:{"Content-Type":"application/json","x-admin-key":key()}
+    }).then(function(r){ return r.json().catch(function(){return {};}).then(function(d){ return {ok:r.ok,d:d}; }); })
+     .then(function(res){
+       if(!res.ok){ if(btn){ btn.disabled=false; btn.textContent=orig; } alert("삭제 실패: "+((res.d&&res.d.error)||"")); return; }
+       records=records.filter(function(z){ return z.id!==x.id; });
+       render();
+       alert("✅ "+name+"님 신청을 삭제했어요.");
+     }).catch(function(){ if(btn){ btn.disabled=false; btn.textContent=orig; } alert("오류가 났어요. 다시 시도해주세요."); });
   }
 
   // ---- 문자봇 ----
