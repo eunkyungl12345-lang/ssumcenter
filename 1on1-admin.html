@@ -1414,6 +1414,19 @@ async function sendCustomSMS(id){
   } catch(e){ alert("오류가 났어요. 다시 시도해주세요."); }
 }
 
+// 선택 바에 뜨는 미니 프로필 (사진 + 이름/나이/성별 + 사는곳·키·직업)
+function pickHTML(rec){
+  if(!rec) return '<span class="text-[#555]">목록에서 선택</span>';
+  const f = rec.fields || {};
+  const photo = (f["프로필사진"] && f["프로필사진"][0] && f["프로필사진"][0].url) || "";
+  const detail = [f["사는곳"], f["키"] ? f["키"]+"cm" : "", f["직업"]].filter(Boolean).join(" · ");
+  return '<div style="display:flex;align-items:center;gap:9px">'
+    + (photo ? `<img src="${photo}" style="width:40px;height:40px;border-radius:9px;object-fit:cover;flex:none">` : '')
+    + `<div style="min-width:0"><div><b class="text-white">${f["이름"]||""}</b> <span class="text-[#9E9E97] text-[12px]">${f["출생연도"]||""}년생 · ${f["성별"]||""}</span></div>`
+    + (detail ? `<div class="text-[11px] text-[#9E9E97]" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${detail}</div>` : '')
+    + '</div></div>';
+}
+
 function toggleSelect(id){
   const record = applicants.find(r => r.id === id);
   if(!record) return;
@@ -1429,12 +1442,8 @@ function toggleSelect(id){
   else { selected[0] = record; selected[1] = null; }
 
   // UI 업데이트
-  document.getElementById("pick-1").innerHTML = selected[0]
-    ? `<b class="text-white">${selected[0].fields["이름"]}</b> <span class="text-[#9E9E97]">${selected[0].fields["출생연도"]}년생 · ${selected[0].fields["성별"]}</span>`
-    : '<span class="text-[#555]">목록에서 선택</span>';
-  document.getElementById("pick-2").innerHTML = selected[1]
-    ? `<b class="text-white">${selected[1].fields["이름"]}</b> <span class="text-[#9E9E97]">${selected[1].fields["출생연도"]}년생 · ${selected[1].fields["성별"]}</span>`
-    : '<span class="text-[#555]">목록에서 선택</span>';
+  document.getElementById("pick-1").innerHTML = pickHTML(selected[0]);
+  document.getElementById("pick-2").innerHTML = pickHTML(selected[1]);
 
   document.getElementById("match-btn").disabled = !(selected[0] && selected[1]);
   document.getElementById("match-result").classList.add("hidden");
