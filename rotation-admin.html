@@ -560,11 +560,11 @@
     api("PATCH",{records:[{id:x.id,fields:{"입금확정":"O"}}]}).then(function(){ f["입금확정"]="O"; });
     sendSmsTo(to, TPLS["확정"](f)).then(function(r){ alert(r&&r.ok?"✅ 입금확정 처리 + 확정문자 발송됨\n(라인업에 자동 등록됐어요)":"입금확정 표시는 됐어요. 문자는 실패: "+((r&&r.error)||"")); });
   };
-  // 전날 안내 일괄 발송 (현재 회차 · 승인자 전원)
+  // 전날 안내 일괄 발송 (현재 회차 · 입금완료자만)
   document.getElementById("reminderBtn").addEventListener("click",function(){
-    var targets=records.filter(function(x){ return (curRound==="전체"||x.fields["회차"]===curRound) && x.fields["승인상태"]==="승인" && x.fields["연락처"]; });
-    if(!targets.length){ alert("이 회차에 승인된(연락처 있는) 참가자가 없어요."); return; }
-    if(!confirm("승인된 "+targets.length+"명에게 '전날 안내(장소)' 문자를 일괄 발송할까요?")) return;
+    var targets=records.filter(function(x){ return (curRound==="전체"||x.fields["회차"]===curRound) && x.fields["입금확정"]==="O" && x.fields["연락처"]; });
+    if(!targets.length){ alert("이 회차에 입금완료된(연락처 있는) 참가자가 없어요."); return; }
+    if(!confirm("입금완료 "+targets.length+"명에게 '전날 안내(장소)' 문자를 일괄 발송할까요?\n(입금 안 한 분에게는 안 보내져요)")) return;
     var btn=this; btn.disabled=true; var orig=btn.textContent; btn.textContent="발송 중…";
     var ok=0, done=0;
     targets.forEach(function(x){
