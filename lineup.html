@@ -16,6 +16,9 @@
   input:focus{outline:none;border-color:var(--amber)}
   select{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
   select:focus{outline:none;border-color:var(--amber)}
+  .rtabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+  .rtab{background:var(--surface);border:1px solid var(--line-strong);color:var(--muted);font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;cursor:pointer;font-family:inherit}
+  .rtab.on{background:var(--amber);border-color:var(--amber);color:var(--ink-on-amber)}
   .btn{border:none;border-radius:11px;padding:12px 16px;font-size:14px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;width:100%}
   .btn.g{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong);width:auto;padding:9px 14px;font-size:12.5px;font-weight:750}
   .hide{display:none}
@@ -57,14 +60,15 @@
 
   <!-- 콘솔 -->
   <div id="console" class="hide">
-    <h1>🎬 8/27 라인업</h1>
-    <div class="sub">입금 확정된 분이 자동으로 올라와요<br><a class="home" href="/rotation-admin">← 로테이션</a> · <a class="home" href="/attendance">📋 출석부</a> · <a class="home" href="/vote-admin">🗳️ 투표</a> · <a class="home" href="/admin">🏠 홈</a></div>
+    <h1>🎬 <span id="lu-round">8/27</span> 라인업</h1>
+    <div class="sub">입금 확정된 분이 자동으로 올라와요 · 회차를 골라보세요<br><a class="home" href="/rotation-admin">← 로테이션</a> · <a class="home" href="/attendance">📋 출석부</a> · <a class="home" href="/vote-admin">🗳️ 투표</a> · <a class="home" href="/admin">🏠 홈</a></div>
     <div class="toolbar">
       <button class="btn g" id="refreshBtn">새로고침</button>
       <button class="btn g" onclick="copyLu()" style="background:#8B5CF6;color:#fff;border:none">📋 SNS 텍스트 복사</button>
       <button class="btn g" id="addBtn" style="color:var(--amber);border-color:var(--amber)">➕ 문토/현장 추가</button>
       <span class="cnt" id="cnt"></span>
     </div>
+    <div class="rtabs" id="round-tabs"></div>
     <div class="card hide" id="add-form" style="margin-bottom:12px">
       <div style="font-weight:800;font-size:14px;margin-bottom:10px">➕ 라인업에 직접 추가 <span style="font-size:12px;color:var(--muted);font-weight:600">(문토 선결제 등 · 음료도 집계에 잡혀요)</span></div>
       <div style="display:flex;flex-direction:column;gap:8px">
@@ -130,7 +134,7 @@
     var msgEl=document.getElementById("a-msg");
     if(!name){ msgEl.textContent="이름을 입력해주세요."; return; }
     if(!gender){ msgEl.textContent="성별을 선택해주세요."; return; }
-    var fields={ "이름":name, "성별":gender, "회차":"8/27 (목)", "승인상태":"승인", "입금확정":"O",
+    var fields={ "이름":name, "성별":gender, "회차":curRound||"8/27 (목)", "승인상태":"승인", "입금확정":"O",
       "음료선택":document.getElementById("a-drink").value, "신청일시":new Date().toLocaleString("ko-KR") };
     var opt={"출생연도":"a-birth","키":"a-height","직업_직장명":"a-job","어필포인트":"a-appeal","연락처":"a-phone"};
     Object.keys(opt).forEach(function(fk){ var val=aval(opt[fk]); if(val) fields[fk]=val; });
@@ -154,13 +158,29 @@
     tryPost(false);
   }
 
+  var allRecs=[], roundList=[], curRound="";
+  function parseRoundKey(rd){ var m=String(rd||"").match(/(\d{1,2})\s*\/\s*(\d{1,2})/); return m?(parseInt(m[1])*100+parseInt(m[2])):0; }
   function load(){
     document.getElementById("list").innerHTML='<div class="spin"></div>';
     fetch("/api/airtable?table="+encodeURIComponent("로테이션 신청"),{headers:{"x-admin-key":key()}}).then(function(r){return r.json();}).then(function(r){
       if(r.error){ document.getElementById("list").innerHTML='<div class="empty">'+esc(r.error)+'</div>'; return; }
-      var recs=(r.records||[]).filter(function(x){ var f=x.fields||{}; return f["입금확정"]==="O" && String(f["회차"]||"").indexOf("8/27")>=0; });
-      render(recs);
+      allRecs=(r.records||[]).filter(function(x){ return (x.fields||{})["입금확정"]==="O"; });
+      roundList=[];
+      allRecs.forEach(function(x){ var rd=(x.fields||{})["회차"]; if(rd && roundList.indexOf(rd)<0) roundList.push(rd); });
+      roundList.sort(function(a,b){ return parseRoundKey(b)-parseRoundKey(a); }); // 최신 회차가 앞
+      if(!roundList.length) roundList=["8/27 (목)"];
+      if(!curRound || roundList.indexOf(curRound)<0) curRound=roundList[0];
+      renderTabs();
+      render();
     }).catch(function(){ document.getElementById("list").innerHTML='<div class="empty">불러오기 오류</div>'; });
+  }
+  function renderTabs(){
+    var t=document.getElementById("round-tabs"); if(!t) return; t.innerHTML="";
+    roundList.forEach(function(rd){
+      var b=document.createElement("button"); b.className="rtab"+(rd===curRound?" on":""); b.textContent=rd;
+      b.addEventListener("click",function(){ curRound=rd; renderTabs(); render(); });
+      t.appendChild(b);
+    });
   }
   function ageShort(y){ y=parseInt(y,10); if(!y) return "?"; var a=2026-y;
     var b = a<=23?"20초":a<=26?"20중":a<=29?"20후":a<=33?"30초":a<=36?"30중":"30후";
@@ -170,7 +190,9 @@
     return ageShort(f["출생연도"])+" / "+(f["직업_직장명"]||"직업미정")+" / "+(f["키"]||"?")+" / "+(appeal||"-");
   }
   var _luText="";
-  function render(recs){
+  function render(){
+    var recs=allRecs.filter(function(x){ return (x.fields||{})["회차"]===curRound; });
+    var luRound=document.getElementById("lu-round"); if(luRound) luRound.textContent=String(curRound).split(" ")[0];
     var males=recs.filter(function(x){return (x.fields||{})["성별"]==="남성";});
     var females=recs.filter(function(x){return (x.fields||{})["성별"]==="여성";});
     document.getElementById("cnt").textContent="확정 "+recs.length+"명 (남 "+males.length+" · 여 "+females.length+")";
@@ -183,7 +205,7 @@
         + '</div>' : '';
     if(!recs.length){ document.getElementById("list").innerHTML='<div class="empty">아직 입금 확정된 참가자가 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 자동으로 올라와요.</div>'; _luText=""; return; }
     // SNS 붙여넣기용 텍스트
-    _luText="🩷📦 8/27(목) 썸배달 라인업 📦🩷\n\n🙋‍♀️ 여성 라인업\n"
+    _luText="🩷📦 "+curRound+" 썸배달 라인업 📦🩷\n\n🙋‍♀️ 여성 라인업\n"
       + (females.length?females.map(function(x){return personLine(x.fields||{});}).join("\n"):"(준비중)")
       + "\n\n🙋‍♂️ 남성 라인업\n"
       + (males.length?males.map(function(x){return personLine(x.fields||{});}).join("\n"):"(준비중)");

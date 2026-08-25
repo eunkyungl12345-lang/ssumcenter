@@ -16,6 +16,9 @@
   input:focus{outline:none;border-color:var(--amber)}
   select{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
   select:focus{outline:none;border-color:var(--amber)}
+  .rtabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+  .rtab{background:var(--surface);border:1px solid var(--line-strong);color:var(--muted);font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;cursor:pointer;font-family:inherit}
+  .rtab.on{background:var(--amber);border-color:var(--amber);color:var(--ink-on-amber)}
   .btn{border:none;border-radius:11px;padding:12px 16px;font-size:14px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;width:100%}
   .btn.g{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong);width:auto;padding:9px 14px;font-size:12.5px;font-weight:750}
   .hide{display:none}
@@ -52,8 +55,9 @@
 
   <!-- 콘솔 -->
   <div id="console" class="hide">
-    <h1>📋 출석부 <span style="font-size:15px;color:var(--amber)">· 8/27 (목)</span></h1>
-    <div class="sub">도착한 분을 탭하면 출석 체크돼요 ✅<br><a class="home" href="/rotation-admin">← 로테이션</a> · <a class="home" href="/lineup">🎬 라인업</a> · <a class="home" href="/vote-admin">🗳️ 투표</a> · <a class="home" href="/admin">🏠 홈</a></div>
+    <h1>📋 출석부 <span style="font-size:15px;color:var(--amber)">· <span id="at-round">8/27 (목)</span></span></h1>
+    <div class="sub">도착한 분을 탭하면 출석 체크돼요 ✅ · 회차를 골라보세요<br><a class="home" href="/rotation-admin">← 로테이션</a> · <a class="home" href="/lineup">🎬 라인업</a> · <a class="home" href="/vote-admin">🗳️ 투표</a> · <a class="home" href="/admin">🏠 홈</a></div>
+    <div class="rtabs" id="round-tabs"></div>
     <div class="stat">
       <div class="b on"><div class="k">출석</div><div class="v" id="s-present">–</div></div>
       <div class="b"><div class="k">전체</div><div class="v" id="s-all">–</div></div>
@@ -106,15 +110,33 @@
   if(key()){ showConsole(); }
 
   document.getElementById("refreshBtn").addEventListener("click",load);
+  var allRecs=[], roundList=[], curRound="";
+  function parseRoundKey(rd){ var m=String(rd||"").match(/(\d{1,2})\s*\/\s*(\d{1,2})/); return m?(parseInt(m[1])*100+parseInt(m[2])):0; }
   function load(){
     document.getElementById("list").innerHTML='<div class="spin"></div>';
     fetch(apiUrl(true),{headers:{"x-admin-key":key()}}).then(function(r){return r.json();}).then(function(r){
       if(r.error){ document.getElementById("list").innerHTML='<div class="empty">'+esc(r.error)+'<br>(비밀번호 확인 · 새로고침)</div>'; return; }
-      records=(r.records||[]).filter(function(x){ var f=x.fields||{}; return f["입금확정"]==="O" && String(f["회차"]||"").indexOf("8/27")>=0; });
+      allRecs=(r.records||[]).filter(function(x){ return (x.fields||{})["입금확정"]==="O"; });
+      roundList=[];
+      allRecs.forEach(function(x){ var rd=(x.fields||{})["회차"]; if(rd && roundList.indexOf(rd)<0) roundList.push(rd); });
+      roundList.sort(function(a,b){ return parseRoundKey(b)-parseRoundKey(a); });
+      if(!roundList.length) roundList=["8/27 (목)"];
+      if(!curRound || roundList.indexOf(curRound)<0) curRound=roundList[0];
+      renderTabs();
       render();
     }).catch(function(){ document.getElementById("list").innerHTML='<div class="empty">불러오기 오류</div>'; });
   }
+  function renderTabs(){
+    var t=document.getElementById("round-tabs"); if(!t) return; t.innerHTML="";
+    roundList.forEach(function(rd){
+      var b=document.createElement("button"); b.className="rtab"+(rd===curRound?" on":""); b.textContent=rd;
+      b.addEventListener("click",function(){ curRound=rd; renderTabs(); render(); });
+      t.appendChild(b);
+    });
+  }
   function render(){
+    records=allRecs.filter(function(x){ return (x.fields||{})["회차"]===curRound; });
+    var atRound=document.getElementById("at-round"); if(atRound) atRound.textContent=curRound;
     var present=records.filter(function(x){ return (x.fields||{})["출석"]==="O"; }).length;
     var m=records.filter(function(x){return (x.fields||{})["성별"]==="남성";}).length;
     var fw=records.filter(function(x){return (x.fields||{})["성별"]==="여성";}).length;
@@ -123,7 +145,7 @@
     document.getElementById("s-gender").textContent=m+" / "+fw;
     document.getElementById("cnt").textContent="출석 "+present+"/"+records.length+"명";
     var list=document.getElementById("list"); list.innerHTML="";
-    if(!records.length){ list.innerHTML='<div class="empty">8/27 입금확정된 참가자가 아직 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 떠요.</div>'; return; }
+    if(!records.length){ list.innerHTML='<div class="empty">'+esc(curRound)+' 입금확정된 참가자가 아직 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 떠요.</div>'; return; }
     records.forEach(function(x){
       var f=x.fields||{}, on=f["출석"]==="O";
       var el=document.createElement("div"); el.className="row"+(on?" present":"");
@@ -145,7 +167,7 @@
     var msgEl=document.getElementById("a-msg");
     if(!name){ msgEl.textContent="이름을 입력해주세요."; return; }
     if(!gender){ msgEl.textContent="성별을 선택해주세요."; return; }
-    var fields={ "이름":name, "성별":gender, "회차":"8/27 (목)", "승인상태":"승인", "입금확정":"O", "신청일시":new Date().toLocaleString("ko-KR") };
+    var fields={ "이름":name, "성별":gender, "회차":curRound||"8/27 (목)", "승인상태":"승인", "입금확정":"O", "신청일시":new Date().toLocaleString("ko-KR") };
     var birth=aval("a-birth"); if(birth) fields["출생연도"]=birth;
     var phone=aval("a-phone"); if(phone) fields["연락처"]=phone;
     fields["유입경로"]="문토";
