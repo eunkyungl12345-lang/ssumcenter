@@ -14,6 +14,8 @@
   .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px}
   input{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
   input:focus{outline:none;border-color:var(--amber)}
+  select{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit}
+  select:focus{outline:none;border-color:var(--amber)}
   .btn{border:none;border-radius:11px;padding:12px 16px;font-size:14px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;width:100%}
   .btn.g{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong);width:auto;padding:9px 14px;font-size:12.5px;font-weight:750}
   .hide{display:none}
@@ -59,7 +61,26 @@
     </div>
     <div class="toolbar">
       <button class="btn g" id="refreshBtn">새로고침</button>
+      <button class="btn g" id="addBtn" style="color:var(--ok);border-color:var(--ok)">➕ 현장 추가</button>
       <span class="cnt" id="cnt"></span>
+    </div>
+    <div class="card hide" id="add-form" style="margin-bottom:12px">
+      <div style="font-weight:800;font-size:14px;margin-bottom:10px">➕ 현장 참가자 추가 <span style="font-size:12px;color:var(--muted);font-weight:600">(문토 선결제 등)</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;gap:8px">
+          <input id="a-name" placeholder="이름 *" style="flex:1">
+          <select id="a-gender" style="width:112px"><option value="">성별 *</option><option value="여성">여성</option><option value="남성">남성</option></select>
+        </div>
+        <div style="display:flex;gap:8px">
+          <input id="a-birth" placeholder="출생연도(예:1995)" inputmode="numeric" style="flex:1">
+          <input id="a-phone" placeholder="연락처(선택)" inputmode="tel" style="flex:1">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:2px">
+          <button class="btn g" id="a-cancel" style="flex:1">닫기</button>
+          <button class="btn" id="a-save" style="flex:2">출석부에 추가</button>
+        </div>
+        <div id="a-msg" style="font-size:12px;color:#E8828A;text-align:center"></div>
+      </div>
     </div>
     <div id="list"></div>
   </div>
@@ -111,6 +132,42 @@
       list.appendChild(el);
     });
   }
+  // ➕ 현장 참가자 수기 추가 (문토 선결제 등 → 입금확정 상태로 명단에 올림)
+  document.getElementById("addBtn").addEventListener("click",function(){
+    var f=document.getElementById("add-form"); f.classList.toggle("hide");
+    if(!f.classList.contains("hide")) document.getElementById("a-name").focus();
+  });
+  document.getElementById("a-cancel").addEventListener("click",function(){ document.getElementById("add-form").classList.add("hide"); });
+  document.getElementById("a-save").addEventListener("click",addWalkin);
+  function aval(id){ return (document.getElementById(id).value||"").trim(); }
+  function addWalkin(){
+    var name=aval("a-name"), gender=document.getElementById("a-gender").value;
+    var msgEl=document.getElementById("a-msg");
+    if(!name){ msgEl.textContent="이름을 입력해주세요."; return; }
+    if(!gender){ msgEl.textContent="성별을 선택해주세요."; return; }
+    var fields={ "이름":name, "성별":gender, "회차":"8/27 (목)", "승인상태":"승인", "입금확정":"O", "신청일시":new Date().toLocaleString("ko-KR") };
+    var birth=aval("a-birth"); if(birth) fields["출생연도"]=birth;
+    var phone=aval("a-phone"); if(phone) fields["연락처"]=phone;
+    fields["유입경로"]="문토";
+    var btn=document.getElementById("a-save"), orig=btn.textContent; btn.disabled=true; btn.textContent="추가 중…";
+    function errText(e){ if(!e) return ""; if(typeof e==="string") return e; return e.message||e.type||JSON.stringify(e); }
+    function tryPost(retried){
+      fetch(apiUrl(false),{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({records:[{fields:fields}]})})
+        .then(function(r){return r.json();}).then(function(r){
+          if(r && r.error){
+            if(!retried && ("유입경로" in fields)){ delete fields["유입경로"]; tryPost(true); return; }
+            btn.disabled=false; btn.textContent=orig; msgEl.textContent="추가 실패: "+errText(r.error); return;
+          }
+          btn.disabled=false; btn.textContent=orig;
+          ["a-name","a-birth","a-phone"].forEach(function(id){ document.getElementById(id).value=""; });
+          document.getElementById("a-gender").value=""; msgEl.textContent="";
+          document.getElementById("add-form").classList.add("hide");
+          load();
+        }).catch(function(){ btn.disabled=false; btn.textContent=orig; msgEl.textContent="오류가 났어요. 다시 시도해주세요."; });
+    }
+    tryPost(false);
+  }
+
   function toggle(x, el){
     var next=((x.fields||{})["출석"]==="O") ? "" : "O";
     x.fields["출석"]=next;
