@@ -43,6 +43,11 @@
   .stat{display:flex;gap:10px;margin-bottom:14px}
   .stat .b{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:13px;text-align:center}
   .stat .b .k{font-size:11px;color:var(--muted)}.stat .b .v{font-size:19px;font-weight:800;color:var(--amber);margin-top:2px}
+  .couple-row{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:12px;margin-top:8px}
+  .couple-no{font-size:11px;font-weight:800;color:var(--rose);background:rgba(232,130,138,.13);padding:3px 9px;border-radius:100px;flex:none}
+  .couple-f{font-weight:800;color:#E88FB0;flex:1;text-align:right}
+  .couple-heart{color:var(--rose);font-size:15px;flex:none}
+  .couple-m{font-weight:800;color:#7EA6E0;flex:1}
   .hide{display:none}
   a.home{font-size:12px;color:var(--muted);text-decoration:none}
 </style>
@@ -102,6 +107,12 @@
       <h2>🥤 음료 집계</h2>
       <div class="desc">등록된 음료를 자동 집계해요 — 이대로 주문하시면 돼요!</div>
       <div id="drink-summary"></div>
+    </div>
+
+    <div class="card" id="couple-card" style="display:none">
+      <h2>💘 성사된 커플</h2>
+      <div class="desc">서로 뽑은(양쪽이 서로 찍은) 쌍이에요. 투표가 들어오면 자동으로 채워져요.</div>
+      <div id="couple-list"></div>
     </div>
 
     <div class="card">
@@ -267,6 +278,13 @@
           return '<div class="b"><div class="k">'+d+'</div><div class="v">'+drinks[d].계+'</div><div style="font-size:10px;color:var(--muted);margin-top:2px">남 '+drinks[d].남+' · 여 '+drinks[d].여+'</div></div>';
         }).join("")+'</div>';
       } else { dcard.style.display="none"; }
+      // 💘 성사된 커플
+      var couples=r.couples||[];
+      var ccard=document.getElementById("couple-card"), clist=document.getElementById("couple-list");
+      ccard.style.display="block";
+      clist.innerHTML = couples.length
+        ? couples.map(function(c,i){ return '<div class="couple-row"><span class="couple-no">'+(i+1)+'커플</span><span class="couple-f">'+(c.여자||"?")+'</span><span class="couple-heart">♥</span><span class="couple-m">'+(c.남자||"?")+'</span></div>'; }).join("")
+        : '<div class="desc" style="padding:8px 0">아직 성사된 커플이 없어요. (양쪽이 서로 뽑으면 여기 떠요)</div>';
       if(!r.participants||!r.participants.length){
         pl.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>';
         al.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>'; return;

@@ -377,6 +377,25 @@ module.exports = async function handler(req, res) {
         if (g === "남성") drinks[d].남++; else if (g === "여성") drinks[d].여++;
         drinks[d].계++;
       });
+      // 💘 성사된 커플 계산 (A가 B를 뽑고 + B도 A를 뽑음)
+      const pickMap = {};
+      votes.forEach(v => { const voter = v.fields["투표자닉네임"]; if (voter) pickMap[voter] = [v.fields["뽑은1"], v.fields["뽑은2"]].filter(Boolean); });
+      const genderByNick = {};
+      people.forEach(p => { genderByNick[p.fields["닉네임"]] = p.fields["성별"] || ""; });
+      const seenPair = {}, couples = [];
+      Object.keys(pickMap).forEach(a => {
+        pickMap[a].forEach(b => {
+          if (pickMap[b] && pickMap[b].indexOf(a) >= 0) {
+            const k = [a, b].sort().join("|");
+            if (seenPair[k]) return;
+            seenPair[k] = true;
+            let woman = a, man = b;
+            if (genderByNick[a] === "남성" || genderByNick[b] === "여성") { man = a; woman = b; }
+            couples.push({ 여자: woman, 남자: man });
+          }
+        });
+      });
+
       return res.status(200).json({
         revealed,
         participants: people.map(p => ({
@@ -385,6 +404,7 @@ module.exports = async function handler(req, res) {
           출석: p.fields["출석"] === true, 순번: p.fields["순번"] || 0,
           음료: p.fields["음료"] || "", 피드백: p.fields["피드백"] || "",
         })),
+        couples,
         voteCount: votes.length,
         attendCount: people.filter(p => p.fields["출석"] === true).length,
         drinks,
