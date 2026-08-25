@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "crons": [
+    { "path": "/api/daily-summary", "schedule": "0 0 * * *" }
+  ],
   "headers": [
     {
       "source": "/(admin|1on1|1on1-admin|rotation-admin|lineup|attendance|vote-admin|participants|response|matching|login|auth-callback|my|members)",

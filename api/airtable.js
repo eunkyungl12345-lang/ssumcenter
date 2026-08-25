@@ -234,6 +234,34 @@ module.exports = async function handler(req, res) {
       } catch (e) { /* 알림 실패 무시 */ }
     }
 
+    // ✍️ 관리자 수기 추가(문토/현장) → 슬랙 알림
+    if (req.method === "POST" && isAdmin && table === "로테이션 신청") {
+      try {
+        const recs = (req.body && req.body.records) || [];
+        for (const rc of recs) {
+          const f = (rc && rc.fields) || {};
+          const src = f["유입경로"] ? `(${f["유입경로"]})` : "(수기)";
+          const info = [f["이름"], f["성별"], f["출생연도"] ? f["출생연도"] + "년생" : "", f["회차"]].filter(Boolean).join(" · ");
+          await notifySlack(`✍️ 로테이션 수기 추가 ${src}\n${info} · 입금확정 → 라인업 등록`);
+        }
+      } catch (e) { /* 알림 실패 무시 */ }
+    }
+
+    // ✅ 로테이션 승인 / 💰 입금확정 → 슬랙 알림 (PATCH)
+    if (req.method === "PATCH" && table === "로테이션 신청" && req.body && req.body.records) {
+      try {
+        for (const rc of req.body.records) {
+          const chf = (rc && rc.fields) || {};
+          const full = (data.records || []).find(d => d.id === rc.id);
+          const ff = (full && full.fields) || {};
+          const nm = ff["이름"] || ff["닉네임"] || "";
+          const rd = ff["회차"] || "";
+          if (chf["승인상태"] === "승인") await notifySlack(`✅ 로테이션 승인\n${nm}님 승인 (${rd})`);
+          if (chf["입금확정"] === "O") await notifySlack(`💰 로테이션 입금확정 → 라인업 등록\n${nm}님 (${rd})`);
+        }
+      } catch (e) { /* 알림 실패 무시 */ }
+    }
+
     // (로테이션 신청 시 자동 문자는 제거됨 — 이제 rotation-admin에서 '승인' 누르면 입금안내 문자 자동 발송)
 
     // 1:1 매칭 신청 접수(공개 폼) → 접수 안내 문자 자동 발송 (실패해도 신청은 성공)
