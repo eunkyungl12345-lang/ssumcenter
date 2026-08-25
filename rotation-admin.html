@@ -570,7 +570,13 @@
     targets.forEach(function(x){
       sendSmsTo(x.fields["연락처"], TPLS["전날 리마인드"](x.fields))
         .then(function(r){ if(r&&r.ok) ok++; }).catch(function(){})
-        .then(function(){ done++; if(done===targets.length){ btn.disabled=false; btn.textContent=orig; alert("✅ 전날 안내 발송 완료: "+ok+"/"+targets.length+"명"); } });
+        .then(function(){ done++; if(done===targets.length){ btn.disabled=false; btn.textContent=orig;
+          alert("✅ 전날 안내 발송 완료: "+ok+"/"+targets.length+"명");
+          // 📢 슬랙에도 결과 알림
+          var rd=(curRound&&curRound!=="전체")?curRound:latestRound();
+          fetch("/api/notify",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},
+            body:JSON.stringify({text:"📢 전날 안내 문자 발송 완료 ("+rd+")\n입금완료 "+ok+"/"+targets.length+"명에게 장소 안내 발송했어요."})}).catch(function(){});
+        } });
     });
   });
 
