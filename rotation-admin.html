@@ -255,7 +255,7 @@
           : '<div class="ph none">🙂</div>')
       + '<div class="hd"><div class="nm">'+esc(f["이름"]||"이름없음")+'<span class="nick">'+esc(f["닉네임"]||"")+'</span></div>'
       + '<div class="meta">'+esc(meta)+'</div>'
-      + '<div style="margin-top:7px">'+badge+' <span class="badge" style="background:var(--surface-2);color:var(--muted)">'+esc(f["회차"]||"회차?")+'</span></div>'
+      + '<div style="margin-top:7px">'+badge+' <span class="badge" style="background:var(--surface-2);color:var(--muted)">'+esc(f["회차"]||"회차?")+'</span>'+(String(f["유입경로"]||"").indexOf("문토")>=0?' <span class="badge" style="background:#153a2a;color:#4ec98a">문토</span>':'')+'</div>'
       + '</div></div>'
       + '<div class="rows">'
       + row("직업",esc(f["직업_직장명"]))
@@ -355,16 +355,25 @@
         "승인상태":"승인", "입금확정":"O", "신청일시":new Date().toLocaleString("ko-KR") };
       var opt={"출생연도":"m-birth","키":"m-height","직업_직장명":"m-job","어필포인트":"m-appeal","음료선택":"m-drink","연락처":"m-phone"};
       Object.keys(opt).forEach(function(fk){ var val=v(opt[fk]); if(val) fields[fk]=val; });
+      fields["유입경로"]="문토";
       var btn=g("m-save"), orig=btn.textContent; btn.disabled=true; btn.textContent="추가 중…";
-      api("POST",{records:[{fields:fields}]}).then(function(r){
-        btn.disabled=false; btn.textContent=orig;
-        if(r.error){ msg("추가 실패: "+r.error); return; }
-        sheet.classList.remove("on");
-        ["m-name","m-birth","m-height","m-job","m-appeal","m-drink","m-phone"].forEach(function(id){ g(id).value=""; });
-        g("m-gender").value="";
-        load();
-        alert("✅ "+name+"님을 라인업에 추가했어요!\n라인업 페이지에서 확인하세요 🎬");
-      }).catch(function(){ btn.disabled=false; btn.textContent=orig; msg("오류가 났어요. 다시 시도해주세요."); });
+      function errText(e){ if(!e) return ""; if(typeof e==="string") return e; return e.message||e.type||JSON.stringify(e); }
+      // '문토'로 저장 시도 → 유입경로가 고정 선택지라 막히면 그 항목만 빼고 한 번 더(사람은 무조건 추가)
+      function tryPost(retried){
+        api("POST",{records:[{fields:fields}]}).then(function(r){
+          if(r && r.error){
+            if(!retried && ("유입경로" in fields)){ delete fields["유입경로"]; tryPost(true); return; }
+            btn.disabled=false; btn.textContent=orig; msg("추가 실패: "+errText(r.error)); return;
+          }
+          btn.disabled=false; btn.textContent=orig;
+          sheet.classList.remove("on");
+          ["m-name","m-birth","m-height","m-job","m-appeal","m-drink","m-phone"].forEach(function(id){ g(id).value=""; });
+          g("m-gender").value="";
+          load();
+          alert("✅ "+name+"님을 라인업에 추가했어요!"+(("유입경로" in fields)?"":"\n(유입경로 '문토' 표시는 이 항목이 고정 선택지라 생략됐어요)")+"\n라인업 페이지에서 확인하세요 🎬");
+        }).catch(function(){ btn.disabled=false; btn.textContent=orig; msg("오류가 났어요. 다시 시도해주세요."); });
+      }
+      tryPost(false);
     });
   })();
 
