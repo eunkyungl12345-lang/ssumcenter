@@ -205,10 +205,14 @@
       <button onclick="filterBy('여성')" class="filter-btn bg-[#161615] border border-[#242422] text-[#9E9E97] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#FFD400]" data-filter="여성">여성</button>
     </div>
     <!-- 정렬 탭 -->
-    <div class="flex gap-1.5">
-      <button onclick="sortMatching('age-asc')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="age-asc">나이순</button>
-      <button onclick="sortMatching('date-desc')" class="sort-tab active text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="date-desc">최신순</button>
-      <button onclick="sortMatching('name')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-sort="name">이름순</button>
+    <div class="flex gap-1.5 items-center flex-wrap">
+      <span class="text-[10px] text-[#6b6358] font-bold mr-0.5">정렬</span>
+      <button onclick="setMatchSortField('default')" class="sort-tab active text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-field="default">기본순</button>
+      <button onclick="setMatchSortField('age')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-field="age">나이순</button>
+      <button onclick="setMatchSortField('height')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-field="height">키순</button>
+      <button onclick="setMatchSortField('date')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-field="date">등록일순</button>
+      <button onclick="setMatchSortField('name')" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" data-field="name">이름순</button>
+      <button onclick="toggleMatchSortDir()" id="sort-dir-btn" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg transition" style="margin-left:auto;min-width:82px">↓ 내림차순</button>
     </div>
   </div>
 
@@ -933,7 +937,7 @@ async function loadApplicants(){
     const data = await res.json();
     applicants = data.records || [];
     updateStats();
-    sortMatching(matchingSort); // 정렬 + 탭 하이라이트 동기화 후 렌더
+    applyMatchSort(); // 정렬 기준·방향 적용 + 하이라이트 동기화 후 렌더
     loadResponses();
     loadMatches();
   } catch(err) {
@@ -2799,16 +2803,48 @@ async function submitRegistration(){
 }
 
 // ===== 소팅 =====
-let matchingSort = "date-desc";
+let matchSortField = "default"; // default | age | height | date | name
+let matchSortDir = "desc";      // asc | desc
 let coffeeSortOrder = "date-desc";
 
-function sortMatching(order){
-  matchingSort = order;
-  document.querySelectorAll(".sort-tab").forEach(t => {
-    t.classList.toggle("active", t.dataset.sort === order);
+function setMatchSortField(f){
+  matchSortField = f;
+  // 기준을 바꾸면 자연스러운 기본 방향으로 맞춤
+  matchSortDir = (f === "name" || f === "age") ? "asc" : "desc";
+  applyMatchSort();
+}
+function toggleMatchSortDir(){
+  matchSortDir = (matchSortDir === "asc") ? "desc" : "asc";
+  applyMatchSort();
+}
+function applyMatchSort(){
+  document.querySelectorAll(".sort-tab[data-field]").forEach(t => {
+    t.classList.toggle("active", t.dataset.field === matchSortField);
   });
-  sortApplicantsArray(applicants, order, "matching");
+  const db = document.getElementById("sort-dir-btn");
+  if(db) db.textContent = (matchSortDir === "asc") ? "↑ 오름차순" : "↓ 내림차순";
+  sortMatchingArray(applicants);
   renderList();
+}
+function sortMatchingArray(arr){
+  const mul = (matchSortDir === "asc") ? 1 : -1;
+  arr.sort((a, b) => {
+    const fa = a.fields, fb = b.fields;
+    let r = 0;
+    switch(matchSortField){
+      case "name":
+        r = (fa["이름"] || "").localeCompare(fb["이름"] || "", "ko"); break;
+      case "age": // 나이 = 2026 - 출생연도. 오름차순이면 어린 사람부터
+        r = (2026 - (parseInt(fa["출생연도"]) || 0)) - (2026 - (parseInt(fb["출생연도"]) || 0)); break;
+      case "height":
+        r = (parseInt(fa["키"]) || 0) - (parseInt(fb["키"]) || 0); break;
+      case "date":
+      case "default":
+      default:
+        r = toTs(fa["신청일시"]) - toTs(fb["신청일시"]); break;
+    }
+    return r * mul;
+  });
 }
 
 function sortCoffee(order){
