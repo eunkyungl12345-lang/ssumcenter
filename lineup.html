@@ -134,7 +134,13 @@
     var msgEl=document.getElementById("a-msg");
     if(!name){ msgEl.textContent="이름을 입력해주세요."; return; }
     if(!gender){ msgEl.textContent="성별을 선택해주세요."; return; }
-    var fields={ "이름":name, "성별":gender, "회차":curRound||"8/27 (목)", "승인상태":"승인", "입금확정":"O",
+    var round=curRound||"8/27 (목)", np=aval("a-phone").replace(/[^0-9]/g,"");
+    var dup=allRecs.filter(function(z){ var zf=z.fields||{}; var zp=String(zf["연락처"]||"").replace(/[^0-9]/g,"");
+      if(np&&zp&&np===zp) return true;
+      return (zf["이름"]||"")===name && (zf["성별"]||"")===gender && (zf["회차"]||"")===round; })[0];
+    if(dup){ var df=dup.fields||{};
+      if(!confirm("⚠️ 이미 라인업에 있는 것 같아요:\n"+(df["이름"]||"")+" · "+(df["성별"]||"")+" · "+(df["회차"]||"")+"\n\n그래도 추가할까요? (중복될 수 있어요)")) return; }
+    var fields={ "이름":name, "성별":gender, "회차":round, "승인상태":"승인", "입금확정":"O",
       "음료선택":document.getElementById("a-drink").value, "신청일시":new Date().toLocaleString("ko-KR") };
     var opt={"출생연도":"a-birth","키":"a-height","직업_직장명":"a-job","어필포인트":"a-appeal","연락처":"a-phone"};
     Object.keys(opt).forEach(function(fk){ var val=aval(opt[fk]); if(val) fields[fk]=val; });

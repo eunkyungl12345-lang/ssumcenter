@@ -131,6 +131,7 @@
       <button class="btn g sm" id="muntoBtn" style="background:#22c55e;color:#fff;border:none">➕ 문토 신청자 추가</button>
       <span class="cnt" id="cnt"></span>
     </div>
+    <input id="rot-search" oninput="rotSearch(this.value)" placeholder="🔍 이름·연락처로 찾기" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:11px;padding:11px 13px;font-size:13.5px;color:var(--ink);font-family:inherit;margin-bottom:10px;outline:none">
     <div class="stabs" id="status-tabs"></div>
     <div id="list"></div>
   </div>
@@ -185,7 +186,8 @@
 (function(){
   "use strict";
   var TABLE="로테이션 신청", KEY="admin_key";
-  var records=[], curRound="전체", curStatus="전체";
+  var records=[], curRound="전체", curStatus="전체", searchQ="";
+  window.rotSearch=function(v){ searchQ=(v||"").trim().toLowerCase(); render(); };
   function matchStatus(f, s){
     var st=f["승인상태"]||"대기", paid=f["입금확정"]==="O";
     if(s==="전체") return true;
@@ -244,18 +246,22 @@
     document.getElementById("st-wait").textContent=filtered.filter(function(x){return (x.fields["승인상태"]||"대기")==="대기";}).length;
     document.getElementById("st-ok").textContent=filtered.filter(function(x){return x.fields["승인상태"]==="승인";}).length;
 
-    // 상태별 필터 칩 (대기/승인/입금전/입금완료/거절) — 회차 기준 개수 표시
+    // 🔍 이름·연락처 검색 (있으면 추가로 걸러냄)
+    var searched = searchQ ? filtered.filter(function(x){ var f=x.fields||{};
+      return ((f["이름"]||"")+" "+(f["닉네임"]||"")+" "+(f["연락처"]||"")).toLowerCase().indexOf(searchQ)>=0; }) : filtered;
+
+    // 상태별 필터 칩 (대기/승인/입금전/입금완료/거절)
     var statusList=["전체","대기","승인","입금전","입금완료","거절"];
     var sTabs=document.getElementById("status-tabs"); sTabs.innerHTML="";
     statusList.forEach(function(s){
-      var cnt=filtered.filter(function(x){ return matchStatus(x.fields||{}, s); }).length;
+      var cnt=searched.filter(function(x){ return matchStatus(x.fields||{}, s); }).length;
       var b=document.createElement("button"); b.className="stab"+(s===curStatus?" on":"");
       b.textContent=s+" "+cnt;
       b.addEventListener("click",function(){ curStatus=s; render(); });
       sTabs.appendChild(b);
     });
 
-    var shown=filtered.filter(function(x){ return matchStatus(x.fields||{}, curStatus); });
+    var shown=searched.filter(function(x){ return matchStatus(x.fields||{}, curStatus); });
     document.getElementById("cnt").textContent=curRound+" · "+curStatus+" "+shown.length+"명";
 
     var list=document.getElementById("list"); list.innerHTML="";
@@ -396,7 +402,13 @@
       var name=v("m-name"), gender=g("m-gender").value;
       if(!name){ msg("이름을 입력해주세요."); return; }
       if(!gender){ msg("성별을 선택해주세요."); return; }
-      var fields={ "이름":name, "성별":gender, "회차":v("m-round")||"8/27 (목)",
+      var round=v("m-round")||"8/27 (목)", np=v("m-phone").replace(/[^0-9]/g,"");
+      var dup=records.filter(function(z){ var zf=z.fields||{}; var zp=String(zf["연락처"]||"").replace(/[^0-9]/g,"");
+        if(np && zp && np===zp) return true;
+        return (zf["이름"]||"")===name && (zf["성별"]||"")===gender && (zf["회차"]||"")===round; })[0];
+      if(dup){ var df=dup.fields||{};
+        if(!confirm("⚠️ 이미 명단에 있는 것 같아요:\n"+(df["이름"]||"")+" · "+(df["성별"]||"")+" · "+(df["회차"]||"")+"\n\n그래도 추가할까요? (중복 등록될 수 있어요)")) return; }
+      var fields={ "이름":name, "성별":gender, "회차":round,
         "승인상태":"승인", "입금확정":"O", "신청일시":new Date().toLocaleString("ko-KR") };
       var opt={"출생연도":"m-birth","키":"m-height","직업_직장명":"m-job","어필포인트":"m-appeal","음료선택":"m-drink","연락처":"m-phone"};
       Object.keys(opt).forEach(function(fk){ var val=v(opt[fk]); if(val) fields[fk]=val; });
