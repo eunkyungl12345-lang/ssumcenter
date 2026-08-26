@@ -351,9 +351,17 @@
         it.innerHTML='<span class="g-badge">'+(p.성별||"?")+'</span>'
           +'<div style="flex:1;min-width:0"><div class="nm">'+p.닉네임+(p.음료?' <span style="font-size:11px;color:var(--muted)">🥤'+p.음료+'</span>':'')+'</div></div>'
           +'<button class="btn sm '+(p.공개상태?"on":"g")+'">'+(p.공개상태?"공개됨 ✓":"공개하기")+'</button>'
+          +'<button class="btn sm delp" style="background:#7f1d1d;color:#fff;border:none;flex:none;width:auto;padding:8px 11px;margin-left:6px">🗑</button>'
           +'<input class="vphone" data-nick="'+p.닉네임+'" placeholder="📞 전화번호 입력 (문토 등)" value="'+(p.전화번호||"")+'" onclick="event.stopPropagation()" onchange="savePhone(this)" style="width:100%;margin-top:8px;background:var(--surface-2);border:1.5px '+(p.전화번호?"solid var(--line-strong)":"dashed rgba(232,176,80,.55)")+';border-radius:9px;padding:9px 11px;font-size:12.5px;color:var(--ink);font-family:inherit">'
           +'<input class="fbinput" placeholder="✍️ 피드백 메모 (엔터/포커스 아웃 시 저장)" style="width:100%;margin-top:8px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px;padding:9px 11px;font-size:12.5px;color:var(--ink);font-family:inherit">';
         it.querySelector(".fbinput").value=p.피드백||"";
+        it.querySelector(".delp").addEventListener("click",function(){
+          if(!confirm("⚠️ "+p.닉네임+"님을 참가자에서 삭제할까요?\n(중복·불참자 정리용 · 투표도 함께 삭제돼요)")) return;
+          post("deleteParticipant",{event:ev(),nick:p.닉네임}).then(function(r){
+            if(r&&r.error){ alert("삭제 실패: "+(r.error&&(r.error.message||r.error.type)||r.error)); return; }
+            refresh();
+          }).catch(function(){ alert("삭제 오류 — 다시 시도해주세요"); });
+        });
         var btn=it.querySelector("button");
         btn.addEventListener("click",function(){
           btn.disabled=true; var next=!p.공개상태;

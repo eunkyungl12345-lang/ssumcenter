@@ -481,6 +481,24 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
+    // ============ (관리자) 참가자 삭제 (중복/불참) ============
+    if (action === "deleteParticipant") {
+      if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
+      const event = body.event || "";
+      const nick = String(body.nick || "").trim();
+      if (!event || !nick) return res.status(400).json({ error: "행사·닉네임 필요" });
+      const people = await getAll("투표참가자", `{행사}='${event}'`);
+      const target = people.find(p => (p.fields["닉네임"] || "") === nick);
+      if (!target) return res.status(404).json({ error: "참가자 없음" });
+      await api(encodeURIComponent("투표참가자") + "/" + target.id, { method: "DELETE" });
+      // 이 사람의 투표도 함께 삭제
+      const votes = await getAll("투표", `{행사}='${event}'`);
+      for (const v of votes.filter(v => (v.fields["투표자닉네임"] || "") === nick)) {
+        await api(encodeURIComponent("투표") + "/" + v.id, { method: "DELETE" });
+      }
+      return res.status(200).json({ ok: true });
+    }
+
     return res.status(400).json({ error: "알 수 없는 action" });
   } catch (err) {
     return res.status(500).json({ error: err.message });
