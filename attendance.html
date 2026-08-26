@@ -23,6 +23,9 @@
   .tbl-input:placeholder-shown{border-style:dashed;border-color:rgba(232,176,80,.55);background:transparent}
   .tbl-input:focus{outline:none;border-style:solid;border-color:var(--amber)}
   .tbl-input::placeholder{color:rgba(232,176,80,.7);font-weight:700;font-size:10.5px}
+  .phone-input{width:100%;margin-top:6px;background:var(--surface-2);border:1.5px dashed rgba(232,176,80,.55);border-radius:9px;padding:9px 11px;font-size:13px;color:var(--amber);font-family:inherit}
+  .phone-input:focus{outline:none;border-style:solid;border-color:var(--amber)}
+  .phone-input::placeholder{color:rgba(232,176,80,.7);font-weight:600;font-size:11.5px}
   .dcbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:12px}
   .dc-title{font-size:13px;font-weight:800;color:var(--amber);margin-bottom:9px}
   .dc-hint{font-size:11px;color:var(--muted);font-weight:600}
@@ -117,6 +120,17 @@
   function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
   var TBL_KEY="att_tables", tableMap=lsGet(TBL_KEY);
   window.setTable=function(id,val){ val=(val||"").trim(); if(val) tableMap[id]=val; else delete tableMap[id]; lsSet(TBL_KEY,tableMap); };
+  // 📞 전화번호 저장 (문토 등 번호 없는 사람) → 로테이션 신청.연락처 (모든 기기 공유)
+  window.savePhone=function(id,val,el){
+    val=(val||"").trim();
+    var rec=allRecs.filter(function(x){return x.id===id;})[0];
+    fetch(apiUrl(false),{method:"PATCH",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({records:[{id:id,fields:{"연락처":val}}]})})
+      .then(function(r){return r.json();}).then(function(r){
+        if(r.error){ alert("번호 저장 실패: "+r.error); return; }
+        if(rec) rec.fields["연락처"]=val;
+        if(el){ el.style.borderColor="var(--ok)"; el.style.borderStyle="solid"; }
+      }).catch(function(){ alert("저장 오류 — 다시 시도해주세요"); });
+  };
   // 🪑 테이블 번호 전체 저장 (화면의 모든 칸을 한번에 저장 + 확인 표시)
   document.getElementById("saveTblBtn").addEventListener("click",function(){
     var inputs=document.querySelectorAll(".tbl-input"), cnt=0;
@@ -208,7 +222,10 @@
       var el=document.createElement("div"); el.className="row"+(on?" present":"");
       var nick=f["닉네임"]?' <span style="font-size:11px;color:var(--muted);font-weight:600">('+esc(f["닉네임"])+')</span>':'';
       var drink=f["음료선택"]?' · ☕'+esc(f["음료선택"]):'';
-      el.innerHTML='<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div><div class="meta">'+esc(f["연락처"]||"")+drink+'</div></div>'+
+      var phoneBlock = f["연락처"]
+        ? '<div class="meta">'+esc(f["연락처"])+drink+'</div>'
+        : '<div class="meta">'+(drink?drink.replace(/^ · /,""):'번호 없음')+'</div><input class="phone-input" placeholder="📞 전화번호 입력 (문토 등)" value="" onclick="event.stopPropagation()" onchange="savePhone(\''+x.id+'\',this.value,this)">';
+      el.innerHTML='<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div>'+phoneBlock+'</div>'+
         '<input class="tbl-input" data-id="'+x.id+'" value="'+esc(tableMap[x.id]||"")+'" placeholder="테이블" onclick="event.stopPropagation()" onchange="setTable(\''+x.id+'\',this.value)">';
       el.addEventListener("click",function(){ toggle(x, el); });
       return el;

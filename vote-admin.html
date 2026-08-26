@@ -348,8 +348,9 @@
         // 결제 공개
         var it=document.createElement("div"); it.className="pitem"; it.style.flexWrap="wrap";
         it.innerHTML='<span class="g-badge">'+(p.성별||"?")+'</span>'
-          +'<div style="flex:1;min-width:0"><div class="nm">'+p.닉네임+'</div><div class="meta">'+p.전화번호+(p.음료?' · 🥤'+p.음료:'')+'</div></div>'
+          +'<div style="flex:1;min-width:0"><div class="nm">'+p.닉네임+(p.음료?' <span style="font-size:11px;color:var(--muted)">🥤'+p.음료+'</span>':'')+'</div></div>'
           +'<button class="btn sm '+(p.공개상태?"on":"g")+'">'+(p.공개상태?"공개됨 ✓":"공개하기")+'</button>'
+          +'<input class="vphone" data-nick="'+p.닉네임+'" placeholder="📞 전화번호 입력 (문토 등)" value="'+(p.전화번호||"")+'" onclick="event.stopPropagation()" onchange="savePhone(this)" style="width:100%;margin-top:8px;background:var(--surface-2);border:1.5px '+(p.전화번호?"solid var(--line-strong)":"dashed rgba(232,176,80,.55)")+';border-radius:9px;padding:9px 11px;font-size:12.5px;color:var(--ink);font-family:inherit">'
           +'<input class="fbinput" placeholder="✍️ 피드백 메모 (엔터/포커스 아웃 시 저장)" style="width:100%;margin-top:8px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px;padding:9px 11px;font-size:12.5px;color:var(--ink);font-family:inherit">';
         it.querySelector(".fbinput").value=p.피드백||"";
         var btn=it.querySelector("button");
@@ -385,6 +386,17 @@
       if(r.error){ alert(r.error); all.forEach(function(s){ s.disabled=false; }); return; }
       refresh(); // 성사/커플/득표 다시 계산
     }).catch(function(){ alert("저장 오류 — 다시 시도해주세요"); all.forEach(function(s){ s.disabled=false; }); });
+  };
+
+  // 📞 참가자 전화번호 저장 (문토 등)
+  window.savePhone=function(el){
+    var nick=el.getAttribute("data-nick"), val=(el.value||"").trim();
+    el.disabled=true;
+    post("setPhone",{event:ev(),nick:nick,newPhone:val}).then(function(r){
+      el.disabled=false;
+      if(r.error){ alert("번호 저장 실패: "+r.error); return; }
+      el.style.borderColor="var(--ok)"; el.style.borderStyle="solid";
+    }).catch(function(){ el.disabled=false; alert("저장 오류 — 다시 시도해주세요"); });
   };
 
   // 💌 성사 커플에게 서로의 연락처 문자 발송

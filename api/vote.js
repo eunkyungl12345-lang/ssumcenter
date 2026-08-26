@@ -464,6 +464,20 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
+    // ============ (관리자) 참가자 전화번호 저장 (문토 등) ============
+    if (action === "setPhone") {
+      if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
+      const event = body.event || "";
+      const nick = String(body.nick || "").trim();
+      const newPhone = String(body.newPhone || "").trim();
+      if (!event || !nick) return res.status(400).json({ error: "행사·닉네임 필요" });
+      const people = await getAll("투표참가자", `{행사}='${event}'`);
+      const target = people.find(p => (p.fields["닉네임"] || "") === nick);
+      if (!target) return res.status(404).json({ error: "참가자 없음" });
+      await api("투표참가자", { method: "PATCH", body: { records: [{ id: target.id, fields: { 전화번호: newPhone } }] } });
+      return res.status(200).json({ ok: true });
+    }
+
     return res.status(400).json({ error: "알 수 없는 action" });
   } catch (err) {
     return res.status(500).json({ error: err.message });
