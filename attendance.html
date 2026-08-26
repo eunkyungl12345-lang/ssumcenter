@@ -126,6 +126,7 @@
   var records=[];
   function apiUrl(sort){ return "/api/airtable?table="+encodeURIComponent("로테이션 신청")+(sort?"&sort=신청일시":""); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function estr(e){ return e==null?"":(typeof e==="object"?(e.message||e.type||JSON.stringify(e)):String(e)); }
 
   // 🪑 테이블 번호 · ☕ 음료 카운터 (이 기기에 저장)
   function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||"{}")||{}; }catch(e){ return {}; } }
@@ -138,7 +139,7 @@
     var rec=allRecs.filter(function(x){return x.id===id;})[0];
     fetch(apiUrl(false),{method:"PATCH",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({records:[{id:id,fields:{"연락처":val}}]})})
       .then(function(r){return r.json();}).then(function(r){
-        if(r.error){ alert("번호 저장 실패: "+r.error); return; }
+        if(r.error){ alert("번호 저장 실패: "+estr(r.error)); return; }
         if(rec) rec.fields["연락처"]=val;
         if(el){ el.style.borderColor="var(--ok)"; el.style.borderStyle="solid"; }
       }).catch(function(){ alert("저장 오류 — 다시 시도해주세요"); });
@@ -196,7 +197,7 @@
   function load(){
     document.getElementById("list").innerHTML='<div class="spin"></div>';
     fetch(apiUrl(true),{headers:{"x-admin-key":key()}}).then(function(r){return r.json();}).then(function(r){
-      if(r.error){ document.getElementById("list").innerHTML='<div class="empty">'+esc(r.error)+'<br>(비밀번호 확인 · 새로고침)</div>'; return; }
+      if(r.error){ document.getElementById("list").innerHTML='<div class="empty">'+esc(estr(r.error))+'<br>(비밀번호 확인 · 새로고침)</div>'; return; }
       allRecs=(r.records||[]).filter(function(x){ return (x.fields||{})["입금확정"]==="O"; });
       roundList=[];
       allRecs.forEach(function(x){ var rd=(x.fields||{})["회차"]; if(rd && roundList.indexOf(rd)<0) roundList.push(rd); });
@@ -237,8 +238,8 @@
       var phoneBlock = f["연락처"]
         ? '<div class="meta">'+esc(f["연락처"])+drink+'</div>'
         : '<div class="meta">'+(drink?drink.replace(/^ · /,""):'번호 없음')+'</div><input class="phone-input" placeholder="📞 전화번호 입력 (문토 등)" value="" onclick="event.stopPropagation()" onchange="savePhone(\''+x.id+'\',this.value,this)">';
-      el.innerHTML='<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div>'+phoneBlock+'</div>'+
-        '<input class="tbl-input" data-id="'+x.id+'" value="'+esc(tableMap[x.id]||"")+'" placeholder="테이블" onclick="event.stopPropagation()" onchange="setTable(\''+x.id+'\',this.value)">';
+      el.innerHTML='<input class="tbl-input" data-id="'+x.id+'" value="'+esc(tableMap[x.id]||"")+'" placeholder="테이블" onclick="event.stopPropagation()" onchange="setTable(\''+x.id+'\',this.value)">'+
+        '<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div>'+phoneBlock+'</div>';
       el.addEventListener("click",function(){ toggle(x, el); });
       return el;
     }
