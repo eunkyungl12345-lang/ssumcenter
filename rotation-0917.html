@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로테이션 소개팅 (9/17 목) 신청 | 썸류센터</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css" media="print" onload="this.media='all'">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body{font-family:-apple-system,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:#0e0c0a;color:#F5F5F3;overflow-x:hidden;min-height:100vh}
+  body::selection{background:#FFBE2E;color:#000}
+  *::selection{background:#FFBE2E;color:#000}
+  .y{color:#FFBE2E}.bg-y{background:#FFBE2E}.bd-y{border-color:#FFBE2E}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#16140f}::-webkit-scrollbar-thumb{background:#FFBE2E;border-radius:3px}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .fade{animation:fadeUp .5s ease both}
+  .glow{background:radial-gradient(circle at 50% 0%,rgba(255,212,0,.12),transparent 60%)}
+  [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+  [data-reveal].in{opacity:1;transform:none}
+  .chip{cursor:pointer;transition:all .2s}
+  .chip:hover{border-color:#FFBE2E;color:#FFBE2E}
+  .chip.selected{background:#FFBE2E;color:#0e0c0a;border-color:#FFBE2E;font-weight:700}
+  .counter{transition:color .2s}.counter.over{color:#FF4A4A}
+  input[type="radio"],input[type="checkbox"]{display:none}
+  .radio-card{cursor:pointer;transition:all .2s}
+  .radio-card:hover{border-color:#FFBE2E}
+  input:checked+.radio-card{background:rgba(255,212,0,.08);border-color:#FFBE2E}
+  input:checked+.radio-card .dot{background:#FFBE2E}
+
+  /* ---- Layout ---- */
+  .nav-bar{position:sticky;top:0;z-index:50;background:rgba(14,12,10,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #1e1c17;padding:0.75rem 1rem}
+  .nav-inner{max-width:72rem;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+  .nav-logo{display:flex;align-items:center;gap:0.5rem;text-decoration:none}
+  .nav-logo img{height:2rem}
+  .nav-home{font-size:0.875rem;font-weight:600;color:#9a9080;text-decoration:none;transition:color .2s}
+  .nav-home:hover{color:#fff}
+  .nav-home i{margin-right:0.25rem}
+
+  .header-wrap{padding:2.5rem 1.25rem 2rem;text-align:center}
+  .header-inner{max-width:32rem;margin:0 auto}
+  .badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,190,46,0.1);border:1px solid rgba(255,190,46,0.3);color:#FFBE2E;padding:0.25rem 1rem 0.375rem;border-radius:9999px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem}
+  .header-title{font-size:1.5rem;font-weight:900;line-height:1.25}
+  @media(min-width:768px){.header-title{font-size:1.875rem}}
+  .header-desc{font-size:0.875rem;color:#9a9080;margin-top:0.75rem;line-height:1.625}
+  .header-tags{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0.5rem;margin-top:1rem}
+  .tag-dark{display:inline-flex;align-items:center;gap:0.5rem;background:#16140f;border:1px solid #1e1c17;border-radius:9999px;padding:0.25rem 1rem 0.375rem;font-size:0.75rem;color:#9a9080}
+  .tag-accent{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,190,46,0.1);border:1px solid rgba(255,190,46,0.3);border-radius:9999px;padding:0.25rem 1rem 0.375rem;font-size:0.75rem;color:#FFBE2E;font-weight:700}
+
+  .form-section{padding:0 1.25rem 4rem}
+  .form-inner{max-width:32rem;margin:0 auto}
+  .form-wrap{display:flex;flex-direction:column;gap:1.5rem}
+
+  .card{background:#16140f;border:1px solid #1e1c17;border-radius:1rem;padding:1.25rem}
+  .card-spaced{display:flex;flex-direction:column;gap:1.25rem}
+  .card-header{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem}
+  .card-header-mb3{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem}
+  .icon-box{width:1.75rem;height:1.75rem;border-radius:0.5rem;background:rgba(255,190,46,0.1);border:1px solid rgba(255,190,46,0.3);display:flex;align-items:center;justify-content:center}
+  .icon-box i{color:#FFBE2E;font-size:0.75rem}
+  .card-title{font-weight:700;font-size:0.875rem}
+
+  .field-label{display:block;font-size:0.75rem;font-weight:700;color:#9a9080;margin-bottom:0.5rem}
+  .field-label-mb3{display:block;font-size:0.75rem;font-weight:700;color:#9a9080;margin-bottom:0.75rem}
+  .text-input{width:100%;background:#0e0c0a;border:1px solid #1e1c17;border-radius:0.75rem;padding:0.75rem 1rem;font-size:0.875rem;color:#fff;outline:none;transition:border-color .2s;font-family:inherit}
+  .text-input::placeholder{color:#6b6358}
+  .text-input:focus{border-color:#FFBE2E}
+  textarea.text-input{resize:none}
+  select.text-input{appearance:none;-webkit-appearance:none}
+
+  .gender-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem}
+  .radio-card-inner{background:#0e0c0a;border:1px solid #1e1c17;border-radius:0.75rem;padding:0.75rem 1rem;font-size:0.875rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+  .dot{width:0.75rem;height:0.75rem;border-radius:9999px;border:2px solid #6b6358;flex-shrink:0}
+
+  .char-count{text-align:right;font-size:11px;margin-top:0.25rem}
+  .char-count span{color:#6b6358}
+
+  /* Photo slots */
+  .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem}
+  .photo-box{aspect-ratio:1;background:#0e0c0a;border:2px dashed rgba(255,190,46,0.4);border-radius:0.75rem;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;position:relative;overflow:hidden}
+  .photo-box:hover{border-color:#FFBE2E}
+  .photo-box-optional{border-color:#1e1c17}
+  .photo-box-optional:hover{border-color:#FFBE2E}
+  .photo-preview{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .photo-preview.visible{display:block}
+  .photo-placeholder{display:flex;flex-direction:column;align-items:center}
+  .photo-placeholder i{font-size:1.125rem;margin-bottom:0.25rem}
+  .photo-placeholder .req-text{font-size:10px;color:#FFBE2E;font-weight:700}
+  .photo-placeholder .opt-text{font-size:10px;color:#6b6358}
+  .photo-placeholder .opt-icon{color:#6b6358;transition:color .2s}
+  .photo-box:hover .opt-icon{color:#FFBE2E}
+  .photo-remove{display:none;position:absolute;top:0.25rem;right:0.25rem;width:1.25rem;height:1.25rem;border-radius:9999px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;align-items:center;justify-content:center;border:none;cursor:pointer;transition:background .2s}
+  .photo-remove.visible{display:flex}
+  .photo-remove:hover{background:#ef4444}
+  .hidden-input{display:none}
+  .photo-hint{font-size:10px;color:#5a5248;margin-top:0.5rem}
+
+  /* Document upload */
+  .doc-upload{width:100%;background:#0e0c0a;border:2px dashed #1e1c17;border-radius:0.75rem;padding:1rem;text-align:center;cursor:pointer;transition:border-color .2s}
+  .doc-upload:hover{border-color:#FFBE2E}
+  .doc-done{display:none;align-items:center;justify-content:center;gap:0.5rem}
+  .doc-done.visible{display:flex}
+  .doc-done i{color:#FFBE2E}
+  .doc-done span{font-size:0.75rem;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+  .doc-done button{color:#6b6358;font-size:0.75rem;margin-left:0.25rem;background:none;border:none;cursor:pointer;transition:color .2s}
+  .doc-done button:hover{color:#f87171}
+  .doc-placeholder{display:flex;flex-direction:column;align-items:center}
+  .doc-placeholder i{color:#6b6358;font-size:1.125rem;margin-bottom:0.25rem;transition:color .2s}
+  .doc-upload:hover .doc-placeholder i{color:#FFBE2E}
+  .doc-placeholder span{font-size:10px;color:#6b6358}
+  .doc-notice{background:#0e0c0a;border:1px solid #1e1c17;border-radius:0.75rem;padding:0.75rem;display:flex;gap:0.5rem;align-items:flex-start;margin-top:0.75rem}
+  .doc-notice i{color:#FFBE2E;font-size:0.75rem;margin-top:2px;flex-shrink:0}
+  .doc-notice p{font-size:11px;color:#6b6358;line-height:1.625}
+
+  /* Chips */
+  .chip-wrap{display:flex;flex-wrap:wrap;gap:0.75rem}
+  .chip-wrap-sm{display:flex;flex-wrap:wrap;gap:0.5rem}
+  .chip-btn{background:#0e0c0a;border:1px solid #1e1c17;border-radius:9999px;padding:0.75rem 1.25rem;font-size:0.875rem;color:inherit;font-family:inherit}
+  .chip-btn-sm{background:#0e0c0a;border:1px solid #1e1c17;border-radius:9999px;padding:0.5rem 0.875rem;font-size:0.75rem;color:inherit;font-family:inherit}
+
+  /* Discount radio stack */
+  .radio-stack{display:flex;flex-direction:column;gap:0.5rem}
+  .radio-card-row{background:#0e0c0a;border:1px solid #1e1c17;border-radius:0.75rem;padding:0.75rem 1rem;font-size:0.875rem;display:flex;align-items:center;gap:0.5rem}
+  .discount-tag{color:#FFBE2E;font-size:0.75rem;font-weight:700;margin-left:0.25rem}
+
+  /* Referral section */
+  .referral-hidden{display:none}
+
+  /* Agree section */
+  .agree-section{display:flex;flex-direction:column;gap:1rem}
+  .agree-label{display:flex;align-items:flex-start;gap:0.75rem;cursor:pointer}
+  .agree-inner{display:flex;align-items:flex-start;gap:0.75rem}
+  .agree-box{width:1.25rem;height:1.25rem;flex-shrink:0;margin-top:2px;border-radius:0.25rem;border:2px solid #6b6358;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  .agree-check{font-size:10px;color:#000;display:none}
+  .agree-check.visible{display:inline}
+  .agree-text{font-size:0.75rem;color:#9a9080;line-height:1.625}
+
+  /* Submit */
+  .submit-btn{background:#FFBE2E;color:#000;font-weight:800;width:100%;padding:0.75rem 1.5rem 1rem;border-radius:1rem;font-size:1rem;border:none;cursor:pointer;transition:background .2s;font-family:inherit}
+  .submit-btn:hover{background:#e0a820}
+  .submit-btn:disabled{opacity:0.5;cursor:not-allowed}
+  .submit-btn i{margin-right:0.375rem}
+  .submit-hint{text-align:center;font-size:11px;color:#6b6358;margin-top:0.75rem}
+
+  /* Success screen */
+  .success-section{display:none;padding:1.25rem 1.25rem 5rem}
+  .success-section.visible{display:block}
+  .success-inner{max-width:32rem;margin:0 auto;text-align:center}
+  .success-icon{width:4rem;height:4rem;margin:0 auto 1.25rem;border-radius:1rem;background:#FFBE2E;display:flex;align-items:center;justify-content:center}
+  .success-icon i{color:#000;font-size:1.5rem}
+  .success-title{font-size:1.5rem;font-weight:900}
+  .success-desc{font-size:0.875rem;color:#9a9080;margin-top:0.75rem;line-height:1.625}
+  .success-info{background:#16140f;border:1px solid rgba(255,190,46,0.2);border-radius:1rem;padding:1.25rem;margin-top:1.5rem;display:flex;gap:0.75rem;align-items:flex-start}
+  .success-info i{color:#FFBE2E;margin-top:2px;flex-shrink:0}
+  .success-info p{font-size:0.75rem;color:#9a9080;line-height:1.625;text-align:left}
+  .success-info b{color:#fff}
+  .success-promo{background:#16140f;border:1px solid rgba(255,190,46,0.3);border-radius:1rem;padding:1.25rem;margin-top:1rem;text-align:left}
+  .success-promo-title{font-size:0.875rem;font-weight:700;text-align:center}
+  .success-promo-actions{margin-top:0.75rem;text-align:center}
+  .success-promo-btn{display:inline-block;background:#FFBE2E;color:#000;font-weight:700;padding:0.75rem 1.5rem;border-radius:0.75rem;font-size:0.875rem;text-decoration:none;transition:filter .2s}
+  .success-promo-btn:hover{filter:brightness(0.9)}
+  .home-link{display:inline-block;margin-top:2rem;background:#16140f;border:1px solid #1e1c17;color:#fff;font-weight:700;padding:0.75rem 1.5rem;border-radius:0.75rem;font-size:0.875rem;text-decoration:none;transition:border-color .2s}
+  .home-link:hover{border-color:#FFBE2E}
+  .home-link i{margin-right:0.375rem}
+
+  /* Footer */
+  .site-footer{border-top:1px solid #1e1c17;padding:2rem 1.25rem;text-align:center;font-size:0.75rem;color:#8a7f70}
+  .site-footer img{height:1.5rem;margin:0 auto 0.5rem;display:block}
+  .site-footer .mt2{margin-top:0.5rem}
+
+  /* Auto-fill for span with ml-auto */
+  .ml-auto{margin-left:auto}
+  .font-normal{font-weight:400}
+
+  /* Hidden utility (used by JS) */
+  .hidden{display:none!important}
+
+  /* AI 자동입력 */
+  .ai-section{background:#16140f;border:1px solid #1e1c17;border-radius:1rem;padding:1.25rem;margin-bottom:0}
+  .ai-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+  .ai-header h3{font-size:15px;font-weight:900}
+  .ai-toggle{display:flex;align-items:center;gap:5px;background:#FFBE2E;color:#0e0c0a;border:none;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+  .ai-toggle:hover{transform:scale(1.03);background:#e0a820}
+  .ai-toggle.active{box-shadow:0 0 14px rgba(255,190,46,.4)}
+  .ai-body{display:none;margin-top:12px}
+  .ai-body.show{display:block}
+  .ai-hint{background:rgba(255,190,46,.06);border:1.5px solid rgba(255,190,46,.25);border-radius:12px;padding:12px;margin-bottom:10px}
+  .ai-hint p{color:#FFBE2E;font-size:11px;line-height:1.5}
+  .ai-textarea{width:100%;background:#0e0c0a;border:1.5px solid rgba(255,190,46,.25);border-radius:12px;padding:14px;color:#F5F5F3;font-size:14px;resize:vertical;min-height:160px;font-family:inherit;line-height:1.7}
+  .ai-textarea:focus{outline:none;border-color:#FFBE2E}
+  .ai-textarea::placeholder{color:#6b6358}
+  .ai-fill-btn{background:#FFBE2E;color:#0e0c0a;border:none;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;float:right;margin-top:8px;font-family:inherit;display:flex;align-items:center;gap:5px}
+  .ai-fill-btn:hover{background:#e0a820}
+  .ai-result{display:none;margin-top:12px;background:rgba(255,190,46,.06);border:1px solid rgba(255,190,46,.25);border-radius:10px;padding:10px 12px;font-size:11px;color:#FFBE2E}
+  .ai-result.show{display:block}
+</style>
+</head>
+<body>
+
+<!-- 네비 -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="logo.png" alt="썸류센터">
+    </a>
+    <a href="index.html" class="nav-home">
+      <i class="fa-solid fa-arrow-left"></i>홈으로
+    </a>
+  </div>
+</nav>
+
+<!-- 헤더 -->
+<header class="header-wrap glow">
+  <div class="header-inner fade">
+    <span class="badge">
+      <i class="fa-solid fa-heart"></i> 로테이션 소개팅
+    </span>
+    <h1 class="header-title">
+      훈남·훈녀들의<br><span class="y">로테이션 소개팅</span>
+    </h1>
+    <p class="header-desc">
+      승인된 분만 참가할 수 있어요. 신청서 제출 후 센터장 검토를 거칩니다.
+    </p>
+    <div class="header-tags">
+      <span class="tag-dark">
+        <i class="fa-solid fa-calendar-day y"></i> 9월 17일 (목) 19:45
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- 신청 폼 -->
+<section class="form-section">
+  <div class="form-inner">
+    <form id="apply-form" class="form-wrap" onsubmit="return handleSubmit(event)">
+
+      <!-- 신청 전 안내 -->
+      <div class="card" data-reveal style="border-color:rgba(255,190,46,0.3)">
+        <div class="card-header-mb3">
+          <div class="icon-box"><i class="fa-solid fa-circle-info"></i></div>
+          <h2 class="card-title">신청 전 꼭 확인해주세요</h2>
+        </div>
+        <div style="font-size:12.5px;color:#c9bfae;line-height:1.9">
+          <p>📅 <b class="y">일정</b> · 9월 17일 (목) 19:45 · 약 2시간 반</p>
+          <p>📍 <b class="y">장소</b> · 강남역 도보 7분 (확정자에게만 공개)</p>
+          <p>💰 <b class="y">참가비</b> · 29,900원 (음료 1잔 포함)</p>
+          <p>💗 <b class="y">진행</b> · 로테이션 소개팅 (최소 10:10 보장)</p>
+          <p style="margin-top:8px">🙋 <b class="y">신청 대상</b><br>· 남성 91~01년생 · 키 174 이상<br>· 여성 93~03년생<br><span style="color:#8a8070">매력 있으면 1~2살 넘어도 승인드려요</span></p>
+          <p style="margin-top:6px;color:#e8918a">🚫 돌싱 · 무직은 이번엔 어려워요</p>
+          <p style="margin-top:8px">✅ <b class="y">승인제</b> · 선착순 아니에요. 프로필 검토 후 <b>확정 문자</b> 받으신 분만 참여 (일주일 내 안내). 문자 못 받으면 확정 아니에요!</p>
+          <p style="color:#8a8070;margin-top:6px">💸 <b class="y">환불</b> · <b>8/23(일)부터 환불 불가</b> · 당일 노쇼·지각 시 환불 불가</p>
+          <p style="color:#8a8070">🎟️ 지인 동반 / 재방문 시 최대 5,000원 할인</p>
+          <p style="margin-top:8px">❓ 문의 · <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" class="y" style="text-decoration:underline">카카오톡 채널 바로가기</a></p>
+        </div>
+      </div>
+
+      <!-- AI 자동입력 -->
+      <div class="ai-section" data-reveal>
+        <div class="ai-header">
+          <h3>신청 정보 입력</h3>
+          <button type="button" id="ai-toggle" class="ai-toggle" onclick="toggleAI()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> AI 자동입력
+          </button>
+        </div>
+        <p style="font-size:11px;color:#6b6358">사진은 최대 3장까지 등록할 수 있습니다.</p>
+        <div id="ai-body" class="ai-body">
+          <div class="ai-hint">
+            <p>한 줄에 하나씩 입력하면 AI가 폼을 자동으로 채워줍니다. 학력·특기 등 폼에 없는 내용은 어필포인트에 입력됩니다.</p>
+          </div>
+          <textarea id="ai-text" class="ai-textarea" placeholder="예시:
+이름 홍길동
+성별 남성
+나이 94년생
+연락처 010-1234-5678
+키 178cm
+직업 경찰공무원(성동구)
+어필 자기관리 잘하고 유머있어요"></textarea>
+          <button type="button" class="ai-fill-btn" onclick="aiFillForm()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> 폼 채우기
+          </button>
+          <div style="clear:both"></div>
+          <div id="ai-result" class="ai-result"></div>
+        </div>
+      </div>
+
+      <!-- 기본 정보 -->
+      <div class="card card-spaced" data-reveal>
+        <div class="card-header">
+          <div class="icon-box">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <h2 class="card-title">기본 정보</h2>
+        </div>
+
+        <div>
+          <label class="field-label">참여 회차</label>
+          <div class="text-input" style="display:flex;align-items:center;gap:8px;color:#FFBE2E;font-weight:700"><i class="fa-solid fa-calendar-day"></i> 9월 17일 (목) 19:45</div>
+          <input type="hidden" name="round" value="9/17 (목)">
+        </div>
+
+        <div>
+          <label class="field-label">이름 <span class="y">*</span></label>
+          <input type="text" name="name" required placeholder="실명을 입력해주세요"
+            class="text-input">
+        </div>
+
+        <div>
+          <label class="field-label">성별 <span class="y">*</span></label>
+          <div class="gender-grid">
+            <label>
+              <input type="radio" name="gender" value="남성" required>
+              <div class="radio-card radio-card-inner">
+                <div class="dot"></div>남성
+              </div>
+            </label>
+            <label>
+              <input type="radio" name="gender" value="여성">
+              <div class="radio-card radio-card-inner">
+                <div class="dot"></div>여성
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label">출생 연도 <span class="y">*</span></label>
+          <select name="birthYear" required class="text-input">
+            <option value="" disabled selected>출생 연도를 선택해주세요</option>
+            <option value="2003">2003년생</option><option value="2002">2002년생</option>
+            <option value="2001">2001년생</option><option value="2000">2000년생</option><option value="1999">1999년생</option>
+            <option value="1998">1998년생</option><option value="1997">1997년생</option>
+            <option value="1996">1996년생</option><option value="1995">1995년생</option>
+            <option value="1994">1994년생</option><option value="1993">1993년생</option>
+            <option value="1992">1992년생</option><option value="1991">1991년생</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="field-label">연락처 <span class="y">*</span></label>
+          <input type="tel" name="phone" required placeholder="010-0000-0000" pattern="01[0-9]-?[0-9]{3,4}-?[0-9]{4}"
+            class="text-input">
+        </div>
+
+        <div>
+          <label class="field-label">키 <span class="y">*</span></label>
+          <input type="text" name="height" required placeholder="예: 175cm" class="text-input">
+        </div>
+
+        <div>
+          <label class="field-label">직업 / 직장명 <span class="y">*</span></label>
+          <input type="text" name="job" required placeholder="예: 경찰공무원(성동구), 자영업(꽃집운영)" class="text-input">
+          <p style="font-size:11px;color:#6b6358;margin-top:6px;line-height:1.5">🌟 어느 지역인지·어느 공공기관인지 상세히 적으면 동료분들과 안 겹쳐요</p>
+        </div>
+
+        <div>
+          <label class="field-label">어필포인트 <span class="y">*</span></label>
+          <textarea name="appeal" required maxlength="200" rows="3" id="appeal"
+            placeholder="나를 소개할 어필포인트를 자유롭게 적어주세요"
+            class="text-input"></textarea>
+          <p class="char-count"><span id="appeal-count" class="counter">0</span><span> / 200자</span></p>
+        </div>
+      </div>
+
+      <!-- 프로필 사진 (최소 2장) -->
+      <div class="card" data-reveal>
+        <div class="card-header-mb3">
+          <div class="icon-box">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+          <h2 class="card-title">본인 사진 <span class="y">*</span></h2>
+          <span style="font-size:10px;color:#6b6358" class="ml-auto">최소 2장, 최대 3장</span>
+        </div>
+        <div class="photo-grid" id="photo-slots">
+          <div class="photo-slot" data-index="0" onclick="triggerPhoto(0)">
+            <div class="photo-box">
+              <img class="photo-preview" alt="">
+              <div class="photo-placeholder"><i class="fa-solid fa-camera" style="color:#FFBE2E"></i><span class="req-text">필수</span></div>
+              <button type="button" class="photo-remove" onclick="event.stopPropagation();removePhoto(0)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+          <div class="photo-slot" data-index="1" onclick="triggerPhoto(1)">
+            <div class="photo-box">
+              <img class="photo-preview" alt="">
+              <div class="photo-placeholder"><i class="fa-solid fa-camera" style="color:#FFBE2E"></i><span class="req-text">필수</span></div>
+              <button type="button" class="photo-remove" onclick="event.stopPropagation();removePhoto(1)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+          <div class="photo-slot" data-index="2" onclick="triggerPhoto(2)">
+            <div class="photo-box photo-box-optional">
+              <img class="photo-preview" alt="">
+              <div class="photo-placeholder"><i class="fa-solid fa-plus opt-icon"></i><span class="opt-text">추가</span></div>
+              <button type="button" class="photo-remove" onclick="event.stopPropagation();removePhoto(2)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+        </div>
+        <input type="file" id="photo-input" accept="image/*" multiple class="hidden-input">
+        <p class="photo-hint">얼굴이 잘 보이는 사진을 올려주세요 (장당 최대 5MB)</p>
+      </div>
+
+      <!-- 신분 인증 -->
+      <div class="card" data-reveal>
+        <div class="card-header-mb3">
+          <div class="icon-box">
+            <i class="fa-solid fa-shield-check"></i>
+          </div>
+          <h2 class="card-title">재직증명서 / 사업자등록증 <span class="y">*</span></h2>
+        </div>
+        <div id="doc-job-upload" onclick="document.getElementById('doc-job-input').click()"
+          class="doc-upload">
+          <div id="doc-job-done" class="doc-done">
+            <i class="fa-solid fa-file-circle-check"></i>
+            <span id="doc-job-name"></span>
+            <button type="button" onclick="event.stopPropagation();removeDoc()"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div id="doc-job-placeholder" class="doc-placeholder">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>파일 선택 (PDF, JPG, PNG / 최대 10MB)</span>
+          </div>
+        </div>
+        <input type="file" id="doc-job-input" accept=".pdf,.jpg,.jpeg,.png" class="hidden-input">
+        <div class="doc-notice">
+          <i class="fa-solid fa-lock"></i>
+          <p>센터장만 확인하며, 인증 완료 후 즉시 폐기됩니다.</p>
+        </div>
+      </div>
+
+      <!-- 음료 & 닉네임 -->
+      <div class="card card-spaced" data-reveal>
+        <div class="card-header">
+          <div class="icon-box">
+            <i class="fa-solid fa-mug-hot"></i>
+          </div>
+          <h2 class="card-title">음료 & 닉네임</h2>
+        </div>
+
+        <div>
+          <label class="field-label">음료 선택 <span class="y">*</span></label>
+          <select name="drink" required class="text-input">
+            <option value="" disabled selected>음료를 선택해주세요</option>
+            <option value="아이스 아메리카노">아이스 아메리카노</option>
+            <option value="아이스티">아이스티</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="field-label">썸류센터에서 쓸 닉네임 <span class="y">*</span></label>
+          <input type="text" name="nickname" required placeholder="소개팅에서 사용할 닉네임"
+            class="text-input">
+        </div>
+      </div>
+
+      <!-- 유입 경로 & 할인 -->
+      <div class="card card-spaced" data-reveal>
+        <div class="card-header">
+          <div class="icon-box">
+            <i class="fa-solid fa-route"></i>
+          </div>
+          <h2 class="card-title">유입 경로 & 할인</h2>
+        </div>
+
+        <div>
+          <label class="field-label">썸류센터를 어떻게 알게 되셨나요? <span class="y">*</span></label>
+          <div id="channel-chips" class="chip-wrap-sm">
+            <button type="button" class="chip chip-btn-sm" data-val="인스타그램">인스타그램</button>
+            <button type="button" class="chip chip-btn-sm" data-val="스레드">스레드</button>
+            <button type="button" class="chip chip-btn-sm" data-val="카카오톡">카카오톡</button>
+            <button type="button" class="chip chip-btn-sm" data-val="블로그/카페">블로그/카페</button>
+            <button type="button" class="chip chip-btn-sm" data-val="지인추천">지인추천</button>
+            <button type="button" class="chip chip-btn-sm" data-val="기타">기타</button>
+          </div>
+          <input type="hidden" name="channel" id="channel-input">
+        </div>
+
+        <div id="referral-section" class="hidden">
+          <label class="field-label">추천인 이름</label>
+          <input type="text" name="referralName" placeholder="추천해준 분의 이름"
+            class="text-input">
+        </div>
+
+        <div>
+          <label class="field-label">할인 혜택 적용 <span class="y">*</span></label>
+          <div class="radio-stack">
+            <label>
+              <input type="radio" name="discount" value="해당없음" required>
+              <div class="radio-card radio-card-row">
+                <div class="dot"></div>해당 없음
+              </div>
+            </label>
+            <label>
+              <input type="radio" name="discount" value="재방문 할인">
+              <div class="radio-card radio-card-row">
+                <div class="dot"></div>재방문 할인 <span class="discount-tag">-5,000원</span>
+              </div>
+            </label>
+            <label>
+              <input type="radio" name="discount" value="동반 할인">
+              <div class="radio-card radio-card-row">
+                <div class="dot"></div>동반 할인 <span class="discount-tag">-5,000원</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label">할인 상세 <span class="font-normal" style="color:#6b6358">(동반 성함 / 재방문 회차)</span></label>
+          <input type="text" name="discountDetail" placeholder="동반: 함께하는 분 성함 / 재방문: 참여했던 회차" class="text-input">
+        </div>
+      </div>
+
+      <!-- 동의 -->
+      <div class="card agree-section" data-reveal>
+        <label class="agree-label">
+          <input type="checkbox" id="agree1" required>
+          <div class="agree-inner">
+            <div class="agree-box">
+              <i class="fa-solid fa-check agree-check"></i>
+            </div>
+            <span class="agree-text">개인정보 수집 및 이용에 동의합니다. 허위 기재 시 이용이 제한될 수 있습니다. 신청 = 참가 확정이 아닙니다. <span class="y">*</span></span>
+          </div>
+        </label>
+        <label class="agree-label">
+          <input type="checkbox" id="agree2" required>
+          <div class="agree-inner">
+            <div class="agree-box">
+              <i class="fa-solid fa-check agree-check"></i>
+            </div>
+            <span class="agree-text">사진 촬영이 진행될 수 있으며, 참여 시 촬영에 동의한 것으로 간주합니다. (얼굴은 가려집니다) <span class="y">*</span></span>
+          </div>
+        </label>
+      </div>
+
+      <!-- 제출 -->
+      <div data-reveal>
+        <button type="submit" id="submit-btn" class="submit-btn">
+          <i class="fa-solid fa-paper-plane"></i>신청서 제출하기
+        </button>
+        <p class="submit-hint">제출 후 센터장 검토 → 확정 문자 + 입금 안내 발송</p>
+      </div>
+
+    </form>
+  </div>
+</section>
+
+<!-- 제출 완료 화면 -->
+<section id="success-screen" class="success-section">
+  <div class="success-inner fade">
+    <div class="success-icon">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <h2 class="success-title">신청이 완료되었어요!</h2>
+    <p class="success-desc">
+      센터장이 신청서를 검토한 후<br>확정 문자를 보내드릴게요.
+    </p>
+    <div class="success-info">
+      <i class="fa-solid fa-circle-info"></i>
+      <p>신청 = 참가 확정이 아니에요. 센터장 검토 후 <b>별도 확정 문자</b>를 받으셔야 참가가 가능합니다.</p>
+    </div>
+
+    <!-- 8월 일정 안내 -->
+    <div class="success-promo">
+      <p class="success-promo-title">📅 8월 로테이션 일정 안내</p>
+      <div class="success-promo-actions">
+        <a href="/rotation" class="success-promo-btn">일정 자세히 보기 →</a>
+      </div>
+    </div>
+
+    <!-- 1:1 소개팅 -->
+    <div class="success-promo">
+      <p class="success-promo-title">🎁 상시 접수 · 1:1 맞춤 소개팅도 있어요</p>
+      <div class="success-promo-actions">
+        <a href="/oneone" class="success-promo-btn">1:1 소개팅 보기 →</a>
+      </div>
+    </div>
+
+    <a href="index.html" class="home-link">
+      <i class="fa-solid fa-arrow-left"></i>홈으로 돌아가기
+    </a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <img src="logo.png" alt="썸류센터">
+  <p>강남역 인근 · 로테이션 소개팅</p>
+  <p class="mt2">문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#FFBE2E;text-decoration:none">카카오톡 채널 바로가기</a></p>
+</footer>
+
+<script>
+// ===== AI 자동입력 =====
+function toggleAI(){
+  const body = document.getElementById("ai-body");
+  const btn = document.getElementById("ai-toggle");
+  const isOpen = body.classList.toggle("show");
+  btn.classList.toggle("active", isOpen);
+}
+
+function aiFillForm(){
+  const text = document.getElementById("ai-text").value.trim();
+  if(!text){ alert("텍스트를 붙여넣어주세요"); return; }
+
+  const lines = text.split("\n").map(function(l){ return l.trim(); }).filter(function(l){ return l; });
+  var filled = [];
+  var etcLines = [];
+
+  for(var i = 0; i < lines.length; i++){
+    var line = lines[i];
+    try {
+      // 나이/년생
+      var bm = line.match(/(나이|년생|생년|출생)\s*[:\s]*(\d{2,4})/) || line.match(/(\d{2,4})\s*년?\s*생/);
+      if(bm){
+        var y = parseInt(bm[2] || bm[1]);
+        if(y < 100) y += 1900;
+        var sel = document.querySelector('select[name="birthYear"]');
+        if(sel){
+          var opt = sel.querySelector('option[value="'+y+'"]');
+          if(opt){ sel.value = y; filled.push("출생연도: " + y + "년생"); }
+        }
+        continue;
+      }
+
+      // 성별
+      if(line.match(/성별.*여/) || line === "여성" || line === "여자"){
+        var r = document.querySelector('input[name="gender"][value="여성"]');
+        if(r){ r.checked = true; r.dispatchEvent(new Event("change",{bubbles:true})); }
+        filled.push("성별: 여성");
+        continue;
+      }
+      if(line.match(/성별.*남/) || line === "남성" || line === "남자"){
+        var r2 = document.querySelector('input[name="gender"][value="남성"]');
+        if(r2){ r2.checked = true; r2.dispatchEvent(new Event("change",{bubbles:true})); }
+        filled.push("성별: 남성");
+        continue;
+      }
+
+      // 이름
+      if(line.match(/^이름/) || line.match(/^성명/)){
+        var nameVal = line.replace(/^(이름|성명)\s*[:：]?\s*/, "").trim();
+        if(nameVal){
+          var nameEl = document.querySelector('input[name="name"]');
+          if(nameEl){ nameEl.value = nameVal; filled.push("이름: " + nameVal); }
+          continue;
+        }
+      }
+
+      // 연락처
+      if(line.match(/연락처|전화|번호|핸드폰|휴대폰/) || line.match(/010/)){
+        var phoneNum = line.replace(/^(연락처|전화|번호|핸드폰|휴대폰)\s*[:：]?\s*/, "").trim();
+        if(!phoneNum.match(/\d/)) phoneNum = line;
+        var digits = phoneNum.replace(/[^\d\-]/g, "");
+        if(digits){
+          var phoneEl = document.querySelector('input[name="phone"]');
+          if(phoneEl){ phoneEl.value = digits; filled.push("연락처: " + digits); }
+          continue;
+        }
+      }
+
+      // 직업/직장명
+      if(line.match(/^(직업|직장|회사|업종)/)){
+        var jobVal = line.replace(/^(직업|직장|회사|업종)\s*[:：]?\s*/, "").trim();
+        if(jobVal){
+          var jobEl = document.querySelector('input[name="job"]');
+          if(jobEl){ jobEl.value = jobVal; filled.push("직업: " + jobVal); }
+          continue;
+        }
+      }
+
+      // 어필포인트
+      if(line.match(/^(어필|어필포인트|자기소개|한줄소개)/)){
+        var appealVal = line.replace(/^(어필포인트|어필|자기소개|한줄소개)\s*[:：]?\s*/, "").trim();
+        if(appealVal){
+          var appealEl = document.getElementById("appeal");
+          if(appealEl){ appealEl.value = (appealEl.value ? appealEl.value + "\n" : "") + appealVal; appealEl.dispatchEvent(new Event("input")); }
+          filled.push("어필포인트: " + appealVal);
+          continue;
+        }
+      }
+
+      // 닉네임
+      if(line.match(/^(닉네임|별명)/)){
+        var nickVal = line.replace(/^(닉네임|별명)\s*[:：]?\s*/, "").trim();
+        if(nickVal){
+          var nickEl = document.querySelector('input[name="nickname"]');
+          if(nickEl){ nickEl.value = nickVal; filled.push("닉네임: " + nickVal); }
+          continue;
+        }
+      }
+
+      // 키
+      if(line.match(/^(키|신장)/) || line.match(/\d{3}\s*cm/)){
+        var htVal = line.replace(/^(키|신장)\s*[:：]?\s*/, "").trim();
+        var htEl = document.querySelector('input[name="height"]');
+        if(htEl && htVal){ htEl.value = htVal; filled.push("키: " + htVal); continue; }
+      }
+
+      // 나머지 → 어필포인트에
+      etcLines.push(line);
+    } catch(err){
+      etcLines.push(line);
+    }
+  }
+
+  // 기타 → 어필포인트에 추가
+  if(etcLines.length > 0){
+    var appealEl2 = document.getElementById("appeal");
+    if(appealEl2){
+      appealEl2.value = (appealEl2.value ? appealEl2.value + "\n" : "") + etcLines.join("\n");
+      appealEl2.dispatchEvent(new Event("input"));
+    }
+    filled.push("어필포인트에 " + etcLines.length + "줄 추가");
+  }
+
+  // 결과 표시
+  var result = document.getElementById("ai-result");
+  if(filled.length > 0){
+    result.innerHTML = "✅ 자동 입력 완료: " + filled.join(" / ");
+    result.classList.add("show");
+  } else {
+    result.innerHTML = "⚠️ 파싱 실패. 한 줄에 하나씩 '이름 홍길동' 형태로 작성해주세요.";
+    result.classList.add("show");
+  }
+}
+
+// 사진
+const photoFiles = [null,null,null]; let activeSlot=0;
+
+// ===== 사진 미리 업로드(속도↑): 고르는 즉시 백그라운드 업로드 =====
+const CN="ddvmmvcei",CP="ml_default";
+function compress(file){
+  return new Promise((resolve)=>{
+    if(!file.type||!file.type.startsWith("image/")){resolve(file);return;}
+    const img=new Image();
+    img.onload=function(){
+      const MAX=1200;let w=img.width,h=img.height;
+      if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX}else{w=Math.round(w*MAX/h);h=MAX}}
+      const c=document.createElement("canvas");c.width=w;c.height=h;
+      c.getContext("2d").drawImage(img,0,0,w,h);
+      c.toBlob(function(blob){resolve(new File([blob],file.name,{type:"image/jpeg"}));},"image/jpeg",0.7);
+    };
+    img.onerror=function(){resolve(file);};
+    img.src=URL.createObjectURL(file);
+  });
+}
+async function up(file,folder){const fd=new FormData();fd.append("file",file);fd.append("upload_preset",CP);fd.append("folder",folder);const r=await fetch(`https://api.cloudinary.com/v1_1/${CN}/auto/upload`,{method:"POST",body:fd});if(!r.ok)throw new Error("파일 업로드 실패");return(await r.json()).secure_url;}
+const photoUploads=[null,null,null];
+function startPhotoUpload(slot,file){const p=(async()=>await up(await compress(file),"ssumcenter/rotation-photos"))();p.catch(function(){});photoUploads[slot]=p;}
+function triggerPhoto(i){activeSlot=i;document.getElementById("photo-input").click();}
+function removePhoto(i){
+  photoFiles[i]=null;photoUploads[i]=null;const s=document.querySelectorAll(".photo-slot")[i];
+  s.querySelector(".photo-preview").classList.remove("visible");s.querySelector(".photo-placeholder").style.display="";s.querySelector(".photo-remove").classList.remove("visible");
+}
+document.getElementById("photo-input").addEventListener("change",function(){
+  const files=[...this.files];
+  let slot=activeSlot;
+  for(const f of files){
+    if(slot>2)break;
+    if(f.size>5*1024*1024){alert(f.name+" : 5MB 이하만 가능합니다.");continue;}
+    photoFiles[slot]=f;
+    startPhotoUpload(slot,f); // 고르는 즉시 백그라운드 업로드
+    const r=new FileReader();
+    const s=slot;
+    r.onload=function(e){const el=document.querySelectorAll(".photo-slot")[s];el.querySelector(".photo-preview").src=e.target.result;el.querySelector(".photo-preview").classList.add("visible");el.querySelector(".photo-placeholder").style.display="none";el.querySelector(".photo-remove").classList.add("visible");};
+    r.readAsDataURL(f);
+    slot++;
+  }
+  this.value="";
+});
+
+// 서류
+let docFile=null;
+document.getElementById("doc-job-input").addEventListener("change",function(){
+  const f=this.files[0];if(!f)return;
+  if(f.size>10*1024*1024){alert("파일 크기는 10MB 이하만 가능합니다.");this.value="";return;}
+  docFile=f;document.getElementById("doc-job-name").textContent=f.name;
+  document.getElementById("doc-job-done").classList.add("visible");document.getElementById("doc-job-placeholder").style.display="none";
+});
+function removeDoc(){docFile=null;document.getElementById("doc-job-input").value="";document.getElementById("doc-job-done").classList.remove("visible");document.getElementById("doc-job-placeholder").style.display="";}
+
+// 어필포인트 카운터
+document.getElementById("appeal").addEventListener("input",function(){
+  const c=document.getElementById("appeal-count");c.textContent=this.value.length;c.classList.toggle("over",this.value.length>200);
+});
+
+// 유입 경로 칩
+let selectedChannel="";
+document.querySelectorAll("#channel-chips .chip").forEach(chip=>{
+  chip.addEventListener("click",()=>{
+    document.querySelectorAll("#channel-chips .chip").forEach(c=>c.classList.remove("selected"));
+    chip.classList.add("selected");selectedChannel=chip.dataset.val;
+    document.getElementById("channel-input").value=selectedChannel;
+    document.getElementById("referral-section").classList.toggle("hidden",selectedChannel!=="지인추천");
+  });
+});
+
+// 동의 체크박스
+document.querySelectorAll("#agree1,#agree2").forEach(cb=>{
+  cb.addEventListener("change",function(){
+    const box=this.parentElement.querySelector(".agree-box"),check=this.parentElement.querySelector(".agree-check");
+    if(this.checked){box.style.background="#FFBE2E";box.style.borderColor="#FFBE2E";check.classList.add("visible");}
+    else{box.style.background="transparent";box.style.borderColor="#6b6358";check.classList.remove("visible");}
+  });
+});
+
+// 제출
+async function handleSubmit(e){
+  e.preventDefault();
+  const photoCount=photoFiles.filter(f=>f).length;
+  if(photoCount<2){alert("본인 사진을 최소 2장 올려주세요.");return false;}
+  if(!docFile){alert("재직증명서 또는 사업자등록증을 제출해주세요.");return false;}
+  if(!selectedChannel){alert("유입 경로를 선택해주세요.");return false;}
+
+  const btn=document.getElementById("submit-btn");btn.disabled=true;
+  btn.innerHTML='<i class="fa-solid fa-spinner fa-spin" style="margin-right:0.375rem"></i>제출 중...';
+
+  try{
+    // 사진: 고를 때 미리 올려둔 결과 사용 (거의 즉시). 없거나 실패했으면 지금 업로드.
+    const photoUrls=[];
+    for(let s=0;s<3;s++){
+      if(!photoFiles[s])continue;
+      let url=null;
+      if(photoUploads[s]){try{url=await photoUploads[s];}catch(e){url=null;}}
+      if(!url){url=await up(await compress(photoFiles[s]),"ssumcenter/rotation-photos");}
+      photoUrls.push({url});
+    }
+    const docUrl=await up(docFile,"ssumcenter/rotation-docs");
+
+    const fm=document.getElementById("apply-form");const d=new FormData(fm);const p=Object.fromEntries(d.entries());
+    const fields={
+      "회차":p.round||"",
+      "이름":p.name||"","성별":p.gender||"","출생연도":p.birthYear||"","연락처":p.phone||"","키":p.height||"",
+      "직업_직장명":p.job||"","어필포인트":p.appeal||"",
+      "음료선택":p.drink||"","닉네임":p.nickname||"",
+      "유입경로":selectedChannel,"추천인이름":p.referralName||"","할인혜택":p.discount||"","할인상세":p.discountDetail||"",
+      "촬영동의":!!document.getElementById("agree2").checked,
+      "승인상태":"대기","신청일시":new Date().toLocaleString("ko-KR")
+    };
+    try{ var _u=JSON.parse(localStorage.getItem("ssumUser")||"null"); if(_u&&_u.id) fields["카카오ID"]=_u.id; }catch(e){}
+    if(photoUrls.length>0)fields["프로필사진"]=photoUrls;
+    if(docUrl)fields["재직증명서"]=[{url:docUrl}];
+
+    const res=await fetch("/api/airtable?table=로테이션 신청",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({records:[{fields}]})
+    });
+    if(!res.ok)throw new Error();
+
+    fm.closest("section").style.display="none";document.querySelector("header").style.display="none";
+    document.getElementById("success-screen").classList.add("visible");window.scrollTo({top:0,behavior:"smooth"});
+  }catch(err){
+    console.error(err);alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
+    btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-paper-plane" style="margin-right:0.375rem"></i>신청서 제출하기';
+  }
+  return false;
+}
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.15});
+document.querySelectorAll("[data-reveal]").forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
