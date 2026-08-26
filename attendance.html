@@ -19,9 +19,10 @@
   .rtabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
   .rtab{background:var(--surface);border:1px solid var(--line-strong);color:var(--muted);font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;cursor:pointer;font-family:inherit}
   .rtab.on{background:var(--amber);border-color:var(--amber);color:var(--ink-on-amber)}
-  .tbl-input{width:66px;flex:none;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:9px;padding:9px 6px;font-size:14px;font-weight:800;color:var(--amber);font-family:inherit;text-align:center}
-  .tbl-input:focus{outline:none;border-color:var(--amber)}
-  .tbl-input::placeholder{color:var(--faint);font-weight:600;font-size:11px}
+  .tbl-input{width:62px;flex:none;background:var(--surface-2);border:1.5px solid var(--amber);border-radius:9px;padding:9px 4px;font-size:15px;font-weight:800;color:var(--amber);font-family:inherit;text-align:center}
+  .tbl-input:placeholder-shown{border-style:dashed;border-color:rgba(232,176,80,.55);background:transparent}
+  .tbl-input:focus{outline:none;border-style:solid;border-color:var(--amber)}
+  .tbl-input::placeholder{color:rgba(232,176,80,.7);font-weight:700;font-size:10.5px}
   .dcbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:12px}
   .dc-title{font-size:13px;font-weight:800;color:var(--amber);margin-bottom:9px}
   .dc-hint{font-size:11px;color:var(--muted);font-weight:600}
