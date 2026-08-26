@@ -79,6 +79,7 @@
     <div class="toolbar">
       <button class="btn g" id="refreshBtn">새로고침</button>
       <button class="btn g" id="addBtn" style="color:var(--ok);border-color:var(--ok)">➕ 현장 추가</button>
+      <button class="btn g" id="saveTblBtn" style="color:var(--amber);border-color:var(--amber)">🪑 테이블 저장</button>
       <span class="cnt" id="cnt"></span>
     </div>
     <div class="card hide" id="add-form" style="margin-bottom:12px">
@@ -116,6 +117,15 @@
   function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
   var TBL_KEY="att_tables", tableMap=lsGet(TBL_KEY);
   window.setTable=function(id,val){ val=(val||"").trim(); if(val) tableMap[id]=val; else delete tableMap[id]; lsSet(TBL_KEY,tableMap); };
+  // 🪑 테이블 번호 전체 저장 (화면의 모든 칸을 한번에 저장 + 확인 표시)
+  document.getElementById("saveTblBtn").addEventListener("click",function(){
+    var inputs=document.querySelectorAll(".tbl-input"), cnt=0;
+    inputs.forEach(function(inp){ var id=inp.getAttribute("data-id"); if(!id) return;
+      var v=(inp.value||"").trim(); if(v){ tableMap[id]=v; cnt++; } else { delete tableMap[id]; } });
+    lsSet(TBL_KEY,tableMap);
+    var b=this, o=b.textContent; b.textContent="✓ 저장됐어요 ("+cnt+"명)"; b.disabled=true;
+    setTimeout(function(){ b.textContent=o; b.disabled=false; },1800);
+  });
   var DRINKS=["아이스 아메리카노","아이스티"];
   function drinkKey(){ return "att_drinks_"+curRound; }
   function autoDrink(d){ return records.filter(function(x){ return (x.fields||{})["음료선택"]===d; }).length; }
@@ -199,7 +209,7 @@
       var nick=f["닉네임"]?' <span style="font-size:11px;color:var(--muted);font-weight:600">('+esc(f["닉네임"])+')</span>':'';
       var drink=f["음료선택"]?' · ☕'+esc(f["음료선택"]):'';
       el.innerHTML='<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div><div class="meta">'+esc(f["연락처"]||"")+drink+'</div></div>'+
-        '<input class="tbl-input" value="'+esc(tableMap[x.id]||"")+'" placeholder="테이블" onclick="event.stopPropagation()" onchange="setTable(\''+x.id+'\',this.value)">';
+        '<input class="tbl-input" data-id="'+x.id+'" value="'+esc(tableMap[x.id]||"")+'" placeholder="테이블" onclick="event.stopPropagation()" onchange="setTable(\''+x.id+'\',this.value)">';
       el.addEventListener("click",function(){ toggle(x, el); });
       return el;
     }
