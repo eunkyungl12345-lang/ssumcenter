@@ -88,7 +88,7 @@
     </div>
     <div class="card hide" id="bulk-form" style="margin-bottom:12px">
       <div style="font-weight:800;font-size:14px;margin-bottom:6px">📋 명단 붙여넣기로 한번에 추가</div>
-      <div style="font-size:11.5px;color:var(--muted);margin-bottom:8px">여자/남자 구분줄 + "이름 (닉네임)" 형식이면 돼요. "- 문토" 표시도 인식하고, 이미 있는 사람은 자동으로 건너뛰어요.</div>
+      <div style="font-size:11.5px;color:var(--muted);margin-bottom:8px">여자/남자 구분줄 + "이름 (닉네임)" 형식. 이미 있는 사람은 <b style="color:var(--amber)">닉네임을 채워주고</b>, 없는 사람은 새로 추가해요. "- 문토" 표시도 인식.</div>
       <textarea id="bulk-text" placeholder="여자 14명&#10;김도현 (클로이)&#10;전세은 (po) - 문토&#10;&#10;남자 15명&#10;이준호 (나무) - 문토" style="width:100%;box-sizing:border-box;min-height:150px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px;padding:11px;font-size:13px;color:var(--ink);font-family:inherit;line-height:1.6;resize:vertical"></textarea>
       <div style="display:flex;gap:8px;margin-top:8px">
         <button class="btn g" id="bulk-cancel" style="flex:1">닫기</button>
@@ -331,28 +331,49 @@
     var parsed=parseRoster(document.getElementById("bulk-text").value);
     if(!parsed.length){ msg.textContent="인식된 이름이 없어요. (여자/남자 구분줄 + 이름 (닉네임) 형식)"; return; }
     var round=curRound||"8/27 (목)";
-    var existing={}; records.forEach(function(x){ var f=x.fields||{}; existing[(f["이름"]||"")+"|"+(f["성별"]||"")]=true; });
-    var toAdd=parsed.filter(function(p){ return !existing[p.이름+"|"+p.성별]; });
-    var dup=parsed.length-toAdd.length;
-    if(!toAdd.length){ msg.textContent="모두 이미 명단에 있어요 ("+parsed.length+"명). 추가할 사람이 없어요."; return; }
-    var btn=document.getElementById("bulk-save"), orig=btn.textContent; btn.disabled=true; btn.textContent="추가 중…";
-    function mkFields(p,withMunto){ var f={이름:p.이름,닉네임:p.닉네임,성별:p.성별,회차:round,승인상태:"승인",입금확정:"O",신청일시:new Date().toLocaleString("ko-KR")}; if(withMunto&&p.문토) f["유입경로"]="문토"; return {fields:f}; }
-    var chunks=[]; for(var i=0;i<toAdd.length;i+=10) chunks.push(toAdd.slice(i,i+10));
-    var added=0, ci=0;
-    function postRecords(recs,cb){
-      fetch("/api/airtable?table="+encodeURIComponent("로테이션 신청"),{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({records:recs})})
+    // 기존 명단(이름+성별) → 레코드. 있으면 닉네임 채우고, 없으면 새로 추가.
+    var existMap={}; records.forEach(function(x){ var f=x.fields||{}; existMap[((f["이름"]||"").trim())+"|"+(f["성별"]||"")]=x; });
+    var toAdd=[], toFix=[];
+    parsed.forEach(function(p){
+      var ex=existMap[p.이름+"|"+p.성별];
+      if(ex){ var cur=(ex.fields||{})["닉네임"]||""; if(p.닉네임 && cur!==p.닉네임) toFix.push({id:ex.id,nick:p.닉네임,rec:ex}); }
+      else toAdd.push(p);
+    });
+    if(!toAdd.length && !toFix.length){ msg.textContent="모두 이미 있고 닉네임도 채워져 있어요 👍"; return; }
+    var btn=document.getElementById("bulk-save"), orig=btn.textContent; btn.disabled=true; btn.textContent="처리 중…";
+    function send(method,recs,cb){
+      fetch("/api/airtable?table="+encodeURIComponent("로테이션 신청"),{method:method,headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({records:recs})})
         .then(function(r){ return r.json().then(function(d){ return {ok:r.ok&&!d.error}; }).catch(function(){ return {ok:r.ok}; }); })
         .then(function(res){ cb(res.ok); }).catch(function(){ cb(false); });
     }
-    function next(){
-      if(ci>=chunks.length){ btn.disabled=false; btn.textContent=orig; document.getElementById("bulk-form").classList.add("hide"); document.getElementById("bulk-text").value=""; alert("✅ "+added+"명 추가 완료!"+(dup?"\n(이미 있던 "+dup+"명은 건너뜀)":"")); load(); return; }
-      var chunk=chunks[ci];
-      postRecords(chunk.map(function(p){return mkFields(p,true);}),function(ok){
-        if(ok){ added+=chunk.length; ci++; next(); }
-        else { postRecords(chunk.map(function(p){return mkFields(p,false);}),function(ok2){ if(ok2) added+=chunk.length; ci++; next(); }); }
+    function mkFields(p,withMunto){ var f={이름:p.이름,닉네임:p.닉네임,성별:p.성별,회차:round,승인상태:"승인",입금확정:"O",신청일시:new Date().toLocaleString("ko-KR")}; if(withMunto&&p.문토) f["유입경로"]="문토"; return {fields:f}; }
+    var added=0, fixed=0;
+    // 1단계: 기존 사람 닉네임 채우기 (PATCH)
+    function doFix(i){
+      if(i>=toFix.length){ doAdd(0); return; }
+      var chunk=toFix.slice(i,i+10);
+      send("PATCH",chunk.map(function(t){return {id:t.id,fields:{"닉네임":t.nick}};}),function(ok){
+        if(ok){ fixed+=chunk.length; chunk.forEach(function(t){ if(t.rec) t.rec.fields["닉네임"]=t.nick; }); }
+        doFix(i+10);
       });
     }
-    next();
+    // 2단계: 새 사람 추가 (POST, 유입경로 실패시 재시도)
+    var addChunks=[]; for(var k=0;k<toAdd.length;k+=10) addChunks.push(toAdd.slice(k,k+10));
+    function doAdd(ci){
+      if(ci>=addChunks.length){ finish(); return; }
+      var chunk=addChunks[ci];
+      send("POST",chunk.map(function(p){return mkFields(p,true);}),function(ok){
+        if(ok){ added+=chunk.length; doAdd(ci+1); }
+        else { send("POST",chunk.map(function(p){return mkFields(p,false);}),function(ok2){ if(ok2) added+=chunk.length; doAdd(ci+1); }); }
+      });
+    }
+    function finish(){
+      btn.disabled=false; btn.textContent=orig;
+      document.getElementById("bulk-form").classList.add("hide");
+      var m="✅ 완료!"; if(fixed) m+="\n닉네임 채움: "+fixed+"명"; if(added) m+="\n새로 추가: "+added+"명";
+      alert(m); load();
+    }
+    doFix(0);
   }
 
   function toggle(x, el){
