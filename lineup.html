@@ -74,7 +74,8 @@
       <div style="display:flex;flex-direction:column;gap:8px">
         <div style="display:flex;gap:8px">
           <input id="a-name" placeholder="이름 *" style="flex:1">
-          <select id="a-gender" style="width:112px"><option value="">성별 *</option><option value="여성">여성</option><option value="남성">남성</option></select>
+          <input id="a-nick" placeholder="닉네임" style="flex:1">
+          <select id="a-gender" style="width:96px"><option value="">성별 *</option><option value="여성">여성</option><option value="남성">남성</option></select>
         </div>
         <div style="display:flex;gap:8px">
           <input id="a-birth" placeholder="출생연도(예:1995)" inputmode="numeric" style="flex:1">
@@ -142,7 +143,7 @@
       if(!confirm("⚠️ 이미 라인업에 있는 것 같아요:\n"+(df["이름"]||"")+" · "+(df["성별"]||"")+" · "+(df["회차"]||"")+"\n\n그래도 추가할까요? (중복될 수 있어요)")) return; }
     var fields={ "이름":name, "성별":gender, "회차":round, "승인상태":"승인", "입금확정":"O",
       "음료선택":document.getElementById("a-drink").value, "신청일시":new Date().toLocaleString("ko-KR") };
-    var opt={"출생연도":"a-birth","키":"a-height","직업_직장명":"a-job","어필포인트":"a-appeal","연락처":"a-phone"};
+    var opt={"닉네임":"a-nick","출생연도":"a-birth","키":"a-height","직업_직장명":"a-job","어필포인트":"a-appeal","연락처":"a-phone"};
     Object.keys(opt).forEach(function(fk){ var val=aval(opt[fk]); if(val) fields[fk]=val; });
     fields["유입경로"]="문토";
     var btn=document.getElementById("a-save"), orig=btn.textContent; btn.disabled=true; btn.textContent="추가 중…";
@@ -155,7 +156,7 @@
             btn.disabled=false; btn.textContent=orig; msgEl.textContent="추가 실패: "+errText(r.error); return;
           }
           btn.disabled=false; btn.textContent=orig;
-          ["a-name","a-birth","a-height","a-job","a-appeal","a-phone"].forEach(function(id){ document.getElementById(id).value=""; });
+          ["a-name","a-nick","a-birth","a-height","a-job","a-appeal","a-phone"].forEach(function(id){ document.getElementById(id).value=""; });
           document.getElementById("a-gender").value=""; document.getElementById("a-drink").selectedIndex=0; msgEl.textContent="";
           document.getElementById("add-form").classList.add("hide");
           load();

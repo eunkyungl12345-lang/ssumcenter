@@ -145,7 +145,8 @@
     <div class="mform" style="display:flex;flex-direction:column;gap:9px">
       <div style="display:flex;gap:9px">
         <input id="m-name" placeholder="이름 *" style="flex:1">
-        <select id="m-gender" style="width:120px"><option value="">성별 *</option><option value="여성">여성</option><option value="남성">남성</option></select>
+        <input id="m-nick" placeholder="닉네임" style="flex:1">
+        <select id="m-gender" style="width:100px"><option value="">성별 *</option><option value="여성">여성</option><option value="남성">남성</option></select>
       </div>
       <div style="display:flex;gap:9px">
         <input id="m-birth" placeholder="출생연도 (예:1995)" inputmode="numeric" style="flex:1">
@@ -414,7 +415,7 @@
         if(!confirm("⚠️ 이미 명단에 있는 것 같아요:\n"+(df["이름"]||"")+" · "+(df["성별"]||"")+" · "+(df["회차"]||"")+"\n\n그래도 추가할까요? (중복 등록될 수 있어요)")) return; }
       var fields={ "이름":name, "성별":gender, "회차":round,
         "승인상태":"승인", "입금확정":"O", "신청일시":new Date().toLocaleString("ko-KR") };
-      var opt={"출생연도":"m-birth","키":"m-height","직업_직장명":"m-job","어필포인트":"m-appeal","음료선택":"m-drink","연락처":"m-phone"};
+      var opt={"닉네임":"m-nick","출생연도":"m-birth","키":"m-height","직업_직장명":"m-job","어필포인트":"m-appeal","음료선택":"m-drink","연락처":"m-phone"};
       Object.keys(opt).forEach(function(fk){ var val=v(opt[fk]); if(val) fields[fk]=val; });
       fields["유입경로"]="문토";
       var btn=g("m-save"), orig=btn.textContent; btn.disabled=true; btn.textContent="추가 중…";
@@ -428,7 +429,7 @@
           }
           btn.disabled=false; btn.textContent=orig;
           sheet.classList.remove("on");
-          ["m-name","m-birth","m-height","m-job","m-appeal","m-drink","m-phone"].forEach(function(id){ g(id).value=""; });
+          ["m-name","m-nick","m-birth","m-height","m-job","m-appeal","m-drink","m-phone"].forEach(function(id){ g(id).value=""; });
           g("m-gender").value="";
           load();
           alert("✅ "+name+"님을 라인업에 추가했어요!"+(("유입경로" in fields)?"":"\n(유입경로 '문토' 표시는 이 항목이 고정 선택지라 생략됐어요)")+"\n라인업 페이지에서 확인하세요 🎬");
