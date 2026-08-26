@@ -83,7 +83,18 @@
       <button class="btn g" id="refreshBtn">새로고침</button>
       <button class="btn g" id="addBtn" style="color:var(--ok);border-color:var(--ok)">➕ 현장 추가</button>
       <button class="btn g" id="saveTblBtn" style="color:var(--amber);border-color:var(--amber)">🪑 테이블 저장</button>
+      <button class="btn g" id="bulkBtn" style="color:#c8a2ff;border-color:#c8a2ff">📋 명단 붙여넣기</button>
       <span class="cnt" id="cnt"></span>
+    </div>
+    <div class="card hide" id="bulk-form" style="margin-bottom:12px">
+      <div style="font-weight:800;font-size:14px;margin-bottom:6px">📋 명단 붙여넣기로 한번에 추가</div>
+      <div style="font-size:11.5px;color:var(--muted);margin-bottom:8px">여자/남자 구분줄 + "이름 (닉네임)" 형식이면 돼요. "- 문토" 표시도 인식하고, 이미 있는 사람은 자동으로 건너뛰어요.</div>
+      <textarea id="bulk-text" placeholder="여자 14명&#10;김도현 (클로이)&#10;전세은 (po) - 문토&#10;&#10;남자 15명&#10;이준호 (나무) - 문토" style="width:100%;box-sizing:border-box;min-height:150px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px;padding:11px;font-size:13px;color:var(--ink);font-family:inherit;line-height:1.6;resize:vertical"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn g" id="bulk-cancel" style="flex:1">닫기</button>
+        <button class="btn" id="bulk-save" style="flex:2">명단 추가</button>
+      </div>
+      <div id="bulk-msg" style="font-size:12.5px;text-align:center;margin-top:8px;color:var(--muted)"></div>
     </div>
     <div class="card hide" id="add-form" style="margin-bottom:12px">
       <div style="font-weight:800;font-size:14px;margin-bottom:10px">➕ 현장 참가자 추가 <span style="font-size:12px;color:var(--muted);font-weight:600">(문토 선결제 등)</span></div>
@@ -291,6 +302,55 @@
         }).catch(function(){ btn.disabled=false; btn.textContent=orig; msgEl.textContent="오류가 났어요. 다시 시도해주세요."; });
     }
     tryPost(false);
+  }
+
+  // 📋 명단 붙여넣기 일괄 추가
+  document.getElementById("bulkBtn").addEventListener("click",function(){ var f=document.getElementById("bulk-form"); f.classList.toggle("hide"); if(!f.classList.contains("hide")) document.getElementById("bulk-text").focus(); });
+  document.getElementById("bulk-cancel").addEventListener("click",function(){ document.getElementById("bulk-form").classList.add("hide"); });
+  document.getElementById("bulk-save").addEventListener("click",bulkAdd);
+  function parseRoster(text){
+    var out=[], gender="";
+    text.split("\n").forEach(function(line){
+      var t=line.trim(); if(!t) return;
+      if(/^여(자|성)/.test(t)){ gender="여성"; return; }
+      if(/^남(자|성)/.test(t)){ gender="남성"; return; }
+      if(!gender) return;
+      var munto=/문토/.test(t);
+      var core=t.replace(/[-–]\s*문토.*$/,"").trim();
+      var m=core.match(/^(.+?)\s*\(([^)]*)\)\s*$/);
+      var name=m?m[1].trim():core;
+      var nick=m?m[2].trim():"";
+      if(name) out.push({이름:name,닉네임:nick,성별:gender,문토:munto});
+    });
+    return out;
+  }
+  function bulkAdd(){
+    var msg=document.getElementById("bulk-msg");
+    var parsed=parseRoster(document.getElementById("bulk-text").value);
+    if(!parsed.length){ msg.textContent="인식된 이름이 없어요. (여자/남자 구분줄 + 이름 (닉네임) 형식)"; return; }
+    var round=curRound||"8/27 (목)";
+    var existing={}; records.forEach(function(x){ var f=x.fields||{}; existing[(f["이름"]||"")+"|"+(f["성별"]||"")]=true; });
+    var toAdd=parsed.filter(function(p){ return !existing[p.이름+"|"+p.성별]; });
+    var dup=parsed.length-toAdd.length;
+    if(!toAdd.length){ msg.textContent="모두 이미 명단에 있어요 ("+parsed.length+"명). 추가할 사람이 없어요."; return; }
+    var btn=document.getElementById("bulk-save"), orig=btn.textContent; btn.disabled=true; btn.textContent="추가 중…";
+    function mkFields(p,withMunto){ var f={이름:p.이름,닉네임:p.닉네임,성별:p.성별,회차:round,승인상태:"승인",입금확정:"O",신청일시:new Date().toLocaleString("ko-KR")}; if(withMunto&&p.문토) f["유입경로"]="문토"; return {fields:f}; }
+    var chunks=[]; for(var i=0;i<toAdd.length;i+=10) chunks.push(toAdd.slice(i,i+10));
+    var added=0, ci=0;
+    function postRecords(recs,cb){
+      fetch("/api/airtable?table="+encodeURIComponent("로테이션 신청"),{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({records:recs})})
+        .then(function(r){ return r.json().then(function(d){ return {ok:r.ok&&!d.error}; }).catch(function(){ return {ok:r.ok}; }); })
+        .then(function(res){ cb(res.ok); }).catch(function(){ cb(false); });
+    }
+    function next(){
+      if(ci>=chunks.length){ btn.disabled=false; btn.textContent=orig; document.getElementById("bulk-form").classList.add("hide"); document.getElementById("bulk-text").value=""; alert("✅ "+added+"명 추가 완료!"+(dup?"\n(이미 있던 "+dup+"명은 건너뜀)":"")); load(); return; }
+      var chunk=chunks[ci];
+      postRecords(chunk.map(function(p){return mkFields(p,true);}),function(ok){
+        if(ok){ added+=chunk.length; ci++; next(); }
+        else { postRecords(chunk.map(function(p){return mkFields(p,false);}),function(ok2){ if(ok2) added+=chunk.length; ci++; next(); }); }
+      });
+    }
+    next();
   }
 
   function toggle(x, el){

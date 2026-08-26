@@ -234,8 +234,8 @@ module.exports = async function handler(req, res) {
       } catch (e) { /* 알림 실패 무시 */ }
     }
 
-    // ✍️ 관리자 수기 추가(문토/현장) → 슬랙 알림
-    if (req.method === "POST" && isAdmin && table === "로테이션 신청") {
+    // ✍️ 관리자 수기 추가(문토/현장) → 슬랙 알림 (대량 명단 붙여넣기는 스킵)
+    if (req.method === "POST" && isAdmin && table === "로테이션 신청" && ((req.body && req.body.records) || []).length <= 3) {
       try {
         const recs = (req.body && req.body.records) || [];
         for (const rc of recs) {
