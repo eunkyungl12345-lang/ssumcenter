@@ -312,9 +312,10 @@ module.exports = async function handler(req, res) {
         return res.status(200).json({ ok: true, count: 0, skipped: 0, message: "해당 회차 입금완료(참석) 인원이 없어요" });
       }
 
-      // 이미 등록된 참가자 번호(중복방지)
+      // 이미 등록된 참가자 중복방지 (번호 있으면 번호로, 없으면 닉네임으로)
       const existing = await getAll("투표참가자", `{행사}='${event}'`);
-      const seen = new Set(existing.map(r => norm(r.fields["전화번호"])).filter(Boolean));
+      const seen = new Set();
+      existing.forEach(r => { const ph = norm(r.fields["전화번호"]); seen.add(ph || ("N:" + (r.fields["닉네임"] || ""))); });
       let maxSeq = existing.reduce((mx, r) => Math.max(mx, parseInt(r.fields["순번"], 10) || 0), 0);
 
       const firstLine = a => String(a || "").split("\n")[0].trim().slice(0, 60);
@@ -323,8 +324,10 @@ module.exports = async function handler(req, res) {
       for (const r of applicants) {
         const f = r.fields || {};
         const phone = norm(f["연락처"]);
-        if (!phone || seen.has(phone)) { skipped++; continue; }
-        seen.add(phone);
+        // 번호 없어도 데려온다(수기 운영). 중복만 방지 — 번호 있으면 번호로, 없으면 닉네임으로
+        const dkey = phone || ("N:" + (f["닉네임"] || f["이름"] || ""));
+        if (dkey === "N:" || seen.has(dkey)) { skipped++; continue; }
+        seen.add(dkey);
         maxSeq += 1;
         rows.push({
           fields: {
