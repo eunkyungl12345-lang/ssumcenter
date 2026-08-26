@@ -56,6 +56,8 @@
   .vtable .sec.m{background:rgba(126,166,224,.1);color:#7EA6E0}
   .vtable .match{color:var(--ok);font-weight:800}
   .vtable .novote{color:var(--faint)}
+  .vpick{background:var(--surface-2);border:1px solid var(--line-strong);border-radius:7px;color:var(--ink);font-family:inherit;font-size:12px;padding:5px 6px;min-width:80px}
+  .vpick:focus{outline:none;border-color:var(--amber)}
   .hide{display:none}
   a.home{font-size:12px;color:var(--muted);text-decoration:none}
 </style>
@@ -292,14 +294,15 @@
           return '<div class="b"><div class="k">'+d+'</div><div class="v">'+drinks[d].계+'</div><div style="font-size:10px;color:var(--muted);margin-top:2px">남 '+drinks[d].남+' · 여 '+drinks[d].여+'</div></div>';
         }).join("")+'</div>';
       } else { dcard.style.display="none"; }
-      // 💘 성사된 커플
+      // 💘 성사된 커플 (+ 문자 보내기)
       var couples=r.couples||[];
+      window._couples=couples;
       var ccard=document.getElementById("couple-card"), clist=document.getElementById("couple-list");
       ccard.style.display="block";
       clist.innerHTML = couples.length
-        ? couples.map(function(c,i){ return '<div class="couple-row"><span class="couple-no">'+(i+1)+'커플</span><span class="couple-f">'+(c.여자||"?")+'</span><span class="couple-heart">♥</span><span class="couple-m">'+(c.남자||"?")+'</span></div>'; }).join("")
+        ? couples.map(function(c,i){ return '<div class="couple-row"><span class="couple-no">'+(i+1)+'커플</span><span class="couple-f">'+(c.여자||"?")+'</span><span class="couple-heart">♥</span><span class="couple-m">'+(c.남자||"?")+'</span><button class="btn sm" style="flex:none;width:auto;padding:7px 12px;font-size:12px" onclick="sendCouple('+i+')">💌 문자</button></div>'; }).join("")
         : '<div class="desc" style="padding:8px 0">아직 성사된 커플이 없어요. (양쪽이 서로 뽑으면 여기 떠요)</div>';
-      // 📋 구글시트식 현황표
+      // 📋 구글시트식 현황표 — 1·2순위를 드롭다운으로 직접 입력(수기)
       var rows=r.rows||[];
       var scard=document.getElementById("sheet-card"), sbody=document.getElementById("sheet-body");
       if(rows.length){
@@ -308,10 +311,17 @@
         var females=rows.filter(function(x){return x.성별==="여성";}).sort(byNum);
         var males=rows.filter(function(x){return x.성별==="남성";}).sort(byNum);
         var etc=rows.filter(function(x){return x.성별!=="여성"&&x.성별!=="남성";});
+        var maleNicks=males.map(function(x){return x.닉네임;});
+        var femaleNicks=females.map(function(x){return x.닉네임;});
+        function opts(list,cur){ return '<option value="">-</option>'+list.map(function(n){ return '<option'+(n===cur?' selected':'')+'>'+n+'</option>'; }).join(""); }
+        function pickSel(x,which,cur){
+          var opp = x.성별==="여성" ? maleNicks : (x.성별==="남성" ? femaleNicks : maleNicks.concat(femaleNicks));
+          return '<select class="vpick" data-voter="'+x.닉네임+'" data-which="'+which+'" onchange="onPickChange(this)">'+opts(opp,cur||"")+'</select>';
+        }
         function rowHtml(x){
-          var match=x.성사&&x.성사.length ? '<span class="match">'+x.성사.join(", ")+'</span>' : (x.voted?'<span class="novote">-</span>':'<span class="novote">미투표</span>');
+          var match=x.성사&&x.성사.length ? '<span class="match">'+x.성사.join(", ")+'</span>' : '<span class="novote">-</span>';
           var forme=x.날찍은사람&&x.날찍은사람.length ? x.날찍은사람.join(", ") : '-';
-          return '<tr><td>'+(x.순번||"")+'</td><td class="nick">'+x.닉네임+'</td><td>'+(x.음료||"")+'</td><td>'+(x.p1||"-")+'</td><td>'+(x.p2||"-")+'</td><td>'+match+'</td><td>'+forme+'</td></tr>';
+          return '<tr><td>'+(x.순번||"")+'</td><td class="nick">'+x.닉네임+'</td><td>'+(x.음료||"")+'</td><td>'+pickSel(x,"1",x.p1)+'</td><td>'+pickSel(x,"2",x.p2)+'</td><td>'+match+'</td><td>'+forme+'</td></tr>';
         }
         function sec(title,arr,cls){ return arr.length ? '<tr><td colspan="7" class="sec '+cls+'">'+title+' ('+arr.length+'명)</td></tr>'+arr.map(rowHtml).join("") : ""; }
         sbody.innerHTML='<table class="vtable"><thead><tr><th>순번</th><th>닉네임</th><th>음료</th><th>1순위</th><th>2순위</th><th>성사</th><th>날 찍은 사람</th></tr></thead><tbody>'
@@ -362,6 +372,31 @@
       });
     });
   }
+
+  // ✍️ 수기 투표 입력 — 드롭다운 바꾸면 저장 후 성사/커플 다시 계산
+  window.onPickChange=function(el){
+    var voter=el.getAttribute("data-voter");
+    var all=document.querySelectorAll('.vpick[data-voter="'+voter+'"]');
+    var p1="",p2="";
+    all.forEach(function(s){ if(s.getAttribute("data-which")==="1") p1=s.value; else p2=s.value; });
+    if(p1&&p2&&p1===p2){ alert("1순위·2순위가 같아요. 다른 사람을 골라주세요."); el.value=""; return; }
+    all.forEach(function(s){ s.disabled=true; });
+    post("adminSetVote",{event:ev(),voter:voter,p1:p1,p2:p2}).then(function(r){
+      if(r.error){ alert(r.error); all.forEach(function(s){ s.disabled=false; }); return; }
+      refresh(); // 성사/커플/득표 다시 계산
+    }).catch(function(){ alert("저장 오류 — 다시 시도해주세요"); all.forEach(function(s){ s.disabled=false; }); });
+  };
+
+  // 💌 성사 커플에게 서로의 연락처 문자 발송
+  function sms(payload){ return fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify(payload)}).then(function(r){return r.json();}).catch(function(){return {ok:false};}); }
+  window.sendCouple=function(i){
+    var c=(window._couples||[])[i]; if(!c) return;
+    if(!c.여자전화||!c.남자전화){ alert("연락처가 없어서 못 보내요.\n("+(!c.여자전화?c.여자:c.남자)+" 번호 없음)"); return; }
+    if(!confirm("💘 "+c.여자+"님 ↔ "+c.남자+"님\n서로에게 '매칭 성사 + 상대 연락처' 문자를 보낼까요?")) return;
+    var toW={to:c.여자전화,text:c.여자+"님 🎉 커피팅에서 "+c.남자+"님과 서로 마음이 통했어요!\n"+c.남자+"님 연락처: "+c.남자전화+"\n좋은 인연 되세요 💛 -썸류센터"};
+    var toM={to:c.남자전화,text:c.남자+"님 🎉 커피팅에서 "+c.여자+"님과 서로 마음이 통했어요!\n"+c.여자+"님 연락처: "+c.여자전화+"\n좋은 인연 되세요 💛 -썸류센터"};
+    Promise.all([sms(toW),sms(toM)]).then(function(rs){ var ok=rs.filter(function(x){return x&&x.ok;}).length; alert(ok===2?"💌 두 분께 문자 발송 완료!":"발송 결과: "+ok+"/2 (실패분은 연락처 확인)"); });
+  };
 })();
 </script>
 </body>

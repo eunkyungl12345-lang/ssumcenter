@@ -305,11 +305,11 @@ module.exports = async function handler(req, res) {
       const round = body.round || event; // 투표 행사명 = 로테이션 회차명 (기본 동일)
       if (!event) return res.status(400).json({ error: "행사(회차)를 입력하세요" });
 
-      // 승인된 해당 회차 신청자
-      const filter = `AND({승인상태}='승인',{회차}='${round}')`;
+      // 입금완료(참석자) 해당 회차 신청자 — 실제 행사 참석자만
+      const filter = `AND({입금확정}='O',{회차}='${round}')`;
       const applicants = await getAll("로테이션 신청", filter);
       if (!applicants.length) {
-        return res.status(200).json({ ok: true, count: 0, skipped: 0, message: "해당 회차 승인자가 없어요" });
+        return res.status(200).json({ ok: true, count: 0, skipped: 0, message: "해당 회차 입금완료(참석) 인원이 없어요" });
       }
 
       // 이미 등록된 참가자 번호(중복방지)
@@ -380,8 +380,8 @@ module.exports = async function handler(req, res) {
       // 💘 성사된 커플 계산 (A가 B를 뽑고 + B도 A를 뽑음)
       const pickMap = {};
       votes.forEach(v => { const voter = v.fields["투표자닉네임"]; if (voter) pickMap[voter] = [v.fields["뽑은1"], v.fields["뽑은2"]].filter(Boolean); });
-      const genderByNick = {};
-      people.forEach(p => { genderByNick[p.fields["닉네임"]] = p.fields["성별"] || ""; });
+      const genderByNick = {}, phoneByNick = {};
+      people.forEach(p => { genderByNick[p.fields["닉네임"]] = p.fields["성별"] || ""; phoneByNick[p.fields["닉네임"]] = p.fields["전화번호"] || ""; });
       const seenPair = {}, couples = [];
       Object.keys(pickMap).forEach(a => {
         pickMap[a].forEach(b => {
@@ -391,7 +391,7 @@ module.exports = async function handler(req, res) {
             seenPair[k] = true;
             let woman = a, man = b;
             if (genderByNick[a] === "남성" || genderByNick[b] === "여성") { man = a; woman = b; }
-            couples.push({ 여자: woman, 남자: man });
+            couples.push({ 여자: woman, 남자: man, 여자전화: phoneByNick[woman] || "", 남자전화: phoneByNick[man] || "" });
           }
         });
       });
@@ -434,6 +434,33 @@ module.exports = async function handler(req, res) {
       const target = people.find(p => norm(p.fields["전화번호"]) === phone);
       if (!target) return res.status(404).json({ error: "참가자 없음" });
       await api("투표참가자", { method: "PATCH", body: { records: [{ id: target.id, fields: { 피드백: body.text || "" } }] } });
+      return res.status(200).json({ ok: true });
+    }
+
+    // ============ (관리자) 수기 투표 입력 — 쪽지 받아서 직접 입력 ============
+    if (action === "adminSetVote") {
+      if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
+      const event = body.event || "";
+      const voterNick = String(body.voter || "").trim();
+      const p1 = String(body.p1 || "").trim();
+      const p2 = String(body.p2 || "").trim();
+      if (!event || !voterNick) return res.status(400).json({ error: "행사·투표자 필요" });
+
+      const people = await getAll("투표참가자", `{행사}='${event}'`);
+      const voter = people.find(p => (p.fields["닉네임"] || "") === voterNick);
+      const phone = voter ? (voter.fields["전화번호"] || "") : "";
+
+      // 이 사람의 기존 투표 삭제 (덮어쓰기)
+      const votes = await getAll("투표", `{행사}='${event}'`);
+      const mine = votes.filter(v => (v.fields["투표자닉네임"] || "") === voterNick);
+      for (const v of mine) { await api(encodeURIComponent("투표") + "/" + v.id, { method: "DELETE" }); }
+
+      // 하나라도 골랐으면 새로 저장
+      if (p1 || p2) {
+        await api(encodeURIComponent("투표"), { method: "POST", body: { records: [{ fields: {
+          행사: event, 투표자전화: phone, 투표자닉네임: voterNick, 뽑은1: p1, 뽑은2: p2, 일시: new Date().toLocaleString("ko-KR"),
+        } }] } });
+      }
       return res.status(200).json({ ok: true });
     }
 
