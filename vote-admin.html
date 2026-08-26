@@ -320,11 +320,12 @@
         }
         function rowHtml(x){
           var match=x.성사&&x.성사.length ? '<span class="match">'+x.성사.join(", ")+'</span>' : '<span class="novote">-</span>';
-          var forme=x.날찍은사람&&x.날찍은사람.length ? x.날찍은사람.join(", ") : '-';
-          return '<tr><td>'+(x.순번||"")+'</td><td class="nick">'+x.닉네임+'</td><td>'+(x.음료||"")+'</td><td>'+pickSel(x,"1",x.p1)+'</td><td>'+pickSel(x,"2",x.p2)+'</td><td>'+match+'</td><td>'+forme+'</td></tr>';
+          var cnt=x.날찍은사람?x.날찍은사람.length:0;
+          var forme=cnt ? x.날찍은사람.join(", ") : '-';
+          return '<tr><td>'+(x.순번||"")+'</td><td class="nick">'+x.닉네임+'</td><td>'+pickSel(x,"1",x.p1)+'</td><td>'+pickSel(x,"2",x.p2)+'</td><td>'+match+'</td><td>'+forme+'</td><td style="font-weight:900;color:var(--amber)">'+cnt+'</td></tr>';
         }
         function sec(title,arr,cls){ return arr.length ? '<tr><td colspan="7" class="sec '+cls+'">'+title+' ('+arr.length+'명)</td></tr>'+arr.map(rowHtml).join("") : ""; }
-        sbody.innerHTML='<table class="vtable"><thead><tr><th>순번</th><th>닉네임</th><th>음료</th><th>1순위</th><th>2순위</th><th>성사</th><th>날 찍은 사람</th></tr></thead><tbody>'
+        sbody.innerHTML='<table class="vtable"><thead><tr><th>순번</th><th>닉네임</th><th>1순위</th><th>2순위</th><th>성사</th><th>날 찍은 사람</th><th>득표수</th></tr></thead><tbody>'
           +sec("🙋‍♀️ 여성",females,"")+sec("🙋‍♂️ 남성",males,"m")+sec("기타",etc,"")+'</tbody></table>';
       } else { scard.style.display="none"; }
       if(!r.participants||!r.participants.length){
