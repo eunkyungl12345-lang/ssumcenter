@@ -130,6 +130,7 @@
     <div class="card" id="sheet-card" style="display:none">
       <h2>📋 투표 현황표</h2>
       <div class="desc">구글시트처럼 누가 누굴 찍었는지·성사됐는지 한눈에. (표를 ← → 옆으로 밀어보세요)</div>
+      <input id="sheet-search" oninput="sheetSearch(this.value)" placeholder="🔍 닉네임으로 찾기" style="width:100%;margin:8px 0;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px;padding:10px 12px;font-size:13px;color:var(--ink);font-family:inherit">
       <div id="sheet-body" style="overflow-x:auto;-webkit-overflow-scrolling:touch"></div>
     </div>
 
@@ -423,6 +424,16 @@
   function failText(nick){
     return (nick||"")+"님, 오늘 썸배달에 함께해주셔서 진심으로 감사해요 🙌\n아쉽게도 이번엔 서로 시그널이 닿은 분이 없었어요. 그치만 좋은 인연은 꼭 찾아온답니다 💛\n\n💘 1:1 매칭 베타 오픈!\n센터장이 직접 취향을 반영해 딱 맞는 한 분을 신중히 소개해드려요. 관심 있으시면 편하게 카톡 주세요!\n\n"+PAID_INFO;
   }
+  // 🔍 현황표 닉네임 검색 (행 show/hide, 섹션 헤더는 유지)
+  window.sheetSearch=function(v){
+    v=(v||"").trim().toLowerCase();
+    document.querySelectorAll("#sheet-body tbody tr").forEach(function(tr){
+      if(tr.querySelector(".sec")){ tr.style.display=""; return; }
+      var nk=tr.querySelector(".nick"); var t=nk?nk.textContent.toLowerCase():"";
+      tr.style.display=(!v||t.indexOf(v)>=0)?"":"none";
+    });
+  };
+
   window.sendAllResults=function(){
     var parts=window._parts||[], rows=window._rows||[];
     var rowByNick={}; rows.forEach(function(r){ rowByNick[r.닉네임]=r; });
@@ -439,7 +450,8 @@
       else { text=failText(p.닉네임); }
       fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({to:p.전화번호,text:text})})
         .then(function(rr){return rr.json();}).then(function(rr){ if(rr&&rr.ok) ok++; }).catch(function(){})
-        .then(function(){ done++; if(done===targets.length){ alert("💌 결과 문자 발송 완료: "+ok+"/"+targets.length+"명"); } });
+        .then(function(){ done++; if(done===targets.length){ alert("💌 결과 문자 발송 완료: "+ok+"/"+targets.length+"명");
+          fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({slackOnly:true,text:"💌 결과 문자 일괄 발송 완료\n성사 "+matched+"명 · 미성사 "+failed+"명 · 발송 "+ok+"/"+targets.length+"명"})}).catch(function(){}); } });
     });
   };
 

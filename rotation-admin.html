@@ -573,10 +573,10 @@
         .then(function(r){ if(r&&r.ok) ok++; }).catch(function(){})
         .then(function(){ done++; if(done===targets.length){ btn.disabled=false; btn.textContent=orig;
           alert("✅ 전날 안내 발송 완료: "+ok+"/"+targets.length+"명");
-          // 📢 슬랙에도 결과 알림
+          // 📢 슬랙에도 결과 알림 (문자 없이 알림만)
           var rd=(curRound&&curRound!=="전체")?curRound:latestRound();
-          fetch("/api/notify",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},
-            body:JSON.stringify({text:"📢 전날 안내 문자 발송 완료 ("+rd+")\n입금완료 "+ok+"/"+targets.length+"명에게 장소 안내 발송했어요."})}).catch(function(){});
+          fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},
+            body:JSON.stringify({slackOnly:true,text:"📢 전날 안내 문자 발송 완료 ("+rd+")\n입금완료 "+ok+"/"+targets.length+"명에게 장소 안내 발송했어요."})}).catch(function(){});
         } });
     });
   });
@@ -604,7 +604,7 @@
     var btn=this, msgEl=document.getElementById("sms-msg");
     btn.disabled=true; msgEl.textContent="보내는 중…"; msgEl.style.color="var(--muted)";
     fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},
-      body:JSON.stringify({to:to,text:smsText.value})})
+      body:JSON.stringify({to:to,text:smsText.value,notify:true})})
       .then(function(r){return r.json();}).then(function(r){
         btn.disabled=false;
         if(r.ok){ msgEl.textContent="✅ 문자 보냈어요!"; msgEl.style.color="var(--ok)"; setTimeout(function(){ smsSheet.classList.remove("on"); },1200); }
