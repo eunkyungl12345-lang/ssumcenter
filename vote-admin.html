@@ -123,6 +123,8 @@
       <h2>💘 성사된 커플</h2>
       <div class="desc">서로 뽑은(양쪽이 서로 찍은) 쌍이에요. 투표가 들어오면 자동으로 채워져요.</div>
       <div id="couple-list"></div>
+      <button class="btn" onclick="sendAllResults()" style="margin-top:12px;background:linear-gradient(135deg,#E8828A,#E8B050)"> 💌 결과 문자 일괄 발송 (성사/미성사 전체)</button>
+      <div class="desc" style="margin-top:6px">성사자 → 상대 연락처+유료안내 · 미성사자 → 1:1 베타 유도. 번호 있는 사람에게만 나가요.</div>
     </div>
 
     <div class="card" id="sheet-card" style="display:none">
@@ -297,6 +299,8 @@
       // 💘 성사된 커플 (+ 문자 보내기)
       var couples=r.couples||[];
       window._couples=couples;
+      window._parts=r.participants||[];
+      window._rows=r.rows||[];
       var ccard=document.getElementById("couple-card"), clist=document.getElementById("couple-list");
       ccard.style.display="block";
       clist.innerHTML = couples.length
@@ -406,6 +410,37 @@
       if(r.error){ alert("번호 저장 실패: "+r.error); return; }
       el.style.borderColor="var(--ok)"; el.style.borderStyle="solid";
     }).catch(function(){ el.disabled=false; alert("저장 오류 — 다시 시도해주세요"); });
+  };
+
+  // 💌💔 결과 문자 일괄 발송 (성사 → 상대 연락처+유료안내 / 미성사 → 1:1 베타 유도)
+  var PAID_INFO="Q. 유료서비스는 어떤게 있나요?\n1. 몇 명이 나를 썼는지 알려드려요 (오천원) (0표는 과금하지 않습니다.)\n2. 누가 나를 썼는지 알려드려요 (오천원) (1번을 하신 분만 2번을 추가로 진행 가능합니다)\n3. 추가 매칭 요청: 상대방 동의 하에 번호를 전달드려요. (매칭이 된 경우에만 명당 '만원'의 추가금이 발생 합니다.)\n\nQ. 유료서비스는 언제까지 가능한가요?\nA. 8월 28일(금) 18시까지만 요청 가능합니다.\n\nQ. 몇 명까지 가능한가요?\nA. 제한은 없으나 많이 쓰신다고 확률이 높은건 아니에요☺️\n\nQ. 매칭이 됐는데도 추가 이용 가능한가요?\nA. 가능합니다\n\n- 카톡 주시면 순차적으로 답장드릴게요!";
+  function successText(nick, partners){
+    var head = partners.length===1
+      ? partners[0].nick+" 님과의 시그널이 통하셨네요!\n\n띵동🎵 당신의 썸이 배달되었습니다.\n\n"+partners[0].nick+" 님의 연락처는 "+(partners[0].phone||"(곧 안내드려요)")+" 에요!"
+      : "여러 분과 시그널이 통하셨어요! 🎉\n\n띵동🎵 당신의 썸이 배달되었습니다.\n\n"+partners.map(function(p){return "· "+p.nick+" : "+(p.phone||"(곧 안내)");}).join("\n");
+    return head+"\n\n예쁜 썸 만들어가시고 참여해주셔서 다시한번 감사드립니다🙌\n\n"+PAID_INFO;
+  }
+  function failText(nick){
+    return (nick||"")+"님, 오늘 썸배달에 함께해주셔서 진심으로 감사해요 🙌\n아쉽게도 이번엔 서로 시그널이 닿은 분이 없었어요. 그치만 좋은 인연은 꼭 찾아온답니다 💛\n\n💘 1:1 매칭 베타 오픈!\n센터장이 직접 취향을 반영해 딱 맞는 한 분을 신중히 소개해드려요. 관심 있으시면 편하게 카톡 주세요!\n\n"+PAID_INFO;
+  }
+  window.sendAllResults=function(){
+    var parts=window._parts||[], rows=window._rows||[];
+    var rowByNick={}; rows.forEach(function(r){ rowByNick[r.닉네임]=r; });
+    var phoneByNick={}; parts.forEach(function(p){ phoneByNick[p.닉네임]=p.전화번호||""; });
+    var targets=parts.filter(function(p){ return p.전화번호; });
+    var noPhone=parts.length-targets.length;
+    var matched=0, failed=0;
+    targets.forEach(function(p){ var r=rowByNick[p.닉네임]; if(r&&r.성사&&r.성사.length) matched++; else failed++; });
+    if(!confirm("💌 결과 문자를 일괄 발송할까요?\n\n🎉 성사 "+matched+"명 → 상대 연락처+유료안내\n💔 미성사 "+failed+"명 → 1:1 베타 유도\n"+(noPhone?("⚠️ 번호 없는 "+noPhone+"명은 제외\n"):"")+"\n총 "+targets.length+"명에게 실제 문자가 나가요!")) return;
+    var done=0, ok=0;
+    targets.forEach(function(p){
+      var r=rowByNick[p.닉네임]||{}; var text;
+      if(r.성사 && r.성사.length){ text=successText(p.닉네임, r.성사.map(function(n){return {nick:n, phone:phoneByNick[n]||""};})); }
+      else { text=failText(p.닉네임); }
+      fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({to:p.전화번호,text:text})})
+        .then(function(rr){return rr.json();}).then(function(rr){ if(rr&&rr.ok) ok++; }).catch(function(){})
+        .then(function(){ done++; if(done===targets.length){ alert("💌 결과 문자 발송 완료: "+ok+"/"+targets.length+"명"); } });
+    });
   };
 
   // 💌 성사 커플에게 서로의 연락처 문자 발송
