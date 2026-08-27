@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진행 가이드 · 대본 | 썸류센터</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--ok:#6FBE97;--rose:#E8828A;--male:#7EA6E0;--female:#E88FB0;--ink-on-amber:#171208;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.7;letter-spacing:-.01em}
+  .wrap{max-width:680px;margin:0 auto;padding:24px 18px 80px}
+  h1{font-size:23px;font-weight:900}
+  .sub{font-size:13px;color:var(--muted);margin:5px 0 6px}
+  a.home{font-size:12.5px;color:var(--muted);text-decoration:none}
+  a.home:hover{color:var(--amber)}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 18px;margin-top:16px;box-shadow:0 8px 26px rgba(0,0,0,.25)}
+  .card h2{font-size:16px;font-weight:900;color:var(--amber);display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .card .cd{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .script{font-size:14.5px;line-height:1.85;white-space:pre-wrap;color:var(--ink)}
+  .hl{background:rgba(232,176,80,.14);border:1px solid rgba(232,176,80,.35);border-radius:12px;padding:12px 14px;margin:12px 0;font-size:14px}
+  .hl b{color:var(--amber)}
+  .warn{background:rgba(232,130,138,.12);border:1px solid rgba(232,130,138,.35);border-radius:12px;padding:12px 14px;margin:12px 0;font-size:14px}
+  .warn b{color:var(--rose)}
+  .fill{display:inline-block;min-width:34px;border-bottom:2px solid var(--amber);color:var(--amber);font-weight:800;text-align:center;padding:0 4px}
+  .steps{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+  .step{display:flex;gap:11px;align-items:flex-start;font-size:14px}
+  .step .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--amber);color:var(--ink-on-amber);display:grid;place-items:center;font-size:12px;font-weight:800;margin-top:1px}
+  .tip{font-size:13.5px;color:var(--ink);padding-left:18px;position:relative;margin-bottom:7px}
+  .tip::before{content:"💡";position:absolute;left:0;top:0}
+  .rotmap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;font-weight:700;margin-top:8px}
+  .rotmap span{background:var(--surface-2);border:1px solid var(--line-strong);border-radius:8px;padding:5px 9px}
+  .rotmap .arw{background:none;border:none;color:var(--amber)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎤 진행 가이드 · 대본</h1>
+  <div class="sub">로테이션 소개팅 운영용 · 센터장 전용 참고 자료</div>
+  <a class="home" href="/admin">🏠 관리자 홈</a> · <a class="home" href="/rotation-admin">🎡 로테이션</a> · <a class="home" href="/attendance">📋 출석부</a> · <a class="home" href="/vote-admin">🗳️ 투표</a>
+
+  <!-- 오늘 인원 -->
+  <div class="card">
+    <h2>👥 오늘 인원 (시작 전 채우기)</h2>
+    <div class="hl" style="font-size:15px">남성 <span class="fill">&nbsp;</span> 분 · 여성 <span class="fill">&nbsp;</span> 분
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">출석부에서 실시간 확인 후 오프닝 멘트에 넣어주세요</div>
+    </div>
+  </div>
+
+  <!-- 프로세스 요약 -->
+  <div class="card">
+    <h2>🗺️ 진행 프로세스 (한눈에)</h2>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><div><b>입장·체크인</b> — 신분증 확인 → 출석부에 테이블 번호 기입 → 이름표 스티커·프로필 카드 전달</div></div>
+      <div class="step"><span class="n">2</span><div><b>오프닝 멘트</b> — 진행 방식 안내 (아래 대본)</div></div>
+      <div class="step"><span class="n">3</span><div><b>로테이션</b> — 10분씩(이동 포함), 8분에 이동 안내 → 남성이 다음 번호로</div></div>
+      <div class="step"><span class="n">4</span><div><b>엔딩 멘트 + 투표</b> — 닉네임 2명 작성 제출 (아래 대본)</div></div>
+      <div class="step"><span class="n">5</span><div><b>퇴장</b> — 여성 먼저 → 남성 대기 후 퇴장</div></div>
+      <div class="step"><span class="n">6</span><div><b>매칭·발송</b> — vote-admin에서 투표 입력 → 성사/미성사 결과 문자 발송</div></div>
+    </div>
+  </div>
+
+  <!-- 오프닝 -->
+  <div class="card">
+    <h2>🎙️ 오프닝 멘트</h2>
+    <div class="cd">시작하기 전에 읽어주세요</div>
+    <div class="script">안녕하세요! 썸류센터를 찾아주신 멋쟁이 여러분, 다시 한번 감사드립니다.
+시작에 앞서 진행 방식을 짧게 안내드릴게요.
+
+대화는 <b>이동 시간 포함 10분씩</b> 진행되고, <b>8분이 지나면</b> 자리를 옮겨달라고 안내드릴 거예요. 아쉬우시겠지만 다음 분이 기다리지 않도록, 안내에 따라 <b>남성분들이 다음 번호 자리로</b> 이동해 주시면 됩니다.
+
+이름표 스티커는 잘 보이는 곳에 붙여주세요.
+나눠드린 프로필 카드는 절반으로 잘라 상대방과 교환하시고 자유롭게 대화 나누시면 됩니다.
+
+프로그램이 끝나면 <b>더 이야기 나누고 싶은 두 분</b>을 적어 제출하시는데, 옆 메모칸에 기억에 남도록 메모해 주세요.</div>
+    <div class="warn"><b>⚠️ 꼭 강조:</b> 자리번호가 아니라 <b>닉네임</b>으로 기억해 주셔야 저희가 착오 없이 매칭을 도와드릴 수 있어요!</div>
+    <div class="script">로테이션은 쉬는 시간 없이 진행되니 화장실은 가급적 참아주시길 부탁드려요. 정말 급하시면, 들어오신 입구로 나가 바로 앞 계단을 올라가시면 화장실입니다.
+가져오신 짐은 빈 의자에 잠깐 올려두시고, 가운데 보조 테이블의 휴지·간식은 편하게 드세요.
+
+오늘은 <b>남성 OO분, 여성 OO분</b>입니다. 이제 앞에 계신 분과 대화 시작해 주시고, 즐거운 시간 보내세요. 감사합니다! 😊</div>
+  </div>
+
+  <!-- 로테이션 규칙 -->
+  <div class="card">
+    <h2>🔄 자리 이동 규칙</h2>
+    <div class="cd">8분 안내 후 — 남성만 이동</div>
+    <div class="hl">남성분들이 <b>다음 번호 자리로</b> 이동해요. <b>마지막 번호</b>에 계신 분은 <b>1번 자리</b>로!</div>
+    <div class="rotmap"><span>1→2</span><span class="arw">·</span><span>2→3</span><span class="arw">·</span><span>3→4</span><span class="arw">···</span><span>마지막→1</span></div>
+  </div>
+
+  <!-- 엔딩 -->
+  <div class="card">
+    <h2>🏁 엔딩 멘트</h2>
+    <div class="cd">모든 로테이션이 끝난 후</div>
+    <div class="script">저희 썸류센터의 모든 로테이션이 끝났습니다!
+가지고 계신 투표용지에 <b>다시 연락하고 싶은 두 분</b>을 적어주시면 되는데요, 자리번호가 아니라 <b>서로의 닉네임</b>을 적어주셔야 합니다. 매칭되시면 연락처를 교환하실 수 있도록 도와드려요.
+매칭 결과는 늦어도 <b>내일 오전까지</b>, 연락 받으신 메신저로 안내드립니다.
+
+혹시 지금 매칭이 안 되시더라도 '몇 분이 나를 투표했는지', '누가 나를 찍었는지'를 이후 <b>유료 서비스</b>로 확인하실 수 있어요. 매칭 결과와 함께 자세히 안내드릴 예정이니 많은 이용 부탁드립니다.
+
+오늘 와주신 분들 다시 한번 감사드립니다! 🙌
+펜은 꼭 자리에 두고 가시고, 다 쓰신 투표용지는 <b>계단 위 스텝</b>에게 전달해 주세요.
+
+여성분들은 다 적으셨으면 먼저 돌아가시면 되고, 남성분들은 여성분들이 모두 퇴장하실 때까지 잠깐 대기하셨다가 안내에 따라 퇴장 도와드리겠습니다.</div>
+  </div>
+
+  <!-- 센터장 팁 -->
+  <div class="card">
+    <h2>✅ 센터장 팁 (제안)</h2>
+    <div class="tip"><b>인원 미리 채우기</b> — 시작 직전 출석부에서 남/여 인원 확인해 오프닝에 넣기</div>
+    <div class="tip"><b>자리 이동 규칙</b>은 화이트보드/화면에 크게 써두면 안내가 훨씬 수월해요</div>
+    <div class="tip"><b>8분 종료 알림음</b>(타이머/벨) 미리 준비 — 매 라운드 일관되게</div>
+    <div class="tip"><b>닉네임 강조</b> — 오프닝·엔딩 두 번 언급 (매칭 착오 방지의 핵심!)</div>
+    <div class="tip"><b>투표용지 수거</b> 후 vote-admin에서 바로 입력 → 성사 자동 계산 → 결과 문자 발송</div>
+  </div>
+</div>
+</body>
+</html>
