@@ -485,18 +485,27 @@ module.exports = async function handler(req, res) {
     if (action === "deleteParticipant") {
       if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
       const event = body.event || "";
+      const seq = body.seq;
       const nick = String(body.nick || "").trim();
-      if (!event || !nick) return res.status(400).json({ error: "행사·닉네임 필요" });
+      if (!event) return res.status(400).json({ error: "행사 필요" });
       const people = await getAll("투표참가자", `{행사}='${event}'`);
-      const target = people.find(p => (p.fields["닉네임"] || "") === nick);
+      // 순번이 있으면 순번으로(정확), 없으면 닉네임으로
+      const target = (seq != null && seq !== "")
+        ? people.find(p => String(p.fields["순번"] || "") === String(seq))
+        : people.find(p => (p.fields["닉네임"] || "") === nick);
       if (!target) return res.status(404).json({ error: "참가자 없음" });
+      const tnick = target.fields["닉네임"] || "";
+      const tseq = target.fields["순번"];
       await api(encodeURIComponent("투표참가자") + "/" + target.id, { method: "DELETE" });
-      // 이 사람의 투표도 함께 삭제
+      // 이 사람의 투표도 함께 삭제 (전화번호 우선, 없으면 닉네임)
+      const tphone = norm(target.fields["전화번호"]);
       const votes = await getAll("투표", `{행사}='${event}'`);
-      for (const v of votes.filter(v => (v.fields["투표자닉네임"] || "") === nick)) {
-        await api(encodeURIComponent("투표") + "/" + v.id, { method: "DELETE" });
+      for (const v of votes) {
+        const vp = norm(v.fields["투표자전화"]);
+        const match = tphone ? (vp === tphone) : ((v.fields["투표자닉네임"] || "") === tnick);
+        if (match) await api(encodeURIComponent("투표") + "/" + v.id, { method: "DELETE" });
       }
-      return res.status(200).json({ ok: true });
+      return res.status(200).json({ ok: true, deleted: tnick + " (순번 " + tseq + ")" });
     }
 
     return res.status(400).json({ error: "알 수 없는 action" });
