@@ -29,7 +29,12 @@
   .drink-sel{margin-top:7px;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:10px;color:var(--ink);font-family:inherit;font-size:15px;font-weight:700;padding:10px 12px;max-width:230px}
   .row-actions{display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap}
   .drink-sel.none{border:1.5px dashed rgba(232,130,138,.55);color:var(--rose)}
+  .drink-sel.ame{background:rgba(160,110,70,.22);border-color:rgba(211,161,122,.5);color:#e0b48c}
+  .drink-sel.tea{background:rgba(232,176,80,.16);border-color:rgba(232,176,80,.5);color:var(--amber)}
   .drink-sel:focus{outline:none;border-color:var(--amber)}
+  .row.male{border-left:4px solid var(--male)} .row.female{border-left:4px solid var(--female)}
+  .row.present.male,.row.present.female{border-left-color:var(--ok)}
+  .row:hover{border-color:var(--line-strong)}
   .move-sel{margin-top:6px;margin-left:6px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px;color:var(--male);font-family:inherit;font-size:12px;padding:7px 9px;max-width:150px}
   .move-sel:focus{outline:none;border-color:var(--amber)}
   .row-del{background:none;border:none;color:var(--faint);font-size:16px;cursor:pointer;flex:none;padding:4px 6px;align-self:flex-start}
@@ -283,13 +288,15 @@
     function rowEl(x){
       var f=x.fields||{}, on=f["출석"]==="O";
       var isDup=nameCount[((f["이름"]||"").trim())+"|"+(f["성별"]||"")]>1;
-      var el=document.createElement("div"); el.className="row"+(on?" present":"")+(isDup?" dup":"");
+      var gcls=f["성별"]==="남성"?" male":f["성별"]==="여성"?" female":"";
+      var el=document.createElement("div"); el.className="row"+(on?" present":"")+(isDup?" dup":"")+gcls;
       var nick=f["닉네임"]?' <span style="font-size:11px;color:var(--muted);font-weight:600">('+esc(f["닉네임"])+')</span>':'';
       var phoneHtml = f["연락처"]
         ? '<div class="meta">'+esc(f["연락처"])+'</div>'
         : '<div class="meta">번호 없음</div><input class="phone-input" placeholder="📞 전화번호 입력 (문토 등)" value="" onclick="event.stopPropagation()" onchange="savePhone(\''+x.id+'\',this.value,this)">';
       var cur=f["음료선택"]||"";
-      var drinkSel='<select class="drink-sel'+(cur?"":" none")+'" onclick="event.stopPropagation()" onchange="saveDrink(\''+x.id+'\',this.value)"><option value="">☕ 음료 미선택</option>'
+      var dcls=cur?(cur.indexOf("아메")>=0?" ame":(cur.indexOf("아이스티")>=0?" tea":" ame")):" none";
+      var drinkSel='<select class="drink-sel'+dcls+'" onclick="event.stopPropagation()" onchange="saveDrink(\''+x.id+'\',this.value)"><option value="">☕ 음료 미선택</option>'
         + DRINKS.map(function(d){return '<option'+(cur===d?' selected':'')+'>'+d+'</option>';}).join("")
         + (cur&&DRINKS.indexOf(cur)<0?'<option selected>'+esc(cur)+'</option>':'')
         + '</select>';

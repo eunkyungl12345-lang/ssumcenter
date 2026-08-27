@@ -143,6 +143,7 @@
     var start=(document.getElementById("tt-start").value||"19:45").trim();
     var min=parseInt(document.getElementById("tt-min").value,10)||8;
     var rounds=parseInt(document.getElementById("tt-rounds").value,10)||14;
+    try{ localStorage.setItem("guide_tt", JSON.stringify({start:start,min:min,rounds:rounds})); }catch(e){}
     var m=start.match(/(\d{1,2}):(\d{2})/);
     var box=document.getElementById("tt-table");
     if(!m){ box.innerHTML='<div style="color:#E8828A;font-size:13px">시작 시간을 19:45 형식으로 넣어주세요</div>'; return; }
@@ -153,6 +154,8 @@
     }
     box.innerHTML=out+'<div style="text-align:right;font-size:12.5px;color:var(--muted);margin-top:8px">종료 예정 <b style="color:var(--amber)">'+fmt(cur)+'</b> · 총 '+(min*rounds)+'분</div>';
   }
+  // 저장된 타임테이블 값 복원
+  try{ var _tt=JSON.parse(localStorage.getItem("guide_tt")||"null"); if(_tt){ document.getElementById("tt-start").value=_tt.start; document.getElementById("tt-min").value=_tt.min; document.getElementById("tt-rounds").value=_tt.rounds; } }catch(e){}
   genTT();
 
   // ✏️ 멘트 직접 수정 (이 기기에 저장)
