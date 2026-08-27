@@ -29,6 +29,8 @@
   .drink-sel{margin-top:6px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px;color:var(--ink);font-family:inherit;font-size:12px;padding:7px 9px;max-width:200px}
   .drink-sel.none{border:1.5px dashed rgba(232,130,138,.55);color:var(--rose)}
   .drink-sel:focus{outline:none;border-color:var(--amber)}
+  .move-sel{margin-top:6px;margin-left:6px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px;color:var(--male);font-family:inherit;font-size:12px;padding:7px 9px;max-width:150px}
+  .move-sel:focus{outline:none;border-color:var(--amber)}
   .row-del{background:none;border:none;color:var(--faint);font-size:16px;cursor:pointer;flex:none;padding:4px 6px;align-self:flex-start}
   .row-del:hover{color:#E8828A}
   .row.dup{border-color:#E8828A;background:rgba(232,130,138,.08)}
@@ -191,13 +193,29 @@
         renderDrinkCounter();
       }).catch(function(){ alert("음료 저장 오류"); });
   };
+  // 📢 슬랙 알림만 보내기 (문자 없이)
+  function slackNote(text){ fetch("/api/send-sms",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({slackOnly:true,text:text})}).catch(function(){}); }
   // 명단에서 사람 삭제 (중복·오등록 정리)
   window.delRow=function(id,name){
     if(!confirm("⚠️ "+(name||"이 사람")+"님을 명단에서 삭제할까요?\n(중복·오등록 정리 · 되돌릴 수 없어요)")) return;
     fetch("/api/airtable?table="+encodeURIComponent("로테이션 신청")+"&recordId="+id,{method:"DELETE",headers:{"Content-Type":"application/json","x-admin-key":key()}})
       .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok,d:d};});})
-      .then(function(res){ if(!res.ok){ alert("삭제 실패: "+estr(res.d&&res.d.error)); return; } allRecs=allRecs.filter(function(z){return z.id!==id;}); render(); })
+      .then(function(res){ if(!res.ok){ alert("삭제 실패: "+estr(res.d&&res.d.error)); return; } allRecs=allRecs.filter(function(z){return z.id!==id;}); slackNote("🗑 명단 삭제: "+(name||"")+" ("+curRound+")"); render(); })
       .catch(function(){ alert("삭제 오류 — 다시 시도해주세요"); });
+  };
+  // 다른 회차로 이동
+  window.moveRound=function(id,round){
+    if(!round){ render(); return; }
+    var rec=allRecs.filter(function(x){return x.id===id;})[0]; if(!rec){ render(); return; }
+    var f=rec.fields||{}, name=f["이름"]||f["닉네임"]||"", from=f["회차"]||"";
+    if(!confirm(name+"님을 ["+round+"] 회차로 옮길까요?")){ render(); return; }
+    fetch(apiUrl(false),{method:"PATCH",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({records:[{id:id,fields:{"회차":round}}]})})
+      .then(function(r){return r.json();}).then(function(r){
+        if(r.error){ alert("이동 실패: "+estr(r.error)); render(); return; }
+        rec.fields["회차"]=round;
+        slackNote("🔀 회차 이동: "+name+" ("+from+" → "+round+")");
+        render();
+      }).catch(function(){ alert("이동 오류 — 다시 시도해주세요"); render(); });
   };
 
   document.getElementById("loginBtn").addEventListener("click",doLogin);
@@ -269,8 +287,10 @@
         + (cur&&DRINKS.indexOf(cur)<0?'<option selected>'+esc(cur)+'</option>':'')
         + '</select>';
       var delBtn='<button class="row-del" onclick="event.stopPropagation();delRow(\''+x.id+'\',\''+esc((f["이름"]||f["닉네임"]||"").replace(/'/g,""))+'\')" title="삭제">🗑</button>';
+      var otherRounds=roundList.filter(function(rd){return rd!==curRound;});
+      var moveSel=otherRounds.length?'<select class="move-sel" onclick="event.stopPropagation()" onchange="moveRound(\''+x.id+'\',this.value)"><option value="">🔀 회차 이동</option>'+otherRounds.map(function(rd){return '<option value="'+esc(rd)+'">→ '+esc(rd)+'</option>';}).join("")+'</select>':'';
       el.innerHTML='<input class="tbl-input" data-id="'+x.id+'" value="'+esc(tableMap[x.id]||"")+'" placeholder="테이블" onclick="event.stopPropagation()" onchange="setTable(\''+x.id+'\',this.value)">'+
-        '<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+(isDup?'<span class="dup-tag">중복?</span>':'')+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div>'+phoneHtml+drinkSel+'</div>'+delBtn;
+        '<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+(isDup?'<span class="dup-tag">중복?</span>':'')+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div>'+phoneHtml+drinkSel+moveSel+'</div>'+delBtn;
       el.addEventListener("click",function(){ toggle(x, el); });
       return el;
     }
