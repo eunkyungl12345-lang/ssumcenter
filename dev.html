@@ -112,6 +112,34 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 </style>
 </head>
 <body>
+<div id="dev-gate" style="position:fixed;inset:0;background:#0c0a08;z-index:99999;display:grid;place-items:center;padding:24px">
+  <div style="max-width:340px;width:100%;text-align:center">
+    <div style="font-size:44px">🔒</div>
+    <div style="font-size:17px;font-weight:800;color:#EDE0CC;margin:12px 0 4px">개발 페이지 · 관리자 전용</div>
+    <div style="font-size:12.5px;color:#998870;margin-bottom:18px">비밀번호를 입력하면 열려요</div>
+    <input id="dev-pw" type="password" placeholder="관리자 비밀번호" style="width:100%;background:#1e1811;border:1.5px solid #3a2e1f;border-radius:12px;padding:13px;font-size:15px;color:#EDE0CC;font-family:inherit;text-align:center">
+    <button onclick="devUnlock()" style="width:100%;margin-top:10px;background:#E8B050;color:#171208;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer">열기</button>
+    <div id="dev-msg" style="font-size:12.5px;color:#E8828A;margin-top:10px"></div>
+  </div>
+</div>
+<script>
+  (function(){
+    var K="admin_key";
+    function key(){ try{ return localStorage.getItem(K)||""; }catch(e){ return ""; } }
+    function open(){ var g=document.getElementById("dev-gate"); if(g) g.style.display="none"; }
+    if(key()) open();
+    var pw=document.getElementById("dev-pw");
+    if(pw) pw.addEventListener("keydown",function(e){ if(e.key==="Enter") devUnlock(); });
+    window.devUnlock=function(){
+      var v=document.getElementById("dev-pw").value;
+      fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:v})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d.ok){ try{ localStorage.setItem(K,v); }catch(e){} open(); }
+          else { document.getElementById("dev-msg").textContent="비밀번호가 틀렸어요"; }
+        }).catch(function(){ document.getElementById("dev-msg").textContent="오류가 났어요. 다시 시도해주세요."; });
+    };
+  })();
+</script>
 
 <!-- Nav -->
 <nav class="nav">
