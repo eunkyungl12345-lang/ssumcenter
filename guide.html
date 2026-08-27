@@ -30,6 +30,12 @@
   .rotmap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;font-weight:700;margin-top:8px}
   .rotmap span{background:var(--surface-2);border:1px solid var(--line-strong);border-radius:8px;padding:5px 9px}
   .rotmap .arw{background:none;border:none;color:var(--amber)}
+  .tt-row{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;border:1px solid var(--line);border-radius:10px;font-size:14.5px;margin-bottom:5px}
+  .tt-r{font-weight:800;color:var(--amber)}
+  .tt-time{font-variant-numeric:tabular-nums;font-weight:700}
+  .editable{border-radius:10px;transition:box-shadow .15s,background .15s}
+  .editable:hover{background:rgba(232,176,80,.04);cursor:text}
+  .editable:focus{outline:none;box-shadow:0 0 0 2px var(--amber);background:rgba(232,176,80,.06)}
 </style>
 </head>
 <body>
@@ -37,6 +43,10 @@
   <h1>🎤 진행 가이드 · 대본</h1>
   <div class="sub">로테이션 소개팅 운영용 · 센터장 전용 참고 자료</div>
   <a class="home" href="/admin">🏠 관리자 홈</a> · <a class="home" href="/rotation-admin">🎡 로테이션</a> · <a class="home" href="/attendance">📋 출석부</a> · <a class="home" href="/vote-admin">🗳️ 투표</a>
+  <div style="margin-top:11px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span>✏️ 회색 멘트 박스를 눌러서 <b style="color:var(--amber)">직접 수정</b>할 수 있어요 (이 기기에 저장)</span>
+    <button onclick="resetGuide()" style="background:var(--surface-2);border:1px solid var(--line-strong);color:var(--muted);border-radius:8px;padding:5px 10px;font-size:11.5px;font-family:inherit;cursor:pointer">↩︎ 원래 대본으로</button>
+  </div>
 
   <!-- 오늘 인원 -->
   <div class="card">
@@ -44,6 +54,19 @@
     <div class="hl" style="font-size:15px">남성 <span class="fill">&nbsp;</span> 분 · 여성 <span class="fill">&nbsp;</span> 분
       <div style="font-size:12px;color:var(--muted);margin-top:4px">출석부에서 실시간 확인 후 오프닝 멘트에 넣어주세요</div>
     </div>
+  </div>
+
+  <!-- 타임 테이블 -->
+  <div class="card">
+    <h2>⏱ 타임 테이블</h2>
+    <div class="cd">오늘 1라운드 = <b style="color:var(--amber)">8분 (이동 포함)</b> · 값 바꾸고 "표 만들기"</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+      <label style="font-size:12px;color:var(--muted)">시작 <input id="tt-start" value="19:45" style="width:64px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:8px;color:var(--ink);padding:6px 8px;font-family:inherit;font-size:13px;text-align:center"></label>
+      <label style="font-size:12px;color:var(--muted)">라운드 <input id="tt-min" value="8" inputmode="numeric" style="width:44px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:8px;color:var(--ink);padding:6px 8px;font-family:inherit;font-size:13px;text-align:center">분</label>
+      <label style="font-size:12px;color:var(--muted)">횟수 <input id="tt-rounds" value="14" inputmode="numeric" style="width:44px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:8px;color:var(--ink);padding:6px 8px;font-family:inherit;font-size:13px;text-align:center"></label>
+      <button onclick="genTT()" style="background:var(--amber);color:var(--ink-on-amber);border:none;border-radius:9px;padding:7px 14px;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer">표 만들기</button>
+    </div>
+    <div id="tt-table"></div>
   </div>
 
   <!-- 프로세스 요약 -->
@@ -66,7 +89,7 @@
     <div class="script">안녕하세요! 썸류센터를 찾아주신 멋쟁이 여러분, 다시 한번 감사드립니다.
 시작에 앞서 진행 방식을 짧게 안내드릴게요.
 
-대화는 <b>이동 시간 포함 10분씩</b> 진행되고, <b>8분이 지나면</b> 자리를 옮겨달라고 안내드릴 거예요. 아쉬우시겠지만 다음 분이 기다리지 않도록, 안내에 따라 <b>남성분들이 다음 번호 자리로</b> 이동해 주시면 됩니다.
+대화는 <b>이동 시간 포함 8분씩</b> 진행됩니다. 시간이 되면 자리를 옮겨달라고 안내드릴 거예요. 아쉬우시겠지만 다음 분이 기다리지 않도록, 안내에 따라 <b>남성분들이 다음 번호 자리로</b> 이동해 주시면 됩니다.
 
 이름표 스티커는 잘 보이는 곳에 붙여주세요.
 나눠드린 프로필 카드는 절반으로 잘라 상대방과 교환하시고 자유롭게 대화 나누시면 됩니다.
@@ -113,5 +136,40 @@
     <div class="tip"><b>투표용지 수거</b> 후 vote-admin에서 바로 입력 → 성사 자동 계산 → 결과 문자 발송</div>
   </div>
 </div>
+<script>
+  function pad(n){ return n<10?"0"+n:""+n; }
+  function fmt(mins){ return pad(Math.floor(mins/60)%24)+":"+pad(mins%60); }
+  function genTT(){
+    var start=(document.getElementById("tt-start").value||"19:45").trim();
+    var min=parseInt(document.getElementById("tt-min").value,10)||8;
+    var rounds=parseInt(document.getElementById("tt-rounds").value,10)||14;
+    var m=start.match(/(\d{1,2}):(\d{2})/);
+    var box=document.getElementById("tt-table");
+    if(!m){ box.innerHTML='<div style="color:#E8828A;font-size:13px">시작 시간을 19:45 형식으로 넣어주세요</div>'; return; }
+    var cur=parseInt(m[1],10)*60+parseInt(m[2],10), out="";
+    for(var i=1;i<=rounds;i++){
+      out+='<div class="tt-row"><span class="tt-r">'+i+'라운드</span><span class="tt-time">'+fmt(cur)+' ~ '+fmt(cur+min)+'</span></div>';
+      cur+=min;
+    }
+    box.innerHTML=out+'<div style="text-align:right;font-size:12.5px;color:var(--muted);margin-top:8px">종료 예정 <b style="color:var(--amber)">'+fmt(cur)+'</b> · 총 '+(min*rounds)+'분</div>';
+  }
+  genTT();
+
+  // ✏️ 멘트 직접 수정 (이 기기에 저장)
+  var EDS=document.querySelectorAll(".script");
+  EDS.forEach(function(el,i){
+    var k="guide_ed_"+i, saved=null;
+    try{ saved=localStorage.getItem(k); }catch(e){}
+    if(saved!=null) el.innerHTML=saved;
+    el.setAttribute("contenteditable","true");
+    el.classList.add("editable");
+    el.addEventListener("input",function(){ try{ localStorage.setItem(k, el.innerHTML); }catch(e){} });
+  });
+  window.resetGuide=function(){
+    if(!confirm("수정한 멘트를 모두 원래 대본으로 되돌릴까요?")) return;
+    EDS.forEach(function(el,i){ try{ localStorage.removeItem("guide_ed_"+i); }catch(e){} });
+    location.reload();
+  };
+</script>
 </body>
 </html>

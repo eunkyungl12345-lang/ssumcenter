@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1:1 매칭 프로세스 | 썸류센터</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--ok:#6FBE97;--rose:#E88FB0;--blue:#7EA6E0;--ink-on-amber:#171208;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.7;letter-spacing:-.01em}
+  .wrap{max-width:680px;margin:0 auto;padding:24px 18px 80px}
+  h1{font-size:23px;font-weight:900}
+  .sub{font-size:13px;color:var(--muted);margin:5px 0 6px}
+  a.home{font-size:12.5px;color:var(--muted);text-decoration:none}
+  a.home:hover{color:var(--rose)}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:16px;box-shadow:0 8px 26px rgba(0,0,0,.25)}
+  .card h2{font-size:16px;font-weight:900;color:var(--rose);display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .card .cd{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .flow{display:flex;flex-direction:column;gap:0}
+  .fstep{display:flex;gap:13px;position:relative;padding-bottom:18px}
+  .fstep:last-child{padding-bottom:0}
+  .fstep::before{content:"";position:absolute;left:15px;top:32px;bottom:-4px;width:2px;background:var(--line-strong)}
+  .fstep:last-child::before{display:none}
+  .fstep .n{flex:none;width:32px;height:32px;border-radius:50%;background:var(--rose);color:#2a0f18;display:grid;place-items:center;font-size:14px;font-weight:900;z-index:1}
+  .fstep .body{flex:1;padding-top:3px}
+  .fstep .t{font-size:15px;font-weight:800}
+  .fstep .d{font-size:13.5px;color:var(--muted);margin-top:3px}
+  .fstep .who{display:inline-block;font-size:11px;font-weight:800;padding:1px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
+  .w-cust{background:rgba(126,166,224,.16);color:var(--blue)}
+  .w-admin{background:rgba(232,176,80,.16);color:var(--amber)}
+  .w-auto{background:rgba(111,190,151,.16);color:var(--ok)}
+  .stt{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .stt span{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface-2)}
+  .tip{font-size:13.5px;color:var(--ink);padding-left:18px;position:relative;margin-bottom:8px}
+  .tip::before{content:"💡";position:absolute;left:0;top:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>💘 1:1 매칭 프로세스</h1>
+  <div class="sub">1:1 매칭 운영 흐름 · 센터장 전용</div>
+  <a class="home" href="/admin">🏠 관리자 홈</a> · <a class="home" href="/1on1-admin">💑 1:1 매칭 관리</a> · <a class="home" href="/1on1">📊 대시보드</a>
+
+  <div class="card">
+    <h2>🔄 전체 흐름 (신청 → 연락처 전달)</h2>
+    <div class="flow">
+      <div class="fstep"><div class="n">1</div><div class="body">
+        <div class="t">신청 접수 <span class="who w-cust">고객</span></div>
+        <div class="d">고객이 1:1 신청폼에서 신청 → "1:1 매칭 신청" 명단에 등록되고, <b>접수 안내 문자가 자동</b>으로 나가요.</div>
+      </div></div>
+      <div class="fstep"><div class="n">2</div><div class="body">
+        <div class="t">프로필 검토 · 승인 <span class="who w-admin">센터장</span></div>
+        <div class="d">1:1 관리에서 프로필·재직증명서 확인 → <b>✅ 승인</b>. 부적합하면 🚫제외 / ❌거절.</div>
+      </div></div>
+      <div class="fstep"><div class="n">3</div><div class="body">
+        <div class="t">상대 매칭 <span class="who w-admin">센터장</span></div>
+        <div class="d">승인된 남·여 중 어울리는 <b>두 사람 선택</b> → <b>"💘 두 사람 매칭 만들기"</b> → 양쪽에게 <b>상대 프로필 링크 문자</b>가 발송돼요. (상태: 소개중)</div>
+      </div></div>
+      <div class="fstep"><div class="n">4</div><div class="body">
+        <div class="t">양쪽 응답 <span class="who w-cust">고객</span></div>
+        <div class="d">각자 받은 링크에서 상대 프로필을 보고 <b>수락 / 거절</b>. 한쪽이라도 거절하면 다시 매칭 가능한 상태로 돌아가요.</div>
+      </div></div>
+      <div class="fstep"><div class="n">5</div><div class="body">
+        <div class="t">성사 → 입금 안내 <span class="who w-auto">자동</span></div>
+        <div class="d">둘 다 수락하면 <b>매칭비 입금 안내 문자가 자동</b>으로 발송돼요.</div>
+      </div></div>
+      <div class="fstep"><div class="n">6</div><div class="body">
+        <div class="t">연락처 전달 <span class="who w-admin">센터장</span></div>
+        <div class="d">입금 확인 후 <b>서로의 연락처를 전달</b> → 매칭 완료! 💛</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🏷️ 상태 뜻</h2>
+    <div class="stt">
+      <span style="color:#FFD400">대기 — 승인 전</span>
+      <span style="color:#22c55e">승인 — 매칭 가능</span>
+      <span style="color:#3b82f6">소개중 — 응답 대기</span>
+      <span style="color:#ef4444">거절</span>
+      <span style="color:var(--muted)">제외 — 숨김(복원 가능)</span>
+      <span style="color:var(--muted)">휴지통 — 삭제(복원 가능)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>✅ 매칭 꿀팁</h2>
+    <div class="tip"><b>커피 궁합</b> — 카드 펼치면 연애테스트 기반 '잘 맞는 이성'이 자동으로 떠요. 참고해서 매칭!</div>
+    <div class="tip"><b>선택 상단 고정</b> — 한 명 고르면 위에 사진·프로필이 고정돼요. 스크롤하며 짝을 편하게 찾기</div>
+    <div class="tip"><b>2단 정렬</b> — 기본/나이/키/등록일 + 오름·내림차순으로 원하는 순서대로</div>
+    <div class="tip"><b>상세/작게 보기</b> — 사진 크게 보거나 촘촘하게 보기 전환</div>
+    <div class="tip"><b>직접 문자</b> — 카드에서 접수 안내 문자, 또는 자유 문구로 바로 발송</div>
+  </div>
+</div>
+</body>
+</html>
