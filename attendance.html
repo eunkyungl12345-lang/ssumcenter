@@ -288,6 +288,7 @@
         + '</select>';
       var delBtn='<button class="row-del" onclick="event.stopPropagation();delRow(\''+x.id+'\',\''+esc((f["이름"]||f["닉네임"]||"").replace(/'/g,""))+'\')" title="삭제">🗑</button>';
       var otherRounds=roundList.filter(function(rd){return rd!==curRound;});
+      ["9/17 (목)","8/27 (목)"].forEach(function(rd){ if(rd!==curRound && otherRounds.indexOf(rd)<0) otherRounds.push(rd); });
       var moveSel=otherRounds.length?'<select class="move-sel" onclick="event.stopPropagation()" onchange="moveRound(\''+x.id+'\',this.value)"><option value="">🔀 회차 이동</option>'+otherRounds.map(function(rd){return '<option value="'+esc(rd)+'">→ '+esc(rd)+'</option>';}).join("")+'</select>':'';
       el.innerHTML='<input class="tbl-input" data-id="'+x.id+'" value="'+esc(tableMap[x.id]||"")+'" placeholder="테이블" onclick="event.stopPropagation()" onchange="setTable(\''+x.id+'\',this.value)">'+
         '<div class="chk">✓</div><div style="flex:1;min-width:0"><div class="nm">'+esc(f["이름"]||f["닉네임"]||"?")+nick+(isDup?'<span class="dup-tag">중복?</span>':'')+'<span class="g">'+esc(f["성별"]||"")+(f["출생연도"]?" · "+esc(f["출생연도"])+"년생":"")+'</span></div>'+phoneHtml+drinkSel+moveSel+'</div>'+delBtn;
