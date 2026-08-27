@@ -1323,6 +1323,10 @@ function renderList(){
       <div class="pool-expand" id="expand-${r.id}">
         <div style="padding:10px 0 0;display:flex;flex-direction:column;gap:8px">
           ${photos.length > 1 ? `<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">${photos.map(p => `<img src="${p.url}" onclick="openPhoto('${p.url}')" style="width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0">`).join("")}</div>` : ""}
+          <div style="display:flex;gap:6px">
+            <button onclick="event.stopPropagation();shareProfile('${r.id}')" style="flex:2;background:#FEE500;color:#3C1E1E;border:none;font-size:12.5px;font-weight:800;padding:10px;border-radius:10px;cursor:pointer">📤 카톡으로 공유 (사진+정보)</button>
+            <button onclick="event.stopPropagation();copyProfile('${r.id}')" style="flex:1;background:#161615;border:1px solid #6b6358;color:#9E9E97;font-size:12px;font-weight:700;padding:10px;border-radius:10px;cursor:pointer">📋 정보 복사</button>
+          </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
             <div onclick="copyPhone('${f["연락처"] || ""}', event)" style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px;cursor:pointer" title="탭하면 복사돼요"><span style="color:#8a8070;font-size:11px">연락처 <i class="fa-solid fa-copy" style="font-size:10px"></i></span><br><b>${f["연락처"] || "-"}</b></div>
             <div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">종교</span><br><b>${f["종교"] || "-"}</b></div>
@@ -1441,6 +1445,44 @@ function copyShare(){
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(txt).then(() => toast(picked.length + "명 명단을 복사했어요 📋"), () => alert("복사 실패 — 길게 눌러 복사해주세요"));
   } else { alert(txt); }
+}
+
+// 📤 카톡 공유용 프로필 텍스트 (이름/년생/키/직장/지역/종교 + 이상형)
+function profileText(f){
+  var parts=[f["이름"], f["출생연도"], f["키"], (f["직업"] || f["직업_직장명"]), f["사는곳"], f["종교"]].filter(function(x){ return x!=null && String(x).trim()!==""; });
+  var t=parts.join("\n");
+  var pref=[f["이상형"], f["선호나이대"]].filter(function(x){ return x && String(x).trim(); }).join("\n");
+  if(pref) t+="\n\n"+pref;
+  return t;
+}
+async function copyProfile(id){
+  const rec=applicants.find(r=>r.id===id); if(!rec) return;
+  const t=profileText(rec.fields);
+  try{ await navigator.clipboard.writeText(t); toast("프로필 정보를 복사했어요 📋"); }
+  catch(e){ prompt("아래 텍스트를 길게 눌러 복사하세요:", t); }
+}
+async function shareProfile(id){
+  const rec=applicants.find(r=>r.id===id); if(!rec) return;
+  const f=rec.fields, text=profileText(f);
+  const urls=(f["프로필사진"]||[]).map(p=>p&&p.url).filter(Boolean);
+  try{
+    const files=[];
+    for(let i=0;i<urls.length;i++){
+      const res=await fetch(urls[i]); if(!res.ok) throw new Error("img");
+      const blob=await res.blob();
+      files.push(new File([blob], (f["이름"]||"profile")+"_"+(i+1)+".jpg", {type:blob.type||"image/jpeg"}));
+    }
+    if(files.length && navigator.canShare && navigator.canShare({files})){
+      await navigator.share({files, text});
+      return;
+    }
+    throw new Error("no-share");
+  }catch(e){
+    if(e && e.name==="AbortError") return;
+    try{ await navigator.clipboard.writeText(text); }catch(_){}
+    urls.forEach(u=>window.open(u,"_blank"));
+    alert("이 기기에선 바로 공유가 안 돼요 😢\n대신 프로필 정보는 복사했고, 사진은 새 탭으로 열었어요 (길게 눌러 저장 후 카톡에 첨부하세요).");
+  }
 }
 
 async function sendIntakeSMS(id){
