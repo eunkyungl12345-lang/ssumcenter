@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>결혼 매칭 | 썸류센터</title>
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--amber-2:#f0c674;--rose:#E88FB0;--ink-on-amber:#171208;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.7;letter-spacing:-.01em}
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px 90px}
+  .hero{text-align:center;padding:64px 8px 40px}
+  .hero .pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--amber);background:rgba(232,176,80,.1);border:1px solid rgba(232,176,80,.3);padding:6px 15px;border-radius:999px}
+  .hero .em{font-size:60px;margin:20px 0 6px}
+  .hero h1{font-size:clamp(30px,7vw,42px);font-weight:800;letter-spacing:-.03em;line-height:1.2}
+  .hero h1 .g{background:linear-gradient(120deg,var(--amber),var(--amber-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{font-size:15.5px;color:var(--muted);margin-top:16px;line-height:1.75}
+  .sec{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px 22px}
+  .sec h2{font-size:18px;font-weight:900;margin-bottom:6px}
+  .sec .lead{font-size:13px;color:var(--muted);margin-bottom:16px}
+  .who{display:flex;flex-direction:column;gap:11px}
+  .who .it{display:flex;gap:11px;font-size:15px;align-items:flex-start}
+  .who .it .c{flex:none;color:var(--amber);font-weight:900;margin-top:1px}
+  .flow{display:flex;flex-direction:column;gap:0}
+  .fs{display:flex;gap:14px;position:relative;padding-bottom:20px}
+  .fs:last-child{padding-bottom:0}
+  .fs::before{content:"";position:absolute;left:16px;top:34px;bottom:-2px;width:2px;background:var(--line-strong)}
+  .fs:last-child::before{display:none}
+  .fs .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--amber);color:var(--ink-on-amber);display:grid;place-items:center;font-weight:900;z-index:1}
+  .fs .t{font-size:15.5px;font-weight:800}
+  .fs .d{font-size:14px;color:var(--muted);margin-top:2px}
+  .price{text-align:center;background:linear-gradient(135deg,rgba(232,176,80,.14),rgba(232,176,80,.04));border:1px solid rgba(232,176,80,.35)}
+  .price .big{font-size:38px;font-weight:900;color:var(--amber);margin:6px 0}
+  .price .sm{font-size:13.5px;color:var(--muted)}
+  .qa{border-top:1px solid var(--line);padding:14px 0}
+  .qa:first-of-type{border-top:none}
+  .qa .q{font-size:14.5px;font-weight:800}
+  .qa .a{font-size:13.5px;color:var(--muted);margin-top:5px}
+  .cta{display:block;text-align:center;background:linear-gradient(135deg,var(--amber),var(--amber-2));color:var(--ink-on-amber);font-weight:900;font-size:16px;padding:18px;border-radius:16px;text-decoration:none;margin-top:22px;box-shadow:0 10px 30px rgba(232,176,80,.25)}
+  .cta:active{transform:translateY(1px)}
+  .foot{text-align:center;font-size:12px;color:var(--faint);margin-top:16px}
+  /* 잠금 게이트 */
+  #gate{position:fixed;inset:0;background:var(--bg);z-index:99999;display:grid;place-items:center;padding:24px}
+  #gate .box{max-width:340px;width:100%;text-align:center}
+  #gate input{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:12px;padding:13px;font-size:15px;color:var(--ink);font-family:inherit;text-align:center}
+  #gate button{width:100%;margin-top:10px;background:var(--amber);color:var(--ink-on-amber);border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="gate"><div class="box">
+  <div style="font-size:44px">🔒</div>
+  <div style="font-size:17px;font-weight:800;margin:12px 0 4px">개발 중 · 관리자 전용</div>
+  <div style="font-size:12.5px;color:var(--muted);margin-bottom:18px">비밀번호를 입력하면 열려요</div>
+  <input id="gpw" type="password" placeholder="관리자 비밀번호">
+  <button onclick="gUnlock()">열기</button>
+  <div id="gmsg" style="font-size:12.5px;color:#E8828A;margin-top:10px"></div>
+</div></div>
+
+<div class="wrap">
+  <div class="hero">
+    <span class="pill">SSUMLYU · 결혼 매칭</span>
+    <div class="em">💍</div>
+    <h1>진심으로 <span class="g">결혼</span>을<br>생각하는 분들께</h1>
+    <p>가볍게 만나는 소개팅은 이제 그만.<br>센터장이 <b>직접, 신중하게</b> 딱 맞는 한 분을 소개해드려요.</p>
+  </div>
+
+  <div class="sec">
+    <h2>이런 분들께 딱이에요</h2>
+    <div class="lead">연애가 아니라 '결혼'이 목표인 분들만 모아요</div>
+    <div class="who">
+      <div class="it"><span class="c">✓</span><div>1~2년 안에 <b>진지하게 결혼</b>을 생각하는 분</div></div>
+      <div class="it"><span class="c">✓</span><div>가벼운 만남·시간 낭비는 원하지 않는 분</div></div>
+      <div class="it"><span class="c">✓</span><div>검증된 분과 <b>제대로</b> 만나고 싶은 분</div></div>
+      <div class="it"><span class="c">✓</span><div>바빠서 좋은 인연 만날 기회가 없던 분</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>어떻게 진행되나요</h2>
+    <div class="flow">
+      <div class="fs"><div class="n">1</div><div><div class="t">관심 신청</div><div class="d">카톡으로 간단히 신청 → 결혼 가치관·원하는 조건 상담</div></div></div>
+      <div class="fs"><div class="n">2</div><div><div class="t">프로필 검증</div><div class="d">직업·재직 등 확인. 진지한 분들만 풀에 등록해요</div></div></div>
+      <div class="fs"><div class="n">3</div><div><div class="t">센터장 직접 매칭</div><div class="d">취향·가치관을 반영해 딱 맞는 한 분을 신중히 소개</div></div></div>
+      <div class="fs"><div class="n">4</div><div><div class="t">성사 · 연락처 전달</div><div class="d">서로 좋으면 연락처 교환 → 두 분의 인연 시작 💛</div></div></div>
+    </div>
+  </div>
+
+  <div class="sec price">
+    <div class="lead" style="margin:0">비용은 이렇게</div>
+    <div class="big">매칭 성사 시 5만원</div>
+    <div class="sm">신청·상담은 무료 · <b>매칭이 성사됐을 때만</b> 비용이 발생해요.<br>안 되면 한 푼도 안 내세요.</div>
+  </div>
+
+  <div class="sec">
+    <h2>자주 묻는 질문</h2>
+    <div class="qa"><div class="q">Q. 왜 성사됐을 때만 내나요?</div><div class="a">진짜 좋은 매칭에만 집중하기 위해서예요. 억지로 연결하지 않고, 두 분이 정말 통했을 때만 비용을 받아요.</div></div>
+    <div class="qa"><div class="q">Q. 어떤 분들이 신청하나요?</div><div class="a">결혼을 진지하게 생각하는 2030~40 직장인 분들이에요. 프로필·직업을 확인해요.</div></div>
+    <div class="qa"><div class="q">Q. 내 정보는 안전한가요?</div><div class="a">연락처·실명은 매칭 성사 전까지 상대에게 공개되지 않아요.</div></div>
+  </div>
+
+  <a class="cta" href="https://pf.kakao.com/_AxfxcVX/chat" target="_blank" rel="noopener">💍 결혼 매칭 관심 신청하기 →</a>
+  <div class="foot">카톡으로 편하게 문의 주세요 · 썸류센터</div>
+</div>
+
+<script>
+  (function(){
+    var K="admin_key";
+    function key(){ try{ return localStorage.getItem(K)||""; }catch(e){ return ""; } }
+    function open(){ var g=document.getElementById("gate"); if(g) g.style.display="none"; }
+    if(key()) open();
+    var el=document.getElementById("gpw"); if(el) el.addEventListener("keydown",function(e){ if(e.key==="Enter") gUnlock(); });
+    window.gUnlock=function(){
+      var v=document.getElementById("gpw").value;
+      fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:v})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d.ok){ try{ localStorage.setItem(K,v); }catch(e){} open(); }
+          else { document.getElementById("gmsg").textContent="비밀번호가 틀렸어요"; }
+        }).catch(function(){ document.getElementById("gmsg").textContent="오류가 났어요."; });
+    };
+  })();
+</script>
+</body>
+</html>
