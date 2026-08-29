@@ -317,8 +317,10 @@
         <!-- 키 -->
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">키 <span class="y">*</span></label>
-          <input type="text" name="height" required placeholder="예: 175"
-            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
+          <select name="height" id="height-sel" required
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#E8B050] focus:outline-none transition appearance-none">
+            <option value="" disabled selected>키를 선택해주세요</option>
+          </select>
         </div>
 
         <!-- 사는 곳 -->
@@ -655,7 +657,7 @@ function aiFillForm(){
       if(line.match(/^키/) || line.match(/키\s*[:：]?\s*\d/)){
         var hVal = line.replace(/[^\d]/g, "");
         if(hVal && parseInt(hVal) > 100){
-          var hEl = document.querySelector('input[name="height"]');
+          var hEl = document.querySelector('[name="height"]');
           if(hEl){ hEl.value = hVal; filled.push("키: " + hVal); }
           continue;
         }
@@ -802,6 +804,12 @@ function aiFillForm(){
       location.replace('login.html?redirect=matching.html');
     }
   }catch(e){}
+})();
+
+// 키 드롭다운 옵션 채우기 (150~195cm)
+(function fillHeight(){
+  var sel=document.getElementById("height-sel"); if(!sel) return;
+  for(var h=150;h<=195;h++){ var o=document.createElement("option"); o.value=String(h); o.textContent=h+"cm"; sel.appendChild(o); }
 })();
 
 // URL 파라미터에서 테스트 결과 읽기 (테스트 페이지에서 넘어온 경우 자동 채움)
