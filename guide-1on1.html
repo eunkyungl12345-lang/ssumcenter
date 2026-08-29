@@ -32,19 +32,39 @@
   .where{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--blue);background:rgba(126,166,224,.1);border:1px solid rgba(126,166,224,.25);padding:5px 11px;border-radius:9px;margin:10px 0 4px;text-decoration:none}
   .tip{font-size:13px;color:var(--muted);margin-top:9px;padding-left:18px;position:relative}
   .tip::before{content:"💡";position:absolute;left:0}
-  /* 폰 목업 */
-  .mock{background:#0D0D0C;border:1.5px solid var(--line-strong);border-radius:16px;padding:14px;margin-top:12px;max-width:280px}
-  .mock-bar{display:flex;gap:5px;margin-bottom:10px}
-  .mock-bar i{width:8px;height:8px;border-radius:50%;background:var(--line-strong)}
-  .mock h4{font-size:13px;font-weight:800;margin-bottom:8px;color:var(--ink)}
-  .mock .ph{background:var(--surface-2);border:1px solid var(--line);border-radius:9px;height:70px;display:grid;place-items:center;color:var(--faint);font-size:22px;margin-bottom:9px}
-  .mock .li{font-size:11.5px;color:var(--muted);padding:3px 0}
-  .mock .btns{display:flex;gap:6px;margin-top:9px}
-  .mock .btn{flex:1;text-align:center;font-size:11.5px;font-weight:800;padding:8px;border-radius:8px}
-  .mock .b-ok{background:var(--amber);color:var(--ink-on-amber)}
-  .mock .b-no{background:var(--surface-2);border:1px solid var(--line-strong);color:var(--muted)}
-  .mock.blur .ph,.mock.blur .li{filter:blur(4px);opacity:.5}
-  .mock .lock{text-align:center;color:var(--rose);font-size:13px;font-weight:800;padding:14px 0}
+  /* 📱 폰 화면 목업 (실제 앱처럼) */
+  .phone{max-width:260px;margin:14px 0 4px;background:#0c0a08;border:6px solid #1a1611;border-radius:30px;padding:0;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+  .phone-notch{height:22px;background:#0c0a08;display:flex;align-items:center;justify-content:center}
+  .phone-notch::after{content:"";width:70px;height:5px;border-radius:5px;background:#1a1611}
+  .screen{background:#0D0D0C;padding:16px 15px 18px;min-height:120px}
+  .sc-eyebrow{font-size:9.5px;font-weight:800;letter-spacing:.1em;color:var(--amber);text-transform:uppercase;margin-bottom:4px}
+  .sc-title{font-size:15px;font-weight:900;line-height:1.35;margin-bottom:3px}
+  .sc-title .am{color:var(--amber)}
+  .sc-sub{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:10px}
+  .sc-photo{aspect-ratio:3/4;background:linear-gradient(160deg,#1e1c17,#16140f);border:1.5px solid rgba(232,176,80,.25);border-radius:12px;display:grid;place-items:center;font-size:40px;margin-bottom:10px}
+  .sc-info{font-size:12px;font-weight:700;color:var(--ink)}
+  .sc-info .g{color:var(--muted);font-weight:500;font-size:11px}
+  .sc-note{font-size:10px;color:var(--muted);background:#16140f;border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin-top:9px;line-height:1.5}
+  .sc-note b{color:var(--amber)}
+  .sc-btns{display:flex;gap:7px;margin-top:11px}
+  .sc-btn{flex:1;text-align:center;font-size:12px;font-weight:800;padding:11px;border-radius:11px}
+  .b-ok{background:linear-gradient(135deg,var(--amber),#f0c674);color:var(--ink-on-amber)}
+  .b-no{background:#16140f;border:1.5px solid var(--line-strong);color:var(--muted);flex:.6}
+  .sc-field{background:#16140f;border:1px solid var(--line-strong);border-radius:9px;padding:9px 11px;font-size:11px;color:var(--faint);margin-bottom:7px}
+  .sc-field.sel::after{content:"▾";float:right;color:var(--muted)}
+  .sc-steps{display:flex;gap:5px;margin-bottom:11px}
+  .sc-steps span{flex:1;text-align:center;font-size:9px;font-weight:700;padding:5px 2px;border-radius:20px;background:#16140f;color:var(--muted);border:1px solid var(--line)}
+  .sc-steps span.on{background:var(--amber);color:var(--ink-on-amber);border-color:var(--amber)}
+  .sc-big{text-align:center;padding:8px 0}
+  .sc-big .emo{font-size:38px}
+  .sc-big h3{font-size:16px;font-weight:900;margin:8px 0 4px}
+  .sc-big p{font-size:11px;color:var(--muted);line-height:1.5}
+  .sc-pay{background:#16140f;border:1px solid rgba(232,176,80,.3);border-radius:11px;padding:11px;margin-top:10px;text-align:center}
+  .sc-pay .amt{font-size:20px;font-weight:900;color:var(--amber)}
+  .sc-pay .lbl{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .sc-photo.blur{filter:blur(5px);opacity:.45}
+  .sc-lock{text-align:center;color:var(--rose);font-size:12px;font-weight:800;padding:6px 0}
+  .cap{font-size:11px;color:var(--faint);margin-top:6px;text-align:center;max-width:260px}
   .arrow{text-align:center;color:var(--faint);font-size:20px;margin:2px 0}
   .flowend{background:linear-gradient(135deg,rgba(232,176,80,.14),rgba(232,176,80,.04));border:1px solid rgba(232,176,80,.35);border-radius:16px;padding:18px;text-align:center;margin-top:16px;font-size:14.5px}
   /* 문자 말풍선 */
@@ -109,13 +129,13 @@
         <li><span class="sn">2</span><b>"💘 두 사람 매칭 만들기"</b> 버튼 → 확인창에서 이름 보고 OK</li>
         <li><span class="sn">3</span>양쪽에게 <b>상대 프로필 링크 문자가 자동 발송</b> (상태: 소개중)</li>
       </ul>
-      <div class="mock">
-        <div class="mock-bar"><i></i><i></i><i></i></div>
-        <h4>🔒 선택한 사람 (상단 고정)</h4>
-        <div class="li">선택1 · 👧 여성 재구 95년생</div>
-        <div class="li">선택2 · 👦 남성 나무 92년생</div>
-        <div class="btns"><div class="btn b-ok">💘 두 사람 매칭 만들기</div></div>
-      </div>
+      <div class="phone"><div class="phone-notch"></div><div class="screen">
+        <div class="sc-eyebrow">🔒 선택한 사람 (상단 고정)</div>
+        <div class="sc-field">선택 1 · 👧 여성 재구 95년생</div>
+        <div class="sc-field">선택 2 · 👦 남성 나무 92년생</div>
+        <div class="sc-btns"><div class="sc-btn b-ok">💘 두 사람 매칭 만들기</div></div>
+      </div></div>
+      <div class="cap">🛠 관리자 매칭 화면</div>
       <div class="warn"><b>주의</b> · 같은 성별끼리는 매칭 안 돼요(자동 차단). 커피 궁합·선호 나이대 참고하면 성사율이 올라가요.</div>
       <a class="where" href="/1on1-admin">📍 1:1 매칭 관리 → 사람 2명 선택 → 매칭 버튼</a>
     </div>
@@ -164,45 +184,71 @@
   <div class="pane" id="pane-guest">
     <div class="step">
       <div class="step-h"><div class="step-n">1</div><div class="step-t">신청서 작성</div></div>
-      <div class="step-d">홈에서 <b>1:1 신청</b> → 사진·프로필·이상형 입력 → 제출하면 <b>접수 안내 문자</b>가 와요.</div>
-      <div class="sms"><div class="sms-label">💬 접수되면 받는 문자</div><div class="sms-body">○○님, 안녕하세요. 썸류센터입니당
+      <div class="step-d">홈에서 <b>1:1 신청</b> → 사진·프로필·이상형 입력 → 4단계로 작성하고 제출해요. <b>AI 자동입력</b>으로 붙여넣기 한 번에 채울 수도 있어요.</div>
+      <div class="phone"><div class="phone-notch"></div><div class="screen">
+        <div class="sc-eyebrow">🇰🇷 1:1 온라인 매칭</div>
+        <div class="sc-title">나만을 위한 <span class="am">매칭</span></div>
+        <div class="sc-steps"><span class="on">1 기본정보</span><span>2 인증</span><span>3 이상형</span><span>4 제출</span></div>
+        <div class="sc-field">📷 프로필 사진 (최대 3장)</div>
+        <div class="sc-field">이름</div>
+        <div class="sc-field sel">키 선택</div>
+        <div class="sc-field sel">종교 선택</div>
+        <div class="sc-btns"><div class="sc-btn b-ok">다음 →</div></div>
+      </div></div>
+      <div class="cap">📱 손님이 보는 신청폼 (4단계)</div>
+      <div class="sms"><div class="sms-label">💬 제출하면 받는 문자</div><div class="sms-body">○○님, 안녕하세요. 썸류센터입니당
 1:1 매칭 신청이 잘 접수됐어요 💛
 좋은 인연이 준비되면 상대 프로필과 함께 안내드릴게요!</div></div>
     </div>
 
     <div class="step">
       <div class="step-h"><div class="step-n">2</div><div class="step-t">매칭 상대 소개받기</div></div>
-      <div class="step-d">센터장이 어울리는 분을 찾으면 <b>문자로 프로필 링크</b>가 와요. 링크 열면 <b>상대 프로필</b>이 보여요.</div>
-      <div class="mock">
-        <div class="mock-bar"><i></i><i></i><i></i></div>
-        <h4>💘 당신의 매칭 상대</h4>
-        <div class="ph">🙂</div>
-        <div class="li">95년생 · 디자이너 · 174cm</div>
-        <div class="li">서울 강남 · 무교</div>
-        <div class="btns"><div class="btn b-ok">💛 수락</div><div class="btn b-no">패스</div></div>
-      </div>
+      <div class="step-d">센터장이 어울리는 분을 찾으면 <b>문자로 프로필 링크</b>가 와요. 링크를 열면 <b>상대 프로필</b>과 수락/거절 버튼이 떠요.</div>
+      <div class="phone"><div class="phone-notch"></div><div class="screen">
+        <div class="sc-eyebrow">💗 1:1 매칭 결과</div>
+        <div class="sc-title">센터장이 찾은<br><span class="am">당신의 매칭 상대</span></div>
+        <div class="sc-sub">프로필을 확인하고 수락 또는 거절을 선택해주세요.</div>
+        <div class="sc-photo">🙂</div>
+        <div class="sc-info">95년생 · 디자이너 <span class="g">· 174cm</span><br><span class="g">서울 강남 · 무교</span></div>
+        <div class="sc-note">💡 아직 매칭된 게 아니에요. <b>두 분 모두 수락</b>해야 성사돼요.</div>
+        <div class="sc-btns"><div class="sc-btn b-ok">💛 수락할게요</div><div class="sc-btn b-no">거절</div></div>
+      </div></div>
+      <div class="cap">📱 상대 프로필 + 수락/거절 화면</div>
     </div>
 
     <div class="step">
-      <div class="step-h"><div class="step-n">3</div><div class="step-t">수락 또는 거절</div></div>
-      <div class="step-d"><b>수락</b>하면 상대 응답을 기다려요. <b>거절(패스)</b>하면 프로필이 사라지고 다음 기회로.</div>
-      <div class="arrow">↓ 한쪽이라도 거절하면</div>
-      <div class="mock blur">
-        <div class="mock-bar"><i></i><i></i><i></i></div>
-        <div class="ph">🙂</div>
-        <div class="li">프로필 정보</div>
-        <div class="lock">🔒 이번 매칭은 불발됐어요<br><span style="font-weight:500;color:var(--muted);font-size:11.5px">상대 프로필은 볼 수 없어요</span></div>
-      </div>
-      <div class="tip">한쪽이 거절하면 <b>상대는 프로필을 못 봐요</b>. 서로 사생활 보호!</div>
+      <div class="step-h"><div class="step-n">3</div><div class="step-t">수락하면 → 상대 응답 대기</div></div>
+      <div class="step-d"><b>수락</b>하면 상대방 응답을 기다려요. 상대도 수락하고 입금까지 되면 연락처가 전달돼요.</div>
+      <div class="phone"><div class="phone-notch"></div><div class="screen">
+        <div class="sc-big"><div class="emo">💛</div><h3>수락 완료!</h3><p>상대방도 수락하고 결제가 확인되면<br>서로의 연락처를 전달해 드려요.</p></div>
+        <div class="sc-note" style="text-align:center">나의 응답: <b>수락</b> · 상대방 응답 대기 중…</div>
+      </div></div>
+      <div class="cap">📱 수락 후 화면 (대기 중)</div>
     </div>
 
     <div class="step">
-      <div class="step-h"><div class="step-n">4</div><div class="step-t">둘 다 수락 → 성사!</div></div>
+      <div class="step-h"><div class="step-n">4</div><div class="step-t">거절 / 불발되면</div></div>
+      <div class="step-d"><b>거절(패스)</b>하거나 <b>상대가 거절</b>하면 매칭이 불발돼요. 이때 <b>상대 프로필은 볼 수 없어요</b> (서로 사생활 보호).</div>
+      <div class="phone"><div class="phone-notch"></div><div class="screen">
+        <div class="sc-photo blur">🙂</div>
+        <div class="sc-lock">🔒 이번 매칭은 불발됐어요</div>
+        <div class="sc-sub" style="text-align:center;margin:0">상대 프로필은 볼 수 없어요.<br>다음에 더 좋은 인연을 찾아드릴게요 💛</div>
+      </div></div>
+      <div class="cap">📱 불발 화면 (프로필 가려짐)</div>
+    </div>
+
+    <div class="step">
+      <div class="step-h"><div class="step-n">5</div><div class="step-t">둘 다 수락 → 성사!</div></div>
       <div class="step-d">두 분 모두 수락하면 <b>매칭 성사</b> 🎉 매칭비 입금 안내를 받아요.</div>
+      <div class="phone"><div class="phone-notch"></div><div class="screen">
+        <div class="sc-big"><div class="emo">🎉</div><h3>매칭 성사!</h3><p>양쪽 모두 수락했어요!</p></div>
+        <div class="sc-pay"><div class="lbl">매칭 비용</div><div class="amt">19,900원</div><div class="sc-sub" style="margin:6px 0 0">입금 확인 후 연락처를 전달해 드려요</div></div>
+      </div></div>
+      <div class="cap">📱 성사 + 결제 안내 화면</div>
     </div>
 
     <div class="step">
-      <div class="step-h"><div class="step-n">5</div><div class="step-t">연락처 받기</div></div>
+      <div class="step-h"><div class="step-n">6</div><div class="step-t">연락처 받기</div></div>
       <div class="step-d">입금 확인되면 <b>서로의 연락처</b>를 전달받아요. 이제 두 분이 직접 연락! 💛</div>
     </div>
 
