@@ -716,6 +716,13 @@ async function checkMyResponse(){
     else if(other === false) showScreen("unmatched");
     else showScreen("accept");     // 수락자는 결과 화면
   } else {
+    // 🔒 내가 아직 응답 안 했어도, 상대가 이미 거절했으면(불발) 프로필 공개 X
+    let other = null;
+    try { other = await checkOtherResponse(); } catch(e){}
+    if(other === false){
+      showScreen("unmatched");     // 상대가 거절 → 불발 화면 (프로필 안 보임)
+      return;
+    }
     // 상대가 이미 슈퍼매칭을 보냈으면 배지 표시 (수락 시 무료 안내)
     try {
       var mt = await getMatchTypes();
