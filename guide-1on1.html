@@ -47,6 +47,16 @@
   .mock .lock{text-align:center;color:var(--rose);font-size:13px;font-weight:800;padding:14px 0}
   .arrow{text-align:center;color:var(--faint);font-size:20px;margin:2px 0}
   .flowend{background:linear-gradient(135deg,rgba(232,176,80,.14),rgba(232,176,80,.04));border:1px solid rgba(232,176,80,.35);border-radius:16px;padding:18px;text-align:center;margin-top:16px;font-size:14.5px}
+  /* 문자 말풍선 */
+  .sms{background:#1c3a2e;border:1px solid #2f5c47;border-radius:14px;border-top-left-radius:4px;padding:12px 14px;margin-top:11px;max-width:300px;position:relative}
+  .sms-label{font-size:10.5px;font-weight:800;color:#6FBE97;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+  .sms-body{font-size:12.5px;color:#e8f0ea;line-height:1.7;white-space:pre-wrap}
+  .sub-steps{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:8px}
+  .sub-steps li{font-size:13.5px;color:var(--ink);padding-left:24px;position:relative;line-height:1.6}
+  .sub-steps li b{color:var(--amber)}
+  .sub-steps .sn{position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--muted);font-size:10px;font-weight:800;display:grid;place-items:center}
+  .warn{background:rgba(239,107,107,.1);border:1px solid rgba(239,107,107,.3);border-radius:10px;padding:9px 12px;margin-top:10px;font-size:12.5px;color:#f0a0a0}
+  .warn b{color:var(--red)}
 </style>
 </head>
 <body>
@@ -64,47 +74,87 @@
   <div class="pane on" id="pane-admin">
     <div class="step">
       <div class="step-h"><div class="step-n">1</div><div class="step-t">신청이 들어와요</div><span class="step-w w-c">손님</span></div>
-      <div class="step-d">손님이 1:1 신청폼을 작성 → 자동으로 <b>접수 안내 문자</b>가 나가고, <b>슬랙 #일반</b>에 새 신청 알림이 떠요.</div>
-      <a class="where" href="/1on1-admin">📍 1:1 매칭 관리 → 신청자 목록에 자동 등록</a>
-      <div class="tip">슬랙 알림 오면 바로 확인 가능. 신청은 자동 "승인" 상태로 들어와요.</div>
+      <div class="step-d">손님이 홈에서 1:1 신청폼을 작성·제출하면 자동으로 처리돼요.</div>
+      <ul class="sub-steps">
+        <li><span class="sn">1</span>손님에게 <b>접수 안내 문자</b>가 자동 발송</li>
+        <li><span class="sn">2</span><b>슬랙 #일반</b> 채널에 "📮 새 1:1 매칭 신청!" 알림 (사진 포함)</li>
+        <li><span class="sn">3</span>신청자 목록에 <b>자동 "승인" 상태</b>로 등록 (따로 승인 안 눌러도 됨)</li>
+      </ul>
+      <div class="sms"><div class="sms-label">💬 자동 발송되는 접수 문자</div><div class="sms-body">○○님, 안녕하세요. 썸류센터입니당
+1:1 매칭 신청이 잘 접수됐어요 💛
+센터장이 ○○님께 어울리는 분을 신중하게 찾고 있어요.
+좋은 인연이 준비되면 상대 프로필과 함께 문자로 안내드릴게요!
+설레는 마음으로 준비할게요. 조금만 기다려주세요 ✨</div></div>
+      <a class="where" href="/1on1-admin">📍 1:1 매칭 관리 → 신청자 목록에서 확인</a>
     </div>
 
     <div class="step">
       <div class="step-h"><div class="step-n">2</div><div class="step-t">프로필 검토</div><span class="step-w w-a">센터장</span></div>
-      <div class="step-d">신청자 카드를 펼쳐서 <b>사진·직업·재직증명서·이상형</b> 확인. 필요하면 <b>🔒 외모 등급</b>(관리자만)도 매겨요. 부적합하면 🚫제외/🗑삭제.</div>
+      <div class="step-d">신청자 카드를 <b>톡 눌러 펼치면</b> 상세 정보가 나와요. 확인할 것들:</div>
+      <ul class="sub-steps">
+        <li><span class="sn">1</span><b>사진</b>(여러 장) · 직업 · 키 · 사는곳 · 직장위치</li>
+        <li><span class="sn">2</span><b>재직증명서</b> 첨부 확인 (초록 = 제출됨 / 빨강 = 없음)</li>
+        <li><span class="sn">3</span>이상형 · 자기소개 · 성격 키워드</li>
+        <li><span class="sn">4</span>필요하면 <b>🔒 외모 등급(★1~5)</b> 매기기 — 우리끼리만 보여요</li>
+      </ul>
+      <div class="tip">부적합하면 <b>🚫제외</b>(숨김·복원가능) 또는 <b>🗑삭제</b>(휴지통). 카드에 <b>☕커피 궁합</b>이 뜨면 잘 맞는 이성 추천이에요.</div>
       <a class="where" href="/1on1-admin">📍 1:1 매칭 관리 → 카드 톡 눌러 펼치기</a>
     </div>
 
     <div class="step">
       <div class="step-h"><div class="step-n">3</div><div class="step-t">두 사람 골라 매칭</div><span class="step-w w-a">센터장</span></div>
-      <div class="step-d">어울리는 <b>남·여 한 명씩 선택</b>(위에 고정됨) → <b>"💘 두 사람 매칭 만들기"</b>. 그러면 양쪽에게 <b>상대 프로필 링크 문자</b>가 자동 발송돼요. (상태: 소개중)</div>
-      <a class="where" href="/1on1-admin">📍 1:1 매칭 관리 → 사람 2명 선택 → 매칭 버튼</a>
+      <div class="step-d">어울리는 두 분을 골라 매칭을 만들어요.</div>
+      <ul class="sub-steps">
+        <li><span class="sn">1</span><b>남자 한 명, 여자 한 명</b> 카드를 톡 선택 → 화면 위에 <b>고정</b>돼요</li>
+        <li><span class="sn">2</span><b>"💘 두 사람 매칭 만들기"</b> 버튼 → 확인창에서 이름 보고 OK</li>
+        <li><span class="sn">3</span>양쪽에게 <b>상대 프로필 링크 문자가 자동 발송</b> (상태: 소개중)</li>
+      </ul>
       <div class="mock">
         <div class="mock-bar"><i></i><i></i><i></i></div>
         <h4>🔒 선택한 사람 (상단 고정)</h4>
-        <div class="li">선택1 · 여성 재구 95년생</div>
-        <div class="li">선택2 · 남성 나무 92년생</div>
+        <div class="li">선택1 · 👧 여성 재구 95년생</div>
+        <div class="li">선택2 · 👦 남성 나무 92년생</div>
         <div class="btns"><div class="btn b-ok">💘 두 사람 매칭 만들기</div></div>
       </div>
-      <div class="tip">커피 궁합·선호나이대 참고해서 고르면 성사율↑</div>
+      <div class="warn"><b>주의</b> · 같은 성별끼리는 매칭 안 돼요(자동 차단). 커피 궁합·선호 나이대 참고하면 성사율이 올라가요.</div>
+      <a class="where" href="/1on1-admin">📍 1:1 매칭 관리 → 사람 2명 선택 → 매칭 버튼</a>
     </div>
 
     <div class="step">
       <div class="step-h"><div class="step-n">4</div><div class="step-t">응답 기다리기</div><span class="step-w w-c">손님</span></div>
-      <div class="step-d">양쪽이 링크 열어서 <b>수락/거절</b>. 응답이 오면 <b>슬랙에 💌수락/🙅거절 알림</b>. 한쪽이 거절하면 <b>불발</b>(자동으로 다시 매칭 가능 상태로).</div>
+      <div class="step-d">두 분이 각자 링크를 열어 <b>수락/거절</b>해요. 응답마다 슬랙 알림이 와요.</div>
+      <ul class="sub-steps">
+        <li><span class="sn">1</span>수락 → 슬랙 <b>💌수락</b> 알림 / 거절 → <b>🙅거절</b> 알림</li>
+        <li><span class="sn">2</span><b>한쪽이라도 거절하면 불발</b> → 자동으로 다시 매칭 가능 상태로 돌아가요</li>
+        <li><span class="sn">3</span>불발되면 상대는 <b>프로필을 못 봐요</b> (사생활 보호)</li>
+      </ul>
+      <div class="tip">응답이 오래 없으면 카드에서 <b>직접 문자</b>로 재촉할 수 있어요 (자유 문구 발송).</div>
       <a class="where" href="/1on1">📍 1:1 대시보드 → '오늘 처리'에서 응답 현황</a>
     </div>
 
     <div class="step">
       <div class="step-h"><div class="step-n">5</div><div class="step-t">성사 → 입금 안내</div><span class="step-w w-s">자동</span></div>
-      <div class="step-d">둘 다 수락하면 <b>매칭비 입금 안내 문자가 자동</b> 발송. 두 분은 결제 화면을 봐요.</div>
-      <a class="where" href="/1on1">📍 1:1 대시보드 → '성사' 타일</a>
+      <div class="step-d"><b>둘 다 수락</b>하면 성사! 먼저 수락한 분에게 <b>매칭비 입금 안내 문자가 자동</b> 발송돼요.</div>
+      <div class="sms"><div class="sms-label">💬 자동 발송되는 성사 문자</div><div class="sms-body">🩷 썸류센터 1:1 매칭 성사 안내 🩷
+○○님, 축하드려요! 상대방도 수락하셨어요 🎉
+아래 계좌로 매칭비를 입금해주시면 서로의 연락처를 전달해 드려요.
+
+▸ 매칭비 19,900원
+▸ 카카오뱅크 장민 3333-34-1009531
+
+입금자명과 신청서에 쓰신 이름이 일치해야 확인돼요.
+입금 확인 후 바로 연락처를 전달해 드릴게요 💛</div></div>
+      <a class="where" href="/1on1">📍 1:1 대시보드 → '성사' 타일에서 확인</a>
     </div>
 
     <div class="step">
       <div class="step-h"><div class="step-n">6</div><div class="step-t">입금 확인 → 연락처 전달</div><span class="step-w w-a">센터장</span></div>
-      <div class="step-d">입금 확인되면 <b>서로의 연락처를 전달</b>(카톡/문자). 두 분의 인연 시작! 💛</div>
-      <a class="where" href="/1on1-admin">📍 1:1 매칭 관리 → 매칭 현황</a>
+      <div class="step-d">입금이 확인되면 <b>서로의 연락처를 전달</b>(카톡/문자)해요. 두 분의 인연 시작! 💛</div>
+      <ul class="sub-steps">
+        <li><span class="sn">1</span>계좌에 입금 확인 (입금자명 = 신청 이름 대조)</li>
+        <li><span class="sn">2</span>두 분에게 <b>서로의 연락처</b> 안내 + 가벼운 인사 멘트</li>
+      </ul>
+      <a class="where" href="/1on1-admin">📍 1:1 매칭 관리 → 📊현황 탭에서 성사 커플 확인</a>
     </div>
 
     <div class="flowend">✅ 신청 → 승인 → 매칭 → 응답 → 성사 → 연락처 전달<br><span style="font-size:12.5px;color:var(--muted)">한 명이라도 거절하면 불발 → 다시 다른 분과 매칭</span></div>
@@ -115,6 +165,9 @@
     <div class="step">
       <div class="step-h"><div class="step-n">1</div><div class="step-t">신청서 작성</div></div>
       <div class="step-d">홈에서 <b>1:1 신청</b> → 사진·프로필·이상형 입력 → 제출하면 <b>접수 안내 문자</b>가 와요.</div>
+      <div class="sms"><div class="sms-label">💬 접수되면 받는 문자</div><div class="sms-body">○○님, 안녕하세요. 썸류센터입니당
+1:1 매칭 신청이 잘 접수됐어요 💛
+좋은 인연이 준비되면 상대 프로필과 함께 안내드릴게요!</div></div>
     </div>
 
     <div class="step">
