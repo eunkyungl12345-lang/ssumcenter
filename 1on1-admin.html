@@ -1346,7 +1346,12 @@ function renderList(){
           ${f["성격키워드"] ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${f["성격키워드"].split(",").map(kw => kw.trim()).filter(Boolean).map(kw => `<span style="font-size:10px;background:rgba(255,212,0,.1);color:#FFD400;padding:3px 8px;border-radius:20px">${kw}</span>`).join("")}</div>` : ""}
           <div style="font-size:11.5px;color:#8a8070;margin-top:2px">💛 선호 나이대: ${f["선호나이대"] || "-"}</div>
           ${f["이상형"] ? `<div style="background:#0D0D0C;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">원하는 이상형</span><p style="color:#9E9E97;margin-top:4px;line-height:1.5">${f["이상형"]}</p></div>` : ""}
-          <button onclick="event.stopPropagation();sendIntakeSMS('${r.id}')" style="background:#161615;border:1px solid #FFD400;color:#FFD400;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;margin-top:4px;width:100%">📨 접수 안내 문자 보내기</button>
+          <div onclick="event.stopPropagation()" style="background:#0D0D0C;border:1px solid #242422;border-radius:11px;padding:9px 12px;margin-top:4px;display:flex;align-items:center;gap:8px">
+            <span style="color:#8a8070;font-size:11px;font-weight:700">🔒 외모 (관리자만)</span>
+            <span style="margin-left:auto;display:flex;gap:3px">${[1,2,3,4,5].map(n=>`<button onclick="event.stopPropagation();setLook('${r.id}',${n})" style="background:none;border:none;cursor:pointer;font-size:17px;padding:0;line-height:1;color:${(lookMap[r.id]||0)>=n?'#FFD400':'#3a3a38'}">★</button>`).join("")}</span>
+            <span style="color:#8a8070;font-size:11px;min-width:14px">${lookMap[r.id]?lookMap[r.id]:''}</span>
+          </div>
+          <button onclick="event.stopPropagation();sendIntakeSMS('${r.id}')" style="background:#161615;border:1px solid #FFD400;color:#FFD400;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;margin-top:6px;width:100%">📨 접수 안내 문자 보내기</button>
           <div onclick="event.stopPropagation()" style="margin-top:6px;background:#0D0D0C;border:1px solid #242422;border-radius:11px;padding:10px 12px">
             <div style="color:#8a8070;font-size:11px;font-weight:700;margin-bottom:6px">✏️ 직접 문자 쓰기 → ${f["연락처"] || "연락처 없음"}</div>
             <textarea id="sms-${r.id}" placeholder="여기에 보낼 문자 내용을 직접 쓰세요" style="width:100%;box-sizing:border-box;background:#161615;border:1px solid #242422;border-radius:9px;color:#fff;font-size:13px;font-family:inherit;padding:9px 10px;resize:vertical;min-height:64px;outline:none" oninput="const c=document.getElementById('smsc-${r.id}');if(c)c.textContent=this.value.length"></textarea>
@@ -1445,6 +1450,15 @@ function copyShare(){
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(txt).then(() => toast(picked.length + "명 명단을 복사했어요 📋"), () => alert("복사 실패 — 길게 눌러 복사해주세요"));
   } else { alert(txt); }
+}
+
+// 🔒 외모 등급 (1~5, 관리자만 — 이 기기 localStorage, 손님·문자엔 절대 안 나감)
+var lookMap = {};
+try { lookMap = JSON.parse(localStorage.getItem("oneone_look") || "{}") || {}; } catch(e){ lookMap = {}; }
+function setLook(id, n){
+  if(lookMap[id] === n) delete lookMap[id]; else lookMap[id] = n; // 같은 별 다시 누르면 해제
+  try{ localStorage.setItem("oneone_look", JSON.stringify(lookMap)); }catch(e){}
+  renderList();
 }
 
 // 📤 카톡 공유용 프로필 텍스트 (이름/년생/키/직장/지역/종교 + 이상형)
