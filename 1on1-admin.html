@@ -1125,12 +1125,17 @@ async function loadMatches(){
       const breakup = (s==="성사")
         ? '<div style="width:100%;margin-top:5px"><button onclick="markBrokenUp(\''+r.id+'\',\''+(f["남자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["여자"]||"").replace(/[\'"\\]/g,"")+'\')" style="width:100%;background:#0D0D0C;border:1px solid #7f1d1d;color:#fca5a5;font-size:11px;font-weight:700;padding:6px;border-radius:8px;cursor:pointer">💔 만나봤는데 잘 안 됐어요 (결별)</button></div>'
         : '';
+      // ✖ 소개중인데 진행 안 됨 → '불발'로 처리 (양쪽 다시 매칭 가능해짐)
+      const cancel = (s==="소개중")
+        ? '<div style="width:100%;margin-top:5px"><button onclick="markUnmatched(\''+r.id+'\',\''+(f["남자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["여자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["남자ID"]||"")+'\',\''+(f["여자ID"]||"")+'\')" style="width:100%;background:#0D0D0C;border:1px solid #6b6358;color:#c8b8a0;font-size:11px;font-weight:700;padding:6px;border-radius:8px;cursor:pointer">✖ 이 매칭 불발 처리 (취소)</button></div>'
+        : '';
       return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #242422;font-size:13px;flex-wrap:wrap">'
         +'<span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;'+badge(s)+'">'+s+'</span>'
         +'<b style="color:#60a5fa">'+(f["남자"]||"?")+'</b> <span style="color:#f472b6">❤</span> <b style="color:#f472b6">'+(f["여자"]||"?")+'</b>'
         +(f["결과"] ? '<span style="color:#8a8070;font-size:11px;margin-left:auto">'+f["결과"]+'</span>' : '')
         +links
         +breakup
+        +cancel
         +'</div>';
     }).join("");
     html += '</div>';
@@ -1150,6 +1155,26 @@ async function markBrokenUp(matchId, man, woman){
     toast("💔 결별로 기록했어요");
     loadMatches();
   } catch(e){ console.error(e); alert("기록 실패: " + e.message); }
+}
+
+// ✖ 소개중 매칭을 '불발' 처리 → 양쪽 다시 매칭 가능(승인)으로 되돌림
+async function markUnmatched(matchId, man, woman, manId, womanId){
+  if(!confirm((man||"")+"님 ❤ "+(woman||"")+"님\n이 매칭을 불발 처리할까요?\n\n· 매칭 현황에서 '불발'로 바뀌어요\n· 두 분 모두 다시 매칭 가능 상태가 돼요\n· 서로 프로필도 못 보게 돼요")) return;
+  try {
+    const r = await fetch("/api/airtable?table=매칭", {
+      method: "PATCH", headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: matchId, fields: { "상태": "불발", "결과": "센터 취소 → 불발" } }], typecast: true })
+    });
+    if(!r.ok){ const d = await r.json().catch(()=>({})); throw new Error(d.error || ("오류 " + r.status)); }
+    // 양쪽 신청자를 '승인'(소개중 해제)으로 되돌림 — best effort
+    const upd = [manId, womanId].filter(Boolean).map(id => ({ id, fields: { "매칭상태": "승인" } }));
+    if(upd.length){
+      try { await fetch("/api/airtable?table=1:1 매칭 신청", { method: "PATCH", headers: apiHeaders(), body: JSON.stringify({ records: upd, typecast: true }) }); } catch(_){}
+    }
+    toast("✖ 불발 처리했어요");
+    loadMatches();
+    if(typeof loadApplicants === "function") loadApplicants(); else location.reload();
+  } catch(e){ console.error(e); alert("처리 실패: " + e.message); }
 }
 
 async function loadResponses(){
