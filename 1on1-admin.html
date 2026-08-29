@@ -1337,7 +1337,7 @@ function renderList(){
       <div class="pool-row" onclick="onCardTap('${r.id}')">
         ${shareMode ? `<div class="share-check ${shareSel[r.id] ? 'on' : ''}">✓</div>` : ""}
         <div class="pool-info">
-          <div class="pool-birth">${f["출생연도"] || "?"}년생${f["키"] ? ` / ${f["키"]}cm` : ""} <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span></div>
+          <div class="pool-birth">${f["출생연도"] || "?"}년생${f["키"] ? ` / ${f["키"]}cm` : ""} <span style="font-size:12px;font-weight:400;color:#9E9E97">${gender} ${f["이름"] || ""}</span>${(f["유입경로"]==="결혼매칭"||f["매칭유형"]==="결혼매칭") ? ' <span style="font-size:10px;font-weight:800;color:#171208;background:#E8B050;padding:1px 7px;border-radius:20px">💍 결혼</span>' : ""}</div>
           <div class="pool-detail">${detail || "-"}</div>
           <div class="pool-status" style="${statusColor}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · <span style="color:#FFD400">⚡슈퍼</span>' : ""}</div>
         </div>
