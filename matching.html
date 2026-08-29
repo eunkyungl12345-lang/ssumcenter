@@ -330,6 +330,13 @@
             class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
         </div>
 
+        <!-- 직장 위치 -->
+        <div>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">직장 위치 <span class="text-[#6b6358] font-normal ml-1">선택</span></label>
+          <input type="text" name="workLocation" placeholder="예: 강남역, 판교, 여의도"
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition">
+        </div>
+
         <!-- 취미 -->
         <div>
           <label class="block text-xs font-bold text-[#9a9080] mb-2">취미 <span class="y">*</span></label>
@@ -728,6 +735,16 @@ function aiFillForm(){
         if(jobVal){
           var jobEl = document.querySelector('input[name="job"]');
           if(jobEl){ jobEl.value = jobVal; filled.push("직업: " + jobVal); }
+          continue;
+        }
+      }
+
+      // 직장 위치
+      if(line.match(/^(직장위치|직장 위치|근무지|회사위치|회사 위치)/)){
+        var wlVal = line.replace(/^(직장위치|직장 위치|근무지|회사위치|회사 위치)\s*[:：]?\s*/, "").trim();
+        if(wlVal){
+          var wlEl = document.querySelector('[name="workLocation"]');
+          if(wlEl){ wlEl.value = wlVal; filled.push("직장 위치: " + wlVal); }
           continue;
         }
       }
@@ -1153,6 +1170,7 @@ async function handleSubmit(e){
       "이름": payload.name || "", "연락처": payload.phone || "", "성별": payload.gender || "",
       "출생연도": payload.birthYear || "", "직업": payload.job || "",
       "키": payload.height || "", "사는곳": payload.location || "",
+      "직장위치": payload.workLocation || "",
       "취미": payload.hobby || "", "종교": payload.religion || "",
       "선호나이대": [...selectedAges].join(", "),
       "성격키워드": [...selectedKeywords].join(", "), "이상형": payload.idealType || "", "자기소개": payload.intro || "",
