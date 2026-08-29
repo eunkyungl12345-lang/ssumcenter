@@ -444,6 +444,13 @@
   fee.value=localStorage.getItem("rot_fee")||"29,900원";
   fee.addEventListener("input",function(){ localStorage.setItem("rot_fee",fee.value); });
   function feeVal(){ return fee.value.trim()||"참가비"; }
+  // 회차("9/17 (목)")를 문자용 날짜("2026년 9월 17일 (목)")로 변환
+  function roundDateText(f){
+    var rd=String((f&&f["회차"])||"").trim();
+    var m=rd.match(/(\d{1,2})\s*\/\s*(\d{1,2})\s*(\([^)]*\))?/);
+    if(!m) return rd||"일정 안내 예정";
+    return "2026년 "+parseInt(m[1],10)+"월 "+parseInt(m[2],10)+"일 "+(m[3]||"").replace(/[()]/g,function(c){return c==="("?"(":")";});
+  }
   var TPLS={
     "입금안내":function(f){ return `🩷📦썸류센터 로테이션 커피팅 입금 안내📦🩷
 
@@ -468,7 +475,7 @@
 설레는 인연, 함께 만들어가보아요.💕
 
 ❤️일정
-2026년 8월 27일 (목) 19:45
+${roundDateText(f)} 19:45
 소개팅 시작 전 나를 표현할 수 있는 프로필 카드를 쓸 수 있도록 꼭 45분까지 도착 부탁드려요☺️ 늦으실수록 나를 어필할 수 있는 시간이 줄어듭니다!
 
 ❤️시간
@@ -504,7 +511,7 @@
 최대 14:14 (최소 10:10 보장)
 
 ❤️일정
-2026년 8월27일(목) 19:45
+${roundDateText(f)} 19:45
 서로를 위해 시간 꼭 지켜주세요!
 
 저녁 7시 45분 입니다!✅️
