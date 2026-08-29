@@ -188,6 +188,15 @@
     <i class="fa-solid fa-user-plus mr-2"></i>신청자 등록
   </button>
 
+  <!-- 📊 회원 DB 요약 -->
+  <div id="db-summary" class="mb-4 bg-[#16140f] border border-[#1e1c17] rounded-2xl p-3" style="display:none">
+    <div class="flex items-center justify-between mb-2">
+      <div class="text-[12px] font-black text-[#E8B050]">📊 1:1 회원 DB</div>
+      <button onclick="exportCSV()" class="text-[11px] font-bold bg-[#0e0c0a] border border-[#E8B050]/40 text-[#E8B050] px-3 py-1.5 rounded-lg hover:bg-[#E8B050]/5 transition">⬇ 엑셀(CSV) 내보내기</button>
+    </div>
+    <div id="db-grid" class="grid grid-cols-4 gap-2 text-center"></div>
+  </div>
+
   <!-- 소개 풀 헤더 -->
   <div class="mb-4">
     <h2 class="text-lg font-black mb-3">소개 풀 (<span id="pool-count">0</span>명)</h2>
@@ -1259,6 +1268,45 @@ function updateStats(){
   const ct = document.getElementById("cnt-trash"); if(ct) ct.textContent = trashed;
   const tp = document.getElementById("mtab-pool-cnt"); if(tp) tp.textContent = waiting ? ("· 대기 " + waiting) : "";
   // stat-waiting(성사)는 loadMatches에서 매칭 테이블 기준으로 채움
+  renderDbSummary();
+}
+
+// 회원 번호 맵 (신청일시 오래된 순 = #1) — 카드에 "회원 N번" 표시용
+let memberNoMap = {};
+function buildMemberNo(){
+  const ts = s => { const m = String(s||"").match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.?(?:\s*(오전|오후))?\s*(\d{1,2}):(\d{2})/); if(!m) return 0; let h=parseInt(m[5])||0; if(m[4]==="오후"&&h<12)h+=12; if(m[4]==="오전"&&h===12)h=0; return new Date(+m[1],+m[2]-1,+m[3],h,+m[6]||0).getTime(); };
+  const sorted = applicants.slice().sort((a,b) => ts((a.fields||{})["신청일시"]) - ts((b.fields||{})["신청일시"]));
+  memberNoMap = {}; sorted.forEach((r,i) => { memberNoMap[r.id] = i+1; });
+}
+
+// 📊 1:1 회원 DB 요약 (휴지통 포함 전체 · 이번 달 신규 · 성별 · 결혼매칭)
+function renderDbSummary(){
+  buildMemberNo();
+  const box = document.getElementById("db-summary"), grid = document.getElementById("db-grid");
+  if(!box || !grid || !applicants.length) return;
+  box.style.display = "block";
+  const all = applicants.length; // 휴지통 포함 전체 = 우리 DB
+  const male = applicants.filter(r => (r.fields||{})["성별"] === "남성").length;
+  const female = applicants.filter(r => (r.fields||{})["성별"] === "여성").length;
+  const now = new Date(), ym = now.getFullYear() + "." + (now.getMonth()+1);
+  const isThisMonth = s => { const m = String(s||"").match(/(\d{4})\.\s*(\d{1,2})\./); return m && (m[1]+"."+parseInt(m[2])) === ym; };
+  const newThis = applicants.filter(r => isThisMonth((r.fields||{})["신청일시"])).length;
+  const tile = (v, k) => '<div class="bg-[#0e0c0a] rounded-xl py-2.5"><div class="text-xl font-black text-[#E8B050]">'+v+'</div><div class="text-[10px] text-[#9a9080] mt-0.5">'+k+'</div></div>';
+  grid.innerHTML = tile(all, "전체 회원") + tile(newThis, "이번달 신규") + tile('<span style="color:#60a5fa">'+male+'</span>/<span style="color:#f472b6">'+female+'</span>', "남 / 여") + tile(applicants.filter(r=>(r.fields||{})["유입경로"]==="결혼매칭").length, "💍 결혼매칭");
+}
+
+// ⬇ 전체 회원(휴지통 포함) CSV 내보내기
+function exportCSV(){
+  if(!applicants.length){ toast("내보낼 데이터가 없어요"); return; }
+  const cols = ["순번","이름","성별","출생연도","연락처","키","사는곳","직장위치","직업","취미","종교","선호나이대","이상형","자기소개","유입경로","매칭상태","신청일시"];
+  const esc = v => { v = (v==null?"":String(v)).replace(/"/g,'""'); return '"'+v+'"'; };
+  const rows = applicants.map((r,i) => { const f = r.fields||{}; return [i+1, f["이름"], f["성별"], f["출생연도"], f["연락처"], f["키"], f["사는곳"], f["직장위치"], f["직업"], f["취미"], f["종교"], f["선호나이대"], f["이상형"], f["자기소개"], f["유입경로"], f["매칭상태"]||"대기", f["신청일시"]].map(esc).join(","); });
+  const csv = "﻿" + cols.map(esc).join(",") + "\n" + rows.join("\n"); // ﻿ = 엑셀 한글 깨짐 방지
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  const d = new Date(); a.download = "1대1_회원DB_"+d.getFullYear()+(d.getMonth()+1)+d.getDate()+".csv";
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+  toast(applicants.length + "명 CSV로 내보냈어요 ⬇");
 }
 
 // ☕ 커피 궁합 (연애 테스트 결과 기반 매칭 추천)
@@ -1297,6 +1345,7 @@ function coffeeMatchesFor(rec){
 function renderList(){
   const list = document.getElementById("applicant-list");
   list.classList.toggle("vm-compact", viewMode === "compact");
+  if(!Object.keys(memberNoMap).length && applicants.length) buildMemberNo();
   let filtered = applicants;
 
   if(currentFilter === "대기" || currentFilter === "승인" || currentFilter === "소개중" || currentFilter === "거절" || currentFilter === "제외" || currentFilter === "휴지통"){
@@ -1337,7 +1386,7 @@ function renderList(){
       <div class="pool-row" onclick="onCardTap('${r.id}')">
         ${shareMode ? `<div class="share-check ${shareSel[r.id] ? 'on' : ''}">✓</div>` : ""}
         <div class="pool-info">
-          <div class="pool-birth">${f["출생연도"] || "?"}년생${f["키"] ? ` / ${f["키"]}cm` : ""} <span style="font-size:12px;font-weight:400;color:#9a9080">${gender} ${f["이름"] || ""}</span>${(f["유입경로"]==="결혼매칭"||f["매칭유형"]==="결혼매칭") ? ' <span style="font-size:10px;font-weight:800;color:#171208;background:#E8B050;padding:1px 7px;border-radius:20px">💍 결혼</span>' : ""}</div>
+          <div class="pool-birth">${memberNoMap[r.id] ? `<span style="font-size:11px;font-weight:700;color:#6b6358">#${memberNoMap[r.id]}</span> ` : ""}${f["출생연도"] || "?"}년생${f["키"] ? ` / ${f["키"]}cm` : ""} <span style="font-size:12px;font-weight:400;color:#9a9080">${gender} ${f["이름"] || ""}</span>${(f["유입경로"]==="결혼매칭"||f["매칭유형"]==="결혼매칭") ? ' <span style="font-size:10px;font-weight:800;color:#171208;background:#E8B050;padding:1px 7px;border-radius:20px">💍 결혼</span>' : ""}</div>
           <div class="pool-detail">${detail || "-"}</div>
           <div class="pool-status" style="${statusColor}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · <span style="color:#E8B050">⚡슈퍼</span>' : ""}</div>
         </div>
