@@ -290,8 +290,9 @@
         <div class="text-[10px] y font-bold uppercase tracking-wider mb-2"><span id="result-name-1"></span>에게 보낼 링크</div>
         <div class="flex gap-2">
           <input type="text" id="url-for-1" readonly class="flex-1 bg-[#16140f] border border-[#1e1c17] rounded-lg px-3 py-2 text-xs text-white">
-          <button onclick="copyUrl('url-for-1')" class="bg-[#1e1c17] hover:bg-[#E8B050]/10 text-white text-xs font-bold px-3 py-2 rounded-lg transition">복사</button>
+          <button onclick="copyUrl('url-for-1')" class="bg-[#1e1c17] hover:bg-[#E8B050]/10 text-white text-xs font-bold px-3 py-2 rounded-lg transition">링크만</button>
         </div>
+        <button onclick="copyKakao(0)" class="w-full mt-2 bg-[#E8B050] hover:bg-[#D4952A] text-black text-xs font-extrabold px-3 py-2 rounded-lg transition">💬 카톡용 메시지 복사 (인사말+링크)</button>
         <button onclick="sendMatchSms(0)" id="sms-btn-1" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition">
           <i class="fa-solid fa-comment-sms mr-1"></i>문자로 보내기
         </button>
@@ -300,8 +301,9 @@
         <div class="text-[10px] y font-bold uppercase tracking-wider mb-2"><span id="result-name-2"></span>에게 보낼 링크</div>
         <div class="flex gap-2">
           <input type="text" id="url-for-2" readonly class="flex-1 bg-[#16140f] border border-[#1e1c17] rounded-lg px-3 py-2 text-xs text-white">
-          <button onclick="copyUrl('url-for-2')" class="bg-[#1e1c17] hover:bg-[#E8B050]/10 text-white text-xs font-bold px-3 py-2 rounded-lg transition">복사</button>
+          <button onclick="copyUrl('url-for-2')" class="bg-[#1e1c17] hover:bg-[#E8B050]/10 text-white text-xs font-bold px-3 py-2 rounded-lg transition">링크만</button>
         </div>
+        <button onclick="copyKakao(1)" class="w-full mt-2 bg-[#E8B050] hover:bg-[#D4952A] text-black text-xs font-extrabold px-3 py-2 rounded-lg transition">💬 카톡용 메시지 복사 (인사말+링크)</button>
         <button onclick="sendMatchSms(1)" id="sms-btn-2" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition">
           <i class="fa-solid fa-comment-sms mr-1"></i>문자로 보내기
         </button>
@@ -1028,10 +1030,24 @@ function nameOf(id){
   return a ? (a.fields["이름"] || a.fields["닉네임"] || "?") : "(명단밖)";
 }
 // 매칭 링크 복사 (매칭 현황에서)
-function copyLink(url){
+// 카톡/문자에 바로 붙여넣기 좋은 메시지로 만들기 (링크는 한 줄 통째 = 잘 눌림)
+function matchMessage(url, name){
+  const who = name ? (name + "님, ") : "";
+  return who + "안녕하세요, 썸류센터예요 💛\n"
+    + "센터장이 신중하게 찾은 매칭 상대를 준비했어요!\n"
+    + "아래 링크에서 프로필 확인 후 수락/거절을 눌러주세요 😊\n\n"
+    + url + "\n\n"
+    + "※ 수락한다고 바로 연락처가 가지 않아요. 두 분 모두 수락하셔야 성사돼요!";
+}
+function copyText(text, okMsg){
   if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(url).then(()=>toast("링크 복사됨! 카톡·문자에 붙여넣으세요"), ()=>toast("복사 실패"));
-  } else { toast("복사가 안 돼요 — 링크를 길게 눌러 복사해주세요"); }
+    navigator.clipboard.writeText(text).then(()=>toast(okMsg||"복사됐어요! 카톡에 붙여넣으세요"), ()=>toast("복사 실패"));
+  } else { toast("복사가 안 돼요 — 길게 눌러 복사해주세요"); }
+}
+// name 있으면 메시지 통째, 없으면(옛 호출) 링크만
+function copyLink(url, name){
+  if(name !== undefined) copyText(matchMessage(url, name), "💬 안내 메시지를 복사했어요! 카톡에 붙여넣으세요");
+  else copyText(url, "링크 복사됨! 카톡·문자에 붙여넣으세요");
 }
 
 // 🔎 링크 점검 — 문자로 보내기 전에 링크가 올바른지 확인
@@ -1126,8 +1142,8 @@ async function loadMatches(){
     html += recs.map(r=>{ const f=r.fields||{}; const s=f["상태"]||"소개중";
       const links = (s==="소개중" && (f["남자링크"]||f["여자링크"]))
         ? '<div style="width:100%;display:flex;gap:6px;margin-top:5px">'
-          + (f["남자링크"] ? '<button onclick="copyLink(\''+f["남자링크"]+'\')" style="flex:1;background:#0e0c0a;border:1px solid #3b82f6;color:#60a5fa;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">📋 '+(f["남자"]||"남")+'에게 링크</button>' : '')
-          + (f["여자링크"] ? '<button onclick="copyLink(\''+f["여자링크"]+'\')" style="flex:1;background:#0e0c0a;border:1px solid #f472b6;color:#f472b6;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">📋 '+(f["여자"]||"여")+'에게 링크</button>' : '')
+          + (f["남자링크"] ? '<button onclick="copyLink(\''+f["남자링크"]+'\',\''+(f["남자"]||"").replace(/[\'"\\]/g,"")+'\')" style="flex:1;background:#0e0c0a;border:1px solid #3b82f6;color:#60a5fa;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">💬 '+(f["남자"]||"남")+'에게 (카톡용)</button>' : '')
+          + (f["여자링크"] ? '<button onclick="copyLink(\''+f["여자링크"]+'\',\''+(f["여자"]||"").replace(/[\'"\\]/g,"")+'\')" style="flex:1;background:#0e0c0a;border:1px solid #f472b6;color:#f472b6;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">💬 '+(f["여자"]||"여")+'에게 (카톡용)</button>' : '')
           + '</div>'
         : '';
       // 💔 성사된 커플에만: 만나봤는데 잘 안 됐을 때 '결별'로 기록
@@ -2049,6 +2065,13 @@ function copyUrl(inputId){
   input.select();
   navigator.clipboard.writeText(input.value);
   toast("링크가 복사되었습니다!");
+}
+// 매칭 결과 화면에서 카톡용 메시지(인사말+링크+안내) 복사. idx 0=url-for-1, 1=url-for-2
+function copyKakao(idx){
+  const url = document.getElementById(idx===0 ? "url-for-1" : "url-for-2").value;
+  const name = document.getElementById(idx===0 ? "result-name-1" : "result-name-2").textContent;
+  if(!url){ toast("먼저 매칭을 만들어주세요"); return; }
+  copyText(matchMessage(url, name), "💬 안내 메시지를 복사했어요! 카톡에 붙여넣으세요");
 }
 
 function filterBy(f){
