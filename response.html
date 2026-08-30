@@ -710,6 +710,8 @@ async function checkMyResponse(){
   const _t = params.get("t");
   if(!mine && _t && /^\d+$/.test(_t) && Date.now() > (parseInt(_t,10) + 48*60*60*1000)){
     showScreen("expired");   // 미응답 + 48시간 지남 → 만료 화면
+    // 📢 센터장에게 슬랙 알림 (중복 방지는 서버에서 처리)
+    try { fetch("/api/roster",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"expiredNotify",id:matchId,myId:params.get("myId")})}); } catch(e){}
     return;
   }
   if(mine === "거절"){

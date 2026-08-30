@@ -36,6 +36,28 @@ module.exports = async function handler(req, res) {
     });
   }
 
+  // ⏰ 만료 링크를 손님이 열었을 때 → 슬랙 알림 (중복 방지: 매칭 레코드에 만료알림 플래그)
+  if (body.action === "expiredNotify") {
+    try {
+      const me = String(body.id || ""), other = String(body.myId || "");   // response.html의 id/myId
+      if (!me || !other) return res.status(200).json({ ok: false });
+      const AUTH = { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" };
+      const MTBL = encodeURIComponent("매칭");
+      const formula = `AND({상태}="소개중",OR(AND({남자ID}="${me}",{여자ID}="${other}"),AND({남자ID}="${other}",{여자ID}="${me}")))`;
+      const fr = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${MTBL}?filterByFormula=${encodeURIComponent(formula)}&pageSize=1`, { headers: AUTH });
+      const fd = await fr.json();
+      const rec = (fd.records || [])[0];
+      if (!rec) return res.status(200).json({ ok: false });          // 소개중 아님 → 알림 X
+      const mf = rec.fields || {};
+      if (mf["만료알림"] === "O") return res.status(200).json({ ok: true, already: true }); // 이미 보냄
+      // 플래그 세팅 + 슬랙 발송
+      await fetch(`https://api.airtable.com/v0/${BASE_ID}/${MTBL}/${rec.id}`, { method: "PATCH", headers: AUTH, body: JSON.stringify({ fields: { "만료알림": "O" }, typecast: true }) }).catch(() => {});
+      const url = process.env.SLACK_WEBHOOK_URL;
+      if (url) { await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: `⏰ 매칭 응답 기한 만료\n${mf["여자"] || "?"} ❤ ${mf["남자"] || "?"} — 48시간 내 무응답으로 만료됐어요.\n필요하면 재매칭하거나 불발 처리해주세요.` }) }).catch(() => {}); }
+      return res.status(200).json({ ok: true });
+    } catch (e) { return res.status(200).json({ ok: false }); }
+  }
+
   if (body.action !== "preview") return res.status(400).json({ error: "알 수 없는 action" });
 
   async function getAll(table, filter) {
