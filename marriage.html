@@ -44,6 +44,12 @@
   .mform input::placeholder,.mform textarea::placeholder{color:var(--faint)}
   .agechip{font-size:13px;font-weight:700;color:var(--muted);background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:20px;padding:8px 14px;cursor:pointer;user-select:none}
   .agechip.on{background:var(--amber);border-color:var(--amber);color:var(--ink-on-amber)}
+  .upbox{display:flex;align-items:center;justify-content:center;min-width:88px;height:88px;background:var(--surface-2);border:1.5px dashed rgba(232,176,80,.4);border-radius:12px;color:var(--amber);font-size:12px;font-weight:700;cursor:pointer;text-align:center;padding:6px;flex:none}
+  .upbox:hover{border-color:var(--amber)}
+  .upthumb{position:relative;width:88px;height:88px;border-radius:12px;overflow:hidden;flex:none}
+  .upthumb img{width:100%;height:100%;object-fit:cover}
+  .upthumb .del{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1}
+  .updone{height:auto;padding:12px;color:var(--ok);border-color:var(--ok);border-style:solid}
   /* 잠금 게이트 */
   #gate{position:fixed;inset:0;background:var(--bg);z-index:99999;display:grid;place-items:center;padding:24px}
   #gate .box{max-width:340px;width:100%;text-align:center}
@@ -111,6 +117,18 @@
     <h2>💍 결혼 매칭 관심 신청</h2>
     <div class="lead">간단히 남겨주시면 센터장이 연락드려요. * 는 필수예요.</div>
     <div class="mform" style="display:flex;flex-direction:column;gap:11px">
+      <!-- 프로필 사진 -->
+      <div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">📷 프로필 사진 * <span style="color:var(--faint)">(최대 3장)</span></div>
+        <div id="ap-photo-box" style="display:flex;gap:8px">
+          <label class="upbox"><input type="file" id="ap-photo" accept="image/*" multiple style="display:none"><span id="ap-photo-label">＋ 사진 추가</span></label>
+        </div>
+      </div>
+      <!-- 재직증명서 / 사업자등록증 -->
+      <div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">📄 재직증명서 또는 사업자등록증 * <span style="color:var(--faint)">(신뢰 확인용)</span></div>
+        <label class="upbox" style="width:100%"><input type="file" id="ap-doc" accept=".pdf,.jpg,.jpeg,.png" style="display:none"><span id="ap-doc-label">＋ 서류 첨부 (PDF·이미지)</span></label>
+      </div>
       <div style="display:flex;gap:10px">
         <input id="ap-name" placeholder="이름 *" style="flex:1">
         <select id="ap-gender" style="width:110px"><option value="">성별 *</option><option value="여성">여성</option><option value="남성">남성</option></select>
@@ -166,6 +184,36 @@
   })();
 
   function openApply(){ var s=document.getElementById("apply-sec"); s.style.display="block"; s.scrollIntoView({behavior:"smooth"}); document.getElementById("ap-name").focus(); }
+
+  // ===== 사진·서류 업로드 (Cloudinary) =====
+  var CLOUD_NAME="ddvmmvcei", CLOUD_PRESET="ml_default";
+  function compress(file){ return new Promise(function(res){
+    if(!/^image\//.test(file.type)){ res(file); return; } // PDF 등은 그대로
+    var img=new Image(), rd=new FileReader();
+    rd.onload=function(e){ img.onload=function(){ var MAX=1200,w=img.width,h=img.height; if(w>h&&w>MAX){h=h*MAX/w;w=MAX;} else if(h>MAX){w=w*MAX/h;h=MAX;} var c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);c.toBlob(function(b){res(b||file);},"image/jpeg",.85); }; img.src=e.target.result; };
+    rd.readAsDataURL(file);
+  }); }
+  function upload(file, folder){ return compress(file).then(function(f){ var fd=new FormData(); fd.append("file",f); fd.append("upload_preset",CLOUD_PRESET); if(folder) fd.append("folder",folder); return fetch("https://api.cloudinary.com/v1_1/"+CLOUD_NAME+"/auto/upload",{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(d){return d.secure_url||d.url;}); }); }
+
+  var photoFiles=[], docFile=null;
+  document.getElementById("ap-photo").addEventListener("change",function(e){
+    var fs=Array.prototype.slice.call(e.target.files||[]);
+    fs.forEach(function(f){ if(photoFiles.length<3) photoFiles.push(f); });
+    renderPhotos(); e.target.value="";
+  });
+  function renderPhotos(){
+    var box=document.getElementById("ap-photo-box");
+    box.innerHTML=photoFiles.map(function(f,i){ return '<div class="upthumb"><img src="'+URL.createObjectURL(f)+'"><button type="button" class="del" onclick="rmPhoto('+i+')">✕</button></div>'; }).join("")
+      + (photoFiles.length<3 ? '<label class="upbox"><input type="file" id="ap-photo2" accept="image/*" multiple style="display:none"><span>＋ 추가</span></label>' : '');
+    var np=document.getElementById("ap-photo2"); if(np) np.addEventListener("change",function(e){ Array.prototype.slice.call(e.target.files||[]).forEach(function(f){ if(photoFiles.length<3) photoFiles.push(f); }); renderPhotos(); });
+  }
+  window.rmPhoto=function(i){ photoFiles.splice(i,1); renderPhotos(); };
+  document.getElementById("ap-doc").addEventListener("change",function(e){
+    docFile=(e.target.files||[])[0]||null;
+    var lb=document.getElementById("ap-doc-label"), box=lb.parentElement;
+    if(docFile){ box.classList.add("updone"); lb.textContent="✅ "+docFile.name; } else { box.classList.remove("updone"); lb.textContent="＋ 서류 첨부 (PDF·이미지)"; }
+  });
+
   // 키 드롭다운 채우기
   (function(){ var s=document.getElementById("ap-height"); if(s){ for(var h=150;h<=195;h++){ var o=document.createElement("option"); o.value=String(h); o.textContent=h+"cm"; s.appendChild(o); } } })();
   // 선호 나이대 칩 토글
@@ -182,6 +230,8 @@
       if(!gender){ msg.style.color="#E8828A"; msg.textContent="성별을 선택해주세요."; return; }
       if(!phone){ msg.style.color="#E8828A"; msg.textContent="연락처를 입력해주세요."; return; }
       if(!plan){ msg.style.color="#E8828A"; msg.textContent="결혼 계획 시기를 선택해주세요."; return; }
+      if(!photoFiles.length){ msg.style.color="#E8828A"; msg.textContent="프로필 사진을 최소 1장 올려주세요."; return; }
+      if(!docFile){ msg.style.color="#E8828A"; msg.textContent="재직증명서 또는 사업자등록증을 첨부해주세요."; return; }
       var ages=[]; document.querySelectorAll("#ap-agebox input:checked").forEach(function(c){ ages.push(c.value); });
       var intro=val("ap-intro");
       // 결혼계획은 자기소개 맨 앞에 붙여 함께 저장 (1:1 테이블에 별도 필드 없어도 남게)
@@ -191,7 +241,15 @@
         "직업":val("ap-job"), "사는곳":val("ap-area"), "직장위치":val("ap-work"), "취미":val("ap-hobby"),
         "선호나이대":ages.join(", "), "이상형":val("ap-ideal"), "자기소개":introFull, "결혼계획":plan,
         "신청일시":new Date().toLocaleString("ko-KR") };
-      var orig=btn.textContent; btn.disabled=true; btn.textContent="보내는 중…";
+      var orig=btn.textContent; btn.disabled=true; btn.textContent="사진 올리는 중…";
+      // 사진·서류 업로드 후 fields에 넣고 저장
+      Promise.all(photoFiles.map(function(f){ return upload(f,"ssumcenter/photos"); }))
+        .then(function(urls){ fields["프로필사진"]=urls.filter(Boolean).map(function(u){return {url:u};});
+          btn.textContent="서류 올리는 중…";
+          return upload(docFile,"ssumcenter/docs"); })
+        .then(function(docUrl){ if(docUrl) fields["재직증명서"]=[{url:docUrl}]; btn.textContent="보내는 중…"; tryPost(fields,0); })
+        .catch(function(){ btn.disabled=false; btn.textContent=orig; msg.style.color="#E8828A"; msg.textContent="사진/서류 업로드 중 오류가 났어요. 다시 시도해주세요."; });
+      return; // 아래 즉시 tryPost 호출 방지 (업로드 완료 후 호출)
       function done(){ document.getElementById("apply-sec").innerHTML='<div style="text-align:center;padding:20px 0"><div style="font-size:40px">💍</div><h2 style="margin:10px 0 6px">신청이 접수됐어요!</h2><p style="color:var(--muted);font-size:14px">센터장이 확인 후 연락드릴게요. 감사합니다 💛</p></div>'; }
       // 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)
       function tryPost(f, tries){
@@ -206,7 +264,7 @@
             btn.disabled=false; btn.textContent=orig; done();
           }).catch(function(){ btn.disabled=false; btn.textContent=orig; msg.style.color="#E8828A"; msg.textContent="오류가 났어요. 다시 시도해주세요."; });
       }
-      tryPost(fields, 0);
+      // 저장은 위 사진/서류 업로드가 끝난 뒤 tryPost로 호출됨
     });
   })();
 </script>
