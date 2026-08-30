@@ -439,25 +439,23 @@ function loadProfile(data){
   setRow("row-religion","profile-religion", data.religion || "");
 
   // 마감 시간
-  if(deadline){
-    const d = new Date(deadline);
-    const now = new Date();
-    if(now > d){
-      showScreen("expired");
+  // 마감시각 결정: deadline 파라미터 > t(링크 만든 시각)+48h > (없으면 표시만 48h)
+  const tParam = params.get("t");
+  let dueDate = null;
+  if(deadline){ dueDate = new Date(deadline); }
+  else if(tParam && /^\d+$/.test(tParam)){ dueDate = new Date(parseInt(tParam,10) + 48*60*60*1000); }
+
+  if(dueDate){
+    if(new Date() > dueDate){
+      showScreen("expired");   // 48시간 지남 → 만료 화면 (프로필 안 보임)
       return;
     }
-    const month = d.getMonth()+1;
-    const day = d.getDate();
-    const hour = d.getHours();
+    const month = dueDate.getMonth()+1, day = dueDate.getDate(), hour = dueDate.getHours();
     document.getElementById("deadline-text").textContent = `${month}월 ${day}일 ${hour}시까지`;
   } else {
-    // 기본 48시간
-    const d = new Date();
-    d.setHours(d.getHours() + 48);
-    const month = d.getMonth()+1;
-    const day = d.getDate();
-    const hour = d.getHours();
-    document.getElementById("deadline-text").textContent = `${month}월 ${day}일 ${hour}시까지 (48시간)`;
+    // t·deadline 둘 다 없는 옛 링크 → 안내만 (만료 판정 안 함)
+    const d = new Date(); d.setHours(d.getHours() + 48);
+    document.getElementById("deadline-text").textContent = `${d.getMonth()+1}월 ${d.getDate()}일 ${d.getHours()}시까지 (48시간)`;
   }
 }
 
@@ -708,6 +706,12 @@ async function checkMyResponse(){
   // 먼저 이미 응답했는지 확인 → 응답한 사람은 프로필 다시 안 보여줌
   let mine = null;
   try { mine = await checkMyResponse(); } catch(e){}
+  // ⏰ 48시간 만료 체크 (아직 응답 안 한 사람만) — t 파라미터 기준
+  const _t = params.get("t");
+  if(!mine && _t && /^\d+$/.test(_t) && Date.now() > (parseInt(_t,10) + 48*60*60*1000)){
+    showScreen("expired");   // 미응답 + 48시간 지남 → 만료 화면
+    return;
+  }
   if(mine === "거절"){
     showScreen("reject");          // 거절한 사람 → 프로필 X, 거절 화면만
   } else if(mine === "수락"){

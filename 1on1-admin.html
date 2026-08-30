@@ -1698,13 +1698,14 @@ function saveMatchRecord(p0, p1){
   try {
     const man = p0.fields["성별"] === "남성" ? p0 : p1;
     const woman = p0.fields["성별"] === "남성" ? p1 : p0;
+    const t = Date.now(); // 링크 만든 시각 (48시간 만료 계산용)
     fetch("/api/airtable?table=매칭", {
       method: "POST", headers: apiHeaders(),
       body: JSON.stringify({ records: [{ fields: {
         "남자": man.fields["이름"] || "", "여자": woman.fields["이름"] || "",
         "남자ID": man.id, "여자ID": woman.id,
-        "남자링크": `${SITE_URL}/response.html?id=${woman.id}&myId=${man.id}`,
-        "여자링크": `${SITE_URL}/response.html?id=${man.id}&myId=${woman.id}`,
+        "남자링크": `${SITE_URL}/response.html?id=${woman.id}&myId=${man.id}&t=${t}`,
+        "여자링크": `${SITE_URL}/response.html?id=${man.id}&myId=${woman.id}&t=${t}`,
         "상태": "소개중", "남자응답": "대기", "여자응답": "대기",
         "생성일": new Date().toLocaleString("ko-KR")
       }}]})
@@ -1731,10 +1732,11 @@ async function generateMatch(){
   const morig = mbtn ? mbtn.innerHTML : "";
   if(mbtn){ mbtn.disabled = true; mbtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>매칭 만드는 중...'; }
 
+  const _t = Date.now(); // 48시간 만료 기준 시각
   // A에게 보낼 링크 (B의 프로필, myId=A의 ID)
-  const urlForA = `${SITE_URL}/response.html?id=${selected[1].id}&myId=${selected[0].id}`;
+  const urlForA = `${SITE_URL}/response.html?id=${selected[1].id}&myId=${selected[0].id}&t=${_t}`;
   // B에게 보낼 링크 (A의 프로필, myId=B의 ID)
-  const urlForB = `${SITE_URL}/response.html?id=${selected[0].id}&myId=${selected[1].id}`;
+  const urlForB = `${SITE_URL}/response.html?id=${selected[0].id}&myId=${selected[1].id}&t=${_t}`;
 
   document.getElementById("result-name-1").textContent = a["이름"];
   document.getElementById("url-for-1").value = urlForA;
