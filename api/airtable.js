@@ -234,6 +234,19 @@ module.exports = async function handler(req, res) {
       } catch (e) { /* 알림 실패 무시 */ }
     }
 
+    // 💘 매칭 생성(소개중) → 슬랙 알림
+    if (req.method === "POST" && table === "매칭") {
+      try {
+        const recs = (req.body && req.body.records) || [];
+        for (const rc of recs) {
+          const f = (rc && rc.fields) || {};
+          if ((f["상태"] || "소개중") === "소개중" && (f["남자"] || f["여자"])) {
+            await notifySlack(`💘 새 매칭 소개중!\n${f["여자"] || "?"} ❤ ${f["남자"] || "?"}\n양쪽에 프로필 링크가 전달됐어요`);
+          }
+        }
+      } catch (e) { /* 알림 실패 무시 */ }
+    }
+
     // ✍️ 관리자 수기 추가(문토/현장) → 슬랙 알림 (대량 명단 붙여넣기는 스킵)
     if (req.method === "POST" && isAdmin && table === "로테이션 신청" && ((req.body && req.body.records) || []).length <= 3) {
       try {
