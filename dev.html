@@ -138,7 +138,9 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     function open(){ var g=document.getElementById("dev-gate"); if(g) g.style.display="none"; }
     // 개발서버(Vercel 프리뷰: 하이픈 있는 vercel.app 주소)는 이미 Vercel 로그인 잠금이라 게이트 자동 해제. 실사이트는 잠금 유지.
     var _h=location.hostname;
-    if(key() || (_h.indexOf("-")>=0 && /\.vercel\.app$/.test(_h))) open();
+    var _isDev=(_h.indexOf("-")>=0 && /\.vercel\.app$/.test(_h));
+    if(key() || _isDev) open();
+    if(_isDev){ var _b=document.getElementById("dev-badge"); if(_b) _b.style.display="block"; }
     var pw=document.getElementById("dev-pw");
     if(pw) pw.addEventListener("keydown",function(e){ if(e.key==="Enter") devUnlock(); });
     window.devUnlock=function(){
@@ -153,6 +155,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 </script>
 
 <!-- Nav -->
+<div id="dev-badge" style="display:none;position:fixed;left:12px;bottom:12px;z-index:9998;background:#E8B050;color:#171208;font-size:11px;font-weight:800;padding:7px 13px;border-radius:100px;box-shadow:0 4px 14px rgba(0,0,0,.45);letter-spacing:.02em">🚧 개발서버 (테스트용)</div>
 <div class="topbar">
 <div class="ticker" aria-hidden="true">
   <div class="ticker-track">
