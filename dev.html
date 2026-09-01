@@ -44,6 +44,14 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 .burger{display:none;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
 .nav-mob{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--glass-border);padding:20px 24px;gap:16px;z-index:100}
 .nav-mob.open{display:flex}
+/* 상단 흐르는 띠 (마퀴) */
+.ticker{overflow:hidden;background:linear-gradient(90deg,#1b1207,#251a0b,#1b1207);border-bottom:1px solid rgba(232,176,80,.22);white-space:nowrap}
+.ticker-track{display:inline-flex;align-items:center;animation:tickerMove 24s linear infinite;will-change:transform}
+.ticker:hover .ticker-track{animation-play-state:paused}
+.ticker .it{display:inline-flex;align-items:center;font-size:12px;font-weight:700;color:#F1DBA6;letter-spacing:.01em;padding:8px 0}
+.ticker .it .sep{color:var(--amber);margin:0 20px;font-size:8px;opacity:.7}
+@keyframes tickerMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.ticker-track{animation:none}}
 @media(max-width:640px){.burger{display:block}.desk{display:none!important}}
 
 /* Section */
@@ -142,6 +150,22 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 </script>
 
 <!-- Nav -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="it">📍 강남역 인근<span class="sep">✦</span></span>
+    <span class="it">💛 누적 4,000+ 매칭<span class="sep">✦</span></span>
+    <span class="it">💸 성사 시에만 비용<span class="sep">✦</span></span>
+    <span class="it">💍 결혼 진심<span class="sep">✦</span></span>
+    <span class="it">🎁 1:1 소개팅<span class="sep">✦</span></span>
+    <span class="it">📦 로테이션 소개팅<span class="sep">✦</span></span>
+    <span class="it">📍 강남역 인근<span class="sep">✦</span></span>
+    <span class="it">💛 누적 4,000+ 매칭<span class="sep">✦</span></span>
+    <span class="it">💸 성사 시에만 비용<span class="sep">✦</span></span>
+    <span class="it">💍 결혼 진심<span class="sep">✦</span></span>
+    <span class="it">🎁 1:1 소개팅<span class="sep">✦</span></span>
+    <span class="it">📦 로테이션 소개팅<span class="sep">✦</span></span>
+  </div>
+</div>
 <nav class="nav">
   <div class="nav-inner">
     <a href="#top"><img src="logo.png" alt="썸류센터" style="height:28px"></a>
