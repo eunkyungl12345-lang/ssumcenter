@@ -36,6 +36,17 @@ function 일대일접수문자(name) {
   ].join("\n");
 }
 
+// 결혼 매칭 신청 접수 → 자동 접수 안내 문자
+function 결혼접수문자(name) {
+  return [
+    name + "님, 안녕하세요. 썸류센터입니다 💍",
+    "결혼 매칭 신청이 잘 접수됐어요.",
+    "센터장이 " + name + "님께 어울리는 분을 진지하게 찾아볼게요.",
+    "좋은 인연이 준비되면 상대 프로필과 함께 문자로 안내드릴게요!",
+    "설레는 마음으로 준비할게요. 조금만 기다려주세요 ✨",
+  ].join("\n");
+}
+
 // 1:1 매칭 성사 → 먼저 수락한 사람에게 입금 안내 (kind="결혼"이면 결혼 매칭 문구)
 function 매칭입금문자(name, amount, kind) {
   const head = kind === "결혼" ? "💍 썸류센터 결혼 매칭 성사 안내 💍" : "🩷 썸류센터 1:1 매칭 성사 안내 🩷";
@@ -227,7 +238,9 @@ module.exports = async function handler(req, res) {
         const recs = (req.body && req.body.records) || [];
         for (const rc of recs) {
           const f = (rc && rc.fields) || {};
-          const kind = table === "1:1 매칭 신청" ? "💘 1:1 매칭" : "🎡 커피팅";
+          const kind = table === "1:1 매칭 신청"
+            ? (String(f["유입경로"] || "").indexOf("결혼") >= 0 ? "💍 결혼 매칭" : "💘 1:1 매칭")
+            : "🎡 커피팅";
           const info = [f["이름"], f["성별"], f["출생연도"] ? f["출생연도"] + "년생" : "", f["직업_직장명"] || f["직업"], f["연락처"]].filter(Boolean).join(" · ");
           const photo = (Array.isArray(f["프로필사진"]) && f["프로필사진"][0] && f["프로필사진"][0].url) ? f["프로필사진"][0].url : null;
           await notifySlack(`📮 새 ${kind} 신청!\n${info}`, photo);
@@ -285,8 +298,9 @@ module.exports = async function handler(req, res) {
         for (const rc of recs) {
           const f = (rc && rc.fields) || {};
           const to = f["연락처"] || "";
+          const isMarriage = String(f["유입경로"] || "").indexOf("결혼") >= 0 || String(f["매칭유형"] || "").indexOf("결혼") >= 0;
           if (isValidPhone(to)) {
-            await sendSms({ to, text: 일대일접수문자(f["이름"] || "") });
+            await sendSms({ to, text: isMarriage ? 결혼접수문자(f["이름"] || "") : 일대일접수문자(f["이름"] || "") });
           }
         }
       } catch (e) { console.error("[airtable] 1:1 접수문자 발송 실패:", e.message); }
