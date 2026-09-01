@@ -36,10 +36,11 @@ function 일대일접수문자(name) {
   ].join("\n");
 }
 
-// 1:1 매칭 성사 → 먼저 수락한 사람에게 입금 안내
-function 매칭입금문자(name, amount) {
+// 1:1 매칭 성사 → 먼저 수락한 사람에게 입금 안내 (kind="결혼"이면 결혼 매칭 문구)
+function 매칭입금문자(name, amount, kind) {
+  const head = kind === "결혼" ? "💍 썸류센터 결혼 매칭 성사 안내 💍" : "🩷 썸류센터 1:1 매칭 성사 안내 🩷";
   return [
-    "🩷 썸류센터 1:1 매칭 성사 안내 🩷",
+    head,
     (name ? name + "님, " : "") + "축하드려요! 상대방도 수락하셨어요 🎉",
     "아래 계좌로 매칭비를 입금해주시면 서로의 연락처를 전달해 드려요.",
     "",
@@ -364,9 +365,11 @@ module.exports = async function handler(req, res) {
                 const pd = await pr.json();
                 const pf = (pd && pd.fields) || {};
                 const to = pf["연락처"] || "";
-                const amount = (String(pf["매칭유형"] || "").indexOf("슈퍼") >= 0) ? "39,800원" : "19,900원";
+                const mtype = String(pf["매칭유형"] || "");
+                const isMarriage = mtype.indexOf("결혼") >= 0 || String(pf["유입경로"] || "").indexOf("결혼") >= 0;
+                const amount = isMarriage ? "100,000원" : (mtype.indexOf("슈퍼") >= 0 ? "39,800원" : "19,900원");
                 if (isValidPhone(to)) {
-                  await sendSms({ to, text: 매칭입금문자(firstName, amount) });
+                  await sendSms({ to, text: 매칭입금문자(firstName, amount, isMarriage ? "결혼" : "") });
                 }
               }
               await notifySlack(`🎉 1:1 매칭 성사!\n${mf["여자"] || ""} ♥ ${mf["남자"] || ""}\n→ 먼저 수락한 ${firstName || ""}님께 입금 안내 문자 발송했어요`);
