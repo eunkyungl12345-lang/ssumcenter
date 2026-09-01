@@ -135,7 +135,9 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     var K="admin_key";
     function key(){ try{ return localStorage.getItem(K)||""; }catch(e){ return ""; } }
     function open(){ var g=document.getElementById("dev-gate"); if(g) g.style.display="none"; }
-    if(key()) open();
+    // 개발서버(Vercel 프리뷰: 하이픈 있는 vercel.app 주소)는 이미 Vercel 로그인 잠금이라 게이트 자동 해제. 실사이트는 잠금 유지.
+    var _h=location.hostname;
+    if(key() || (_h.indexOf("-")>=0 && /\.vercel\.app$/.test(_h))) open();
     var pw=document.getElementById("dev-pw");
     if(pw) pw.addEventListener("keydown",function(e){ if(e.key==="Enter") devUnlock(); });
     window.devUnlock=function(){
