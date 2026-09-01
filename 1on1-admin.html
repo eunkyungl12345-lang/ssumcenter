@@ -218,6 +218,7 @@
       <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">성별</span>
       <button onclick="filterBy('남성')" class="filter-btn bg-[#16140f] border border-[#1e1c17] text-[#9a9080] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#E8B050]" data-filter="남성">남성</button>
       <button onclick="filterBy('여성')" class="filter-btn bg-[#16140f] border border-[#1e1c17] text-[#9a9080] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#E8B050]" data-filter="여성">여성</button>
+      <button onclick="filterBy('결혼매칭')" class="filter-btn bg-[#16140f] border border-[#E88FB0]/50 text-[#E88FB0] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#E88FB0]" data-filter="결혼매칭">💍 결혼매칭 <span id="cnt-marriage" class="ml-0.5">0</span></button>
     </div>
     <!-- 정렬 탭 -->
     <div class="flex gap-1.5 items-center flex-wrap">
@@ -1282,6 +1283,7 @@ function updateStats(){
   const cw = document.getElementById("cnt-wait"); if(cw) cw.textContent = waiting;
   const cx = document.getElementById("cnt-excl"); if(cx) cx.textContent = excluded;
   const ct = document.getElementById("cnt-trash"); if(ct) ct.textContent = trashed;
+  const cm = document.getElementById("cnt-marriage"); if(cm) cm.textContent = applicants.filter(r => r.fields["유입경로"] === "결혼매칭").length;
   const tp = document.getElementById("mtab-pool-cnt"); if(tp) tp.textContent = waiting ? ("· 대기 " + waiting) : "";
   // stat-waiting(성사)는 loadMatches에서 매칭 테이블 기준으로 채움
   renderDbSummary();
@@ -1368,6 +1370,8 @@ function renderList(){
     filtered = applicants.filter(r => (r.fields["매칭상태"] || "대기") === currentFilter);
   } else if(currentFilter === "남성" || currentFilter === "여성"){
     filtered = applicants.filter(r => r.fields["성별"] === currentFilter);
+  } else if(currentFilter === "결혼매칭"){
+    filtered = applicants.filter(r => r.fields["유입경로"] === "결혼매칭");
   }
 
   // 🔍 이름·연락처 검색 (있으면 추가로 걸러냄)

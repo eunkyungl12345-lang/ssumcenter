@@ -146,6 +146,14 @@
       <input id="ap-work" placeholder="직장 위치 (예: 강남역, 판교)">
       <input id="ap-hobby" placeholder="취미 (예: 러닝, 카페투어)">
       <select id="ap-plan"><option value="">결혼 계획 시기 *</option><option>1년 이내</option><option>1~2년 내</option><option>2~3년 내</option><option>좋은 사람 만나면</option></select>
+      <div style="display:flex;gap:10px">
+        <select id="ap-marital" style="flex:1"><option value="">결혼 상태 *</option><option>초혼</option><option>재혼</option></select>
+        <select id="ap-child" style="flex:1"><option value="">자녀 계획 *</option><option>원해요</option><option>원치 않아요</option><option>아직 모르겠어요</option></select>
+      </div>
+      <div style="display:flex;gap:10px">
+        <select id="ap-dualincome" style="flex:1"><option value="">맞벌이 희망 *</option><option>맞벌이 희망</option><option>외벌이 희망</option><option>상관없어요</option></select>
+        <select id="ap-live" style="flex:1"><option value="">결혼 후 거주 *</option><option>서울</option><option>경기·인천</option><option>지방</option><option>상관없어요</option></select>
+      </div>
       <div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:6px">선호 나이대 (복수 선택)</div>
         <div id="ap-agebox" style="display:flex;flex-wrap:wrap;gap:7px">
@@ -226,20 +234,28 @@
     btn.addEventListener("click",function(){
       var msg=document.getElementById("ap-msg");
       var name=val("ap-name"), gender=document.getElementById("ap-gender").value, phone=val("ap-phone"), plan=document.getElementById("ap-plan").value;
+      var marital=document.getElementById("ap-marital").value, child=document.getElementById("ap-child").value;
+      var dual=document.getElementById("ap-dualincome").value, live=document.getElementById("ap-live").value;
       if(!name){ msg.style.color="#E8828A"; msg.textContent="이름을 입력해주세요."; return; }
       if(!gender){ msg.style.color="#E8828A"; msg.textContent="성별을 선택해주세요."; return; }
       if(!phone){ msg.style.color="#E8828A"; msg.textContent="연락처를 입력해주세요."; return; }
       if(!plan){ msg.style.color="#E8828A"; msg.textContent="결혼 계획 시기를 선택해주세요."; return; }
+      if(!marital){ msg.style.color="#E8828A"; msg.textContent="결혼 상태(초혼/재혼)를 선택해주세요."; return; }
+      if(!child){ msg.style.color="#E8828A"; msg.textContent="자녀 계획을 선택해주세요."; return; }
+      if(!dual){ msg.style.color="#E8828A"; msg.textContent="맞벌이 희망을 선택해주세요."; return; }
+      if(!live){ msg.style.color="#E8828A"; msg.textContent="결혼 후 거주 지역을 선택해주세요."; return; }
       if(!photoFiles.length){ msg.style.color="#E8828A"; msg.textContent="프로필 사진을 최소 1장 올려주세요."; return; }
       if(!docFile){ msg.style.color="#E8828A"; msg.textContent="재직증명서 또는 사업자등록증을 첨부해주세요."; return; }
       var ages=[]; document.querySelectorAll("#ap-agebox input:checked").forEach(function(c){ ages.push(c.value); });
       var intro=val("ap-intro");
-      // 결혼계획은 자기소개 맨 앞에 붙여 함께 저장 (1:1 테이블에 별도 필드 없어도 남게)
-      var introFull="💍 결혼 계획: "+plan+(intro?("\n"+intro):"");
+      // 결혼관 정보는 자기소개 맨 앞에 묶어서 함께 저장 (1:1 테이블에 별도 필드 없어도 남게)
+      var marriageBlock="💍 결혼정보\n· 결혼계획: "+plan+"\n· 결혼상태: "+marital+"\n· 자녀계획: "+child+"\n· 맞벌이: "+dual+"\n· 결혼후거주: "+live;
+      var introFull=marriageBlock+(intro?("\n\n"+intro):"");
       var fields={ "이름":name, "성별":gender, "연락처":phone, "유입경로":"결혼매칭", "매칭상태":"대기", "매칭유형":"결혼매칭",
         "출생연도":val("ap-birth"), "키":document.getElementById("ap-height").value, "종교":document.getElementById("ap-religion").value,
         "직업":val("ap-job"), "사는곳":val("ap-area"), "직장위치":val("ap-work"), "취미":val("ap-hobby"),
         "선호나이대":ages.join(", "), "이상형":val("ap-ideal"), "자기소개":introFull, "결혼계획":plan,
+        "결혼상태":marital, "자녀계획":child, "맞벌이":dual, "결혼후거주":live,
         "신청일시":new Date().toLocaleString("ko-KR") };
       var orig=btn.textContent; btn.disabled=true; btn.textContent="사진 올리는 중…";
       // 사진·서류 업로드 후 fields에 넣고 저장
