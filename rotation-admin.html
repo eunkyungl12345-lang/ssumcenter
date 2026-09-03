@@ -187,7 +187,7 @@
 (function(){
   "use strict";
   var TABLE="로테이션 신청", KEY="admin_key";
-  var records=[], curRound="전체", curStatus="전체", searchQ="";
+  var records=[], curRound="", curStatus="전체", searchQ="";
   window.rotSearch=function(v){ searchQ=(v||"").trim().toLowerCase(); render(); };
   // 🔁 가장 최신 회차 자동 감지 (문토 추가 기본값 등에 사용)
   function roundKey(rd){ var m=String(rd||"").match(/(\d{1,2})\s*\/\s*(\d{1,2})/); return m?(parseInt(m[1])*100+parseInt(m[2])):0; }
@@ -233,11 +233,12 @@
   }
 
   function render(){
-    // 회차 탭
-    var rounds=["전체"];
-    records.forEach(function(x){ var rd=x.fields["회차"]; if(rd && String(rd).indexOf("8/13")<0 && rounds.indexOf(rd)<0) rounds.push(rd); });
-    // 최신 회차가 앞쪽에 오도록 정렬 ("전체"는 항상 맨 앞)
-    rounds=["전체"].concat(rounds.filter(function(r){return r!=="전체";}).sort(function(a,b){return roundKey(b)-roundKey(a);}));
+    if(!curRound) curRound=latestRound();   // 기본 = 최신 회차(예: 9/17)
+    // 회차 탭 — 지난 회차는 숨김(오늘 이후 + 최신 회차만). "전체"는 항상 남겨둠(필요하면 지난 것도 봄)
+    var _now=new Date(), todayKey=(_now.getMonth()+1)*100+_now.getDate(), lr=latestRound();
+    var rounds=[];
+    records.forEach(function(x){ var rd=x.fields["회차"]; if(rd && (roundKey(rd)>=todayKey || rd===lr) && rounds.indexOf(rd)<0) rounds.push(rd); });
+    rounds=["전체"].concat(rounds.sort(function(a,b){return roundKey(b)-roundKey(a);}));
     var tabs=document.getElementById("tabs"); tabs.innerHTML="";
     rounds.forEach(function(rd){
       var b=document.createElement("button"); b.className="tab"+(rd===curRound?" on":""); b.textContent=rd;
