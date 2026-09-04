@@ -90,6 +90,41 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: "서버 환경변수가 설정되지 않았습니다" });
   }
 
+  // ☀️ 아침 브리핑 — Vercel cron이 매일 호출 → 슬랙에 현황 요약 (데이터 변경 없음, 슬랙 발송만)
+  if (req.query.summary === "1") {
+    try {
+      const H = { Authorization: `Bearer ${TOKEN}` };
+      async function all(t) {
+        let recs = [], off;
+        do {
+          const p = new URLSearchParams({ pageSize: "100" });
+          if (off) p.set("offset", off);
+          const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(t)}?${p.toString()}`, { headers: H });
+          const d = await r.json();
+          if (!r.ok) break;
+          recs = recs.concat(d.records || []);
+          off = d.offset;
+        } while (off);
+        return recs;
+      }
+      const one = await all("1:1 매칭 신청");
+      const rot = await all("로테이션 신청");
+      const isMarriage = f => String(f["유입경로"] || "").indexOf("결혼") >= 0;
+      const oneWait = one.filter(r => (r.fields["매칭상태"] || "대기") === "대기" && !isMarriage(r.fields)).length;
+      const oneIntro = one.filter(r => r.fields["매칭상태"] === "소개중").length;
+      const marriage = one.filter(r => isMarriage(r.fields)).length;
+      const rk = rd => { const m = String(rd || "").match(/(\d{1,2})\/(\d{1,2})/); return m ? parseInt(m[1]) * 100 + parseInt(m[2]) : 0; };
+      let latest = "", lk = -1;
+      rot.forEach(r => { const rd = r.fields["회차"]; if (rd) { const k = rk(rd); if (k > lk) { lk = k; latest = rd; } } });
+      const cur = rot.filter(r => r.fields["회차"] === latest);
+      const rotWait = cur.filter(r => (r.fields["승인상태"] || "대기") === "대기").length;
+      const rotPaid = cur.filter(r => r.fields["입금확정"] === "O").length;
+      const msg = `☀️ 썸류 아침 브리핑\n\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건\n🎡 로테이션 ${latest || "-"} — 대기 ${rotWait} · 입금완료 ${rotPaid}\n\n오늘도 화이팅이에요! 💪`;
+      await notifySlack(msg);
+      return res.status(200).json({ ok: true });
+    } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
+  }
+
   // ---- 고객: 전화번호로 기존(로그인 전) 신청을 내 계정에 연결 (카카오ID 없는 것만) ----
   if (req.method === "POST" && req.query.claim === "1") {
     const claimKakao = req.query.kakaoId;
