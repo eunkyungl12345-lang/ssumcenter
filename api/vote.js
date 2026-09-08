@@ -47,18 +47,32 @@ module.exports = async function handler(req, res) {
 
   const digits = s => String(s || "").replace(/[^0-9]/g, "");
   const norm = s => digits(s); // 전화번호 비교용
+  const nm = s => String(s || "").trim(); // 닉네임 비교용
+  const rk = rd => { const m = String(rd || "").match(/(\d{1,2})\/(\d{1,2})/); return m ? parseInt(m[1]) * 100 + parseInt(m[2]) : 0; }; // 회차 최신순
+  // 닉네임(또는 전화번호)으로 참가자 찾기 — 같은 닉네임이 여러 회차면 최신 회차 우선
+  function findMe(people, { nick, phone, event }) {
+    const n = nm(nick), ph = norm(phone), ev = nm(event);
+    if (n) {
+      let ms = people.filter(p => nm(p.fields["닉네임"]) === n);
+      if (ev) { const inEv = ms.filter(p => nm(p.fields["행사"]) === ev); if (inEv.length) ms = inEv; }
+      if (!ms.length) return null;
+      ms.sort((a, b) => rk(b.fields["행사"]) - rk(a.fields["행사"]));
+      return ms[0];
+    }
+    if (ph.length >= 10) return people.find(p => norm(p.fields["전화번호"]) === ph) || null;
+    return null;
+  }
 
   try {
     // ============ 참가자 본인 확인 ============
     if (action === "verify") {
-      const phone = norm(body.phone);
-      if (phone.length < 10) return res.status(200).json({ found: false });
-      const people = await getAll("투표참가자", body.event ? `{행사}='${body.event}'` : null);
-      const me = people.find(p => norm(p.fields["전화번호"]) === phone);
+      const people = await getAll("투표참가자");
+      const me = findMe(people, { nick: body.nick, phone: body.phone, event: body.event });
       if (!me) return res.status(200).json({ found: false });
       const event = me.fields["행사"] || "";
+      const myNick = nm(me.fields["닉네임"]);
       const myVotes = await getAll("투표", `{행사}='${event}'`);
-      const voted = myVotes.some(v => norm(v.fields["투표자전화"]) === phone);
+      const voted = myVotes.some(v => nm(v.fields["투표자닉네임"]) === myNick);
       const settings = await getAll("투표설정", `{행사}='${event}'`);
       const revealed = settings.some(s => s.fields["공개"] === true);
       return res.status(200).json({
@@ -91,19 +105,18 @@ module.exports = async function handler(req, res) {
 
     // ============ 투표 제출 ============
     if (action === "vote") {
-      const phone = norm(body.phone);
       const picks = (body.picks || []).filter(Boolean).slice(0, 2);
-      if (phone.length < 10) return res.status(400).json({ error: "본인 확인 필요" });
       if (picks.length === 0) return res.status(400).json({ error: "최소 1명 선택" });
 
       const people = await getAll("투표참가자");
-      const me = people.find(p => norm(p.fields["전화번호"]) === phone);
-      if (!me) return res.status(400).json({ error: "명단에 없는 번호" });
+      const me = findMe(people, { nick: body.nick, phone: body.phone, event: body.event });
+      if (!me) return res.status(400).json({ error: "명단에 없어요" });
       const event = me.fields["행사"] || "";
+      const myNick = nm(me.fields["닉네임"]);
 
-      // 중복 투표 방지
-      const existing = await getAll("투표", `{투표자전화}='${me.fields["전화번호"]}'`);
-      const dup = existing.find(v => norm(v.fields["투표자전화"]) === phone && (v.fields["행사"] || "") === event);
+      // 중복 투표 방지 (닉네임+행사)
+      const existing = await getAll("투표", `{행사}='${event}'`);
+      const dup = existing.find(v => nm(v.fields["투표자닉네임"]) === myNick);
       if (dup) return res.status(200).json({ ok: false, already: true });
 
       await api("투표", {
@@ -126,12 +139,9 @@ module.exports = async function handler(req, res) {
 
     // ============ 결과 조회 ============
     if (action === "result") {
-      const phone = norm(body.phone);
-      if (phone.length < 10) return res.status(400).json({ error: "본인 확인 필요" });
-
       const people = await getAll("투표참가자");
-      const me = people.find(p => norm(p.fields["전화번호"]) === phone);
-      if (!me) return res.status(400).json({ error: "명단에 없는 번호" });
+      const me = findMe(people, { nick: body.nick, phone: body.phone, event: body.event });
+      if (!me) return res.status(400).json({ error: "명단에 없어요" });
       const event = me.fields["행사"] || "";
       const myNick = me.fields["닉네임"] || "";
 
@@ -144,7 +154,7 @@ module.exports = async function handler(req, res) {
       const byNick = {};
       people.forEach(p => { byNick[p.fields["닉네임"]] = p; });
 
-      const myVote = votes.find(v => norm(v.fields["투표자전화"]) === phone);
+      const myVote = votes.find(v => nm(v.fields["투표자닉네임"]) === nm(myNick));
       const myPicks = myVote ? [myVote.fields["뽑은1"], myVote.fields["뽑은2"]].filter(Boolean) : [];
 
       // 나를 뽑은 사람들

@@ -102,14 +102,14 @@
   <!-- 입장 -->
   <div class="scr" id="s-entry">
     <div class="apphead"><img src="/logo.png" alt="썸류센터" style="height:26px;flex-shrink:0"><span class="ttl" id="ev-title">썸류센터 커피팅 투표</span></div>
-    <div class="lead"><div class="ky">📷 QR로 접속했어요</div><h2>본인 확인</h2><div class="sub">입력한 번호로 오늘 밤 결과를 보내드려요</div></div>
-    <div class="qrbox"><div class="qrimg">▦</div><div class="qrcap">행사장 QR로 접속하셨어요</div></div>
-    <label class="fld"><span>휴대폰 번호</span>
-      <input id="phone" inputmode="numeric" placeholder="010-1234-5678" maxlength="13" autocomplete="off">
+    <div class="lead"><div class="ky">📷 QR로 접속했어요</div><h2>본인 확인</h2><div class="sub">명찰에 적힌 <b>내 닉네임</b>을 입력해주세요</div></div>
+    <div class="qrbox"><div class="qrimg">🏷️</div><div class="qrcap">명찰 닉네임으로 입장해요</div></div>
+    <label class="fld"><span>내 닉네임 (명찰)</span>
+      <input id="nick" placeholder="예: 라떼" maxlength="20" autocomplete="off">
     </label>
     <div class="err" id="entry-err"></div>
     <div style="margin-top:6px"><button class="btn" id="entryBtn" disabled>입장하기</button></div>
-    <div class="note">명단에 있는 번호만 입장돼요 · 회원가입 없음</div>
+    <div class="note">명찰에 적힌 닉네임으로 입장돼요 · 회원가입 없음</div>
   </div>
 
   <!-- 투표 -->
@@ -153,7 +153,7 @@
   "use strict";
   var API="/api/vote";
   var ACCOUNT={bank:"카카오뱅크",no:"3333-34-1009531",holder:"장민",price:"9,900원"};
-  var state={phone:"",me:null,list:[],picks:[]};
+  var state={nick:"",event:"",me:null,list:[],picks:[]};
 
   function post(action,data){
     return fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
@@ -169,30 +169,29 @@
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
   function avatar(p){ return p.사진 ? '<div class="av"><img src="'+esc(p.사진)+'" alt=""></div>' : '<div class="av">🙂</div>'; }
 
-  // ---- 시작: 저장된 번호 있으면 자동 라우팅 ----
-  var saved=localStorage.getItem("vote_phone");
-  if(saved){ state.phone=saved; route(saved); }
+  // ---- 시작: 저장된 닉네임 있으면 자동 라우팅 ----
+  var saved=localStorage.getItem("vote_nick");
+  if(saved){ state.nick=saved; route(saved); }
   else show("s-entry");
 
   // ---- 입장 ----
-  var phone=document.getElementById("phone"), entryBtn=document.getElementById("entryBtn"), entryErr=document.getElementById("entry-err");
-  phone.addEventListener("input",function(){
-    var d=phone.value.replace(/[^0-9]/g,"").slice(0,11),out=d;
-    if(d.length>7){out=d.slice(0,3)+"-"+d.slice(3,7)+"-"+d.slice(7);}
-    else if(d.length>3){out=d.slice(0,3)+"-"+d.slice(3);}
-    phone.value=out; entryBtn.disabled=d.length<10; entryErr.textContent="";
+  var nickEl=document.getElementById("nick"), entryBtn=document.getElementById("entryBtn"), entryErr=document.getElementById("entry-err");
+  nickEl.addEventListener("input",function(){
+    entryBtn.disabled=nickEl.value.trim().length<1; entryErr.textContent="";
   });
+  nickEl.addEventListener("keydown",function(e){ if(e.key==="Enter"&&nickEl.value.trim()){ entryBtn.click(); } });
   entryBtn.addEventListener("click",function(){
-    var p=phone.value.replace(/[^0-9]/g,"");
+    var p=nickEl.value.trim();
+    if(!p) return;
     entryBtn.disabled=true; entryBtn.textContent="확인 중…";
     route(p).catch(function(){ entryErr.textContent="오류가 났어요. 다시 시도해주세요."; })
       .finally(function(){ entryBtn.textContent="입장하기"; entryBtn.disabled=false; });
   });
 
   function route(p){
-    return post("verify",{phone:p}).then(function(r){
-      if(!r.found){ entryErr.textContent="명단에 없는 번호예요. 센터장에게 문의해주세요."; show("s-entry"); return; }
-      state.phone=p; state.me=r.me; localStorage.setItem("vote_phone",p);
+    return post("verify",{nick:p}).then(function(r){
+      if(!r.found){ entryErr.textContent="명찰 닉네임을 다시 확인해주세요. 안 되면 센터장에게 문의!"; show("s-entry"); return; }
+      state.nick=p; state.me=r.me; state.event=r.me.행사; localStorage.setItem("vote_nick",p);
       document.getElementById("vote-me").textContent=r.me.닉네임;
       document.getElementById("done-me").textContent=r.me.닉네임;
       document.getElementById("res-me").textContent=r.me.닉네임;
@@ -235,7 +234,7 @@
   var submitBtn=document.getElementById("submitBtn");
   submitBtn.addEventListener("click",function(){
     submitBtn.disabled=true; submitBtn.textContent="제출 중…";
-    post("vote",{phone:state.phone,picks:state.picks}).then(function(r){
+    post("vote",{nick:state.nick,event:state.event,picks:state.picks}).then(function(r){
       if(r.ok||r.already){ show("s-done"); }
       else { alert(r.error||"제출 실패"); submitBtn.disabled=false; submitBtn.textContent="투표 제출하기"; }
     }).catch(function(){ alert("오류가 났어요."); submitBtn.disabled=false; submitBtn.textContent="투표 제출하기"; });
@@ -244,7 +243,7 @@
   // ---- 완료 화면: 결과 열렸는지 확인 ----
   document.getElementById("refreshBtn").addEventListener("click",function(){
     var b=this; b.disabled=true; b.textContent="확인 중…";
-    post("verify",{phone:state.phone}).then(function(r){
+    post("verify",{nick:state.nick}).then(function(r){
       if(r.revealed){ loadResult(); }
       else { b.textContent="아직이에요 · 다시 확인"; setTimeout(function(){ b.disabled=false; b.textContent="결과 열렸는지 확인하기"; },1500); }
     });
@@ -253,7 +252,7 @@
   // ---- 결과 ----
   function loadResult(){
     show("s-load");
-    return post("result",{phone:state.phone}).then(function(r){
+    return post("result",{nick:state.nick,event:state.event}).then(function(r){
       if(!r.revealed){ show("s-done"); return; }
       renderResult(r); show("s-result");
     });
