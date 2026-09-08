@@ -373,7 +373,7 @@
 
         <!-- 재직증명서 / 사업자등록증 -->
         <div>
-          <label class="block text-xs font-bold text-[#9a9080] mb-2">재직증명서 또는 사업자등록증 <span class="y">*</span></label>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">재직증명서·사업자등록증·명함 중 1개 <span class="y">*</span></label>
           <div id="doc-job-upload" onclick="document.getElementById('doc-job-input').click()"
             class="w-full bg-[#0e0c0a] border-2 border-dashed border-[#1e1c17] rounded-xl p-4 text-center cursor-pointer hover:border-[#E8B050] transition group">
             <div id="doc-job-done" class="hidden flex items-center justify-center gap-2">
@@ -1088,7 +1088,7 @@ function stepFieldsValid(n){
     if(!/^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/.test(ph)){ alert("연락처 형식을 확인해주세요. (예: 010-1234-5678)"); return false; }
     return true;
   }
-  if(n===2){ if(!docFiles.job){ alert("재직증명서 또는 사업자등록증을 제출해주세요."); return false; } return true; }
+  if(n===2){ if(!docFiles.job){ alert("재직증명서·사업자등록증·명함 중 하나를 제출해주세요."); return false; } return true; }
   if(n===3){
     if(selectedAges.size===0){ alert("선호 나이대를 1개 이상 선택해주세요."); return false; }
     if(selectedKeywords.size<1){ alert("성격 키워드를 1개 이상 선택해주세요."); return false; }
@@ -1123,7 +1123,7 @@ async function handleSubmit(e){
 
   // 서류 검증
   if(!docFiles.job){
-    alert("재직증명서 또는 사업자등록증을 제출해주세요.");
+    alert("재직증명서·사업자등록증·명함 중 하나를 제출해주세요.");
     return false;
   }
 
