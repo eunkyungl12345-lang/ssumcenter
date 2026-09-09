@@ -114,10 +114,16 @@ module.exports = async function handler(req, res) {
       const event = me.fields["행사"] || "";
       const myNick = nm(me.fields["닉네임"]);
 
-      // 중복 투표 방지 (닉네임+행사)
+      // 이미 투표했으면 → 수정(덮어쓰기) 허용. 결과 공개 후엔 잠금.
+      const settings0 = await getAll("투표설정", `{행사}='${event}'`);
+      const revealed0 = settings0.some(s => s.fields["공개"] === true);
       const existing = await getAll("투표", `{행사}='${event}'`);
       const dup = existing.find(v => nm(v.fields["투표자닉네임"]) === myNick);
-      if (dup) return res.status(200).json({ ok: false, already: true });
+      if (dup) {
+        if (revealed0) return res.status(200).json({ ok: false, locked: true });
+        await api(encodeURIComponent("투표") + "/" + dup.id, { method: "PATCH", body: { fields: { 뽑은1: picks[0] || "", 뽑은2: picks[1] || "", 일시: new Date().toLocaleString("ko-KR") } } });
+        return res.status(200).json({ ok: true, updated: true });
+      }
 
       await api("투표", {
         method: "POST",

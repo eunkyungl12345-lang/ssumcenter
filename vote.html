@@ -134,10 +134,13 @@
       <div class="whenbar">🌙 오늘 <b class="tnum" style="margin:0 3px">23:30</b> 이 링크에서 공개</div>
     </div>
     <div class="infocard">
-      🟢 <b style="color:var(--ok)">서로 뽑은 분</b>이 있으면 → <b>연락처 무료</b>로 공유돼요<br>
-      🔒 <b style="color:var(--amber)">누가 날 뽑았는지 · 득표수</b>는 → 유료로 확인
+      🟢 <b style="color:var(--ok)">서로 뽑은 분</b>이 있으면 → 매칭 💗<br>
+      💰 매칭된 분 <b style="color:var(--amber)">연락처</b>는 → 만원 결제하면 열려요
     </div>
-    <div style="margin-top:22px"><button class="btn ghost" id="refreshBtn">결과 열렸는지 확인하기</button></div>
+    <div style="margin-top:22px;display:flex;flex-direction:column;gap:9px">
+      <button class="btn ghost" id="revoteBtn">🔄 다시 투표하기 (수정)</button>
+      <button class="btn ghost" id="refreshBtn">결과 열렸는지 확인하기</button>
+    </div>
   </div>
 
   <!-- 결과 -->
@@ -220,6 +223,7 @@
         el.addEventListener("click",function(){ toggle(p.닉네임,el); });
         vl.appendChild(el);
       });
+      document.getElementById("submitBtn").textContent="투표 제출하기";
       updateCount(); show("s-vote");
     });
   }
@@ -237,11 +241,21 @@
   submitBtn.addEventListener("click",function(){
     submitBtn.disabled=true; submitBtn.textContent="제출 중…";
     post("vote",{nick:state.nick,event:state.event,picks:state.picks}).then(function(r){
-      if(r.ok||r.already){ show("s-done"); }
+      if(r.ok){ show("s-done"); }
+      else if(r.locked){ alert("결과가 이미 공개돼서 투표를 바꿀 수 없어요."); show("s-done"); }
       else { alert(r.error||"제출 실패"); submitBtn.disabled=false; submitBtn.textContent="투표 제출하기"; }
     }).catch(function(){ alert("오류가 났어요."); submitBtn.disabled=false; submitBtn.textContent="투표 제출하기"; });
   });
 
+  // ---- 완료 화면: 다시 투표(수정) ----
+  document.getElementById("revoteBtn").addEventListener("click",function(){
+    var b=this; b.disabled=true; b.textContent="확인 중…";
+    post("verify",{nick:state.nick}).then(function(r){
+      if(r.revealed){ b.textContent="결과가 공개돼서 못 바꿔요"; setTimeout(function(){ b.disabled=false; b.textContent="🔄 다시 투표하기 (수정)"; },1800); return; }
+      b.disabled=false; b.textContent="🔄 다시 투표하기 (수정)";
+      loadList();
+    });
+  });
   // ---- 완료 화면: 결과 열렸는지 확인 ----
   document.getElementById("refreshBtn").addEventListener("click",function(){
     var b=this; b.disabled=true; b.textContent="확인 중…";
