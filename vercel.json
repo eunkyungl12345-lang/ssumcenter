@@ -6,13 +6,13 @@
   ],
   "headers": [
     {
-      "source": "/(admin|1on1|1on1-admin|rotation-admin|lineup|attendance|vote-admin|participants|response|matching|login|auth-callback|my|members|dev|guide|guide-1on1|patch-notes|links|marriage)",
+      "source": "/(admin|1on1|1on1-admin|rotation-admin|lineup|attendance|vote-admin|vote-test|participants|response|matching|login|auth-callback|my|members|dev|guide|guide-1on1|patch-notes|links|marriage)",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, must-revalidate" }
       ]
     },
     {
-      "source": "/(admin|1on1|1on1-admin|rotation-admin|lineup|attendance|vote-admin|participants|response|matching|login|auth-callback|my|members|dev|guide|guide-1on1|patch-notes|links|marriage).html",
+      "source": "/(admin|1on1|1on1-admin|rotation-admin|lineup|attendance|vote-admin|vote-test|participants|response|matching|login|auth-callback|my|members|dev|guide|guide-1on1|patch-notes|links|marriage).html",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, must-revalidate" }
       ]

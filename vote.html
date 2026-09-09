@@ -170,7 +170,9 @@
   function avatar(p){ return p.사진 ? '<div class="av"><img src="'+esc(p.사진)+'" alt=""></div>' : '<div class="av">🙂</div>'; }
 
   // ---- 시작: 저장된 닉네임 있으면 자동 라우팅 ----
-  var saved=localStorage.getItem("vote_nick");
+  // ?nick=닉네임 이 있으면 자동 로그인 (테스트 링크용) — URL 우선
+  var urlNick=new URLSearchParams(location.search).get("nick");
+  var saved=urlNick || localStorage.getItem("vote_nick");
   if(saved){ state.nick=saved; route(saved); }
   else show("s-entry");
 

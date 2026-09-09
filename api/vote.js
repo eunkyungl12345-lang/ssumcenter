@@ -203,8 +203,10 @@ module.exports = async function handler(req, res) {
     if (action === "setPaid") {
       if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
       const phone = norm(body.phone);
-      const people = await getAll("투표참가자");
-      const target = people.find(p => norm(p.fields["전화번호"]) === phone);
+      const nick = nm(body.nick);
+      const people = await getAll("투표참가자", body.event ? `{행사}='${body.event}'` : null);
+      const target = phone ? people.find(p => norm(p.fields["전화번호"]) === phone)
+                           : people.find(p => nm(p.fields["닉네임"]) === nick);
       if (!target) return res.status(404).json({ error: "참가자 없음" });
       await api("투표참가자", { method: "PATCH", body: { records: [{ id: target.id, fields: { 공개상태: body.on !== false, 결제상태: body.on !== false ? "완료" : "미결제" } }] } });
       return res.status(200).json({ ok: true });

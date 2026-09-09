@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧪 투표 테스트 | 썸류센터</title>
+<style>
+  :root{--bg:#0e0c0a;--surface:#17130c;--surface-2:#120d07;--ink:#EDE0CC;--muted:#9c8f78;--line:#2e2214;--line-strong:#3a2e1f;--amber:#E8B050;--ok:#4ec98a;--rose:#E8828A;--ink-on-amber:#171208;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.55;letter-spacing:-.01em}
+  .wrap{max-width:560px;margin:0 auto;padding:22px 16px 80px}
+  h1{font-size:21px;font-weight:900}
+  .sub{font-size:12.5px;color:var(--muted);margin:5px 0 16px;line-height:1.6}
+  .sub a{color:var(--amber);text-decoration:none}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:15px;margin-bottom:12px}
+  .card h2{font-size:14.5px;font-weight:800;margin-bottom:4px}
+  .card .d{font-size:12px;color:var(--muted);margin-bottom:11px;line-height:1.6}
+  .btn{border:none;border-radius:11px;padding:12px 14px;font-size:13.5px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit}
+  .btn.g{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong)}
+  .btn.rose{background:var(--rose);color:#2a0d0f}
+  .btn.ok{background:var(--ok);color:#062}
+  .btn.sm{padding:8px 12px;font-size:12px}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  input{background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit;width:100%}
+  .p{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+  .p .g{font-size:11px;font-weight:800;padding:2px 8px;border-radius:100px;flex:none}
+  .g.m{background:rgba(96,165,250,.15);color:#60a5fa}.g.f{background:rgba(244,114,182,.15);color:#f472b6}
+  .p .nk{flex:1;font-size:14px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .p a.vote{font-size:11.5px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);padding:7px 11px;border-radius:9px;text-decoration:none;flex:none}
+  .p button.pay{font-size:11px;font-weight:700;border:1.5px solid var(--line-strong);background:transparent;color:var(--muted);border-radius:9px;padding:7px 9px;cursor:pointer;font-family:inherit;flex:none}
+  .p button.pay.on{background:var(--ok);color:#062;border-color:transparent}
+  .msg{font-size:12.5px;margin-top:8px;min-height:16px}.msg.ok{color:var(--ok)}.msg.err{color:var(--rose)}
+  .reveal-st{font-size:13px;font-weight:800;padding:8px 12px;border-radius:10px;display:inline-block}
+  .reveal-st.on{background:rgba(78,201,138,.15);color:var(--ok)}.reveal-st.off{background:var(--surface-2);color:var(--muted)}
+  .empty{font-size:13px;color:var(--muted);text-align:center;padding:14px;border:1px dashed var(--line-strong);border-radius:12px}
+  #login{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;padding:24px;z-index:99}
+  #login .box{max-width:320px;width:100%;text-align:center}
+  #login input{text-align:center;margin-bottom:10px}
+  .hide{display:none!important}
+  .step{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--amber);color:var(--ink-on-amber);font-size:12px;font-weight:900;margin-right:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div id="login"><div class="box">
+  <div style="font-size:40px">🧪</div>
+  <div style="font-size:16px;font-weight:800;margin:10px 0 4px">투표 테스트 (개발용)</div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:16px">관리자 비밀번호</div>
+  <input id="pw" type="password" placeholder="비밀번호">
+  <button class="btn" id="loginBtn" style="width:100%">열기</button>
+  <div class="msg err" id="login-msg"></div>
+</div></div>
+
+<div class="wrap hide" id="app">
+  <h1>🧪 투표 테스트</h1>
+  <div class="sub">실제 회차랑 분리된 <b>"테스트" 회차</b>로 마음껏 연습해요. 친구들한테 아래 "투표하기" 링크 보내거나, 이 폰에서 하나씩 눌러 테스트! · <a href="/vote-admin">← 진짜 투표 관리</a></div>
+
+  <div class="card">
+    <h2><span class="step">1</span> 테스트 참가자</h2>
+    <div class="d">여자 4명·남자 4명을 "테스트" 회차에 넣어요. (이미 있으면 건너뜀)</div>
+    <div class="row">
+      <button class="btn" id="seedBtn">➕ 테스트 참가자 8명 세팅</button>
+      <button class="btn rose" id="resetBtn">🗑️ 전부 지우기(초기화)</button>
+    </div>
+    <div class="msg" id="seed-msg"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="step">2</span> 결과 공개</h2>
+    <div class="d">다들 투표 끝나면 켜세요. 켜면 각자 /vote에서 결과(매칭)를 볼 수 있어요.</div>
+    <div class="row" style="align-items:center">
+      <button class="btn ok sm" id="revealOn">결과 공개 켜기</button>
+      <button class="btn g sm" id="revealOff">끄기</button>
+      <span class="reveal-st off" id="reveal-st">공개 꺼짐</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="step">3</span> 참가자 · 투표하기</h2>
+    <div class="d">각 "🗳️ 투표" = 그 사람으로 자동 로그인돼요(새 탭). · <b>💰 연락처공개</b> = 결제 확인 흉내(켜면 그 사람 결과에서 매칭 상대 연락처가 열림).</div>
+    <div id="list"><div class="empty">위 "세팅" 먼저 눌러주세요</div></div>
+    <button class="btn g sm" id="refreshBtn" style="margin-top:6px">🔄 새로고침</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var API="/api/vote", EVENT="테스트", KEY="admin_key";
+  function key(){ return localStorage.getItem(KEY)||""; }
+  function post(action,data){
+    return fetch(API,{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":key()},
+      body:JSON.stringify(Object.assign({action:action},data||{}))}).then(function(r){return r.json();});
+  }
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function setMsg(id,t,cls){ var e=document.getElementById(id); e.textContent=t; e.className="msg "+(cls||""); }
+
+  // 로그인
+  function openApp(){ document.getElementById("login").classList.add("hide"); document.getElementById("app").classList.remove("hide"); load(); refreshReveal(); }
+  if(key()) openApp();
+  document.getElementById("pw").addEventListener("keydown",function(e){ if(e.key==="Enter") doLogin(); });
+  document.getElementById("loginBtn").addEventListener("click",doLogin);
+  function doLogin(){
+    var v=document.getElementById("pw").value; if(!v) return;
+    fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:v})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ localStorage.setItem(KEY,v); openApp(); }
+        else { document.getElementById("login-msg").textContent="비밀번호가 틀렸어요."; }
+      }).catch(function(){ document.getElementById("login-msg").textContent="오류가 났어요."; });
+  }
+
+  // 세팅
+  var SAMPLE=[
+    {순번:1,닉네임:"센터장",성별:"여성",년생:"90",한줄소개:"테스트 진행 중"},
+    {순번:2,닉네임:"라떼",성별:"여성",년생:"94",한줄소개:"카페 투어가 취미"},
+    {순번:3,닉네임:"초코",성별:"여성",년생:"96",한줄소개:"디저트 러버"},
+    {순번:4,닉네임:"민트",성별:"여성",년생:"95",한줄소개:"러닝·요가"},
+    {순번:5,닉네임:"커피왕",성별:"남성",년생:"92",한줄소개:"주말마다 카페 투어"},
+    {순번:6,닉네임:"운동왕",성별:"남성",년생:"93",한줄소개:"등산·러닝 좋아함"},
+    {순번:7,닉네임:"책읽는곰",성별:"남성",년생:"95",한줄소개:"독서모임 운영중"},
+    {순번:8,닉네임:"여행러",성별:"남성",년생:"91",한줄소개:"한 달에 한 번 여행"}
+  ];
+  document.getElementById("seedBtn").addEventListener("click",function(){
+    setMsg("seed-msg","세팅 중…","");
+    post("adminData",{event:EVENT}).then(function(d){
+      var have={}; (d.participants||[]).forEach(function(p){ have[p.닉네임]=1; });
+      var rows=SAMPLE.filter(function(s){ return !have[s.닉네임]; });
+      if(!rows.length){ setMsg("seed-msg","이미 8명 다 있어요 👍","ok"); load(); return; }
+      post("addParticipants",{event:EVENT,rows:rows}).then(function(r){
+        if(r.error){ setMsg("seed-msg","❌ "+r.error,"err"); return; }
+        setMsg("seed-msg","✅ "+r.count+"명 추가!","ok"); load();
+      });
+    });
+  });
+  document.getElementById("resetBtn").addEventListener("click",function(){
+    if(!confirm("테스트 회차 참가자·투표를 전부 지울까요?")) return;
+    setMsg("seed-msg","지우는 중…","");
+    post("adminData",{event:EVENT}).then(function(d){
+      var ppl=d.participants||[];
+      if(!ppl.length){ setMsg("seed-msg","이미 비어있어요","ok"); load(); return; }
+      var i=0;
+      (function next(){
+        if(i>=ppl.length){ setMsg("seed-msg","✅ 전부 지웠어요","ok"); load(); return; }
+        post("deleteParticipant",{event:EVENT,nick:ppl[i].닉네임}).then(function(){ i++; next(); });
+      })();
+    });
+  });
+
+  // 결과 공개
+  function refreshReveal(){
+    post("adminData",{event:EVENT}).then(function(d){
+      var on=!!d.revealed; var e=document.getElementById("reveal-st");
+      e.textContent=on?"공개 켜짐 🟢":"공개 꺼짐"; e.className="reveal-st "+(on?"on":"off");
+    }).catch(function(){});
+  }
+  document.getElementById("revealOn").addEventListener("click",function(){ post("reveal",{event:EVENT,on:true}).then(refreshReveal); });
+  document.getElementById("revealOff").addEventListener("click",function(){ post("reveal",{event:EVENT,on:false}).then(refreshReveal); });
+
+  // 목록
+  document.getElementById("refreshBtn").addEventListener("click",function(){ load(); refreshReveal(); });
+  function load(){
+    post("adminData",{event:EVENT}).then(function(d){
+      var ppl=d.participants||[], box=document.getElementById("list");
+      if(!ppl.length){ box.innerHTML='<div class="empty">참가자가 없어요. "세팅" 눌러주세요</div>'; return; }
+      box.innerHTML=ppl.map(function(p){
+        var gm=p.성별==="남성";
+        return '<div class="p"><span class="g '+(gm?"m":"f")+'">'+(gm?"남":"여")+'</span>'
+          +'<span class="nk">'+esc(p.닉네임)+'</span>'
+          +'<a class="vote" href="/vote?nick='+encodeURIComponent(p.닉네임)+'" target="_blank">🗳️ 투표</a>'
+          +'<button class="pay'+(p.공개상태?" on":"")+'" data-nick="'+esc(p.닉네임)+'" data-on="'+(p.공개상태?"1":"0")+'">💰 연락처'+(p.공개상태?"✓":"")+'</button></div>';
+      }).join("");
+      Array.prototype.forEach.call(box.querySelectorAll("button.pay"),function(b){
+        b.addEventListener("click",function(){
+          var on=b.dataset.on!=="1";
+          post("setPaid",{event:EVENT,nick:b.dataset.nick,on:on}).then(function(r){ if(!r.error) load(); });
+        });
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>
