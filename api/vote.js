@@ -176,28 +176,13 @@ module.exports = async function handler(req, res) {
         } : { 닉네임: nick };
       };
 
-      // 무료: 상호 매칭 → 연락처 공유
-      const free = mutual.map(nick => {
-        const p = byNick[nick];
-        return { ...profile(nick), 연락처: p ? p.fields["전화번호"] : "" };
-      });
-
-      // 유료: 결제(공개상태) 되어야 상세 공개
+      // 서로 뽑은 매칭만 보여줌 (받은 표 유료공개 폐지). 연락처는 결제(공개상태) 후 열림.
       const paidUnlocked = me.fields["공개상태"] === true;
-      const paid = paidUnlocked
-        ? {
-            unlocked: true,
-            득표수: votersForMe.length,
-            상호수: mutual.length,
-            나를뽑은사람: votersForMe.map(nick => {
-              const isMutual = mutual.includes(nick);
-              const p = byNick[nick];
-              return { ...profile(nick), 상호매칭: isMutual, 연락처: isMutual ? "" : (p ? p.fields["전화번호"] : "") };
-            }),
-          }
-        : { unlocked: false, hasVotes: votersForMe.length > 0 };
-
-      return res.status(200).json({ revealed: true, free, paid });
+      const matches = mutual.map(nick => {
+        const p = byNick[nick];
+        return { ...profile(nick), 연락처: paidUnlocked ? (p ? p.fields["전화번호"] : "") : "" };
+      });
+      return res.status(200).json({ revealed: true, matches, unlocked: paidUnlocked });
     }
 
     // ============ (관리자) 공개 스위치 ============

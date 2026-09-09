@@ -158,8 +158,8 @@
       </div>
       <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-top:18px">
         <div style="font-size:12.5px;color:var(--ink-2);font-weight:600;line-height:1.6">
-          🟢 <b style="color:var(--ok)">서로 뽑은 분</b>이 있으면 → <b>연락처 무료</b>로 공유돼요<br>
-          🔒 <b style="color:var(--amber)">누가 날 뽑았는지 · 득표수</b>는 → 유료로 확인
+          🟢 <b style="color:var(--ok)">서로 뽑은 분</b>이 있으면 → 매칭 💗<br>
+          💰 매칭된 분 <b style="color:var(--amber)">연락처</b>는 → 만원 결제하면 열려요
         </div>
       </div>
       <button class="demobtn" onclick="go(3)">▶︎ (데모) 23:30 결과 화면 보기</button>
@@ -169,46 +169,36 @@
     <div class="scr" id="s3">
       <div class="apphead"><span class="ttl">오늘의 결과 🎉</span><span class="me">절약토끼</span></div>
 
-      <!-- 무료: 서로 통한 인연 -->
-      <div class="grp">
-        <div class="gt">💗 서로 통한 인연 <span class="free">무료 · 자동</span></div>
-        <div class="safe">🔒 서로 뽑은 두 분에게만 연락처가 열려요</div>
+      <!-- 서로 통한 인연 (매칭) — 연락처는 만원 결제 후 -->
+      <div class="grp" id="paid-grp">
+        <div class="gt">💗 서로 통한 인연 <span class="free">매칭</span></div>
+        <div class="safe">🔒 서로 뽑은 2명! 연락처는 결제하면 열려요</div>
         <div class="rc match">
           <div class="av g1">🧑🏻‍💼</div>
           <div class="info"><div class="nm">배당곰 · 92년생</div><div class="st">서로 뽑았어요 ✓ · 금융권/배당주</div></div>
-          <div class="num tnum">010-2345-6789</div>
         </div>
         <div class="rc match">
           <div class="av g3">🧑🏻</div>
           <div class="info"><div class="nm">임장왕 · 97년생</div><div class="st">서로 뽑았어요 ✓ · 자영업/부동산</div></div>
-          <button class="kk">💬 카톡</button>
         </div>
-      </div>
 
-      <!-- 유료: 받은 표 공개 -->
-      <div class="grp" id="paid-grp">
-        <div class="gt">💌 받은 표 공개 <span class="paid">유료</span></div>
-
-        <div id="lock-stage">
+        <div id="lock-stage" style="margin-top:12px">
           <div class="lock">
-            <div class="big">💛 당신을 뽑은 사람이 있어요</div>
-            <div class="sub">몇 명인지 · 누가 뽑았는지 · 추가 매칭 연락처</div>
-            <div class="row">
-              <div class="blur">❔</div><div class="blur">❔</div><div class="blur">❔</div>
-            </div>
-            <button onclick="showPay()">받은 표 확인하기</button>
-            <div class="price">9,900원 · 계좌이체 (확인 후 열림)</div>
+            <div class="big">💛 매칭된 분과 연결하기</div>
+            <div class="sub">결제하면 매칭된 2명의 연락처가 열려요</div>
+            <button onclick="showPay()">연락처 받기</button>
+            <div class="price">10,000원 · 계좌이체 (확인 후 열림)</div>
           </div>
         </div>
 
         <div id="pay-stage" style="display:none">
           <div class="lock">
-            <div class="big">받은 표 공개 · <b>9,900원</b></div>
+            <div class="big">연락처 받기 · <b>10,000원</b></div>
             <div class="paybox">
               <div class="payrow"><span>은행</span><b>카카오뱅크</b></div>
               <div class="payrow"><span>계좌번호</span><b class="copy">3333-34-1009531</b></div>
               <div class="payrow"><span>예금주</span><b>장민</b></div>
-              <div class="payrow"><span>금액</span><b>9,900원</b></div>
+              <div class="payrow"><span>금액</span><b>10,000원</b></div>
               <div class="payrow"><span>입금자명</span><b>절약토끼</b></div>
             </div>
             <div class="paynote">위 계좌로 입금 후, 아래 버튼을 눌러주세요</div>
@@ -225,33 +215,25 @@
         </div>
 
         <div id="unlock-stage" style="display:none">
-          <div class="stat">
-            <div class="box"><div class="k">내 득표수</div><div class="v tnum">3표</div></div>
-            <div class="box"><div class="k">서로 통한 매칭</div><div class="v tnum">2명</div></div>
-          </div>
-          <div class="safe" style="color:var(--amber)">✓ 결제 확인 완료 · 나를 뽑은 3명</div>
-          <div class="rc">
+          <div class="safe" style="color:var(--amber)">✓ 결제 확인 완료 · 연락처가 열렸어요 🎉</div>
+          <div class="rc match">
             <div class="av g1">🧑🏻‍💼</div>
-            <div class="info"><div class="nm">배당곰 · 92년생</div><div class="st">이미 매칭됐어요 💗</div></div>
+            <div class="info"><div class="nm">배당곰 · 92년생</div><div class="st">금융권 · 배당주 모으는 중</div></div>
+            <div class="num tnum">010-2345-6789</div>
           </div>
-          <div class="rc">
-            <div class="av g4">👨🏻</div>
-            <div class="info"><div class="nm">숫자요정 · 93년생</div><div class="st">회계사 · 나를 뽑았어요</div></div>
-            <button class="kk" style="color:var(--amber);border-color:var(--amber)">연결</button>
+          <div class="rc match">
+            <div class="av g3">🧑🏻</div>
+            <div class="info"><div class="nm">임장왕 · 97년생</div><div class="st">자영업 · 주말마다 임장</div></div>
+            <div class="num tnum">010-9876-5432</div>
           </div>
-          <div class="rc">
-            <div class="av g5">🧑🏻‍🦱</div>
-            <div class="info"><div class="nm">새벽차트 · 96년생</div><div class="st">마케터 · 나를 뽑았어요</div></div>
-            <button class="kk" style="color:var(--amber);border-color:var(--amber)">연결</button>
-          </div>
-          <div class="note" style="margin-top:12px">추가 매칭(숫자요정·새벽차트)은 상대도 좋으면 연락처가 열려요</div>
+          <div class="note" style="margin-top:12px">매칭된 분과 연락처가 열렸어요! 좋은 인연 되세요 💛</div>
         </div>
       </div>
     </div>
 
   </div></div></div></div>
 
-  <div class="cap">MORA의 "받은 표 공개"처럼 — <b>서로 뽑으면 무료 자동 연결</b>, <b>득표수·누가 뽑았는지는 유료</b>. 지금 센터장님이 문자로 수동으로 하시는 걸 QR + 자동으로 옮긴 거예요.</div>
+  <div class="cap"><b>서로 뽑으면 매칭 💗</b>, 매칭된 분 <b>연락처는 만원 결제</b>하면 열려요. 지금 센터장님이 문자로 수동으로 하시는 걸 QR + 자동으로 옮긴 거예요.</div>
 </div>
 
 <script>
