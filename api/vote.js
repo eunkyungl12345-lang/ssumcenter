@@ -183,12 +183,12 @@ module.exports = async function handler(req, res) {
       };
 
       // 서로 뽑은 매칭만 보여줌 (받은 표 유료공개 폐지). 연락처는 결제(공개상태) 후 열림.
-      const paidUnlocked = me.fields["공개상태"] === true;
+      // 서로 뽑은 매칭 → 연락처 무료 공유 (결제 모델 폐지)
       const matches = mutual.map(nick => {
         const p = byNick[nick];
-        return { ...profile(nick), 연락처: paidUnlocked ? (p ? p.fields["전화번호"] : "") : "" };
+        return { ...profile(nick), 연락처: p ? p.fields["전화번호"] : "" };
       });
-      return res.status(200).json({ revealed: true, matches, unlocked: paidUnlocked });
+      return res.status(200).json({ revealed: true, matches });
     }
 
     // ============ (관리자) 공개 스위치 ============

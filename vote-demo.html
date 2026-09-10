@@ -159,7 +159,7 @@
       <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-top:18px">
         <div style="font-size:12.5px;color:var(--ink-2);font-weight:600;line-height:1.6">
           🟢 <b style="color:var(--ok)">서로 뽑은 분</b>이 있으면 → 매칭 💗<br>
-          💰 매칭된 분 <b style="color:var(--amber)">연락처</b>는 → 만원 결제하면 열려요
+          💛 매칭되면 <b style="color:var(--ok)">연락처가 공유</b>돼요 (무료)
         </div>
       </div>
       <button class="demobtn" onclick="go(3)">▶︎ (데모) 23:30 결과 화면 보기</button>
@@ -169,71 +169,27 @@
     <div class="scr" id="s3">
       <div class="apphead"><span class="ttl">오늘의 결과 🎉</span><span class="me">절약토끼</span></div>
 
-      <!-- 서로 통한 인연 (매칭) — 연락처는 만원 결제 후 -->
-      <div class="grp" id="paid-grp">
+      <!-- 서로 통한 인연 (매칭) — 연락처 무료 공유 -->
+      <div class="grp">
         <div class="gt">💗 서로 통한 인연 <span class="free">매칭</span></div>
-        <div class="safe">🔒 서로 뽑은 2명! 연락처는 결제하면 열려요</div>
+        <div class="safe" style="color:var(--ok)">🎉 서로 뽑은 2명! 연락처가 공유됐어요</div>
         <div class="rc match">
           <div class="av g1">🧑🏻‍💼</div>
           <div class="info"><div class="nm">배당곰 · 92년생</div><div class="st">서로 뽑았어요 ✓ · 금융권/배당주</div></div>
+          <div class="num tnum">010-2345-6789</div>
         </div>
         <div class="rc match">
           <div class="av g3">🧑🏻</div>
           <div class="info"><div class="nm">임장왕 · 97년생</div><div class="st">서로 뽑았어요 ✓ · 자영업/부동산</div></div>
+          <div class="num tnum">010-9876-5432</div>
         </div>
-
-        <div id="lock-stage" style="margin-top:12px">
-          <div class="lock">
-            <div class="big">💛 매칭된 분과 연결하기</div>
-            <div class="sub">결제하면 매칭된 2명의 연락처가 열려요</div>
-            <button onclick="showPay()">연락처 받기</button>
-            <div class="price">10,000원 · 계좌이체 (확인 후 열림)</div>
-          </div>
-        </div>
-
-        <div id="pay-stage" style="display:none">
-          <div class="lock">
-            <div class="big">연락처 받기 · <b>10,000원</b></div>
-            <div class="paybox">
-              <div class="payrow"><span>은행</span><b>카카오뱅크</b></div>
-              <div class="payrow"><span>계좌번호</span><b class="copy">3333-34-1009531</b></div>
-              <div class="payrow"><span>예금주</span><b>장민</b></div>
-              <div class="payrow"><span>금액</span><b>10,000원</b></div>
-              <div class="payrow"><span>입금자명</span><b>절약토끼</b></div>
-            </div>
-            <div class="paynote">위 계좌로 입금 후, 아래 버튼을 눌러주세요</div>
-            <button onclick="showWait()">입금했어요</button>
-          </div>
-        </div>
-
-        <div id="wait-stage" style="display:none">
-          <div class="lock">
-            <div class="big">⏳ 입금 확인 중이에요</div>
-            <div class="sub" style="margin-bottom:0">확인되면 문자로 바로 열어드려요 (보통 몇 분 안)</div>
-          </div>
-          <button class="demobtn" onclick="unlock()">▶︎ (데모) 센터장이 입금 확인 → 공개</button>
-        </div>
-
-        <div id="unlock-stage" style="display:none">
-          <div class="safe" style="color:var(--amber)">✓ 결제 확인 완료 · 연락처가 열렸어요 🎉</div>
-          <div class="rc match">
-            <div class="av g1">🧑🏻‍💼</div>
-            <div class="info"><div class="nm">배당곰 · 92년생</div><div class="st">금융권 · 배당주 모으는 중</div></div>
-            <div class="num tnum">010-2345-6789</div>
-          </div>
-          <div class="rc match">
-            <div class="av g3">🧑🏻</div>
-            <div class="info"><div class="nm">임장왕 · 97년생</div><div class="st">자영업 · 주말마다 임장</div></div>
-            <div class="num tnum">010-9876-5432</div>
-          </div>
-          <div class="note" style="margin-top:12px">매칭된 분과 연락처가 열렸어요! 좋은 인연 되세요 💛</div>
-        </div>
+        <div class="note" style="margin-top:12px">서로 뽑은 분과 연락처가 열렸어요! 좋은 인연 되세요 💛</div>
       </div>
     </div>
 
   </div></div></div></div>
 
-  <div class="cap"><b>서로 뽑으면 매칭 💗</b>, 매칭된 분 <b>연락처는 만원 결제</b>하면 열려요. 지금 센터장님이 문자로 수동으로 하시는 걸 QR + 자동으로 옮긴 거예요.</div>
+  <div class="cap"><b>서로 뽑으면 매칭 💗</b>, 매칭된 분 <b>연락처가 무료로 공유</b>돼요. 지금 센터장님이 문자로 수동으로 하시는 걸 QR + 자동으로 옮긴 거예요.</div>
 </div>
 
 <script>

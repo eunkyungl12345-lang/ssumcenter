@@ -76,7 +76,7 @@
 
   <div class="card">
     <h2><span class="step">3</span> 참가자 · 투표하기</h2>
-    <div class="d">각 "🗳️ 투표" = 그 사람으로 자동 로그인돼요(새 탭). · <b>💰 연락처공개</b> = 결제 확인 흉내(켜면 그 사람 결과에서 매칭 상대 연락처가 열림).</div>
+    <div class="d">각 "🗳️ 투표" = 그 사람으로 자동 로그인돼요(새 탭). 여러 명이 서로 뽑으면 매칭! 결과 공개하면 매칭된 사람 연락처가 떠요(무료).</div>
     <div id="list"><div class="empty">위 "세팅" 먼저 눌러주세요</div></div>
     <button class="btn g sm" id="refreshBtn" style="margin-top:6px">🔄 새로고침</button>
   </div>
@@ -165,15 +165,8 @@
         var gm=p.성별==="남성";
         return '<div class="p"><span class="g '+(gm?"m":"f")+'">'+(gm?"남":"여")+'</span>'
           +'<span class="nk">'+esc(p.닉네임)+'</span>'
-          +'<a class="vote" href="/vote?nick='+encodeURIComponent(p.닉네임)+'" target="_blank">🗳️ 투표</a>'
-          +'<button class="pay'+(p.공개상태?" on":"")+'" data-nick="'+esc(p.닉네임)+'" data-on="'+(p.공개상태?"1":"0")+'">💰 연락처'+(p.공개상태?"✓":"")+'</button></div>';
+          +'<a class="vote" href="/vote?nick='+encodeURIComponent(p.닉네임)+'" target="_blank">🗳️ 투표</a></div>';
       }).join("");
-      Array.prototype.forEach.call(box.querySelectorAll("button.pay"),function(b){
-        b.addEventListener("click",function(){
-          var on=b.dataset.on!=="1";
-          post("setPaid",{event:EVENT,nick:b.dataset.nick,on:on}).then(function(r){ if(!r.error) load(); });
-        });
-      });
     });
   }
 })();

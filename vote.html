@@ -135,7 +135,7 @@
     </div>
     <div class="infocard">
       🟢 <b style="color:var(--ok)">서로 뽑은 분</b>이 있으면 → 매칭 💗<br>
-      💰 매칭된 분 <b style="color:var(--amber)">연락처</b>는 → 만원 결제하면 열려요
+      💛 매칭되면 <b style="color:var(--ok)">연락처가 공유</b>돼요 (무료)
     </div>
     <div style="margin-top:22px;display:flex;flex-direction:column;gap:9px">
       <button class="btn ghost" id="revoteBtn">🔄 다시 투표하기 (수정)</button>
@@ -278,31 +278,17 @@
     var matches=r.matches||[];
     h+='<div class="grp"><div class="gt">💗 서로 통한 인연 <span class="free">매칭</span></div>';
     if(matches.length){
-      if(r.unlocked){
-        h+='<div class="safe" style="color:var(--amber)">✓ 결제 확인 완료 · 연락처가 열렸어요 🎉</div>';
-      } else {
-        h+='<div class="safe">🔒 서로 뽑은 '+matches.length+'명! 연락처는 결제하면 열려요</div>';
-      }
+      h+='<div class="safe" style="color:var(--ok)">🎉 서로 뽑은 '+matches.length+'명! 연락처가 공유됐어요</div>';
       matches.forEach(function(p){
         var bio=[p.년생,p.한줄소개].filter(Boolean).join(" · ");
         h+='<div class="rc match">'+avatar(p)+'<div><div class="nm">'+esc(p.닉네임)+'</div><div class="st">서로 뽑았어요 ✓ · '+esc(bio)+'</div></div>'
           +(p.연락처?'<div class="num tnum">'+esc(p.연락처)+'</div>':'')+'</div>';
       });
-      if(!r.unlocked){
-        h+='<div class="lock" id="lockcard" style="margin-top:12px">'
-          +'<div class="big">💛 매칭된 분과 연결하기</div>'
-          +'<div class="sub">결제하면 매칭된 '+matches.length+'명의 연락처가 열려요</div>'
-          +'<button id="payBtn">연락처 받기</button>'
-          +'<div class="price">'+ACCOUNT.price+' · 계좌이체 (확인 후 열림)</div></div>';
-      }
     } else {
       h+='<div class="infocard" style="margin-top:0">이번엔 서로 뽑은 인연이 없었어요 🥲<br>다음 기회에 또 좋은 인연 만들어봐요!</div>';
     }
     h+='</div>';
     document.getElementById("result-body").innerHTML=h;
-
-    var payBtn=document.getElementById("payBtn");
-    if(payBtn) payBtn.addEventListener("click",showPay);
   }
   function showPay(){
     document.getElementById("lockcard").innerHTML=
