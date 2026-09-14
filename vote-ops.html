@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>⭐ 투표 운영 매뉴얼 (센터장용) · 썸류센터</title>
+<style>
+  :root{
+    --bg:#0b0906; --panel:#161009; --panel-2:#1e1610; --ink:#F3E9D6; --muted:#9c8f78; --faint:#6a5c4c;
+    --amber:#E8B050; --amber-2:#E8945A; --line:#2c2114; --line-2:#3a2e1f; --ink-on-amber:#1a1108;
+    --ok:#4ec98a; --rose:#E88FB0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;
+    line-height:1.6;letter-spacing:-.01em;padding:24px 16px 70px}
+  .wrap{max-width:480px;margin:0 auto}
+  .back{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--muted);text-decoration:none;margin-bottom:12px}
+  .back:hover{color:var(--amber)}
+  .head{text-align:center;margin-bottom:8px}
+  .head .kicker{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--amber);
+    background:rgba(232,176,80,.1);border:1px solid rgba(232,176,80,.28);padding:5px 13px;border-radius:999px}
+  .head h1{font-size:22px;font-weight:900;margin-top:12px}
+  .intro{font-size:12.5px;color:var(--muted);text-align:center;margin:8px 0 4px;line-height:1.65}
+
+  .ophase{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 16px 6px;margin-top:12px}
+  .ophase.key{border-color:rgba(232,176,80,.4);background:linear-gradient(135deg,rgba(232,176,80,.1),rgba(232,148,90,.03))}
+  .ophase h3{font-size:15px;font-weight:900;display:flex;align-items:center;gap:8px}
+  .ophase.key h3{color:var(--amber)}
+  .ophase .when{font-size:11px;color:var(--faint);font-weight:700;margin-left:auto}
+  .oli{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+  .oli:first-of-type{border-top:0}
+  .oli .n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line-2);color:var(--amber);font-size:11px;font-weight:900;display:grid;place-items:center;margin-top:2px}
+  .oli .tx{font-size:13px;color:var(--ink);line-height:1.6}
+  .oli .tx b{color:var(--amber)}
+  .oli .tx small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+  .say{background:var(--panel-2);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:8px 12px;margin:4px 0 10px;font-size:12.5px;color:var(--ink);line-height:1.6}
+  .say b{color:var(--amber)}
+  .warn{margin-top:14px;background:rgba(232,143,176,.08);border:1px solid rgba(232,143,176,.3);border-radius:14px;padding:15px}
+  .warn h3{font-size:14px;font-weight:900;color:var(--rose)}
+  .warn ul{margin:9px 0 2px;padding-left:2px;list-style:none}
+  .warn li{font-size:12.5px;color:var(--ink);line-height:1.6;padding:5px 0;display:flex;gap:8px}
+  .warn li::before{content:"⚠️";flex:none}
+  .warn li b{color:var(--rose)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+  .oplink{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--amber);color:var(--ink-on-amber);
+    text-decoration:none;font-weight:800;font-size:13.5px;padding:14px 12px;border-radius:13px}
+  .oplink.g{background:transparent;color:var(--muted);border:1.5px solid var(--line-2)}
+  .foot{text-align:center;font-size:11.5px;color:var(--faint);margin-top:24px;line-height:1.8}
+  .foot a{color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/admin">← 관리자 홈</a>
+  <div class="head">
+    <span class="kicker">SSUMLYU · 운영 전용</span>
+    <h1>⭐ 투표 운영 매뉴얼</h1>
+    <div class="intro">진행 순서대로만 따라 하면 돼요. (센터장·스태프용)</div>
+  </div>
+
+  <div class="ophase">
+    <h3>1️⃣ 준비 <span class="when">행사 전</span></h3>
+    <div class="oli"><span class="n">1</span><span class="tx"><b>vote-admin</b>에서 이번 <b>회차</b> 선택<small>맨 위에서 오늘 회차인지 확인</small></span></div>
+    <div class="oli"><span class="n">2</span><span class="tx"><b>승인자 자동 불러오기</b>로 참가자 등록<small>손으로 복붙 안 해도 돼요 · 성별/순번 그대로 들어옴</small></span></div>
+    <div class="oli"><span class="n">3</span><span class="tx"><b>QR 주소</b>로 QR 만들어 행사장에 부착<small>손님은 이 QR만 찍으면 입장 화면이 떠요</small></span></div>
+    <div class="oli"><span class="n">4</span><span class="tx">결과 공개는 <b>꺼둔 상태</b>로 시작<small>아직 켜면 안 돼요</small></span></div>
+  </div>
+
+  <div class="ophase">
+    <h3>2️⃣ 진행 중 <span class="when">행사 시작~</span></h3>
+    <div class="oli"><span class="n">1</span><span class="tx">체크인하며 <b>명찰(닉네임)</b> 나눠주기<small>손님은 QR 찍고 명찰 닉네임으로 입장</small></span></div>
+    <div class="oli"><span class="n">2</span><span class="tx">손님들 자유롭게 투표 (마감 전까지 <b>수정 가능</b>)</span></div>
+    <div class="oli"><span class="n">3</span><span class="tx">출석·투표 현황은 <b>vote-admin에서 실시간</b> 확인<small>출석부·현황표 다 남/여로 나뉘어 보여요</small></span></div>
+  </div>
+
+  <div class="ophase key">
+    <h3>3️⃣ 마감 &amp; 결과 공개 <span class="when">가장 중요 ⭐</span></h3>
+    <div class="oli"><span class="n">1</span><span class="tx"><b>시각 하나로</b> 공지 (예: 23:30)</span></div>
+    <div class="say">📢 <b>“투표랑 수정은 23:30까지예요~”</b></div>
+    <div class="oli"><span class="n">2</span><span class="tx">23:30에 vote-admin → <b>“결과 공개 켜기”</b> 클릭<small>이 버튼을 눌러야 열려요. 시간 되면 자동으로 안 열림!</small></span></div>
+    <div class="oli"><span class="n">3</span><span class="tx">누르는 순간 → <b>투표 잠김 + 결과 공개</b></span></div>
+    <div class="oli"><span class="n">4</span><span class="tx">손님들에게 안내</span></div>
+    <div class="say">📢 <b>“결과 공개했어요! 각자 폰에서 결과 확인하세요~”</b><br><small style="color:var(--muted)">문자 안 가요 · 각자 결과 화면을 열어야 매칭이 보여요</small></div>
+  </div>
+
+  <div class="ophase">
+    <h3>4️⃣ 결과 <span class="when">공개 후</span></h3>
+    <div class="oli"><span class="n">1</span><span class="tx"><b>서로 뽑은 커플만</b> 매칭 → 연락처 <b>무료 공유</b><small>각자 결과 화면에 상대 연락처가 떠요</small></span></div>
+    <div class="oli"><span class="n">2</span><span class="tx">vote-admin에 <b>성사 커플 목록·현황표</b>가 떠요<small>누가 누구랑 됐는지 한눈에</small></span></div>
+  </div>
+
+  <div class="warn">
+    <h3>자주 헷갈리는 것</h3>
+    <ul>
+      <li><span>결과는 <b>자동으로 안 열려요.</b> “결과 공개 켜기”를 눌러야 떠요.</span></li>
+      <li><span>연락처는 <b>문자로 안 가요.</b> 각자 결과 화면을 열어야 보여요.</span></li>
+      <li><span>“끄기”를 누르면 다시 투표 화면으로 돌아가요 <b>(연습·테스트용)</b></span></li>
+    </ul>
+  </div>
+
+  <div class="row2">
+    <a class="oplink" href="/vote-admin">🗳️ vote-admin</a>
+    <a class="oplink g" href="/vote-guide" target="_blank">🙋 손님 안내 미리보기</a>
+  </div>
+
+  <div class="foot"><a href="/admin">← 관리자 홈</a> · 썸류센터 운영 매뉴얼</div>
+</div>
+</body>
+</html>

@@ -3,33 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>🗳️ 투표 진행 안내 · 썸류센터</title>
+<title>🗳️ 오늘 이렇게 진행돼요 · 썸류센터</title>
 <style>
   :root{
     --bg:#0b0906; --panel:#161009; --panel-2:#1e1610; --ink:#F3E9D6; --muted:#9c8f78; --faint:#6a5c4c;
     --amber:#E8B050; --amber-2:#E8945A; --line:#2c2114; --line-2:#3a2e1f; --ink-on-amber:#1a1108;
-    --ok:#4ec98a; --rose:#E88FB0; --male:#7EA6E0;
+    --ok:#4ec98a; --rose:#E88FB0;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;
     line-height:1.6;letter-spacing:-.01em;padding:24px 16px 70px}
   .wrap{max-width:480px;margin:0 auto}
-  .head{text-align:center;margin-bottom:16px}
+  .head{text-align:center;margin-bottom:6px}
   .head .kicker{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--amber);
     background:rgba(232,176,80,.1);border:1px solid rgba(232,176,80,.28);padding:5px 13px;border-radius:999px}
-  .head h1{font-size:22px;font-weight:900;margin-top:12px}
+  .head h1{font-size:23px;font-weight:900;margin-top:12px;line-height:1.3}
+  .intro{font-size:13px;color:var(--muted);text-align:center;margin:8px 0 4px;line-height:1.7}
 
-  /* 토글 */
-  .switch{display:flex;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px;margin-bottom:8px}
-  .switch button{flex:1;border:none;background:transparent;color:var(--muted);border-radius:9px;
-    padding:12px 8px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:.15s;line-height:1.3}
-  .switch button small{display:block;font-size:10.5px;font-weight:600;margin-top:2px;opacity:.8}
-  .switch button.on{background:var(--amber);color:var(--ink-on-amber)}
-  .hide{display:none!important}
-  .intro{font-size:12.5px;color:var(--muted);text-align:center;margin:2px 0 4px;line-height:1.65}
-
-  /* ===== 손님용: 폰 목업 ===== */
   .step{margin-top:26px}
   .step-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
   .step-h .no{width:28px;height:28px;border-radius:50%;background:var(--amber);color:var(--ink-on-amber);
@@ -67,170 +58,87 @@
   .cand.match{border-color:rgba(78,201,138,.4);background:rgba(78,201,138,.07)}
   .cand.match .nm small{color:var(--ok);font-weight:700}
   .cand .phone-num{font-size:10.5px;color:var(--amber);font-weight:700;margin-top:1px}
-  .cap{font-size:12.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6}
+  .cap{font-size:12.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.65}
   .cap b{color:var(--ink)}
 
-  /* ===== 센터장용: 체크리스트 ===== */
-  .ops{margin-top:8px}
-  .ophase{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 16px 6px;margin-top:12px}
-  .ophase.key{border-color:rgba(232,176,80,.4);background:linear-gradient(135deg,rgba(232,176,80,.1),rgba(232,148,90,.03))}
-  .ophase h3{font-size:15px;font-weight:900;display:flex;align-items:center;gap:8px}
-  .ophase.key h3{color:var(--amber)}
-  .ophase .when{font-size:11px;color:var(--faint);font-weight:700;margin-left:auto}
-  .ophase h3 .when{margin-left:auto}
-  .oli{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
-  .oli:first-of-type{border-top:0}
-  .oli .n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line-2);color:var(--amber);font-size:11px;font-weight:900;display:grid;place-items:center;margin-top:2px}
-  .oli .tx{font-size:13px;color:var(--ink);line-height:1.6}
-  .oli .tx b{color:var(--amber)}
-  .oli .tx small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
-  .say{background:var(--panel-2);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:8px 12px;margin:4px 0 10px;font-size:12.5px;color:var(--ink);line-height:1.6}
-  .say b{color:var(--amber)}
-  .warn{margin-top:14px;background:rgba(232,143,176,.08);border:1px solid rgba(232,143,176,.3);border-radius:14px;padding:15px}
-  .warn h3{font-size:14px;font-weight:900;color:var(--rose)}
-  .warn ul{margin:9px 0 2px;padding-left:2px;list-style:none}
-  .warn li{font-size:12.5px;color:var(--ink);line-height:1.6;padding:5px 0;display:flex;gap:8px}
-  .warn li::before{content:"⚠️";flex:none}
-  .warn li b{color:var(--rose)}
-  .oplink{display:flex;align-items:center;gap:8px;margin-top:14px;background:var(--amber);color:var(--ink-on-amber);
-    text-decoration:none;font-weight:800;font-size:14px;padding:14px 16px;border-radius:13px;justify-content:center}
-
-  .foot{text-align:center;font-size:11.5px;color:var(--faint);margin-top:30px;line-height:1.8}
-  .foot a{color:var(--muted);text-decoration:none}
+  .outro{margin-top:30px;background:linear-gradient(135deg,rgba(232,143,176,.1),rgba(232,176,80,.05));
+    border:1px solid rgba(232,143,176,.28);border-radius:16px;padding:18px 18px;text-align:center}
+  .outro .big{font-size:15px;font-weight:900;line-height:1.5}
+  .outro .big .hl{color:var(--rose)}
+  .outro .sm{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.6}
+  .foot{text-align:center;font-size:11.5px;color:var(--faint);margin-top:26px;line-height:1.8}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="head">
-    <span class="kicker">SSUMLYU · 로테이션 투표</span>
-    <h1>🗳️ 투표 진행 안내</h1>
+    <span class="kicker">SSUMLYU · 썸배달 투표</span>
+    <h1>🗳️ 오늘, 이렇게 진행돼요</h1>
+    <div class="intro">폰으로 마음에 든 분을 살짝 뽑으면 끝!<br>서로 통하면 그날 밤 <b style="color:var(--rose)">썸이 배달돼요 💌</b></div>
   </div>
 
-  <div class="switch">
-    <button id="tab-guest" class="on" onclick="show('guest')">🙋 손님용<small>참여 화면 4단계</small></button>
-    <button id="tab-ops" onclick="show('ops')">⭐ 센터장용<small>운영 매뉴얼</small></button>
+  <div class="step">
+    <div class="step-h"><span class="no">1</span><span class="tt">명찰 닉네임으로 입장<small>QR 찍으면 뜨는 첫 화면 · 가입 없어요</small></span></div>
+    <div class="phone">
+      <div class="p-top"><span class="p-brand">🏛 커피팅 투표</span></div>
+      <div class="p-sub" style="color:var(--amber);font-weight:700">📷 QR로 접속했어요</div>
+      <div class="p-title" style="margin-top:6px">본인 확인</div>
+      <div class="p-sub">명찰에 적힌 내 닉네임을 입력해주세요 🏷️</div>
+      <div class="field">내 닉네임 (명찰)</div>
+      <div class="cta">입장하기</div>
+      <div class="tiny">명찰에 적힌 닉네임으로 입장돼요 · 회원가입 없음</div>
+    </div>
+    <div class="cap">받은 <b>명찰 닉네임</b>만 입력하면 끝. 번호·가입 필요 없어요.</div>
   </div>
 
-  <!-- ============ 손님용 ============ -->
-  <div id="guest">
-    <div class="intro">손님이 폰에서 보는 실제 화면이에요. 단톡방에 미리 보내주거나, 현장에서 보여줘도 좋아요.</div>
-
-    <div class="step">
-      <div class="step-h"><span class="no">1</span><span class="tt">명찰 닉네임으로 입장<small>QR 찍으면 뜨는 첫 화면 · 회원가입 없음</small></span></div>
-      <div class="phone">
-        <div class="p-top"><span class="p-brand">🏛 커피팅 투표</span></div>
-        <div class="p-sub" style="color:var(--amber);font-weight:700">📷 QR로 접속했어요</div>
-        <div class="p-title" style="margin-top:6px">본인 확인</div>
-        <div class="p-sub">명찰에 적힌 내 닉네임을 입력해주세요 🏷️</div>
-        <div class="field">내 닉네임 (명찰)</div>
-        <div class="cta">입장하기</div>
-        <div class="tiny">명찰에 적힌 닉네임으로 입장돼요 · 회원가입 없음</div>
-      </div>
-      <div class="cap">체크인 때 받은 <b>명찰 닉네임</b>만 입력. 전화번호·가입 필요 없어요.</div>
+  <div class="step">
+    <div class="step-h"><span class="no">2</span><span class="tt">마음에 든 분 뽑기<small>최대 2명 · 하트 눌러 선택 → 제출</small></span></div>
+    <div class="phone">
+      <div class="p-top"><span class="p-brand">🏛 커피팅 투표</span><span class="p-badge">라떼 · 오늘</span></div>
+      <div class="p-title" style="margin-top:8px">오늘 마음에 든 분은?</div>
+      <div class="p-sub">최대 2명까지 · 나만 볼 수 있어요</div>
+      <div class="cnt-row"><span>참가자 4명</span><span><b>1/2</b> 선택</span></div>
+      <div class="cand sel"><span class="av">🙂</span><span class="nm"><b>커피왕</b><small>92 · 주말마다 카페 투어</small></span><span class="ht">♥</span></div>
+      <div class="cand"><span class="av">🙂</span><span class="nm"><b>운동왕</b><small>93 · 등산·러닝 좋아함</small></span><span class="ht">♡</span></div>
+      <div class="cand"><span class="av">🙂</span><span class="nm"><b>책읽는곰</b><small>95 · 독서모임 운영중</small></span><span class="ht">♡</span></div>
+      <div class="cta" style="margin-top:11px">투표 제출하기</div>
+      <div class="tiny">제출 후에도 수정 가능 · 내 선택은 아무도 몰라요</div>
     </div>
-
-    <div class="step">
-      <div class="step-h"><span class="no">2</span><span class="tt">마음에 든 사람 뽑기<small>최대 2명 · 하트 눌러 선택 → 제출</small></span></div>
-      <div class="phone">
-        <div class="p-top"><span class="p-brand">🏛 커피팅 투표</span><span class="p-badge">센터장 · 테스트</span></div>
-        <div class="p-title" style="margin-top:8px">오늘 마음에 든 분은?</div>
-        <div class="p-sub">최대 2명까지 · 센터장만 확인해요</div>
-        <div class="cnt-row"><span>참가자 4명</span><span><b>1/2</b> 선택</span></div>
-        <div class="cand sel"><span class="av">🙂</span><span class="nm"><b>커피왕</b><small>92 · 주말마다 카페 투어</small></span><span class="ht">♥</span></div>
-        <div class="cand"><span class="av">🙂</span><span class="nm"><b>운동왕</b><small>93 · 등산·러닝 좋아함</small></span><span class="ht">♡</span></div>
-        <div class="cand"><span class="av">🙂</span><span class="nm"><b>책읽는곰</b><small>95 · 독서모임 운영중</small></span><span class="ht">♡</span></div>
-        <div class="cta" style="margin-top:11px">투표 제출하기</div>
-        <div class="tiny">제출 후에도 수정 가능 · 투표 내용은 상대에게 안 보여요</div>
-      </div>
-      <div class="cap">고른 사람 하트가 <b>노랗게</b> 켜져요. 내가 누굴 뽑았는지는 <b>상대에게 안 보여요.</b></div>
-    </div>
-
-    <div class="step">
-      <div class="step-h"><span class="no">3</span><span class="tt">투표 완료<small>결과 열릴 때까지 대기 · 수정 가능</small></span></div>
-      <div class="phone">
-        <div class="p-top"><span class="p-brand">🏛 투표 완료</span><span class="p-badge">센터장</span></div>
-        <div class="done-ic">✅</div>
-        <div class="p-title">투표가 접수됐어요!</div>
-        <div class="p-sub">두근두근 🖤 결과는 오늘 밤에 공개돼요</div>
-        <div class="reveal-pill">🌙 오늘 23:30 · 이 링크에서 공개</div>
-        <div class="note-box">🟢 서로 뽑은 분이 있으면 → 매칭 💗<br>💛 매칭되면 <b style="color:var(--amber)">연락처가 공유돼요 (무료)</b></div>
-        <div class="ghost">🔄 다시 투표하기 (수정)</div>
-        <div class="ghost">결과 열렸는지 확인하기</div>
-      </div>
-      <div class="cap">마감 전까진 <b>🔄 다시 투표하기</b>로 언제든 바꿀 수 있어요.</div>
-    </div>
-
-    <div class="step">
-      <div class="step-h"><span class="no">4</span><span class="tt">결과 공개 — 매칭!<small>서로 뽑았으면 연락처 자동 공유(무료)</small></span></div>
-      <div class="phone">
-        <div class="p-top"><span class="p-brand">🎉 오늘의 결과</span><span class="p-badge">센터장</span></div>
-        <div class="match-head" style="margin-top:10px">💗 서로 통한 인연 <span class="match-tag">매칭</span></div>
-        <div class="match-sub">🎉 서로 뽑은 1명! 연락처가 공유됐어요</div>
-        <div class="cand match"><span class="av">🙂</span><span class="nm"><b>커피왕</b><small>서로 뽑았어요 ✓ · 92 · 주말마다 카페 투어</small><span class="phone-num">📞 010-1234-5678</span></span></div>
-      </div>
-      <div class="cap"><b>둘 다 서로를 뽑았을 때만</b> 매칭돼요. 매칭되면 <b>연락처 무료 공유</b> — 한쪽만 뽑으면 아무에게도 안 보여요.</div>
-    </div>
+    <div class="cap">고른 분 하트가 <b>노랗게</b> 켜져요. 내가 누굴 뽑았는지는 <b>아무도 몰라요.</b> 마음 편히 골라요 😌</div>
   </div>
 
-  <!-- ============ 센터장용 ============ -->
-  <div id="ops" class="ops hide">
-    <div class="intro">진행 순서대로 정리했어요. 이대로만 하면 돼요 👇</div>
-
-    <div class="ophase">
-      <h3>1️⃣ 준비 <span class="when">행사 전</span></h3>
-      <div class="oli"><span class="n">1</span><span class="tx"><b>vote-admin</b>에서 이번 <b>회차</b> 선택<small>맨 위에서 오늘 회차인지 확인</small></span></div>
-      <div class="oli"><span class="n">2</span><span class="tx"><b>승인자 자동 불러오기</b>로 참가자 등록<small>손으로 복붙 안 해도 돼요 · 성별/순번 그대로 들어옴</small></span></div>
-      <div class="oli"><span class="n">3</span><span class="tx"><b>QR 주소</b>로 QR 만들어 행사장에 부착<small>손님은 이 QR만 찍으면 입장 화면이 떠요</small></span></div>
-      <div class="oli"><span class="n">4</span><span class="tx">결과 공개는 <b>꺼둔 상태</b>로 시작<small>아직 켜면 안 돼요</small></span></div>
+  <div class="step">
+    <div class="step-h"><span class="no">3</span><span class="tt">투표 완료<small>결과 열릴 때까지 두근두근 · 수정도 OK</small></span></div>
+    <div class="phone">
+      <div class="p-top"><span class="p-brand">🏛 투표 완료</span><span class="p-badge">라떼</span></div>
+      <div class="done-ic">✅</div>
+      <div class="p-title">투표가 접수됐어요!</div>
+      <div class="p-sub">두근두근 🖤 결과는 오늘 밤에 공개돼요</div>
+      <div class="reveal-pill">🌙 오늘 밤 · 이 링크에서 공개</div>
+      <div class="note-box">🟢 서로 뽑았으면 → 매칭 💗<br>💛 매칭되면 <b style="color:var(--amber)">연락처가 톡! 배달돼요 (무료)</b></div>
+      <div class="ghost">🔄 다시 뽑기 (마감 전까지 수정)</div>
+      <div class="ghost">결과 열렸는지 확인하기</div>
     </div>
-
-    <div class="ophase">
-      <h3>2️⃣ 진행 중 <span class="when">행사 시작~</span></h3>
-      <div class="oli"><span class="n">1</span><span class="tx">체크인하며 <b>명찰(닉네임)</b> 나눠주기<small>손님은 QR 찍고 명찰 닉네임으로 입장</small></span></div>
-      <div class="oli"><span class="n">2</span><span class="tx">손님들 자유롭게 투표 (마감 전까지 <b>수정 가능</b>)</span></div>
-      <div class="oli"><span class="n">3</span><span class="tx">출석·투표 현황은 <b>vote-admin에서 실시간</b> 확인<small>출석부·현황표 다 남/여로 나뉘어 보여요</small></span></div>
-    </div>
-
-    <div class="ophase key">
-      <h3>3️⃣ 마감 &amp; 결과 공개 <span class="when">가장 중요 ⭐</span></h3>
-      <div class="oli"><span class="n">1</span><span class="tx"><b>시각 하나로</b> 공지 (예: 23:30)</span></div>
-      <div class="say">📢 <b>“투표랑 수정은 23:30까지예요~”</b></div>
-      <div class="oli"><span class="n">2</span><span class="tx">23:30에 vote-admin → <b>“결과 공개 켜기”</b> 클릭<small>이 버튼을 눌러야 열려요. 시간 되면 자동으로 안 열림!</small></span></div>
-      <div class="oli"><span class="n">3</span><span class="tx">누르는 순간 → <b>투표 잠김 + 결과 공개</b></span></div>
-      <div class="oli"><span class="n">4</span><span class="tx">손님들에게 안내</span></div>
-      <div class="say">📢 <b>“결과 공개했어요! 각자 폰에서 결과 확인하세요~”</b><br><small style="color:var(--muted)">문자 안 가요 · 각자 결과 화면을 열어야 매칭이 보여요</small></div>
-    </div>
-
-    <div class="ophase">
-      <h3>4️⃣ 결과 <span class="when">공개 후</span></h3>
-      <div class="oli"><span class="n">1</span><span class="tx"><b>서로 뽑은 커플만</b> 매칭 → 연락처 <b>무료 공유</b><small>각자 결과 화면에 상대 연락처가 떠요</small></span></div>
-      <div class="oli"><span class="n">2</span><span class="tx">vote-admin에 <b>성사 커플 목록·현황표</b>가 떠요<small>누가 누구랑 됐는지 한눈에</small></span></div>
-    </div>
-
-    <div class="warn">
-      <h3>자주 헷갈리는 것</h3>
-      <ul>
-        <li><span>결과는 <b>자동으로 안 열려요.</b> “결과 공개 켜기”를 눌러야 떠요.</span></li>
-        <li><span>연락처는 <b>문자로 안 가요.</b> 각자 결과 화면을 열어야 보여요.</span></li>
-        <li><span>“끄기”를 누르면 다시 투표 화면으로 돌아가요 <b>(연습·테스트용)</b></span></li>
-      </ul>
-    </div>
-
-    <a class="oplink" href="/vote-admin">🗳️ vote-admin 열기 →</a>
+    <div class="cap">마감 전까진 <b>🔄 다시 뽑기</b>로 언제든 바꿀 수 있어요.</div>
   </div>
 
-  <div class="foot"><a href="/admin">← 관리자 홈</a> · 썸류센터 로테이션 커피팅 투표</div>
+  <div class="step">
+    <div class="step-h"><span class="no">4</span><span class="tt">밤이 되면… 썸 배달 💌<small>서로 뽑았으면 연락처가 도착!</small></span></div>
+    <div class="phone">
+      <div class="p-top"><span class="p-brand">🎉 오늘의 결과</span><span class="p-badge">라떼</span></div>
+      <div class="match-head" style="margin-top:10px">💗 서로 통한 인연 <span class="match-tag">매칭</span></div>
+      <div class="match-sub">🎉 서로 뽑은 1명! 연락처가 배달됐어요</div>
+      <div class="cand match"><span class="av">🙂</span><span class="nm"><b>커피왕</b><small>서로 뽑았어요 ✓ · 92 · 주말마다 카페 투어</small><span class="phone-num">📞 010-1234-5678</span></span></div>
+    </div>
+    <div class="cap"><b>둘이 서로 통했을 때만</b> 썸이 배달돼요 💌 그때 <b>연락처가 톡 하고 도착(무료)</b>. 나 혼자만 뽑았으면 아무도 모르니까 <b>부담 하나도 없어요</b> 😌</div>
+  </div>
+
+  <div class="outro">
+    <div class="big">그럼, 오늘 밤 <span class="hl">누구랑 통할지</span> 🍀<br>편하게 즐겨요!</div>
+    <div class="sm">결과는 밤에 이 화면(투표한 링크)에서 확인 · 매칭되면 연락처가 떠요</div>
+  </div>
+
+  <div class="foot">썸류센터 · 로테이션 커피팅 💛</div>
 </div>
-
-<script>
-  function show(which){
-    var g=which==="guest";
-    document.getElementById("guest").classList.toggle("hide",!g);
-    document.getElementById("ops").classList.toggle("hide",g);
-    document.getElementById("tab-guest").classList.toggle("on",g);
-    document.getElementById("tab-ops").classList.toggle("on",!g);
-    window.scrollTo(0,0);
-  }
-</script>
 </body>
 </html>
