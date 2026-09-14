@@ -33,6 +33,9 @@
   .reveal-st{font-size:13px;font-weight:800;padding:8px 12px;border-radius:10px;display:inline-block}
   .reveal-st.on{background:rgba(78,201,138,.15);color:var(--ok)}.reveal-st.off{background:var(--surface-2);color:var(--muted)}
   .empty{font-size:13px;color:var(--muted);text-align:center;padding:14px;border:1px dashed var(--line-strong);border-radius:12px}
+  .ghead{font-size:12.5px;font-weight:800;color:var(--ink);margin:16px 2px 8px;display:flex;align-items:center;gap:7px}
+  .ghead:first-child{margin-top:2px}
+  .gcnt{font-size:10.5px;font-weight:700;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);padding:1px 8px;border-radius:999px}
   #login{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;padding:24px;z-index:99}
   #login .box{max-width:320px;width:100%;text-align:center}
   #login input{text-align:center;margin-bottom:10px}
@@ -157,16 +160,25 @@
 
   // 목록
   document.getElementById("refreshBtn").addEventListener("click",function(){ load(); refreshReveal(); });
+  function personRow(p,cls){
+    return '<div class="p"><span class="g '+cls+'">'+(p.순번||"·")+'</span>'
+      +'<span class="nk">'+esc(p.닉네임)+'</span>'
+      +'<a class="vote" href="/vote?nick='+encodeURIComponent(p.닉네임)+'" target="_blank">🗳️ 투표</a></div>';
+  }
+  function section(title,cls,list){
+    if(!list.length) return "";
+    return '<div class="ghead">'+title+' <span class="gcnt">'+list.length+'명</span></div>'
+      + list.map(function(p){ return personRow(p,cls); }).join("");
+  }
   function load(){
     post("adminData",{event:EVENT}).then(function(d){
       var ppl=d.participants||[], box=document.getElementById("list");
       if(!ppl.length){ box.innerHTML='<div class="empty">참가자가 없어요. "세팅" 눌러주세요</div>'; return; }
-      box.innerHTML=ppl.map(function(p){
-        var gm=p.성별==="남성";
-        return '<div class="p"><span class="g '+(gm?"m":"f")+'">'+(gm?"남":"여")+'</span>'
-          +'<span class="nk">'+esc(p.닉네임)+'</span>'
-          +'<a class="vote" href="/vote?nick='+encodeURIComponent(p.닉네임)+'" target="_blank">🗳️ 투표</a></div>';
-      }).join("");
+      var byNo=function(a,b){ return (a.순번||0)-(b.순번||0); };
+      var women=ppl.filter(function(p){return p.성별==="여성";}).sort(byNo);
+      var men  =ppl.filter(function(p){return p.성별==="남성";}).sort(byNo);
+      var etc  =ppl.filter(function(p){return p.성별!=="여성"&&p.성별!=="남성";}).sort(byNo);
+      box.innerHTML = section("👩 여성","f",women) + section("👨 남성","m",men) + section("❔ 성별 미입력","",etc);
     });
   }
 })();
