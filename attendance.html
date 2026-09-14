@@ -83,7 +83,20 @@
   .smap-head .sp button{border:1.5px solid var(--line-strong);background:var(--surface-2);color:var(--muted);border-radius:9px;padding:6px 11px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit}
   .smap-head .sp button.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
   .smap-stage{background:#000;border:1px solid var(--line);border-radius:14px;padding:6px}
-  .smap-stage svg{width:100%;max-width:420px;height:auto;display:block;margin:0 auto}
+  .smap-stage svg{width:100%;max-width:560px;height:auto;display:block;margin:0 auto}
+  .smap-zoom{border:1.5px solid var(--amber)!important;background:rgba(232,176,80,.12)!important;color:var(--amber)!important}
+  /* 전체화면 크게 보기 */
+  #smap-full{position:fixed;inset:0;z-index:300;background:rgba(6,4,2,.97);display:none;flex-direction:column;padding:12px}
+  #smap-full.on{display:flex}
+  #smap-full .fbar{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  #smap-full .fbar .ft{font-size:14px;font-weight:800;color:var(--ink)}
+  #smap-full .fbar .fsp{display:flex;gap:6px}
+  #smap-full .fbar .fsp button{border:1.5px solid var(--line-strong);background:var(--surface-2);color:var(--muted);border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit}
+  #smap-full .fbar .fsp button.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
+  #smap-full .fclose{margin-left:auto;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--ink);border-radius:10px;padding:8px 15px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer}
+  #smap-full .fstage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+  #smap-full svg{width:100%;height:100%;max-height:100%}
+  #smap-full .fhint{font-size:11.5px;color:var(--muted);text-align:center;margin-top:6px}
   .seatg .sr{stroke-width:2.5;transition:.12s;cursor:pointer}
   .seatg.empty .sr{fill:transparent;stroke:#3a2e1f;stroke-dasharray:4 4;cursor:default}
   .seatg.male .sr{fill:rgba(126,166,224,.16);stroke:#7EA6E0}
@@ -166,13 +179,24 @@
       <div class="smap-head">
         <span class="t">🪑 자리 지도</span>
         <span style="font-size:11.5px;color:var(--muted)">자리 탭 = 출석 체크 ✅</span>
-        <span class="sp"><button id="smap14" class="on">14인</button><button id="smap15">15인</button></span>
+        <span class="sp"><button id="smap14" class="on">14인</button><button id="smap15">15인</button><button id="smap-big" class="smap-zoom">⛶ 크게</button></span>
       </div>
       <div class="smap-stage"><svg id="smap-svg" viewBox="20 318 420 502"></svg></div>
       <div class="smap-hint">초록=출석 · 색칠=배정됨(아직 안 옴) · 점선=빈 자리. 자리 번호는 아래 명단의 <b>"테이블" 칸</b>이랑 연결돼요.</div>
     </div>
     <div id="list"></div>
   </div>
+</div>
+
+<!-- 🪑 자리 지도 크게 보기 -->
+<div id="smap-full">
+  <div class="fbar">
+    <span class="ft">🪑 자리 지도 <span id="fsmap-lbl" style="color:var(--amber)">14인</span></span>
+    <span class="fsp"><button id="fsmap14" class="on">14인</button><button id="fsmap15">15인</button></span>
+    <button class="fclose" id="smap-close">✕ 닫기</button>
+  </div>
+  <div class="fstage"><svg id="smap-svg-full" viewBox="20 318 420 502"></svg></div>
+  <div class="fhint">자리 탭 = 출석 체크 ✅ · 초록=출석 · 파랑=남 · 핑크=여 · 점선=빈자리</div>
 </div>
 <script>
   var KEY="admin_key";
@@ -197,7 +221,6 @@
   };
   function seatMapNow(){ var m={}; records.forEach(function(x){ var t=(tableMap[x.id]||"").trim(); if(t) m[t]=x; }); return m; }
   function renderSeatmap(){
-    var svg=document.getElementById("smap-svg"); if(!svg) return;
     var sm=seatMapNow(), L=SEAT_LAYOUTS[seatMode];
     var wall='<polygon class="smap-wall" points="196,332 428,332 428,802 36,802 36,590 196,590"/>'
       +'<g class="smap-stair"><rect x="34" y="592" width="98" height="66" rx="3" fill="none"/>'
@@ -215,7 +238,10 @@
         +(label?'<text class="snick" x="'+x+'" y="'+(y+7)+'">'+esc(label)+'</text>':'')
         +'</g>';
     }).join("");
-    svg.innerHTML=wall+seats;
+    var html=wall+seats;
+    ["smap-svg","smap-svg-full"].forEach(function(id){ var s=document.getElementById(id); if(s) s.innerHTML=html; });
+    var b14=document.getElementById("smap14"), f14=document.getElementById("fsmap-lbl");
+    if(f14) f14.textContent=seatMode+"인";
   }
   // 📞 전화번호 저장 (문토 등 번호 없는 사람) → 로테이션 신청.연락처 (모든 기기 공유)
   window.savePhone=function(id,val,el){
@@ -314,8 +340,28 @@
       var p=seatMapNow()[g.getAttribute("data-seat")]; if(p) toggle(p,null);
     });
     var b14=document.getElementById("smap14"), b15=document.getElementById("smap15");
-    if(b14) b14.addEventListener("click",function(){ seatMode=14; b14.classList.add("on"); b15.classList.remove("on"); renderSeatmap(); });
-    if(b15) b15.addEventListener("click",function(){ seatMode=15; b15.classList.add("on"); b14.classList.remove("on"); renderSeatmap(); });
+    var f14=document.getElementById("fsmap14"), f15=document.getElementById("fsmap15");
+    function setMode(m){
+      seatMode=m;
+      if(b14) b14.classList.toggle("on",m===14); if(b15) b15.classList.toggle("on",m===15);
+      if(f14) f14.classList.toggle("on",m===14); if(f15) f15.classList.toggle("on",m===15);
+      renderSeatmap();
+    }
+    if(b14) b14.addEventListener("click",function(){ setMode(14); });
+    if(b15) b15.addEventListener("click",function(){ setMode(15); });
+    if(f14) f14.addEventListener("click",function(){ setMode(14); });
+    if(f15) f15.addEventListener("click",function(){ setMode(15); });
+    // 큰 지도 열기/닫기
+    var full=document.getElementById("smap-full");
+    var big=document.getElementById("smap-big"), close=document.getElementById("smap-close");
+    if(big) big.addEventListener("click",function(){ full.classList.add("on"); renderSeatmap(); });
+    if(close) close.addEventListener("click",function(){ full.classList.remove("on"); });
+    // 큰 지도에서도 자리 탭 = 출석 체크
+    var svgFull=document.getElementById("smap-svg-full");
+    if(svgFull) svgFull.addEventListener("click",function(e){
+      var g=e.target.closest(".seatg"); if(!g) return;
+      var p=seatMapNow()[g.getAttribute("data-seat")]; if(p) toggle(p,null);
+    });
   })();
   var allRecs=[], roundList=[], curRound="";
   function parseRoundKey(rd){ var m=String(rd||"").match(/(\d{1,2})\s*\/\s*(\d{1,2})/); return m?(parseInt(m[1])*100+parseInt(m[2])):0; }
