@@ -109,9 +109,29 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 .modal-bg.show{opacity:1;pointer-events:all}
 .modal-box{background:var(--surface);border:1px solid rgba(255,255,255,.06);border-radius:28px;padding:40px 32px;max-width:400px;width:100%;margin:20px;transform:translateY(24px) scale(.97);transition:transform .5s cubic-bezier(.22,1,.36,1);box-shadow:0 32px 80px rgba(0,0,0,.4)}
 .modal-bg.show .modal-box{transform:none}
+/* 상단 흐르는 광고 띠 (마퀴) */
+.ticker{overflow:hidden;background:linear-gradient(90deg,#1b1207,#251a0b,#1b1207);border-bottom:1px solid rgba(232,176,80,.22);white-space:nowrap}
+.ticker-track{display:inline-flex;align-items:center;animation:tickerMove 22s linear infinite;will-change:transform}
+.ticker:hover .ticker-track{animation-play-state:paused}
+.ticker .it{display:inline-flex;align-items:center;font-size:12px;font-weight:700;color:#F1DBA6;letter-spacing:.01em;padding:8px 0}
+.ticker .it .sep{color:var(--amber-light);margin:0 20px;font-size:8px;opacity:.7}
+@keyframes tickerMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.ticker-track{animation:none}}
 </style>
 </head>
 <body>
+
+<!-- 상단 광고 띠 -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="it">📌 당신을 위한 “썸류센터 1:1 맞춤 소개팅”<span class="sep">✦</span></span>
+    <span class="it">👩‍❤️‍👨 신청도 무료 · 프로필 확인도 무료<span class="sep">✦</span></span>
+    <span class="it">💛 지금 많이많이 신청해주세요!<span class="sep">✦</span></span>
+    <span class="it">📌 당신을 위한 “썸류센터 1:1 맞춤 소개팅”<span class="sep">✦</span></span>
+    <span class="it">👩‍❤️‍👨 신청도 무료 · 프로필 확인도 무료<span class="sep">✦</span></span>
+    <span class="it">💛 지금 많이많이 신청해주세요!<span class="sep">✦</span></span>
+  </div>
+</div>
 
 <!-- Nav -->
 <nav class="nav">
