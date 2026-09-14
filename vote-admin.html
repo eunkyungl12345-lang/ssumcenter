@@ -29,6 +29,7 @@
   .row{display:flex;gap:8px;align-items:center}
   .link{background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:10px;padding:11px;font-size:13px;color:var(--amber);word-break:break-all;margin-bottom:8px}
   .plist{margin-top:12px}
+  .psec{font-size:12.5px;font-weight:800;color:var(--ink);margin:15px 0 3px;padding-top:6px}
   .pitem{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
   .pitem .nm{font-size:13.5px;font-weight:700}
   .pitem .meta{font-size:11.5px;color:var(--muted)}
@@ -339,7 +340,16 @@
         al.innerHTML='<div class="desc">아직 등록된 참가자가 없어요.</div>'; return;
       }
       function attCount(){ return document.querySelectorAll(".pitem.att.on").length; }
-      r.participants.forEach(function(p){
+      function grank(g){ return g==="여성"?0 : g==="남성"?1 : 2; }
+      var sortedP=(r.participants||[]).slice().sort(function(a,b){ var d=grank(a.성별)-grank(b.성별); return d||((a.순번||0)-(b.순번||0)); });
+      var lastG=null;
+      sortedP.forEach(function(p){
+        if(p.성별!==lastG){
+          lastG=p.성별;
+          var lbl=p.성별==="여성"?"👩 여성":(p.성별==="남성"?"👨 남성":"❔ 성별 미입력");
+          var ha=document.createElement("div"); ha.className="psec"; ha.textContent=lbl; al.appendChild(ha);
+          var hp=document.createElement("div"); hp.className="psec"; hp.textContent=lbl; pl.appendChild(hp);
+        }
         // 출석 (탭하면 토글)
         var at=document.createElement("div"); at.className="pitem att"+(p.출석?" on":"");
         at.innerHTML='<span class="g-badge">'+(p.성별||"?")+'</span><div class="nm">'+p.닉네임+'</div><span class="attmark">'+(p.출석?"출석 ✓":"탭하면 출석")+'</span>';
