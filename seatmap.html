@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🪑 로테이션 자리표 | 썸류센터</title>
+<style>
+  :root{
+    --bg:#0b0906; --panel:#141009; --ink:#F3E9D6; --muted:#9c8f78; --faint:#6a5c4c;
+    --amber:#E8945A; --amber-soft:rgba(232,148,90,.14);
+    --line:#2c2114; --ink-on-amber:#1a1108; --ok:#4ec98a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;
+    line-height:1.55;letter-spacing:-.01em;padding:16px 16px 60px}
+  .wrap{max-width:440px;margin:0 auto}
+  .back{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--muted);
+    text-decoration:none;margin-bottom:14px}
+  .back:hover{color:var(--amber)}
+  h1{font-size:20px;font-weight:900;display:flex;align-items:center;gap:7px}
+  .sub{font-size:12.5px;color:var(--muted);margin:6px 0 14px;line-height:1.6}
+
+  /* 사용법 가이드 */
+  details.guide{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    margin-bottom:14px;overflow:hidden}
+  details.guide summary{list-style:none;cursor:pointer;padding:13px 15px;font-size:13.5px;font-weight:800;
+    display:flex;align-items:center;gap:8px}
+  details.guide summary::-webkit-details-marker{display:none}
+  details.guide summary .chev{margin-left:auto;color:var(--faint);transition:transform .2s}
+  details.guide[open] summary .chev{transform:rotate(90deg)}
+  details.guide .gbody{padding:0 16px 15px 16px;font-size:13px;color:var(--muted);line-height:1.75}
+  details.guide .gbody b{color:var(--ink)}
+  details.guide .gbody ol{margin:6px 0 0 18px}
+  details.guide .gbody li{margin:5px 0}
+  details.guide .gbody .tipbox{margin-top:11px;padding:10px 12px;background:var(--amber-soft);
+    border-radius:10px;font-size:12.5px;color:var(--ink);line-height:1.7}
+
+  .toggle{display:flex;gap:8px;margin-bottom:12px}
+  .toggle button{flex:1;border:1.5px solid var(--line);background:var(--panel);color:var(--muted);
+    border-radius:12px;padding:12px 8px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:.15s}
+  .toggle button .n{font-size:11px;font-weight:600;color:var(--muted);display:block;margin-top:2px}
+  .toggle button.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
+  .toggle button.on .n{color:rgba(26,17,8,.7)}
+
+  .bar{display:flex;align-items:center;justify-content:space-between;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px}
+  .bar .cnt{font-size:13px;font-weight:700}
+  .bar .cnt b{color:var(--amber);font-size:16px}
+  .bar button{border:1.5px solid var(--line);background:transparent;color:var(--muted);
+    border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+
+  .stage{background:#000;border:1px solid var(--line);border-radius:16px;padding:6px;overflow:hidden}
+  svg{width:100%;height:auto;display:block}
+  .seat rect{fill:transparent;stroke:var(--amber);stroke-width:3;transition:.12s;cursor:pointer}
+  .seat text{fill:#fff;font-weight:800;font-size:26px;text-anchor:middle;dominant-baseline:central;
+    pointer-events:none}
+  .seat.taken rect{fill:var(--amber)}
+  .seat.taken text{fill:var(--ink-on-amber)}
+  .wall{fill:none;stroke:var(--amber);stroke-width:3.5;stroke-linejoin:round;opacity:.85}
+  .stair rect{fill:none;stroke:var(--amber);stroke-width:3}
+  .stair line{stroke:var(--amber);stroke-width:2.5}
+  .stair text{fill:var(--amber);font-size:15px;font-weight:800;text-anchor:middle;dominant-baseline:central}
+
+  .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6}
+  .hint b{color:var(--amber)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/admin">← 관리자 홈</a>
+  <h1>🪑 로테이션 자리표</h1>
+  <div class="sub">인원 따라 <b>14인 / 15인</b>을 골라요. 자리를 <b>탭하면 "찼음"</b> 표시 → 빈자리가 한눈에!</div>
+
+  <details class="guide">
+    <summary>❓ 사용법 (처음이면 열어보세요)<span class="chev">›</span></summary>
+    <div class="gbody">
+      <b>이 자리표는 "지도 + 빈자리 현황판"이에요.</b> 이름은 안 적어요 — 이름·자리배정은 <b>출석부</b>에서, 여긴 위치랑 빈자리만 봐요.
+      <ol>
+        <li>행사 시작 전 <b>14인 / 15인</b> 중 오늘 인원에 맞게 골라요.</li>
+        <li>사람이 자리에 앉으면 <b>그 번호 자리를 탭</b> → 주황색으로 "찼음" 표시.</li>
+        <li>위쪽 <b>앉은 자리 X / 14</b> 숫자로 몇 자리 남았는지 확인. <b>비어있는(테두리만) 자리 = 아직 안 온 사람.</b></li>
+        <li>"어? 3번 자리가 방 어디지?" 할 때 이 지도로 위치 안내.</li>
+        <li>행사 끝나면 <b>🔄 전부 비우기</b> → 다음 회차에 깨끗하게 다시 사용.</li>
+      </ol>
+      <div class="tipbox">💡 <b>여자분은 자리 고정</b>이라 안 움직여요. 남자분들이 번호 순서대로 돌면서 이동해요. 이 표는 매 행사마다 <b>비우고 재사용</b>하는 1회용이에요.</div>
+    </div>
+  </details>
+
+  <div class="toggle">
+    <button id="b14" class="on" onclick="setMode(14)">14인<span class="n">1~14번</span></button>
+    <button id="b15" onclick="setMode(15)">15인<span class="n">1~15번</span></button>
+  </div>
+
+  <div class="bar">
+    <div class="cnt">앉은 자리 <b id="taken">0</b> / <span id="total">14</span></div>
+    <button onclick="clearAll()">🔄 전부 비우기</button>
+  </div>
+
+  <div class="stage">
+    <svg id="svg" viewBox="0 0 460 830" aria-label="자리 배치도">
+      <polygon class="wall" points="196,332 428,332 428,802 36,802 36,590 196,590"/>
+      <g class="stair">
+        <rect x="34" y="592" width="98" height="66" rx="3"/>
+        <line x1="50" y1="594" x2="50" y2="656"/>
+        <line x1="66" y1="594" x2="66" y2="656"/>
+        <line x1="82" y1="594" x2="82" y2="656"/>
+        <line x1="98" y1="594" x2="98" y2="656"/>
+        <line x1="114" y1="594" x2="114" y2="656"/>
+        <text x="83" y="672">계단</text>
+      </g>
+      <g id="seats"></g>
+    </svg>
+  </div>
+
+  <div class="hint">체크인해서 자리에 앉으면 <b>그 번호를 탭</b> → 진행하면서 빈자리·중복 헷갈림 끝!<br>인원 바꾸면 표시는 초기화돼요.</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SZ=54;
+  var COMMON={
+    "11":[243,362],"10":[243,420],"9":[243,478],"8":[243,536],
+    "7":[248,622],"2":[322,632],"1":[396,632],
+    "3":[201,686],"6":[82,704],"5":[82,768],"4":[146,768]
+  };
+  var LAYOUTS={
+    14: Object.assign({}, COMMON, {"12":[396,384],"13":[396,454],"14":[396,524]}),
+    15: Object.assign({}, COMMON, {"12":[321,362],"13":[396,384],"14":[396,454],"15":[396,524]})
+  };
+  var mode=14, taken={};
+
+  function render(){
+    var g=document.getElementById("seats"), L=LAYOUTS[mode], html="";
+    Object.keys(L).forEach(function(num){
+      var x=L[num][0], y=L[num][1];
+      var cls="seat"+(taken[num]?" taken":"");
+      html+='<g class="'+cls+'" data-n="'+num+'">'
+          +'<rect x="'+(x-SZ/2)+'" y="'+(y-SZ/2)+'" width="'+SZ+'" height="'+SZ+'" rx="7"/>'
+          +'<text x="'+x+'" y="'+(y+1)+'">'+num+'</text></g>';
+    });
+    g.innerHTML=html;
+    document.getElementById("total").textContent=mode;
+    updateCount();
+  }
+  function updateCount(){
+    var c=0; Object.keys(taken).forEach(function(k){ if(taken[k]) c++; });
+    document.getElementById("taken").textContent=c;
+  }
+  window.setMode=function(m){
+    if(mode===m) return;
+    mode=m; taken={};
+    document.getElementById("b14").classList.toggle("on",m===14);
+    document.getElementById("b15").classList.toggle("on",m===15);
+    render();
+  };
+  window.clearAll=function(){ taken={}; render(); };
+
+  document.getElementById("seats").addEventListener("click",function(e){
+    var g=e.target.closest(".seat"); if(!g) return;
+    var n=g.getAttribute("data-n");
+    taken[n]=!taken[n];
+    g.classList.toggle("taken",!!taken[n]);
+    updateCount();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
