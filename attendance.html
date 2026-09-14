@@ -75,6 +75,30 @@
   a.home{font-size:12px;color:var(--muted);text-decoration:none}
   .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
   .toolbar .cnt{font-size:12.5px;color:var(--muted);margin-left:auto}
+  /* 🪑 자리 지도 */
+  .smap-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+  .smap-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .smap-head .t{font-size:14px;font-weight:800}
+  .smap-head .sp{margin-left:auto;display:flex;gap:6px}
+  .smap-head .sp button{border:1.5px solid var(--line-strong);background:var(--surface-2);color:var(--muted);border-radius:9px;padding:6px 11px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit}
+  .smap-head .sp button.on{background:var(--amber);color:var(--ink-on-amber);border-color:transparent}
+  .smap-stage{background:#000;border:1px solid var(--line);border-radius:14px;padding:6px}
+  .smap-stage svg{width:100%;max-width:420px;height:auto;display:block;margin:0 auto}
+  .seatg .sr{stroke-width:2.5;transition:.12s;cursor:pointer}
+  .seatg.empty .sr{fill:transparent;stroke:#3a2e1f;stroke-dasharray:4 4;cursor:default}
+  .seatg.male .sr{fill:rgba(126,166,224,.16);stroke:#7EA6E0}
+  .seatg.female .sr{fill:rgba(232,143,176,.16);stroke:#E88FB0}
+  .seatg.present.male .sr,.seatg.present.female .sr{fill:var(--ok);stroke:transparent}
+  .seatg .snum{fill:var(--muted);font-size:11px;font-weight:800}
+  .seatg.present .snum{fill:#083b26}
+  .seatg .snick{fill:var(--ink);font-size:15px;font-weight:800;text-anchor:middle}
+  .seatg.present .snick{fill:#083b26}
+  .seatg.empty .snick{fill:#5a4c3a}
+  .smap-hint{font-size:11.5px;color:var(--muted);margin-top:9px;line-height:1.6}
+  .smap-hint b{color:var(--amber)}
+  .smap-wall{fill:none;stroke:var(--amber);stroke-width:3;opacity:.5;stroke-linejoin:round}
+  .smap-stair line{stroke:var(--amber);stroke-width:2.5;opacity:.7}
+  .smap-stair rect{stroke:var(--amber);stroke-width:2.5;opacity:.7}
 </style>
 </head>
 <body>
@@ -138,6 +162,15 @@
       </div>
     </div>
     <div id="drink-counter" class="dcbox hide"></div>
+    <div class="smap-card" id="smap-card">
+      <div class="smap-head">
+        <span class="t">🪑 자리 지도</span>
+        <span style="font-size:11.5px;color:var(--muted)">자리 탭 = 출석 체크 ✅</span>
+        <span class="sp"><button id="smap14" class="on">14인</button><button id="smap15">15인</button></span>
+      </div>
+      <div class="smap-stage"><svg id="smap-svg" viewBox="0 0 460 830"></svg></div>
+      <div class="smap-hint">초록=출석 · 색칠=배정됨(아직 안 옴) · 점선=빈 자리. 자리 번호는 아래 명단의 <b>"테이블" 칸</b>이랑 연결돼요.</div>
+    </div>
     <div id="list"></div>
   </div>
 </div>
@@ -153,7 +186,37 @@
   function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||"{}")||{}; }catch(e){ return {}; } }
   function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
   var TBL_KEY="att_tables", tableMap=lsGet(TBL_KEY);
-  window.setTable=function(id,val){ val=(val||"").trim(); if(val) tableMap[id]=val; else delete tableMap[id]; lsSet(TBL_KEY,tableMap); };
+  window.setTable=function(id,val){ val=(val||"").trim(); if(val) tableMap[id]=val; else delete tableMap[id]; lsSet(TBL_KEY,tableMap); renderSeatmap(); };
+
+  // 🪑 자리 지도 — 출석부의 "테이블" 번호로 각 자리에 이름·출석 표시
+  var SEAT_SZ=54, seatMode=14;
+  var SEAT_COMMON={"11":[243,362],"10":[243,420],"9":[243,478],"8":[243,536],"7":[248,622],"2":[322,632],"1":[396,632],"3":[201,686],"6":[82,704],"5":[82,768],"4":[146,768]};
+  var SEAT_LAYOUTS={
+    14: Object.assign({}, SEAT_COMMON, {"12":[396,384],"13":[396,454],"14":[396,524]}),
+    15: Object.assign({}, SEAT_COMMON, {"12":[321,362],"13":[396,384],"14":[396,454],"15":[396,524]})
+  };
+  function seatMapNow(){ var m={}; records.forEach(function(x){ var t=(tableMap[x.id]||"").trim(); if(t) m[t]=x; }); return m; }
+  function renderSeatmap(){
+    var svg=document.getElementById("smap-svg"); if(!svg) return;
+    var sm=seatMapNow(), L=SEAT_LAYOUTS[seatMode];
+    var wall='<polygon class="smap-wall" points="196,332 428,332 428,802 36,802 36,590 196,590"/>'
+      +'<g class="smap-stair"><rect x="34" y="592" width="98" height="66" rx="3" fill="none"/>'
+      +'<line x1="50" y1="594" x2="50" y2="656"/><line x1="66" y1="594" x2="66" y2="656"/><line x1="82" y1="594" x2="82" y2="656"/><line x1="98" y1="594" x2="98" y2="656"/><line x1="114" y1="594" x2="114" y2="656"/>'
+      +'<text x="83" y="628" style="fill:var(--amber);font-size:14px;font-weight:800;text-anchor:middle;dominant-baseline:central">계단</text></g>';
+    var seats=Object.keys(L).map(function(num){
+      var x=L[num][0], y=L[num][1], p=sm[num];
+      var g=p?((p.fields||{})["성별"]||""):"", present=p&&(p.fields||{})["출석"]==="O";
+      var cls="seatg "+(p?(g==="여성"?"female":"male"):"empty")+(present?" present":"");
+      var nk=p?((p.fields||{})["닉네임"]||(p.fields||{})["이름"]||""):"";
+      var label=nk.length>4?nk.slice(0,4):nk;
+      return '<g class="'+cls+'" data-seat="'+num+'">'
+        +'<rect class="sr" x="'+(x-SEAT_SZ/2)+'" y="'+(y-SEAT_SZ/2)+'" width="'+SEAT_SZ+'" height="'+SEAT_SZ+'" rx="8"/>'
+        +'<text class="snum" x="'+(x-SEAT_SZ/2+7)+'" y="'+(y-SEAT_SZ/2+14)+'">'+num+'</text>'
+        +(label?'<text class="snick" x="'+x+'" y="'+(y+7)+'">'+esc(label)+'</text>':'')
+        +'</g>';
+    }).join("");
+    svg.innerHTML=wall+seats;
+  }
   // 📞 전화번호 저장 (문토 등 번호 없는 사람) → 로테이션 신청.연락처 (모든 기기 공유)
   window.savePhone=function(id,val,el){
     val=(val||"").trim();
@@ -170,7 +233,7 @@
     var inputs=document.querySelectorAll(".tbl-input"), cnt=0;
     inputs.forEach(function(inp){ var id=inp.getAttribute("data-id"); if(!id) return;
       var v=(inp.value||"").trim(); if(v){ tableMap[id]=v; cnt++; } else { delete tableMap[id]; } });
-    lsSet(TBL_KEY,tableMap);
+    lsSet(TBL_KEY,tableMap); renderSeatmap();
     var b=this, o=b.textContent; b.textContent="✓ 저장됐어요 ("+cnt+"명)"; b.disabled=true;
     setTimeout(function(){ b.textContent=o; b.disabled=false; },1800);
   });
@@ -244,6 +307,16 @@
   if(key()){ showConsole(); }
 
   document.getElementById("refreshBtn").addEventListener("click",load);
+  (function(){
+    var svg=document.getElementById("smap-svg");
+    if(svg) svg.addEventListener("click",function(e){
+      var g=e.target.closest(".seatg"); if(!g) return;
+      var p=seatMapNow()[g.getAttribute("data-seat")]; if(p) toggle(p,null);
+    });
+    var b14=document.getElementById("smap14"), b15=document.getElementById("smap15");
+    if(b14) b14.addEventListener("click",function(){ seatMode=14; b14.classList.add("on"); b15.classList.remove("on"); renderSeatmap(); });
+    if(b15) b15.addEventListener("click",function(){ seatMode=15; b15.classList.add("on"); b14.classList.remove("on"); renderSeatmap(); });
+  })();
   var allRecs=[], roundList=[], curRound="";
   function parseRoundKey(rd){ var m=String(rd||"").match(/(\d{1,2})\s*\/\s*(\d{1,2})/); return m?(parseInt(m[1])*100+parseInt(m[2])):0; }
   function load(){
@@ -279,6 +352,7 @@
     document.getElementById("s-gender").textContent=m+" / "+fw;
     document.getElementById("cnt").textContent="출석 "+present+"/"+records.length+"명";
     renderDrinkCounter();
+    renderSeatmap();
     var list=document.getElementById("list"); list.innerHTML="";
     if(!records.length){ list.innerHTML='<div class="empty">'+esc(curRound)+' 입금확정된 참가자가 아직 없어요.<br>rotation-admin에서 "💰 입금확인" 누르면 여기 떠요.</div>'; return; }
 
