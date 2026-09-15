@@ -86,8 +86,9 @@ module.exports = async function handler(req, res) {
     const dec = Math.floor(age / 10) * 10;
     return dec + "대 " + ((age % 10) < 5 ? "초반" : "후반");
   };
-  // 직업에서 괄호(지역/기관 상세) 제거: "경찰공무원(성동구)" → "경찰공무원"
-  const jobCat = j => String(j || "").replace(/[\(（].*?[\)）]/g, "").trim();
+  // 직업에서 회사명·상세 제거: 괄호·슬래시·구분자 뒤(회사명)를 잘라 직군만 남김
+  //  "경찰공무원(성동구)"→"경찰공무원", "엔지니어/삼성전자"→"엔지니어", "영업직 · 스킨엑스"→"영업직"
+  const jobCat = j => String(j || "").replace(/[\(（].*?[\)）]/g, "").split(/[\/|·・,]/)[0].trim();
   // 어필 첫 줄만, 45자 컷
   const oneLine = a => { const t = String(a || "").split("\n")[0].trim(); return t.length > 45 ? t.slice(0, 45) + "…" : t; };
 
