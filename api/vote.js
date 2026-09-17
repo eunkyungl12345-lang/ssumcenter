@@ -88,6 +88,17 @@ module.exports = async function handler(req, res) {
       if (!me) return res.status(200).json({ found: false });
       const event = me.fields["행사"] || "";
       const myNick = nm(me.fields["닉네임"]);
+      // ---- 비밀번호(4자리) 확인/설정 ----
+      const storedPin = nm(me.fields["비번"]);
+      const inPin = nm(body.pin);
+      if (!storedPin) {
+        // 처음 입장 — 비번을 새로 정해야 함
+        if (!/^\d{4}$/.test(inPin)) return res.status(200).json({ found: true, needPin: "set" });
+        await api(encodeURIComponent("투표참가자") + "/" + me.id, { method: "PATCH", body: { fields: { 비번: inPin } } });
+      } else {
+        // 이미 비번 있음 — 맞아야 통과
+        if (inPin !== storedPin) return res.status(200).json({ found: true, needPin: inPin ? "wrong" : "enter" });
+      }
       const myVotes = await getAll("투표", `{행사}='${event}'`);
       const voted = myVotes.some(v => nm(v.fields["투표자닉네임"]) === myNick);
       const settings = await getAll("투표설정", `{행사}='${event}'`);
@@ -96,6 +107,7 @@ module.exports = async function handler(req, res) {
         found: true,
         voted,
         revealed,
+        pinSet: !storedPin,
         me: {
           닉네임: me.fields["닉네임"] || "",
           성별: me.fields["성별"] || "",
@@ -130,6 +142,9 @@ module.exports = async function handler(req, res) {
       if (!me) return res.status(400).json({ error: "명단에 없어요" });
       const event = me.fields["행사"] || "";
       const myNick = nm(me.fields["닉네임"]);
+      // 비밀번호 확인 (설정돼 있으면 맞아야 투표 가능)
+      const storedPinV = nm(me.fields["비번"]);
+      if (storedPinV && nm(body.pin) !== storedPinV) return res.status(200).json({ ok: false, pinError: true });
 
       // 이미 투표했으면 → 수정(덮어쓰기) 허용. 결과 공개 후엔 잠금.
       const settings0 = await getAll("투표설정", `{행사}='${event}'`);
@@ -167,6 +182,9 @@ module.exports = async function handler(req, res) {
       if (!me) return res.status(400).json({ error: "명단에 없어요" });
       const event = me.fields["행사"] || "";
       const myNick = me.fields["닉네임"] || "";
+      // 비밀번호 확인 (설정돼 있으면 맞아야 결과 조회 가능)
+      const storedPinR = nm(me.fields["비번"]);
+      if (storedPinR && nm(body.pin) !== storedPinR) return res.status(200).json({ pinError: true });
 
       // 공개 여부
       const settings = await getAll("투표설정", `{행사}='${event}'`);

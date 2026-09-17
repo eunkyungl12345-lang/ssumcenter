@@ -107,6 +107,9 @@
     <label class="fld"><span>내 닉네임 (명찰)</span>
       <input id="nick" placeholder="예: 라떼" maxlength="20" autocomplete="off">
     </label>
+    <label class="fld"><span>내 비밀번호 4자리 <b style="color:#E8B050">(처음이면 새로 정해서 입력!)</b></span>
+      <input id="pin" type="tel" inputmode="numeric" maxlength="4" placeholder="숫자 4자리" autocomplete="off">
+    </label>
     <div class="err" id="entry-err"></div>
     <div style="margin-top:6px"><button class="btn" id="entryBtn" disabled>입장하기</button></div>
     <div class="note">명찰에 적힌 닉네임으로 입장돼요 · 회원가입 없음</div>
@@ -177,27 +180,30 @@
   // ?nick=닉네임 이 있으면 자동 로그인 (테스트 링크용) — URL 우선
   var urlNick=new URLSearchParams(location.search).get("nick");
   var saved=urlNick || localStorage.getItem("vote_nick");
-  if(saved){ state.nick=saved; route(saved); }
+  var savedPin=localStorage.getItem("vote_pin")||"";
+  if(saved&&savedPin){ state.nick=saved; state.pin=savedPin; route(saved,savedPin); }
   else show("s-entry");
 
   // ---- 입장 ----
-  var nickEl=document.getElementById("nick"), entryBtn=document.getElementById("entryBtn"), entryErr=document.getElementById("entry-err");
-  nickEl.addEventListener("input",function(){
-    entryBtn.disabled=nickEl.value.trim().length<1; entryErr.textContent="";
-  });
-  nickEl.addEventListener("keydown",function(e){ if(e.key==="Enter"&&nickEl.value.trim()){ entryBtn.click(); } });
+  var nickEl=document.getElementById("nick"), pinEl=document.getElementById("pin"), entryBtn=document.getElementById("entryBtn"), entryErr=document.getElementById("entry-err");
+  function chkEntry(){ entryBtn.disabled=!(nickEl.value.trim().length>=1 && /^\d{4}$/.test(pinEl.value.trim())); entryErr.textContent=""; }
+  nickEl.addEventListener("input",chkEntry);
+  pinEl.addEventListener("input",function(){ pinEl.value=pinEl.value.replace(/[^0-9]/g,""); chkEntry(); });
+  pinEl.addEventListener("keydown",function(e){ if(e.key==="Enter"&&!entryBtn.disabled){ entryBtn.click(); } });
   entryBtn.addEventListener("click",function(){
-    var p=nickEl.value.trim();
-    if(!p) return;
+    var p=nickEl.value.trim(), pin=pinEl.value.trim();
+    if(!p||!/^\d{4}$/.test(pin)) return;
     entryBtn.disabled=true; entryBtn.textContent="확인 중…";
-    route(p).catch(function(){ entryErr.textContent="오류가 났어요. 다시 시도해주세요."; })
+    route(p,pin).catch(function(){ entryErr.textContent="오류가 났어요. 다시 시도해주세요."; })
       .finally(function(){ entryBtn.textContent="입장하기"; entryBtn.disabled=false; });
   });
 
-  function route(p){
-    return post("verify",{nick:p}).then(function(r){
+  function route(p,pin){
+    return post("verify",{nick:p,pin:pin}).then(function(r){
       if(!r.found){ entryErr.textContent="명찰 닉네임을 다시 확인해주세요. 안 되면 센터장에게 문의!"; show("s-entry"); return; }
-      state.nick=p; state.me=r.me; state.event=r.me.행사; localStorage.setItem("vote_nick",p);
+      if(r.needPin==="wrong"){ entryErr.textContent="비밀번호가 달라요. 처음 정한 4자리를 넣어주세요. (모르면 센터장에게)"; show("s-entry"); return; }
+      if(r.needPin==="set"||r.needPin==="enter"){ entryErr.textContent="비밀번호 4자리를 입력해주세요."; show("s-entry"); return; }
+      state.nick=p; state.pin=pin; state.me=r.me; state.event=r.me.행사; localStorage.setItem("vote_nick",p); localStorage.setItem("vote_pin",pin);
       document.getElementById("vote-me").textContent=r.me.닉네임;
       document.getElementById("done-me").textContent=r.me.닉네임;
       document.getElementById("res-me").textContent=r.me.닉네임;
@@ -241,9 +247,10 @@
   var submitBtn=document.getElementById("submitBtn");
   submitBtn.addEventListener("click",function(){
     submitBtn.disabled=true; submitBtn.textContent="제출 중…";
-    post("vote",{nick:state.nick,event:state.event,picks:state.picks}).then(function(r){
+    post("vote",{nick:state.nick,event:state.event,picks:state.picks,pin:state.pin}).then(function(r){
       if(r.ok){ show("s-done"); }
       else if(r.locked){ alert("결과가 이미 공개돼서 투표를 바꿀 수 없어요."); show("s-done"); }
+      else if(r.pinError){ alert("비밀번호 확인이 필요해요. 다시 입장해주세요."); localStorage.removeItem("vote_nick"); localStorage.removeItem("vote_pin"); location.reload(); }
       else { alert(r.error||"제출 실패"); submitBtn.disabled=false; submitBtn.textContent="투표 제출하기"; }
     }).catch(function(){ alert("오류가 났어요."); submitBtn.disabled=false; submitBtn.textContent="투표 제출하기"; });
   });
@@ -251,7 +258,7 @@
   // ---- 완료 화면: 다시 투표(수정) ----
   document.getElementById("revoteBtn").addEventListener("click",function(){
     var b=this; b.disabled=true; b.textContent="확인 중…";
-    post("verify",{nick:state.nick}).then(function(r){
+    post("verify",{nick:state.nick,pin:state.pin}).then(function(r){
       if(r.revealed){ b.textContent="결과가 공개돼서 못 바꿔요"; setTimeout(function(){ b.disabled=false; b.textContent="🔄 다시 투표하기 (수정)"; },1800); return; }
       b.disabled=false; b.textContent="🔄 다시 투표하기 (수정)";
       loadList();
@@ -260,7 +267,7 @@
   // ---- 완료 화면: 결과 열렸는지 확인 ----
   document.getElementById("refreshBtn").addEventListener("click",function(){
     var b=this; b.disabled=true; b.textContent="확인 중…";
-    post("verify",{nick:state.nick}).then(function(r){
+    post("verify",{nick:state.nick,pin:state.pin}).then(function(r){
       if(r.revealed){ loadResult(); }
       else { b.textContent="아직이에요 · 다시 확인"; setTimeout(function(){ b.disabled=false; b.textContent="결과 열렸는지 확인하기"; },1500); }
     });
@@ -269,7 +276,7 @@
   // ---- 결과 ----
   function loadResult(){
     show("s-load");
-    return post("result",{nick:state.nick,event:state.event}).then(function(r){
+    return post("result",{nick:state.nick,event:state.event,pin:state.pin}).then(function(r){
       if(!r.revealed){ show("s-done"); return; }
       renderResult(r); show("s-result");
     });
