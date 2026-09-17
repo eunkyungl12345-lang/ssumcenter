@@ -488,6 +488,36 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
+    // ============ (관리자) 닉네임 변경 ============
+    // {event, oldNick, newNick, name?} → 투표참가자 + 로테이션 신청 둘 다 변경
+    if (action === "renameNick") {
+      if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
+      const event = body.event || "";
+      const oldNick = nm(body.oldNick);
+      const newNick = nm(body.newNick);
+      const name = nm(body.name);
+      if (!newNick) return res.status(400).json({ error: "새 닉네임 필요" });
+      const updated = { vote: 0, rotation: 0 };
+      // 투표참가자 (해당 회차, 옛 닉네임 매칭)
+      const people = await getAll("투표참가자", event ? `{행사}='${event}'` : null);
+      for (const p of people) {
+        if (nm(p.fields["닉네임"]) === oldNick) {
+          await api(encodeURIComponent("투표참가자") + "/" + p.id, { method: "PATCH", body: { fields: { 닉네임: newNick } } });
+          updated.vote++;
+        }
+      }
+      // 로테이션 신청 (이름 또는 옛 닉네임 매칭, 같은 회차만)
+      const rot = await getAll("로테이션 신청");
+      for (const r of rot) {
+        if (event && nm(r.fields["회차"]) !== nm(event)) continue;
+        if ((name && nm(r.fields["이름"]) === name) || (oldNick && nm(r.fields["닉네임"]) === oldNick)) {
+          await api(encodeURIComponent("로테이션 신청") + "/" + r.id, { method: "PATCH", body: { fields: { 닉네임: newNick } } });
+          updated.rotation++;
+        }
+      }
+      return res.status(200).json({ ok: true, updated });
+    }
+
     // ============ (관리자) 비밀번호 리셋 ============
     // {event, nick} → 그 사람만 / {event, all:true} → 그 회차 전체 비번 초기화
     if (action === "resetPin") {
