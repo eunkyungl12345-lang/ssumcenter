@@ -64,23 +64,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // ============ [임시/관리자] 비번 저장 필드 생성 ============
-    if (action === "_createPinField") {
-      if (!isAdmin) return res.status(403).json({ error: "관리자 전용" });
-      const meta = await (await fetch(`https://api.airtable.com/v0/meta/bases/${BASE_ID}/tables`, { headers: { Authorization: `Bearer ${TOKEN}` } })).json();
-      if (meta.error) return res.status(200).json({ ok: false, step: "list", error: meta.error });
-      const t = (meta.tables || []).find(x => x.name === "투표참가자");
-      if (!t) return res.status(200).json({ ok: false, error: "투표참가자 테이블 없음", tables: (meta.tables || []).map(x => x.name) });
-      if ((t.fields || []).some(f => f.name === "비번")) return res.status(200).json({ ok: true, already: true });
-      const cr = await fetch(`https://api.airtable.com/v0/meta/bases/${BASE_ID}/tables/${t.id}/fields`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ name: "비번", type: "singleLineText" }),
-      });
-      const crj = await cr.json();
-      return res.status(200).json({ ok: !crj.error, result: crj.error || "created" });
-    }
-
     // ============ 참가자 본인 확인 ============
     if (action === "verify") {
       const people = await getAll("투표참가자");
