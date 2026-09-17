@@ -125,6 +125,11 @@ module.exports = async function handler(req, res) {
       if (!me) return res.status(400).json({ error: "명단에 없어요" });
       const event = me.fields["행사"] || "";
       const myNick = nm(me.fields["닉네임"]);
+      // 회차별 투표 마감 (KST). 마감 후엔 신규·수정 투표 모두 차단.
+      const VOTE_DEADLINES = { "9/17 (목)": Date.parse("2026-09-17T14:00:00Z") }; // 밤 11시(23:00) KST
+      if (VOTE_DEADLINES[event] && Date.now() >= VOTE_DEADLINES[event]) {
+        return res.status(200).json({ ok: false, closed: true });
+      }
       // 비밀번호 확인 (설정돼 있으면 맞아야 투표 가능)
       const storedPinV = nm(me.fields["비번"]);
       if (storedPinV && nm(body.pin) !== storedPinV) return res.status(200).json({ ok: false, pinError: true });

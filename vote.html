@@ -134,8 +134,8 @@
     <div class="center">
       <div class="pulse">✅</div>
       <h2 style="font-size:21px;font-weight:800;margin:6px 0 4px">투표가 접수됐어요!</h2>
-      <p class="sub" style="font-size:13.5px;color:var(--muted);max-width:28ch;margin:0 auto">두근두근 🤍 결과는 오늘 밤에 공개돼요.</p>
-      <div class="whenbar">🌙 오늘 <b class="tnum" style="margin:0 3px">23:30</b> 이 링크에서 공개</div>
+      <p class="sub" style="font-size:13.5px;color:var(--muted);max-width:28ch;margin:0 auto">두근두근 🤍 투표는 밤 11시까지 · 결과는 오늘 밤 공개돼요.</p>
+      <div class="whenbar">🌙 밤 <b class="tnum" style="margin:0 3px">11시</b>까지 투표 · 이후 결과 공개</div>
     </div>
     <div class="infocard">
       🟢 <b style="color:var(--ok)">서로 뽑은 분</b>이 있으면 → 매칭 💗<br>
@@ -249,6 +249,7 @@
     submitBtn.disabled=true; submitBtn.textContent="제출 중…";
     post("vote",{nick:state.nick,event:state.event,picks:state.picks,pin:state.pin}).then(function(r){
       if(r.ok){ show("s-done"); }
+      else if(r.closed){ alert("밤 11시가 지나 투표가 마감됐어요 🙏 아쉽지만 다음 기회에!"); submitBtn.disabled=false; submitBtn.textContent="투표 제출하기"; }
       else if(r.locked){ alert("결과가 이미 공개돼서 투표를 바꿀 수 없어요."); show("s-done"); }
       else if(r.pinError){ alert("비밀번호 확인이 필요해요. 다시 입장해주세요."); localStorage.removeItem("vote_nick"); localStorage.removeItem("vote_pin"); location.reload(); }
       else { alert(r.error||"제출 실패"); submitBtn.disabled=false; submitBtn.textContent="투표 제출하기"; }
