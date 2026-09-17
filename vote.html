@@ -219,7 +219,7 @@
       if(state.list.length===0){ vl.innerHTML='<div class="note">아직 등록된 상대 참가자가 없어요.</div>'; }
       state.list.forEach(function(p){
         var el=document.createElement("div"); el.className="vc";
-        var bio=[p.년생,p.한줄소개].filter(Boolean).join(" · ");
+        var bio=[p.한줄소개].filter(Boolean).join(" · ");
         el.innerHTML=avatar(p)+'<div><div class="nm">'+esc(p.닉네임)+'</div><div class="bio">'+esc(bio)+'</div></div><div class="heart">♥</div>';
         el.addEventListener("click",function(){ toggle(p.닉네임,el); });
         vl.appendChild(el);
@@ -281,7 +281,7 @@
     if(matches.length){
       h+='<div class="safe" style="color:var(--ok)">🎉 서로 뽑은 '+matches.length+'명! 연락처가 공유됐어요</div>';
       matches.forEach(function(p){
-        var bio=[p.년생,p.한줄소개].filter(Boolean).join(" · ");
+        var bio=[p.한줄소개].filter(Boolean).join(" · ");
         h+='<div class="rc match">'+avatar(p)+'<div><div class="nm">'+esc(p.닉네임)+'</div><div class="st">서로 뽑았어요 ✓ · '+esc(bio)+'</div></div>'
           +(p.연락처?'<div class="num tnum">'+esc(p.연락처)+'</div>':'')+'</div>';
       });
