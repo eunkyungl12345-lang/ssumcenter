@@ -488,6 +488,22 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
+    // ============ (관리자) 비밀번호 리셋 ============
+    // {event, nick} → 그 사람만 / {event, all:true} → 그 회차 전체 비번 초기화
+    if (action === "resetPin") {
+      if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
+      const event = body.event || "";
+      if (!event) return res.status(400).json({ error: "행사 필요" });
+      const people = await getAll("투표참가자", `{행사}='${event}'`);
+      let targets = [];
+      if (body.all) targets = people.filter(p => nm(p.fields["비번"]));
+      else { const nick = nm(body.nick); const t = people.find(p => nm(p.fields["닉네임"]) === nick); if (t) targets = [t]; }
+      for (const t of targets) {
+        await api(encodeURIComponent("투표참가자") + "/" + t.id, { method: "PATCH", body: { fields: { 비번: "" } } });
+      }
+      return res.status(200).json({ ok: true, reset: targets.map(t => t.fields["닉네임"]) });
+    }
+
     // ============ (관리자) 참가자 전화번호 저장 (문토 등) ============
     if (action === "setPhone") {
       if (!isAdmin) return res.status(401).json({ error: "관리자 전용" });
