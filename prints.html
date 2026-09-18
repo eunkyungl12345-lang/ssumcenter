@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🖨️ 출력물 | 썸류센터</title>
+<style>
+  :root{ --bg:#0e0c0a; --surface:#16140f; --line:#1e1c17; --ink:#F5F5F3; --muted:#9a9080; --faint:#6b6358; --amber:#FFBE2E; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em;min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:22px 18px 60px}
+  h1{font-size:22px;font-weight:800}
+  .sub{font-size:13px;color:var(--muted);margin-top:6px}
+  .home{color:var(--muted);text-decoration:none;font-size:13px;font-weight:700}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:18px}
+  .card h2{font-size:16px;font-weight:800}
+  .card .desc{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .btn{border:none;border-radius:12px;padding:13px 18px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:7px}
+  .btn.primary{background:var(--amber);color:#000}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+  .preview{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+  .preview iframe{width:100%;height:520px;border:0;display:block}
+  .note{font-size:12px;color:var(--faint);margin-top:12px;line-height:1.7}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="home" href="/admin">← 관리자 홈</a>
+    <h1 style="margin-top:10px">🖨️ 출력물</h1>
+    <div class="sub">행사 때 인쇄해서 쓰는 자료 모음이에요. 미리보기 → 인쇄 or 다운로드.</div>
+
+    <div class="card">
+      <h2>💌 프로필 카드 (설문지) · QR 포함</h2>
+      <div class="desc">현장에서 나눠주는 프로필 작성 카드예요. 하단에 투표 QR이 들어가 있어요. (A4 · 양면/컷 가능)</div>
+      <div class="btns">
+        <a class="btn primary" href="/profile-card.pdf" target="_blank" rel="noopener">🖨️ 인쇄하기 (새 창)</a>
+        <a class="btn ghost" href="/profile-card.pdf" download="썸류센터_프로필카드.pdf">📥 다운로드</a>
+      </div>
+      <div class="preview">
+        <iframe src="/profile-card.pdf#toolbar=1" title="프로필 카드 미리보기"></iframe>
+      </div>
+      <div class="note">
+        💡 인쇄 팁 — "인쇄하기" 누르면 새 창에서 PDF가 열려요. 거기서 <b>Ctrl/Cmd + P</b> 눌러 인쇄하시면 돼요.<br>
+        용지: A4 · 인원 수만큼 넉넉히 준비하세요.
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:22px">
+      다른 출력물(명찰·안내문 등)도 필요하면 센터장에게 요청해서 여기에 추가할 수 있어요.
+    </div>
+  </div>
+</body>
+</html>
