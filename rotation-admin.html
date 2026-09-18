@@ -234,10 +234,9 @@
 
   function render(){
     if(!curRound) curRound=latestRound();   // 기본 = 최신 회차(예: 9/17)
-    // 회차 탭 — 지난 회차는 숨김(오늘 이후 + 최신 회차만). "전체"는 항상 남겨둠(필요하면 지난 것도 봄)
-    var _now=new Date(), todayKey=(_now.getMonth()+1)*100+_now.getDate(), lr=latestRound();
+    // 회차 탭 — 모든 회차를 날짜순(최신 먼저)으로 보여줌. "전체"는 항상 맨 앞.
     var rounds=[];
-    records.forEach(function(x){ var rd=x.fields["회차"]; if(rd && (roundKey(rd)>=todayKey || rd===lr) && rounds.indexOf(rd)<0) rounds.push(rd); });
+    records.forEach(function(x){ var rd=x.fields["회차"]; if(rd && rounds.indexOf(rd)<0) rounds.push(rd); });
     rounds=["전체"].concat(rounds.sort(function(a,b){return roundKey(b)-roundKey(a);}));
     var tabs=document.getElementById("tabs"); tabs.innerHTML="";
     rounds.forEach(function(rd){
