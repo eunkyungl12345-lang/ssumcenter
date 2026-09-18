@@ -284,6 +284,19 @@
         </div>
       </div>
 
+      <!-- 재참여자: 번호로 이전 신청 불러오기 -->
+      <div class="card card-spaced" data-reveal style="border-color:rgba(255,190,46,0.35)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <i class="fa-solid fa-bolt" style="color:#FFBE2E"></i>
+          <b style="font-size:0.92rem">재참여자이신가요? 번호로 이전 신청 불러오기</b>
+        </div>
+        <div style="display:flex;gap:8px">
+          <input type="tel" id="prefill-phone" inputmode="numeric" placeholder="이전에 신청한 전화번호" class="text-input" style="flex:1">
+          <button type="button" onclick="prefillFromPhone(this)" class="submit-btn" style="width:auto;white-space:nowrap;padding:0.75rem 1.1rem;font-size:0.875rem">불러오기</button>
+        </div>
+        <p style="font-size:11px;color:#6b6358;margin-top:8px">번호만 넣으면 저번에 쓰신 프로필이 자동으로 채워져요 ✨ (처음이시면 그냥 아래에 작성하세요)</p>
+      </div>
+
       <!-- 기본 정보 -->
       <div class="card card-spaced" data-reveal>
         <div class="card-header">
@@ -801,6 +814,27 @@ document.querySelectorAll("#agree1,#agree2").forEach(cb=>{
 });
 
 // 제출
+async function prefillFromPhone(btn){
+  var el=document.getElementById("prefill-phone");
+  var phone=(el.value||"").replace(/[^0-9]/g,"");
+  if(phone.length<9){alert("전화번호를 정확히 입력해주세요");return;}
+  var t=btn.textContent; btn.disabled=true; btn.textContent="찾는 중...";
+  try{
+    var r=await fetch("/api/airtable?prefill=1",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:phone})});
+    var j=await r.json();
+    if(!j.found){ alert("이전 신청 내역이 없어요 🙏\n아래에 새로 작성해주세요!"); return; }
+    var d=j.data||{};
+    function setV(name,val){ var e=document.querySelector('[name="'+name+'"]'); if(e&&val!=null&&val!=="") e.value=val; }
+    setV("name",d.name); setV("birthYear",d.birthYear); setV("phone",phone); setV("height",d.height);
+    setV("job",d.job); setV("nickname",d.nickname); setV("drink",d.drink);
+    var ap=document.querySelector('[name="appeal"]'); if(ap&&d.appeal){ ap.value=d.appeal; ap.dispatchEvent(new Event("input",{bubbles:true})); }
+    if(d.gender){ var g=document.querySelector('input[name="gender"][value="'+d.gender+'"]'); if(g){ g.checked=true; } }
+    if(d.channel){ var ch=document.querySelector('#channel-chips .chip[data-val="'+d.channel+'"]'); if(ch){ ch.click(); } }
+    alert("✨ 이전 신청 내용을 불러왔어요!\n확인하시고, 사진·재직증명서만 다시 올려주세요 :)");
+    var fc=document.querySelector(".card-spaced"); if(fc) fc.scrollIntoView({behavior:"smooth"});
+  }catch(e){ alert("불러오기에 실패했어요. 다시 시도해주세요."); }
+  finally{ btn.disabled=false; btn.textContent=t; }
+}
 async function handleSubmit(e){
   e.preventDefault();
   const photoCount=photoFiles.filter(f=>f).length;

@@ -161,6 +161,30 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true, linked });
   }
 
+  // ---- 재참여자: 전화번호로 이전 로테이션 신청 불러오기 (폼 자동채우기) ----
+  // 개인정보 보호: 전화번호는 body로만, 폼 재작성에 필요한 필드만 반환(사진·서류·카카오ID 등 제외)
+  if (req.method === "POST" && req.query.prefill === "1") {
+    const np = String((req.body && req.body.phone) || "").replace(/[^0-9]/g, "");
+    if (np.length < 9) return res.status(400).json({ error: "전화번호를 정확히 입력해주세요" });
+    const H = { Authorization: `Bearer ${TOKEN}` };
+    const base = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("로테이션 신청")}`;
+    const formula = `SUBSTITUTE(SUBSTITUTE({연락처},"-","")," ","")="${np}"`;
+    try {
+      const url = `${base}?filterByFormula=${encodeURIComponent(formula)}&pageSize=50`;
+      const found = await (await fetch(url, { headers: H })).json();
+      const recs = found.records || [];
+      if (!recs.length) return res.status(200).json({ found: false });
+      const rk = rd => { const m = String(rd || "").match(/(\d{1,2})\/(\d{1,2})/); return m ? parseInt(m[1]) * 100 + parseInt(m[2]) : 0; };
+      recs.sort((a, b) => rk(b.fields["회차"]) - rk(a.fields["회차"]));
+      const f = recs[0].fields;
+      return res.status(200).json({ found: true, data: {
+        name: f["이름"] || "", gender: f["성별"] || "", birthYear: f["출생연도"] || "", height: f["키"] || "",
+        job: f["직업_직장명"] || "", appeal: f["어필포인트"] || "", drink: f["음료선택"] || "",
+        nickname: f["닉네임"] || "", channel: f["유입경로"] || ""
+      } });
+    } catch (e) { return res.status(500).json({ error: "불러오기 중 오류가 났어요" }); }
+  }
+
   const { table, recordId, filter, sort, offset } = req.query;
   if (!table) return res.status(400).json({ error: "table 파라미터 필요" });
 
