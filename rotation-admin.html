@@ -235,7 +235,9 @@
   function render(){
     if(!curRound) curRound=latestRound();   // 기본 = 최신 회차(예: 9/17)
     // 회차 탭 — 모든 회차를 날짜순(최신 먼저)으로 보여줌. "전체"는 항상 맨 앞.
-    var rounds=[];
+    // 오픈한 회차는 신청자 0명이어도 탭이 뜨도록 고정 목록에 넣어둠 (신규 회차 열 때 여기 추가)
+    var UPCOMING=["10/8 (목)","10/22 (목)"];
+    var rounds=UPCOMING.slice();
     records.forEach(function(x){ var rd=x.fields["회차"]; if(rd && rounds.indexOf(rd)<0) rounds.push(rd); });
     rounds=["전체"].concat(rounds.sort(function(a,b){return roundKey(b)-roundKey(a);}));
     var tabs=document.getElementById("tabs"); tabs.innerHTML="";
