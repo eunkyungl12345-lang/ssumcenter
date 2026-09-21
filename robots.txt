@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /rotation-admin
+Disallow: /1on1-admin
+Disallow: /vote-admin
+Disallow: /participants
+Disallow: /attendance
+Disallow: /lineup
+Disallow: /dev
+
+Sitemap: https://ssumcenter.vercel.app/sitemap.xml
