@@ -43,7 +43,8 @@
   }
 
   // 실패한 응답에서 진짜 이유를 뽑아낸다.
-  // JSON이 아닐 수도 있으므로(예: Vercel이 직접 돌려준 429) 본문을 글자로 읽는다.
+  // JSON이 아닐 수도 있으므로(예: Vercel이 우리 코드 실행 전에 막은 경우) 본문을 글자로 읽고,
+  // 본문이 비어 있을 때를 대비해 어디서 막았는지 알려주는 헤더도 같이 남긴다.
   window.applyFailReason = async function (res) {
     var status = res && res.status;
     var raw = "";
@@ -58,9 +59,20 @@
         raw = String(body || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 200);
       }
     } catch (_) {}
-    if (!raw) raw = "서버 응답 오류 (" + status + ")";
+
+    // 본문이 비어 있으면 서버(Vercel)가 남긴 단서를 대신 보여준다
+    var hints = [];
+    try {
+      ["x-vercel-error", "x-vercel-id", "retry-after", "x-robots-tag", "server"].forEach(function (h) {
+        var v = res.headers && res.headers.get && res.headers.get(h);
+        if (v) hints.push(h + "=" + v);
+      });
+    } catch (_) {}
+
+    if (!raw) raw = "응답 본문 없음";
+    var detail = status + " · " + raw + (hints.length ? " · " + hints.join(" · ") : "");
     var nice = translate(raw, status);
-    return nice === raw ? raw : nice + "\n\n[자세히] " + status + " · " + raw;
+    return nice + "\n\n[자세히] " + detail;
   };
 
   /**
