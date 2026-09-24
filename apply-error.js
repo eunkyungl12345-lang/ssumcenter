@@ -15,6 +15,12 @@
   function translate(raw, status) {
     var m = String(raw || "");
 
+    // 에어테이블 월 API 호출 한도 초과 — 플랜을 올리거나 다음 달까지 기다려야 한다
+    if (/BILLING_LIMIT_EXCEEDED|billing plan limit|maximum number of requests allowed for this month/i.test(m)) {
+      return "지금 신청을 받을 수 없어요 😢\n서버 이용량 한도를 넘어서 잠시 막혔습니다.\n"
+        + "센터장에게 알려주시면 바로 조치할게요!";
+    }
+
     // 너무 많은 요청 — 신청이 몰릴 때 Airtable/서버가 잠깐 막는다
     if (status === 429 || /RATE_LIMIT|Rate limit|too many/i.test(m)) {
       return "지금 신청이 몰려서 잠시 막혔어요.\n30초쯤 뒤에 다시 눌러주시면 됩니다!";
@@ -52,9 +58,13 @@
       var body = await res.text();
       try {
         var d = JSON.parse(body);
-        var e = d && d.error;
-        raw = (e && (e.message || e.type || e)) || (d && d.message) || "";
+        // 서버·에어테이블이 쓰는 여러 형태를 모두 받아준다
+        //   {error:"..."} · {error:{message}} · {errors:[{message}]} · {message:"..."}
+        var e = d && (d.error || (d.errors && d.errors[0]));
+        raw = (e && (e.message || e.type || e.error || e)) || (d && d.message) || "";
         if (typeof raw !== "string") raw = JSON.stringify(raw);
+        // 알아볼 수 있는 형태가 아니면 본문 자체를 단서로 남긴다 (통째로 버리지 않게)
+        if (!raw) raw = String(body).replace(/\s+/g, " ").trim().slice(0, 200);
       } catch (_) {
         raw = String(body || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 200);
       }
