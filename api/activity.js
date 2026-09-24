@@ -52,6 +52,9 @@ module.exports = async function handler(req, res) {
     }
     // 최신순 정렬 후 상위 25개
     events.sort((a, b) => new Date(b.time) - new Date(a.time));
+    // 에어테이블 호출을 아끼기 위해 CDN에 30분 캐시한다.
+    // 이 API 한 번이 테이블 4개를 읽으므로, 보는 사람이 많아도 30분에 4회만 쓰게 된다.
+    res.setHeader("Cache-Control", "public, s-maxage=1800, stale-while-revalidate=3600");
     return res.status(200).json({ events: events.slice(0, 25) });
   } catch (err) {
     return res.status(500).json({ error: err.message });

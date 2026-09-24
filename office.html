@@ -273,7 +273,9 @@
   </style>
   <div class="actlog-wrap">
     <div class="actlog-card">
-      <div class="actlog-head"><span class="live-dot"></span>실시간 활동 로그<span class="actlog-sub">진짜 신청·출석 데이터 · <a href="https://app.slack.com/client/T052TKB1P1P" target="_blank" rel="noopener" style="color:#7FD37A;text-decoration:none">슬랙에도 실시간 전송 🔔</a></span></div>
+      <div class="actlog-head"><span class="live-dot"></span>활동 로그<span class="actlog-sub">진짜 신청·출석 데이터 · <a href="https://app.slack.com/client/T052TKB1P1P" target="_blank" rel="noopener" style="color:#7FD37A;text-decoration:none">슬랙에도 실시간 전송 🔔</a></span>
+        <button type="button" id="act-refresh" style="margin-left:auto;background:transparent;border:1px solid rgba(255,255,255,.18);color:#9E9E97;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:inherit">↻ 새로고침</button>
+      </div>
       <div class="actlog-body" id="actlog"><div class="actlog-empty">불러오는 중…</div></div>
     </div>
   </div>
@@ -406,7 +408,16 @@
     });
   }
   loadActivity();
-  setInterval(loadActivity, 20000);
+  // ⚠️ 20초마다 자동 갱신하지 않는다.
+  // /api/activity 는 한 번에 에어테이블 테이블 4개를 읽는다. 20초 주기면 하루 17,000회가
+  // 넘고, 에어테이블 무료 플랜 월 1,000회를 1시간 반이면 다 써버린다.
+  // (2026-09-24 실제로 한도를 넘겨 신청·관리자 조회가 전부 막혔다)
+  // 필요할 때만 사람이 눌러서 갱신한다.
+  var actBtn=document.getElementById("act-refresh");
+  if(actBtn) actBtn.addEventListener("click",function(){
+    var b=this, t=b.textContent; b.disabled=true; b.textContent="불러오는 중…";
+    loadActivity(); setTimeout(function(){ b.disabled=false; b.textContent=t; },1500);
+  });
 })();
 </script>
 </body>
