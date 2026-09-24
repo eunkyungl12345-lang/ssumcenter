@@ -875,10 +875,7 @@ async function handleSubmit(e){
     if(photoUrls.length>0)fields["프로필사진"]=photoUrls;
     if(docUrl)fields["재직증명서"]=[{url:docUrl}];
 
-    const res=await fetch("/api/airtable?table=로테이션 신청",{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({records:[{fields}]})
-    });
+    const res=await postWithRetry("/api/airtable?table=로테이션 신청", {records:[{fields}]}, function(n,total){btn.innerHTML='<i class="fa-solid fa-hourglass-half" style="margin-right:0.375rem"></i>신청이 몰려서 잠시 대기 중... ('+n+'/'+total+')';});
     if(!res.ok)throw new Error(await applyFailReason(res));
 
     fm.closest("section").style.display="none";document.querySelector("header").style.display="none";
