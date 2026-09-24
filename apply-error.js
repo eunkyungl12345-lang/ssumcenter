@@ -12,8 +12,16 @@
  */
 (function () {
   // Airtable이 돌려주는 영어 오류를 센터장·회원이 알아볼 수 있는 말로 바꾼다
-  function translate(raw) {
+  function translate(raw, status) {
     var m = String(raw || "");
+
+    // 너무 많은 요청 — 신청이 몰릴 때 Airtable/서버가 잠깐 막는다
+    if (status === 429 || /RATE_LIMIT|Rate limit|too many/i.test(m)) {
+      return "지금 신청이 몰려서 잠시 막혔어요.\n30초쯤 뒤에 다시 눌러주시면 됩니다!";
+    }
+    if (status === 503 || status === 504 || /timeout|timed out/i.test(m)) {
+      return "서버가 잠깐 바빴어요.\n잠시 후 다시 눌러주세요!";
+    }
 
     // 단일선택(회차 등)에 없는 값을 보냈을 때 — 새 회차를 열었을 때 제일 흔한 원인
     if (/select option|INVALID_MULTIPLE_CHOICE_OPTIONS/i.test(m)) {
@@ -34,18 +42,46 @@
     return m || "알 수 없는 오류";
   }
 
-  // 실패한 응답에서 진짜 이유를 뽑아낸다
+  // 실패한 응답에서 진짜 이유를 뽑아낸다.
+  // JSON이 아닐 수도 있으므로(예: Vercel이 직접 돌려준 429) 본문을 글자로 읽는다.
   window.applyFailReason = async function (res) {
+    var status = res && res.status;
     var raw = "";
     try {
-      var d = await res.json();
-      var e = d && d.error;
-      raw = (e && (e.message || e.type || e)) || (d && d.message) || "";
-      if (typeof raw !== "string") raw = JSON.stringify(raw);
+      var body = await res.text();
+      try {
+        var d = JSON.parse(body);
+        var e = d && d.error;
+        raw = (e && (e.message || e.type || e)) || (d && d.message) || "";
+        if (typeof raw !== "string") raw = JSON.stringify(raw);
+      } catch (_) {
+        raw = String(body || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 200);
+      }
     } catch (_) {}
-    if (!raw) raw = "서버 응답 오류 (" + (res && res.status) + ")";
-    var nice = translate(raw);
-    return nice === raw ? raw : nice + "\n\n[자세히] " + raw;
+    if (!raw) raw = "서버 응답 오류 (" + status + ")";
+    var nice = translate(raw, status);
+    return nice === raw ? raw : nice + "\n\n[자세히] " + status + " · " + raw;
+  };
+
+  /**
+   * 신청서 전송. 요청이 몰려 막혔을 때(429·503) 스스로 몇 번 더 시도한다.
+   * 회원이 "오류" 보고 포기하는 대신 조금 기다렸다 자동으로 통과되도록.
+   * 중복 신청이 생기면 안 되므로, '처리되지 않았음'이 확실한 상태에서만 재시도한다.
+   */
+  window.postWithRetry = async function (url, payload, onWait) {
+    var waits = [2000, 5000, 12000];
+    for (var i = 0; ; i++) {
+      var res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return res;
+      var retryable = (res.status === 429 || res.status === 503);
+      if (!retryable || i >= waits.length) return res;
+      if (typeof onWait === "function") onWait(i + 1, waits.length);
+      await new Promise(function (r) { setTimeout(r, waits[i]); });
+    }
   };
 
   window.applyFailAlert = function (err) {
