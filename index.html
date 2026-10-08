@@ -205,7 +205,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     </h1>
     <p style="font-size:16px;color:var(--muted);margin-top:20px;line-height:1.7">
       검증된 2030 싱글들만 모이는 강남 소개팅.<br>
-      1:1 맞춤 매칭부터 로테이션 커피팅까지.
+      오직 당신만을 위한 1:1 맞춤 매칭.
     </p>
     <div style="margin-top:36px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px">
       <button class="cta cta-glow" onclick="openModal()"><i class="fa-solid fa-truck-fast"></i>신청하기</button>
@@ -233,7 +233,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>어떤 설렘을 <span class="ac">받아보시겠어요?</span></h2>
     <p style="font-size:14px;color:var(--dim);margin-top:8px" data-r>나에게 맞는 프로그램을 선택하세요</p>
 
-    <div class="prog-grid" style="margin-top:40px;grid-template-columns:repeat(3,1fr)" data-r>
+    <div class="prog-grid" style="margin-top:40px;grid-template-columns:minmax(0,360px);justify-content:center" data-r>
       <a href="oneone.html" class="glass prog-card">
         <span class="prog-tag">BETA</span>
         <div class="prog-emoji">🎁</div>
@@ -242,6 +242,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
         <div style="margin-top:12px;font-size:12px;color:var(--amber);font-weight:700">상시 접수</div>
         <div class="prog-arrow">자세히 보기 →</div>
       </a>
+      <!-- 로테이션(썸배달) 잠시 쉼 (홈 노출 중단) — 재개하려면 이 주석을 풀어주세요
       <a href="rotation.html" class="glass prog-card">
         <div class="prog-emoji">📦</div>
         <div class="prog-title gm">썸배달</div>
@@ -249,6 +250,8 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
         <div style="margin-top:12px;font-size:11px;color:var(--amber);font-weight:700">10/8 · 10/22 (목)</div>
         <div class="prog-arrow">신청하기 →</div>
       </a>
+      -->
+      <!-- 1:1 BETA 태그 제거: 로테이션 쉬는 동안 1:1이 메인 -->
       <!-- 재테크 미팅 숨김 (홈 노출 중단) — 되살리려면 이 주석을 풀어주세요
       <a href="fintech.html" class="glass prog-card">
         <span class="prog-tag">NEW</span>
@@ -376,10 +379,12 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
         <div style="flex:1"><div>특급 배송 · 1:1 매칭</div><div style="font-size:11px;font-weight:500;opacity:.6;margin-top:2px">상시 접수 · 신청하기 →</div></div>
         <span style="font-size:9px;background:rgba(0,0,0,.15);padding:2px 8px;border-radius:100px;font-weight:700">BETA</span>
       </a>
+      <!-- 로테이션(썸배달) 잠시 쉼 — 재개하려면 이 주석을 풀어주세요
       <button onclick="closeModal();openDateModal()" style="display:flex;align-items:center;gap:14px;background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);font-weight:800;padding:16px 18px;border-radius:18px;cursor:pointer;transition:all .2s;font-family:inherit;font-size:15px;text-align:left">
         <span style="font-size:24px">📦</span>
         <div style="flex:1"><div>썸배달 · 로테이션</div><div style="font-size:11px;font-weight:500;color:var(--amber);margin-top:2px">10/8 · 10/22 (목) · 신청하기 →</div></div>
       </button>
+      -->
       <!-- 재테크 미팅 신청 숨김 (홈 노출 중단) — 되살리려면 이 주석을 풀어주세요
       <a href="apply.html" style="display:flex;align-items:center;gap:14px;background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);font-weight:800;padding:16px 18px;border-radius:18px;transition:all .2s;font-size:15px;text-align:left">
         <span style="font-size:24px">💰</span>
@@ -424,7 +429,9 @@ rv.addEventListener('mouseleave',()=>{rvt=setInterval(()=>{if(rv.scrollLeft+rv.o
 function toggleFaq(el){const f=el.parentElement;const o=f.classList.contains('open');document.querySelectorAll('.faq').forEach(x=>x.classList.remove('open'));if(!o)f.classList.add('open')}
 
 /* Modals */
-function openModal(){document.getElementById('modal').classList.add('show');document.body.style.overflow='hidden'}
+function openModal(){ /* 로테이션 쉬는 동안: 신청하기 → 바로 1:1 신청서로. 재개 시 아래 한 줄 원복
+  document.getElementById('modal').classList.add('show');document.body.style.overflow='hidden'; */
+  window.location.href='matching.html'; }
 function closeModal(){document.getElementById('modal').classList.remove('show');document.body.style.overflow=''}
 function openDateModal(){document.getElementById('date-modal').classList.add('show');document.body.style.overflow='hidden'}
 function closeDateModal(){document.getElementById('date-modal').classList.remove('show');document.body.style.overflow=''}
