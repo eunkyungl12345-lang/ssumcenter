@@ -266,8 +266,8 @@
       html+='<div class="couple"><div class="pair">'
         +side(f["여자"],f["여자응답"])+'<span class="heart">♥</span>'+side(f["남자"],f["남자응답"])
         +'</div><div class="cfoot">'
-        +(f["여자링크"]?'<button class="mini" onclick="copyLink(\''+esc(f["여자링크"])+'\')">📋 '+esc(f["여자"]||"여")+' 링크</button>':'')
-        +(f["남자링크"]?'<button class="mini" onclick="copyLink(\''+esc(f["남자링크"])+'\')">📋 '+esc(f["남자"]||"남")+' 링크</button>':'')
+        +(f["여자링크"]?'<button class="mini" onclick="copyLink(\''+esc(f["여자링크"])+'\')">📋 '+esc(f["여자"]||"여")+'님에게 보낼 프로필링크</button>':'')
+        +(f["남자링크"]?'<button class="mini" onclick="copyLink(\''+esc(f["남자링크"])+'\')">📋 '+esc(f["남자"]||"남")+'님에게 보낼 프로필링크</button>':'')
         +'</div></div>';
     });
     html+='</div></details>';
