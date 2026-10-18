@@ -108,30 +108,22 @@ module.exports = async function handler(req, res) {
         return recs;
       }
       const one = await all("1:1 매칭 신청");
-      const rot = await all("로테이션 신청");
       const isMarriage = f => String(f["유입경로"] || "").indexOf("결혼") >= 0;
       const oneWait = one.filter(r => (r.fields["매칭상태"] || "대기") === "대기" && !isMarriage(r.fields)).length;
       const oneIntro = one.filter(r => r.fields["매칭상태"] === "소개중").length;
       const marriage = one.filter(r => isMarriage(r.fields)).length;
-      const rk = rd => { const m = String(rd || "").match(/(\d{1,2})\/(\d{1,2})/); return m ? parseInt(m[1]) * 100 + parseInt(m[2]) : 0; };
-      let latest = "", lk = -1;
-      rot.forEach(r => { const rd = r.fields["회차"]; if (rd) { const k = rk(rd); if (k > lk) { lk = k; latest = rd; } } });
-      const cur = rot.filter(r => r.fields["회차"] === latest);
-      const rotWait = cur.filter(r => (r.fields["승인상태"] || "대기") === "대기").length;
-      const paid = cur.filter(r => r.fields["입금확정"] === "O");
-      const paidM = paid.filter(r => r.fields["성별"] === "남성").length;
-      const paidF = paid.filter(r => r.fields["성별"] === "여성").length;
-      // 디데이 (KST 기준)
+      // 🆕 이번달 신규 신청 (성별별 — KST 기준, 레코드 생성시각으로 집계)
       const nowK = new Date(Date.now() + 9 * 3600 * 1000);
-      const mm = String(latest || "").match(/(\d{1,2})\/(\d{1,2})/);
-      let ddStr = "";
-      if (mm) {
-        const target = Date.UTC(nowK.getUTCFullYear(), parseInt(mm[1]) - 1, parseInt(mm[2]));
-        const todayU = Date.UTC(nowK.getUTCFullYear(), nowK.getUTCMonth(), nowK.getUTCDate());
-        const dd = Math.round((target - todayU) / 86400000);
-        ddStr = dd > 0 ? ` (D-${dd})` : dd === 0 ? " (D-DAY 🎉)" : ` (${-dd}일 지남)`;
-      }
-      const msg = `☀️ 썸류 아침 브리핑\n\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건\n\n🎡 로테이션 ${latest || "-"}${ddStr}\n　입금완료 👦 남 ${paidM} · 👧 여 ${paidF} (총 ${paid.length}명)\n　대기 ${rotWait}명\n\n오늘도 화이팅이에요! 💪`;
+      const curY = nowK.getUTCFullYear(), curM = nowK.getUTCMonth();
+      const thisMonth = one.filter(r => {
+        const d = new Date(r.createdTime);
+        if (isNaN(d)) return false;
+        const dk = new Date(d.getTime() + 9 * 3600 * 1000);
+        return dk.getUTCFullYear() === curY && dk.getUTCMonth() === curM;
+      });
+      const newF = thisMonth.filter(r => r.fields["성별"] === "여성").length;
+      const newM = thisMonth.filter(r => r.fields["성별"] === "남성").length;
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
