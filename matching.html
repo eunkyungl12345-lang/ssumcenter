@@ -464,6 +464,20 @@
             <span id="intro-count" class="counter text-[#6b6358]">0</span><span class="text-[#6b6358]"> / 100자</span>
           </p>
         </div>
+
+        <!-- 유입경로 (광고 효과 추적용) -->
+        <div>
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">어떻게 알고 오셨어요? <span class="y">*</span></label>
+          <select name="inflow" required
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#E8B050] focus:outline-none transition appearance-none">
+            <option value="" disabled selected>유입경로를 선택해주세요</option>
+            <option value="블로그">블로그</option>
+            <option value="인스타">인스타</option>
+            <option value="쓰레드">쓰레드</option>
+            <option value="지인소개">지인소개</option>
+            <option value="인터넷">인터넷(검색 등)</option>
+          </select>
+        </div>
       </div>
 
       <div class="fnav">
@@ -1178,6 +1192,7 @@ async function handleSubmit(e){
       "취미": payload.hobby || "", "종교": payload.religion || "",
       "선호나이대": [...selectedAges].join(", "),
       "성격키워드": [...selectedKeywords].join(", "), "이상형": payload.idealType || "", "자기소개": payload.intro || "",
+      "유입경로": payload.inflow || "",
       "테스트결과": payload.testResult || "", "매칭유형": payload.matchType || "일반매칭", "매칭상태": "승인",
       "신청일시": new Date().toLocaleString("ko-KR")
     };
@@ -1192,7 +1207,7 @@ async function handleSubmit(e){
       const res = await fetch("/api/airtable?table=1:1 매칭 신청", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ records: [{ fields: attempt }] })
+        body: JSON.stringify({ records: [{ fields: attempt }], typecast: true })
       });
       if(res.ok){ ok = true; break; }
       let msg = "";
