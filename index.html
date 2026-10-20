@@ -434,9 +434,9 @@ rv.addEventListener('mouseleave',()=>{rvt=setInterval(()=>{if(rv.scrollLeft+rv.o
 function toggleFaq(el){const f=el.parentElement;const o=f.classList.contains('open');document.querySelectorAll('.faq').forEach(x=>x.classList.remove('open'));if(!o)f.classList.add('open')}
 
 /* Modals */
-function openModal(){ /* 로테이션 쉬는 동안: 신청하기 → 바로 1:1 신청서로. 재개 시 아래 한 줄 원복
+function openModal(){ /* 로테이션 쉬는 동안: 신청하기 → 1:1 소개 페이지(/oneone) 경유 후 신청. 재개 시 아래 한 줄 원복
   document.getElementById('modal').classList.add('show');document.body.style.overflow='hidden'; */
-  window.location.href='matching.html'; }
+  window.location.href='/oneone'; }
 function closeModal(){document.getElementById('modal').classList.remove('show');document.body.style.overflow=''}
 function openDateModal(){document.getElementById('date-modal').classList.add('show');document.body.style.overflow='hidden'}
 function closeDateModal(){document.getElementById('date-modal').classList.remove('show');document.body.style.overflow=''}
