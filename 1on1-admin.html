@@ -940,6 +940,7 @@ function openPhoto(url){
 
 let applicants = [];
 let matchResponses = [];
+let statusLoaded = false; // '현황' 탭 처음 열 때만 매칭·응답 로드 (API 호출 절약)
 let selected = [null, null];
 let currentFilter = "all";
 let matchSearchQuery = "";
@@ -958,6 +959,8 @@ function showMatchTab(t){
     const tab = document.getElementById("mtab-" + k); if(tab) tab.className = (k === t) ? onCls : offCls;
   });
   window.scrollTo({ top: 0, behavior: "smooth" });
+  // 현황 탭 처음 열 때만 매칭·응답 로드 (API 절약)
+  if(t === "status" && !statusLoaded){ statusLoaded = true; loadResponses(); loadMatches(); }
 }
 
 async function loadApplicants(){
@@ -973,8 +976,7 @@ async function loadApplicants(){
     applicants = data.records || [];
     updateStats();
     applyMatchSort(); // 정렬 기준·방향 적용 + 하이라이트 동기화 후 렌더
-    loadResponses();
-    loadMatches();
+    // 매칭·응답은 '현황' 탭을 처음 열 때 로드 (showMatchTab에서 lazy — API 호출 절약)
   } catch(err) {
     console.error(err);
     document.getElementById("applicant-list").innerHTML = '<p class="text-center text-red-400 py-10">데이터를 불러올 수 없습니다</p>';
