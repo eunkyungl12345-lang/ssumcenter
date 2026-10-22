@@ -352,6 +352,23 @@ module.exports = async function handler(req, res) {
       } catch (e) { /* 알림 실패 무시 */ }
     }
 
+    // 💌 1:1 연락처 전달(연락처전달=O) → 양쪽에게 상대 연락처 "썸배달 도착" 문자 자동 발송
+    if (req.method === "PATCH" && table === "매칭" && req.body && req.body.fields && req.body.fields["연락처전달"] === "O") {
+      try {
+        const mf = (data && data.fields) || {};
+        const H2 = { Authorization: `Bearer ${TOKEN}` };
+        async function getApp(id){ if(!id) return {}; const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}/${id}`, { headers: H2 }); const d = await r.json(); return (d && d.fields) || {}; }
+        const mA = await getApp(mf["남자ID"]), wA = await getApp(mf["여자ID"]);
+        const mPhone = mA["연락처"] || "", wPhone = wA["연락처"] || "";
+        const mName = mf["남자"] || mA["이름"] || "상대", wName = mf["여자"] || wA["이름"] || "상대";
+        const clean = p => String(p || "").replace(/\D/g, "");
+        const msg = (otherName, otherPhone) => `[썸류센터] 💌 썸배달 도착!\n\n센터장이 이어드린 인연, ${otherName}님의 연락처예요 💛\n📞 ${otherPhone}\n\n먼저 가볍게 인사 건네보세요 :)\n좋은 인연 되시길 응원할게요!`;
+        if (clean(mPhone).length >= 10 && wPhone) await sendSms({ to: clean(mPhone), text: msg(wName, wPhone) });
+        if (clean(wPhone).length >= 10 && mPhone) await sendSms({ to: clean(wPhone), text: msg(mName, mPhone) });
+        await notifySlack(`💌 연락처 전달 문자 자동발송\n${wName} ❤ ${mName}`);
+      } catch (e) { /* 문자 실패해도 전달 처리는 성공 */ }
+    }
+
     // (로테이션 신청 시 자동 문자는 제거됨 — 이제 rotation-admin에서 '승인' 누르면 입금안내 문자 자동 발송)
 
     // 1:1 매칭 신청 접수(공개 폼) → 접수 안내 문자 자동 발송 (실패해도 신청은 성공)

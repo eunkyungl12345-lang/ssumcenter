@@ -328,7 +328,7 @@
 
   // ---------- 액션 ----------
   window.markDelivered=function(id, btn){
-    if(!confirm("연락처를 전달했나요?\n'완료'로 표시하면 오늘 처리에서 사라져요.")) return;
+    if(!confirm("두 분께 서로의 연락처를 문자로 보낼까요?\n(보내면 오늘 처리에서 사라져요 · '썸배달 도착!' 문자가 양쪽에 전송돼요)")) return;
     btn.disabled=true; btn.textContent="처리 중...";
     fetch("/api/airtable?table="+encodeURIComponent("매칭")+"&recordId="+id,{method:"PATCH",headers:{"Content-Type":"application/json","x-admin-key":key()},body:JSON.stringify({fields:{"연락처전달":"O"}})})
       .then(function(r){return r.json();}).then(function(d){ if(d && !d.error){ toast("✅ 연락처 전달 완료 처리됨!"); loadAll(); } else { toast("실패: "+((d&&d.error)||"")); btn.disabled=false; btn.textContent="💚 연락처 전달 완료"; } })
