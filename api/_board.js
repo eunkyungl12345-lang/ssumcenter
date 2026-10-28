@@ -42,8 +42,8 @@ async function listAll(base, H, formula, fields, sort) {
 
 // ---- 제재 (블라인드식) : 신고 1회 → 글 검토중(숨김)+경고, 누적 2회 → 7일 정지, 누적 3회 → 영구 정지
 async function getMember(mBase, H, kid) {
-  const mm = await listAll(mBase, H, `{카카오ID}="${kid}"`, ["쪽지권", "신고누적", "정지해제일"]);
-  return mm[0] || null;
+  // 필드 지정 없이 조회 — 쪽지권/신고누적/정지해제일 필드가 아직 없어도 에러 안 나게
+  try { const mm = await listAll(mBase, H, `{카카오ID}="${kid}"`); return mm[0] || null; } catch (e) { return null; }
 }
 function banInfo(m) {
   const until = m && m.fields && m.fields["정지해제일"];
@@ -185,8 +185,7 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
     const sentAll = await listAll(nBase, H, `AND({보낸카카오ID}="${kid}",{회차}="${TAG}")`, ["상태"]);
     let usedTicket = false, memberRec = null;
     if (sentAll.length >= 1) {
-      const mm = await listAll(mBase, H, `{카카오ID}="${kid}"`, ["쪽지권"]);
-      memberRec = mm[0];
+      memberRec = await getMember(mBase, H, kid);
       const tickets = memberRec ? (memberRec.fields["쪽지권"] || 0) : 0;
       if (tickets < 1) return { status: 402, json: { error: "첫 쪽지는 무료, 두 번째부터는 쪽지권이 필요해요", needTicket: true } };
       usedTicket = true;
@@ -223,8 +222,8 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
       items.push({ id: n.id, dir: "sent", board: true, round: `${pf["업체"] || ""} ${pf["날짜"] || ""}`.trim(), text: f["내용"] || "", status: f["상태"] || "대기", date: f["보낸날짜"] || "",
         from: "", to: "글쓴이" }); });
     items.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
-    const mm = await listAll(mBase, H, `{카카오ID}="${kid}"`, ["쪽지권"]);
-    return { status: 200, json: { ok: true, items, freeLeft: sent.length ? 0 : 1, tickets: mm[0] ? (mm[0].fields["쪽지권"] || 0) : 0 } };
+    const mm = await getMember(mBase, H, kid);
+    return { status: 200, json: { ok: true, items, freeLeft: sent.length ? 0 : 1, tickets: mm ? (mm.fields["쪽지권"] || 0) : 0 } };
   }
 
   // ---- 받은 "저예요" 쪽지에 답하기 ----
