@@ -36,6 +36,22 @@ function 일대일접수문자(name) {
   ].join("\n");
 }
 
+// 1:1 신청 7일째(아직 대기·승인 상태) → 기다림 안내 문자 (아침 브리핑 때 자동 발송)
+const 대기안내_시작일 = "2026-10-29"; // 이 날짜(KST) 이후 신청자부터 적용
+const 대기안내_일수 = 7;
+function 대기안내문자(name) {
+  return [
+    "[썸류센터] " + (name ? name + "님, " : "") + "신청서 잘 받아서 보고 있어요 💛",
+    "",
+    "결 맞는 분을 신중하게 찾는 중이라",
+    "조금 시간이 걸리고 있어요.",
+    "",
+    "좋은 인연이 준비되면 바로 연락드릴게요.",
+    "그동안 첫 만남 장소 미리 구경해보세요 ☕",
+    "👉 ssumcenter.vercel.app/date-spots",
+  ].join("\n");
+}
+
 // 결혼 매칭 신청 접수 → 자동 접수 안내 문자
 function 결혼접수문자(name) {
   return [
@@ -123,7 +139,23 @@ module.exports = async function handler(req, res) {
       });
       const newF = thisMonth.filter(r => r.fields["성별"] === "여성").length;
       const newM = thisMonth.filter(r => r.fields["성별"] === "남성").length;
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건\n\n오늘도 화이팅이에요! 💪`;
+      // 💌 신청 7일째인데 아직 대기·승인(소개 전)인 분 → 기다림 안내 문자
+      const dayKST = t => Math.floor((new Date(t).getTime() + 9 * 3600 * 1000) / 86400000);
+      const todayK = dayKST(Date.now()), startK = dayKST(대기안내_시작일 + "T00:00:00+09:00");
+      const waitTargets = one.filter(r => {
+        const st = r.fields["매칭상태"] || "대기";
+        const c = dayKST(r.createdTime);
+        return (st === "대기" || st === "승인") && c >= startK && todayK - c === 대기안내_일수;
+      });
+      const waitSent = [];
+      for (const r of waitTargets) {
+        const to = String(r.fields["연락처"] || "").replace(/\D/g, "");
+        if (to.length < 10) continue;
+        try { await sendSms({ to, text: 대기안내문자(r.fields["이름"] || "") }); waitSent.push(r.fields["이름"] || "이름없음"); }
+        catch (e) { console.error("[airtable] 대기안내 문자 실패:", e.message); }
+      }
+      const waitLine = waitSent.length ? `\n💌 7일째 대기 안내 문자 ${waitSent.length}명 발송 (${waitSent.join(", ")})` : "";
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${waitLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
