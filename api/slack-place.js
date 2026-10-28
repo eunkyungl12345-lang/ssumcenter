@@ -81,8 +81,8 @@ function preview(fields, recId) {
   const lines = [
     `*${fields["이름"]}*  ·  ${fields["분류"] || "분류 미정"}  ·  ${fields["동네"] || "동네 미정"}`,
     `💛 ${(fields["추천 센터장"] || []).join(" · ") || "센터장"} 센터장 PICK`,
-    fields["한줄소개"] ? `📝 ${fields["한줄소개"]}` : "📝 (한줄소개 못 찾음 — 에어테이블에서 채워주세요)",
-    fields["위치"] ? `🚶 ${fields["위치"]}` : "🚶 (위치 못 찾음)",
+    fields["한줄소개"] ? `📝 ${fields["한줄소개"]}` : "📝 (한줄소개는 나중에 채워도 돼요)",
+    fields["위치"] ? `🚶 ${fields["위치"]}` : null,
     fields["스토리"] ? `💍 ${fields["스토리"]}` : null,
     `🗺️ <${fields["지도링크"]}|네이버 지도에서 확인>`,
   ].filter(Boolean);
@@ -102,7 +102,9 @@ function preview(fields, recId) {
 
 async function handleCommand(cmd, responseUrl) {
   try {
-    const info = await lookupPlace(cmd);
+    // 💸 AI 자동검색 끔(무료 운영): 이름·동네·센터장만 저장하고, 분류·한줄소개·위치는 에어테이블에서 채워요.
+    //    AI 자동완성을 켜려면 아래 줄을 지우고 `const info = await lookupPlace(cmd);` 로 바꾸고 ANTHROPIC_API_KEY를 설정하세요.
+    const info = { found: true };
     const name = (info.found && info["정식이름"]) || cmd.name;
     const fields = {
       "이름": name,
