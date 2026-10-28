@@ -21,7 +21,14 @@ function fieldsFromForm(file, varName, stub) {
   const re = new RegExp("const fields\\s*=\\s*(\\{[\\s\\S]*?\\n\\s*\\};)");
   const m = html.match(re);
   if (!m) throw new Error(file + " 에서 fields 를 못 찾음");
-  const ctx = Object.assign({ Date, Object, Array, JSON }, stub);
+  // 브라우저에만 있는 것들을 흉내 낸다 (폼이 location·URLSearchParams 등을 쓸 수 있음)
+  const ctx = Object.assign({
+    Date, Object, Array, JSON, String, Number, Boolean, Set, Map,
+    URLSearchParams,
+    location: { search: "", href: "https://ssumcenter.vercel.app/" },
+    localStorage: { getItem: () => null, setItem: () => {} },
+    document: { getElementById: () => ({ checked: true, value: "" }), querySelector: () => null },
+  }, stub);
   vm.createContext(ctx);
   return vm.runInContext("(" + m[1].replace(/;$/, "") + ")", ctx);
 }
