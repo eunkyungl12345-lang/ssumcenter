@@ -94,7 +94,7 @@
 
   <div class="hero">
     <h2>소개팅 그날, 번호 못 물어본 사람<br>지금 물어볼래요?</h2>
-    <p>썸류센터 회차든, 다른 곳 소개팅이든. 쪽지를 보내고 상대가 수락하면, 두 분 모두 1:1 매칭 신청 후 센터장이 확인하고 연결해드려요. 연락처는 서로 공개되지 않아요.</p>
+    <p>썸류센터든 다른 곳 소개팅이든 전부 익명이에요. 연락처는 아예 받지 않아요. 쪽지가 수락되면 두 분 모두 1:1 매칭 신청 후 센터장이 확인하고 연결해드려요.</p>
   </div>
 
   <div id="content"><div class="spin"></div></div>
@@ -111,7 +111,7 @@
       <div style="margin-bottom:10px"><b style="color:var(--gold)">4. 묘사는 그날의 인상까지만</b><br><span style="color:var(--muted)">"베이지 코트, 제주 얘기" 정도면 충분해요. 너무 자세한 외모·신상 묘사는 올라가지 않아요.</span></div>
       <div style="margin-bottom:10px"><b style="color:var(--gold)">5. 광고 · 영업 · 조건 만남 금지</b><br><span style="color:var(--muted)">다른 서비스 홍보, 금전 거래, 조건 만남 제안은 즉시 삭제하고 이용을 막아요.</span></div>
       <div style="margin-bottom:10px"><b style="color:var(--gold)">6. 쪽지는 한 사람에게 한 번</b><br><span style="color:var(--muted)">답이 없다고 다시 보내거나 다른 글로 또 보내지 마세요. 거절은 상대에게 알리지 않으니 편하게 눌러도 돼요.</span></div>
-      <div><b style="color:var(--gold)">7. 신고는 바로 처리</b><br><span style="color:var(--muted)">신고 3회면 자동으로 글이 내려가고, 센터장이 확인해요. 허위 신고도 제재 대상이에요.</span></div>
+      <div><b style="color:var(--gold)">7. 신고 1회면 바로 내려가요</b><br><span style="color:var(--muted)">신고당한 글·쪽지는 즉시 숨겨지고 센터장이 확인해요. 작성자는 경고 1회, 누적 2회면 7일 정지, 3회면 영구 정지예요. 허위 신고도 똑같이 제재해요.</span></div>
     </div>
     <button class="btn p" style="width:100%;margin-top:16px" onclick="$('rules').classList.remove('on')">확인했어요</button>
   </div>
@@ -123,7 +123,6 @@
     <p id="m-sub"></p>
     <textarea id="m-text" maxlength="300" placeholder="그날 어떤 얘기가 좋았는지, 한 줄이면 충분해요 :)"></textarea>
     <div class="cnt"><span id="m-len">0</span>/300</div>
-    <div class="fld" id="m-phone-w" style="display:none;margin-top:10px"><label>내 연락처 <small>· 상대에게 공개 안 돼요. 알림·연결용</small></label><input id="m-phone" type="tel" inputmode="numeric" placeholder="01012345678"></div>
     <div class="row" style="margin-top:12px">
       <button class="btn g" onclick="closeModal()">취소</button>
       <button class="btn p" id="m-send" onclick="sendNote()">보내기</button>
@@ -136,7 +135,7 @@
   var user=null;
   try{ user=JSON.parse(localStorage.getItem("ssumUser")||"null"); }catch(e){}
   var KID=user&&user.id?user.id:"";
-  var me=null, tab="board", curRound="", people=[], posts=[], target=null, mode="rot";
+  var tab="board", posts=[], target=null, mode="board";
   var $=function(id){ return document.getElementById(id); };
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
   function api(action,extra){
@@ -149,77 +148,30 @@
   function needLogin(){ location.href="login.html?redirect=reconnect.html"; }
   function gdTag(g){ return g==="여성"?'<span class="gd f">여</span>':(g==="남성"?'<span class="gd m">남</span>':''); }
 
-  async function load(){
-    if(KID){ me=await api("rc_me"); if(me&&me.ok&&me.linked) curRound=me.rounds[0]||""; }
-    render();
-  }
+  async function load(){ render(); }
 
   function render(){
     var h='<div class="tabs">'+
-      '<div class="tab'+(tab==="board"?" on":"")+'" onclick="setTab(\'board\')">다른 곳에서 만난 사람</div>'+
-      '<div class="tab'+(tab==="find"?" on":"")+'" onclick="setTab(\'find\')">썸류센터 회차</div>'+
+      '<div class="tab'+(tab==="board"?" on":"")+'" onclick="setTab(\'board\')">그날 그 사람</div>'+
       '<div class="tab'+(tab==="box"?" on":"")+'" onclick="setTab(\'box\')">쪽지함</div></div>';
     h+='<div id="panel"><div class="spin"></div></div>';
     $("content").innerHTML=h;
-    if(tab==="find") renderFind(); else if(tab==="board") renderBoard(); else renderBox();
+    if(tab==="board") renderBoard(); else renderBox();
   }
   function setTab(t){ tab=t; render(); }
-
-  /* ===== 썸류센터 회차 ===== */
-  function renderLink(){
-    $("panel").innerHTML=
-      '<div class="card"><div class="ch">참가 기록을 먼저 연결해주세요</div>'+
-      '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">썸류센터 로테이션 소개팅 신청할 때 적었던 전화번호를 입력하면 내 참가 기록과 연결돼요.</p>'+
-      '<input id="phone" type="tel" placeholder="01012345678" inputmode="numeric">'+
-      '<button class="save" onclick="linkPhone()">연결하기</button><div class="msg" id="link-msg"></div></div>'+
-      '<div class="rule">· 참가(입금 확정)한 회차가 있어야 사용할 수 있어요<br>· 아직 참여한 적 없다면 <a href="rotation.html" style="color:var(--amber);font-weight:800">다음 회차 신청하기 →</a><br>· 다른 곳 소개팅에서 만난 분은 <a href="javascript:setTab(\'board\')" style="color:var(--amber);font-weight:800">왼쪽 탭</a>에서 찾아보세요</div>';
-  }
-  async function linkPhone(){
-    var p=($("phone").value||"").replace(/[^0-9]/g,"");
-    if(p.length<9){ $("link-msg").textContent="전화번호를 정확히 입력해주세요"; return; }
-    $("link-msg").textContent="연결 중...";
-    try{
-      var r=await fetch("/api/airtable?claim=1&kakaoId="+encodeURIComponent(KID),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:p})});
-      var d=await r.json();
-      if(!r.ok){ $("link-msg").textContent=d.error||"연결 실패"; return; }
-      me=await api("rc_me");
-      if(me.linked){ curRound=me.rounds[0]||""; renderFind(); }
-      else $("link-msg").textContent="이 번호로 참가(입금 확정)한 기록이 없어요. 신청할 때 쓴 번호가 맞는지 확인해주세요.";
-    }catch(e){ $("link-msg").textContent="오류가 났어요. 다시 시도해주세요"; }
-  }
-  async function renderFind(){
-    if(!KID){ $("panel").innerHTML='<div class="card"><div class="empty">카카오 로그인 후 이용할 수 있어요<br><br><button class="save" onclick="needLogin()">카카오로 로그인</button></div></div>'; return; }
-    if(!me||!me.ok){ $("panel").innerHTML='<div class="empty">'+esc((me&&me.error)||"불러오기 실패")+'</div>'; return; }
-    if(!me.linked){ renderLink(); return; }
-    var h='<div class="card"><div class="ch">내가 참여한 회차 <small>'+esc(me.nickname)+' '+gdTag(me.gender)+'</small></div><div class="chips">';
-    me.rounds.forEach(function(r){ h+='<div class="chip'+(r===curRound?" on":"")+'" onclick="pickRound(\''+esc(r).replace(/'/g,"")+'\')">'+esc(r)+'</div>'; });
-    h+='</div><div id="people"><div class="spin"></div></div></div>';
-    h+='<div class="rule">· 쪽지는 하루 3개까지 보낼 수 있어요<br>· 상대가 수락하면 두 분께 1:1 매칭 신청 링크가 가고, 센터장이 확인 후 연결해드려요 (연락처 비공개). 거절하면 상대는 알 수 없어요<br>· 같은 분께는 한 번만 보낼 수 있어요</div>';
-    $("panel").innerHTML=h;
-    var d=await api("rc_people",{round:curRound});
-    if(!d.ok){ $("people").innerHTML='<div class="empty">'+esc(d.error||"불러오기 실패")+'</div>'; return; }
-    people=d.people||[];
-    if(!people.length){ $("people").innerHTML='<div class="empty">이 회차 참가자 정보가 아직 없어요</div>'; return; }
-    var g='<div class="grid">';
-    people.forEach(function(p,i){
-      var av=p.gender==="여성"?"🙋‍♀️":"🙋‍♂️";
-      var btn=p.sent?'<button disabled>'+(p.sent==="수락"?"수락됨 🎉":(p.sent==="거절"?"답장 없음":"보냈어요 ✓"))+'</button>':'<button onclick="openModal(\'rot\','+i+')">쪽지 보내기</button>';
-      g+='<div class="pp"><div class="av">'+av+'</div><div class="nm">'+esc(p.nickname)+'</div><div class="sub">'+(p.birth?esc(p.birth)+'년생 · ':'')+esc(p.round)+'</div>'+btn+'</div>';
-    });
-    $("people").innerHTML=g+'</div>';
-  }
-  function pickRound(r){ curRound=r; renderFind(); }
 
   /* ===== 익명 게시판: 다른 곳에서 만난 사람 ===== */
   async function renderBoard(){
     var h='<button class="newbtn" onclick="openPostForm()">✍️ 글 올리기 (그 사람 찾기 · 셀소)</button>';
     h+='<div id="postform"></div><div id="posts"><div class="spin"></div></div>';
-    h+='<div class="rule">· 어느 업체 소개팅이든 올릴 수 있어요. 업체명은 초성으로만 공개되고, 그날 번호(여 3호 등)·닉네임·한 줄 인상으로 찾아요<br>· "찾기"는 그 사람을 찾는 글, "셀소"는 그날의 나를 올려두는 글이에요<br>· 이름·전화번호·SNS·자세한 묘사는 올릴 수 없어요<br>· 쪽지 보내기는 <b style="color:var(--gold)">첫 1회 무료</b>, 두 번째부터는 쪽지권(1,000원)이 필요해요. 받은 쪽지 수락은 무료<br>· 상대가 수락하면 두 분께 1:1 매칭 신청 링크가 가고, 센터장이 신원 확인 후 연결해드려요 (연락처 비공개) · 부적절한 글은 신고 3회면 자동으로 내려가요<br>· 19금·욕설·비하·광고 금지 — <a href="javascript:void(0)" onclick="$(\'rules\').classList.add(\'on\')" style="color:var(--amber);font-weight:800">커뮤니티 규칙 전체 보기</a></div>';
-    h+='<div class="card" style="margin-top:14px;text-align:center"><div style="font-size:14px;font-weight:900">아직 못 찾았어요?</div><div style="font-size:12.5px;color:var(--muted);margin:4px 0 10px">썸류센터 다음 회차에서 새 인연을 만나보세요</div><a href="rotation.html" class="save" style="display:block;text-decoration:none;text-align:center">썸류센터 소개팅 보러가기 →</a></div>';
+    h+='<div class="rule">· 썸류센터든 어느 업체 소개팅이든 올릴 수 있어요. 업체명은 초성으로만 공개되고, 그날 번호(여 3호 등)·닉네임·한 줄 인상으로 찾아요<br>· "찾기"는 그 사람을 찾는 글, "셀소"는 그날의 나를 올려두는 글이에요<br>· 이름·전화번호·SNS·자세한 묘사는 올릴 수 없어요<br>· 쪽지 보내기는 <b style="color:var(--gold)">첫 1회 무료</b>, 두 번째부터는 쪽지권(1,000원)이 필요해요. 받은 쪽지 수락은 무료<br>· 연락처는 받지 않아요. 상대가 수락하면 두 분 쪽지함에 1:1 매칭 신청 링크가 뜨고, 센터장이 신원 확인 후 연결해드려요<br>· 신고 1회면 글이 바로 내려가고 작성자에게 경고 — 2회 7일 정지, 3회 영구 정지<br>· 19금·욕설·비하·광고 금지 — <a href="javascript:void(0)" onclick="$(\'rules\').classList.add(\'on\')" style="color:var(--amber);font-weight:800">커뮤니티 규칙 전체 보기</a></div>';
+    h+='<div class="card" style="margin-top:14px;text-align:center"><div style="font-size:14px;font-weight:900">아직 못 찾았어요?</div><div style="font-size:12.5px;color:var(--muted);margin:4px 0 10px">썸류센터에서 새 인연을 만나보세요</div><div class="row"><a href="rotation.html" class="btn p" style="display:block;text-decoration:none;text-align:center">다음 회차 신청 →</a><a href="matching.html" class="btn p" style="display:block;text-decoration:none;text-align:center;background:var(--surface-2);color:var(--gold);border:1px solid var(--amber)">1:1 매칭 신청 →</a></div></div>';
     $("panel").innerHTML=h;
     var d=await api("bd_list");
     if(!d.ok){ $("posts").innerHTML='<div class="empty">'+esc(d.error||"불러오기 실패")+'</div>'; return; }
     posts=d.posts||[];
+    if(d.ban) $("posts").insertAdjacentHTML("beforebegin",'<div class="ticket" style="color:var(--bad);border-color:rgba(224,122,122,.4)">⛔ '+esc(d.ban)+'</div>');
+    else if(d.strikes>0) $("posts").insertAdjacentHTML("beforebegin",'<div class="ticket" style="color:var(--bad)">⚠️ 신고 누적 '+d.strikes+'회 — 2회면 7일 정지, 3회면 영구 정지예요</div>');
     if(!posts.length){ $("posts").innerHTML='<div class="empty">아직 올라온 글이 없어요.<br>첫 번째로 그날 그 사람을 찾아보세요!</div>'; return; }
     var g='';
     posts.forEach(function(p,i){
@@ -243,7 +195,7 @@
       '<div class="ch">글 올리기</div>'+
       '<div class="tabs" style="margin-bottom:14px"><div class="tab on" id="t-find" onclick="setPostType(\'찾기\')">🔍 그 사람 찾기</div><div class="tab" id="t-self" onclick="setPostType(\'셀소\')">🙋 셀소 (저 여기 있었어요)</div></div>'+
       '<div class="rule" id="t-hint" style="margin:0 0 12px">그날 만난 분을 찾아요. 상대가 "저예요!" 하면 연결돼요.</div>'+
-      '<div class="two"><div class="fld"><label>어디 소개팅? <small>· 초성으로만 공개돼요</small></label><input id="f-co" maxlength="30" placeholder="예: 썸류센터" oninput="$(\'f-co-prev\').textContent=this.value?\'공개될 이름: \'+chosung(this.value):\'\'"><div id="f-co-prev" style="font-size:11px;color:var(--gold);margin-top:4px;min-height:14px"></div></div>'+
+      '<div class="two"><div class="fld"><label>어디 소개팅? <small>· 입력하면 바로 초성으로 바뀌어요</small></label><input id="f-co" maxlength="30" placeholder="예: 썸류센터 → ㅆㄹㅅㅌ" oninput="var c=chosung(this.value); if(c!==this.value){this.value=c;} $(\'f-co-prev\').textContent=c?\'이렇게 공개돼요: \'+c:\'\'" onchange="this.value=chosung(this.value)"><div id="f-co-prev" style="font-size:11px;color:var(--gold);margin-top:4px;min-height:14px"></div></div>'+
       '<div class="fld"><label>날짜</label><input id="f-dt" type="date" max="'+today+'"></div></div>'+
       '<div class="fld"><label>장소 <small>· 동네 정도만</small></label><input id="f-pl" maxlength="20" placeholder="예: 강남역"></div>'+
       '<div class="fld"><label>저는</label><div class="two" style="grid-template-columns:1fr 1fr 1.4fr">'+
@@ -254,7 +206,6 @@
         '<input id="f-yn" type="number" inputmode="numeric" min="1" max="99" placeholder="몇 호"><input id="f-yk" maxlength="12" placeholder="그날 닉네임"></div>'+
         '<input id="f-you" maxlength="80" placeholder="한 줄 인상 · 예: 베이지 코트, 제주 한달살기" style="margin-top:8px"></div>'+
       '<div class="fld"><label>하고 싶은 말 <small>· 선택</small></label><textarea id="f-msg" maxlength="200" style="min-height:70px" placeholder="그때 번호 못 물어봐서 아쉬웠어요"></textarea></div>'+
-      '<div class="fld"><label>내 연락처 <small>· 상대에게 공개 안 돼요. 알림·연결용</small></label><input id="f-ph" type="tel" inputmode="numeric" placeholder="01012345678"></div>'+
       '<div class="rule" style="margin:0 0 12px">번호·닉네임·짧은 인상만 적어주세요. 실명·전화번호·SNS·너무 자세한 묘사, 욕설·19금 표현은 올라가지 않아요. <a href="javascript:void(0)" onclick="$(\'rules\').classList.add(\'on\')" style="color:var(--amber);font-weight:800">커뮤니티 규칙 보기</a></div>'+
       '<div class="row"><button class="btn g" onclick="$(\'postform\').innerHTML=\'\'">취소</button><button class="btn p" id="f-save" onclick="submitPost()">올리기</button></div><div class="msg" id="f-msg-out"></div></div>';
     $("f-co").focus();
@@ -267,25 +218,25 @@
     $("t-hint").textContent=t==="셀소"?"그날 나를 올려둬요. 관심 있는 분이 쪽지를 보내면 수락해서 연결돼요.":"그날 만난 분을 찾아요. 상대가 \"저예요!\" 하면 연결돼요.";
   }
   async function submitPost(){
-    var b={type:postType,company:$("f-co").value,date:$("f-dt").value,place:$("f-pl").value,myGender:$("f-mg").value,meNo:$("f-mn").value,meNick:$("f-mk").value,me:$("f-me").value,youNo:$("f-yn").value,youNick:$("f-yk").value,you:$("f-you").value,msg:$("f-msg").value,phone:$("f-ph").value};
+    var b={type:postType,company:$("f-co").value,date:$("f-dt").value,place:$("f-pl").value,myGender:$("f-mg").value,meNo:$("f-mn").value,meNick:$("f-mk").value,me:$("f-me").value,youNo:$("f-yn").value,youNick:$("f-yk").value,you:$("f-you").value,msg:$("f-msg").value};
     $("f-save").disabled=true; $("f-msg-out").textContent="올리는 중...";
     var d=await api("bd_post",b);
     if(!d.ok){ $("f-msg-out").textContent=d.error||"실패"; $("f-save").disabled=false; return; }
     $("postform").innerHTML=''; renderBoard();
   }
   async function hidePost(id){ if(!confirm("이 글을 내릴까요?")) return; var d=await api("bd_hide",{postId:id}); if(!d.ok){alert(d.error||"실패");return;} renderBoard(); }
-  async function reportPost(id){ if(!KID){ needLogin(); return; } if(!confirm("이 글을 신고할까요? (실명·연락처 노출, 비방 등)")) return; var d=await api("bd_report",{postId:id}); alert(d.ok?"신고했어요. 확인 후 조치할게요":(d.error||"실패")); }
+  async function reportPost(id){ if(!KID){ needLogin(); return; } var r=prompt("신고 사유를 적어주세요 (19금·욕설·실명 노출·광고 등)\n\n신고하면 글이 바로 내려가고 작성자에게 경고가 쌓여요."); if(r===null) return; var d=await api("bd_report",{postId:id,reason:r}); alert(d.ok?"신고했어요. 글은 바로 내려갔고 센터장이 확인해요":(d.error||"실패")); if(d.ok) renderBoard(); }
+  async function reportNote(id){ var r=prompt("이 쪽지를 신고할까요? 사유를 적어주세요"); if(r===null) return; var d=await api("bd_report",{noteId:id,reason:r}); alert(d.ok?"신고했어요. 쪽지는 삭제됐고 보낸 사람에게 경고가 쌓여요":(d.error||"실패")); if(d.ok) renderBox(); }
 
   /* ===== 쪽지함 ===== */
   async function renderBox(){
     if(!KID){ $("panel").innerHTML='<div class="card"><div class="empty">카카오 로그인 후 이용할 수 있어요<br><br><button class="save" onclick="needLogin()">카카오로 로그인</button></div></div>'; return; }
     var items=[], remaining=null, bd=await api("bd_inbox");
     if(bd.ok) items=items.concat(bd.items||[]);
-    if(me&&me.ok&&me.linked){ var rc=await api("rc_inbox"); if(rc.ok){ items=items.concat(rc.items||[]); remaining=rc.remaining; } }
     items.sort(function(a,b){ return (b.date||"").localeCompare(a.date||""); });
     var recv=items.filter(function(x){return x.dir==="received";}), sent=items.filter(function(x){return x.dir==="sent";});
     var h='';
-    if(bd.ok) h+='<div class="ticket">익명 게시판 "저예요" 쪽지: '+(bd.freeLeft?'<b>무료 1회 남음</b>':'무료 사용함')+' · 쪽지권 <b>'+bd.tickets+'장</b>'+(bd.freeLeft||bd.tickets?'':' — <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:var(--amber);font-weight:800">쪽지권 구매 (카톡 채널) →</a>')+'</div>';
+    if(bd.ok) h+='<div class="ticket">쪽지 보내기: '+(bd.freeLeft?'<b>무료 1회 남음</b>':'무료 사용함')+' · 쪽지권 <b>'+bd.tickets+'장</b>'+(bd.freeLeft||bd.tickets?'':' — <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:var(--amber);font-weight:800">쪽지권 구매 (카톡 채널) →</a>')+'</div>';
     h+='<div class="card"><div class="ch">받은 쪽지 <small>'+recv.length+'개</small></div>';
     if(!recv.length) h+='<div class="empty">아직 받은 쪽지가 없어요</div>';
     recv.forEach(function(n){ h+=noteHtml(n,true); });
@@ -297,15 +248,15 @@
   }
   function stTag(s){ return s==="수락"?'<span class="st ok">수락</span>':(s==="거절"?'<span class="st no">거절</span>':'<span class="st wait">답장 대기</span>'); }
   function noteHtml(n,isRecv){
-    var h='<div class="note"><div class="meta"><span>'+(n.board?'📋 ':'☕ ')+esc(n.round)+' · '+esc(n.date)+'</span>'+stTag(n.status)+'</div>';
+    var h='<div class="note"><div class="meta"><span>'+esc(n.round)+' · '+esc(n.date)+'</span>'+stTag(n.status)+'</div>';
     h+='<div class="who">'+(isRecv?esc(n.from)+(n.board?' 쪽지가 왔어요':'님이 보냄'):(n.to?esc(n.to)+'님에게':'보낸 쪽지'))+'</div><div class="txt">'+esc(n.text)+'</div>';
-    if(isRecv&&n.status==="대기") h+='<div class="row"><button class="btn g" onclick="respond(\''+n.id+'\',\'거절\','+(n.board?'true':'false')+')">괜찮아요</button><button class="btn p" onclick="respond(\''+n.id+'\',\'수락\','+(n.board?'true':'false')+')">수락하기</button></div>';
-    if(n.status==="수락") h+='<div class="contact">🎉 수락됐어요! 두 분 모두 1:1 매칭 신청서를 작성하면 센터장이 확인 후 연결해드려요<br><a href="matching.html?ref=reconnect&note='+esc(n.id)+'" style="color:var(--ok);text-decoration:underline;font-weight:900">1:1 매칭 신청서 작성하기 →</a></div>';
+    if(isRecv&&n.status==="대기") h+='<div class="row"><button class="btn g" onclick="respond(\''+n.id+'\',\'거절\','+(n.board?'true':'false')+')">괜찮아요</button><button class="btn p" onclick="respond(\''+n.id+'\',\'수락\','+(n.board?'true':'false')+')">수락하기</button></div><div style="text-align:right;margin-top:6px"><a href="javascript:void(0)" onclick="reportNote(\''+n.id+'\')" style="font-size:11px;color:var(--faint)">🚩 쪽지 신고</a></div>';
+    if(n.status==="수락") h+='<div class="contact">🎉 수락됐어요! 연락처를 주고받지 않으니, 두 분 모두 아래 신청서를 작성해주세요. 센터장이 확인 후 연결해드려요 (상대도 같은 안내를 봐요)<br><a href="matching.html?ref=reconnect&note='+esc(n.id)+'" style="color:var(--ok);text-decoration:underline;font-weight:900">1:1 매칭 신청서 작성하기 →</a></div>';
     return h+'</div>';
   }
   async function respond(id,ans,isBoard){
     if(ans==="수락"&&!confirm("수락하면 두 분 모두 1:1 매칭 신청서를 작성하고, 센터장이 확인 후 연결해드려요. 괜찮을까요?")) return;
-    var d=await api(isBoard?"bd_respond":"rc_respond",{noteId:id,answer:ans});
+    var d=await api("bd_respond",{noteId:id,answer:ans});
     if(!d.ok){ alert(d.error||"처리 실패"); return; }
     renderBox();
   }
@@ -313,9 +264,8 @@
   /* ===== 쪽지 모달 ===== */
   function openModal(m,i){
     if(!KID){ needLogin(); return; }
-    mode=m; target=(m==="rot"?people:posts)[i]; if(!target) return;
-    if(m==="rot"){ $("m-title").textContent=target.nickname+"님께 쪽지"; $("m-sub").textContent=curRound+" 소개팅에서 만난 분이에요. 상대가 수락하면 센터장이 연결해드려요."; $("m-phone-w").style.display="none"; }
-    else { $("m-title").textContent=target.type==="셀소"?"💌 쪽지 보내기":"👋 저예요!"; $("m-sub").textContent=target.company+" "+target.date+" 글쓴이에게 보내요. 첫 쪽지는 무료, 두 번째부터는 쪽지권이 필요해요."; $("m-phone-w").style.display="block"; $("m-phone").value=""; }
+    mode="board"; target=posts[i]; if(!target) return;
+    { $("m-title").textContent=target.type==="셀소"?"💌 쪽지 보내기":"👋 저예요!"; $("m-sub").textContent=target.company+" "+target.date+" 글쓴이에게 보내요. 첫 쪽지는 무료, 두 번째부터는 쪽지권이 필요해요. 답장은 쪽지함에서 확인하세요."; }
     $("m-text").value=""; $("m-len").textContent="0"; $("m-msg").textContent=""; $("m-send").disabled=false;
     $("modal").classList.add("on"); $("m-text").focus();
   }
@@ -325,16 +275,14 @@
     var t=($("m-text").value||"").trim();
     if(!t){ $("m-msg").textContent="내용을 입력해주세요"; return; }
     $("m-send").disabled=true; $("m-msg").textContent="보내는 중...";
-    var d;
-    if(mode==="rot") d=await api("rc_send",{toId:target.id,round:curRound,text:t});
-    else d=await api("bd_reply",{postId:target.id,text:t,phone:$("m-phone").value});
+    var d=await api("bd_reply",{postId:target.id,text:t});
     if(!d.ok){
       if(d.needTicket){ $("m-msg").innerHTML='첫 쪽지는 무료, 두 번째부터는 쪽지권(1,000원)이 필요해요.<br><a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:var(--amber);font-weight:800">카톡 채널에서 쪽지권 구매 →</a>'; }
       else $("m-msg").textContent=d.error||"전송 실패";
       $("m-send").disabled=false; return;
     }
-    $("m-msg").textContent=mode==="rot"?("보냈어요! 오늘 "+d.remaining+"개 더 보낼 수 있어요"):(d.usedTicket?"보냈어요! 쪽지권 1장을 사용했어요":"보냈어요! (무료 1회 사용)");
-    setTimeout(function(){ closeModal(); if(mode==="rot") renderFind(); else renderBoard(); },900);
+    $("m-msg").textContent=d.usedTicket?"보냈어요! 쪽지권 1장을 사용했어요":"보냈어요! (무료 1회 사용)";
+    setTimeout(function(){ closeModal(); renderBoard(); },900);
   }
   $("modal").addEventListener("click",function(e){ if(e.target===this) closeModal(); });
   $("rules").addEventListener("click",function(e){ if(e.target===this) this.classList.remove("on"); });
