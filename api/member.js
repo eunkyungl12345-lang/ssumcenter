@@ -100,9 +100,10 @@ module.exports = async function handler(req, res) {
   if (req.method === "POST" && typeof body.action === "string" && (body.action.indexOf("rc_") === 0 || body.action.indexOf("bd_") === 0)) {
     try {
       const reconnect = body.action.indexOf("bd_") === 0 ? require("./_board.js") : require("./_reconnect.js");
-      let sendSms = null;
+      let sendSms = null, notify = null;
       try { sendSms = require("./_sms.js").sendSms; } catch (e) {}
-      const out = await reconnect({ action: body.action, body, TOKEN, BASE_ID, sendSms });
+      try { notify = require("./airtable.js").notifySlack || null; } catch (e) {}
+      const out = await reconnect({ action: body.action, body, TOKEN, BASE_ID, sendSms, notify });
       return res.status(out.status).json(out.json);
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }

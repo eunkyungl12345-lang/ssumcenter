@@ -15,7 +15,6 @@ function kstToday() { return new Date(Date.now() + 9 * 3600 * 1000).toISOString(
 function esc(s) { return String(s || "").replace(/["\\]/g, ""); }
 function clean(s, n) { return String(s || "").replace(/\s+/g, " ").trim().slice(0, n); }
 function normPhone(p) { return String(p || "").replace(/[^0-9]/g, ""); }
-function maskPhone(p) { const n = normPhone(p); return n.length >= 10 ? n.slice(0, 3) + "-" + n.slice(3, 7) + "-" + n.slice(7) : n; }
 // 이름·전화번호·SNS 아이디 같은 식별 정보는 글에서 걸러냄
 // 한글 → 초성 (업체명 익명화: 썸류센터 → ㅆㄹㅅㅌ). 한글 아닌 글자는 그대로
 const CHO = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
@@ -49,7 +48,7 @@ function pubPost(r, kid) {
   };
 }
 
-module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms }) {
+module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, notify }) {
   const H = { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" };
   const bBase = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(BOARD)}`;
   const nBase = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(NOTE)}`;
@@ -83,7 +82,7 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms })
     const phone = normPhone(body.phone);
     if (!companyRaw || !date || !place) return { status: 400, json: { error: "업체·날짜·장소는 꼭 적어주세요" } };
     if (!youNo && !youNick && !you) return { status: 400, json: { error: "찾는 분의 번호·닉네임·인상 중 하나는 적어주세요" } };
-    if (phone.length < 9) return { status: 400, json: { error: "연락처를 정확히 입력해주세요 (상대가 수락할 때만 공개돼요)" } };
+    if (phone.length < 9) return { status: 400, json: { error: "연락처를 정확히 입력해주세요 (상대에게 공개되지 않고, 알림과 연결 안내에만 써요)" } };
     if (hasPII(me + " " + you + " " + msg + " " + meNick + " " + youNick)) return { status: 400, json: { error: "글에는 전화번호·SNS 아이디·실명을 넣을 수 없어요. 그날의 인상만 적어주세요 :)" } };
     const myToday = await listAll(bBase, H, `AND({작성카카오ID}="${kid}",IS_SAME({작성일},"${kstToday()}","day"))`, ["상태"]);
     if (myToday.length >= 2) return { status: 429, json: { error: "글은 하루 2개까지만 올릴 수 있어요" } };
@@ -120,7 +119,7 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms })
   if (action === "bd_reply") {
     const postId = esc(body.postId), text = clean(body.text, 300), phone = normPhone(body.phone);
     if (!postId || !text) return { status: 400, json: { error: "내용을 입력해주세요" } };
-    if (phone.length < 9) return { status: 400, json: { error: "연락처를 정확히 입력해주세요 (상대가 수락할 때만 공개돼요)" } };
+    if (phone.length < 9) return { status: 400, json: { error: "연락처를 정확히 입력해주세요 (상대에게 공개되지 않고, 알림과 연결 안내에만 써요)" } };
     const p = await (await fetch(`${bBase}/${postId}`, { headers: H })).json();
     const pf = p.fields || {};
     if (!pf["상태"] || pf["상태"] !== "공개") return { status: 404, json: { error: "글을 찾을 수 없어요" } };
@@ -165,13 +164,13 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms })
     const items = [];
     received.forEach(n => { const f = n.fields || {}; const pf = pMap[f["받는레코드ID"]] || {};
       items.push({ id: n.id, dir: "received", board: true, round: `${pf["업체"] || ""} ${pf["날짜"] || ""}`.trim(), text: f["내용"] || "", status: f["상태"] || "대기", date: f["보낸날짜"] || "",
-        from: "저예요!", to: "", contact: f["상태"] === "수락" ? maskPhone(f["보낸연락처"]) : "" }); });
+        from: "저예요!", to: "" }); });
     const postIds = [...new Set(sent.map(n => n.fields["받는레코드ID"]))];
     const postMap = {};
     for (const id of postIds) { try { const p = await (await fetch(`${bBase}/${id}`, { headers: H })).json(); postMap[id] = p.fields || {}; } catch (e) {} }
     sent.forEach(n => { const f = n.fields || {}; const pf = postMap[f["받는레코드ID"]] || {};
       items.push({ id: n.id, dir: "sent", board: true, round: `${pf["업체"] || ""} ${pf["날짜"] || ""}`.trim(), text: f["내용"] || "", status: f["상태"] || "대기", date: f["보낸날짜"] || "",
-        from: "", to: "글쓴이", contact: f["상태"] === "수락" ? maskPhone(pf["연락처"]) : "" }); });
+        from: "", to: "글쓴이" }); });
     items.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
     const mm = await listAll(mBase, H, `{카카오ID}="${kid}"`, ["쪽지권"]);
     return { status: 200, json: { ok: true, items, freeLeft: sent.length ? 0 : 1, tickets: mm[0] ? (mm[0].fields["쪽지권"] || 0) : 0 } };
@@ -188,9 +187,13 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms })
     const answer = body.answer === "수락" ? "수락" : "거절";
     await fetch(`${nBase}/${n.id}`, { method: "PATCH", headers: H, body: JSON.stringify({ typecast: true, fields: { "상태": answer, "응답날짜": kstToday() } }) });
     if (answer === "수락") {
-      try { if (f["보낸연락처"] && sendSms) await sendSms({ to: f["보낸연락처"], text: `[썸류센터] 글쓴이가 "저예요!" 쪽지를 수락했어요 🎉\n연락처 확인: https://ssumcenter.vercel.app/reconnect` }); } catch (e) {}
+      // 연락처는 서로 공개하지 않음 — 센터장이 양쪽에 연락해서 연결
+      const label = `${p.fields["업체"] || ""} ${p.fields["날짜"] || ""}`.trim();
+      try { if (f["보낸연락처"] && sendSms) await sendSms({ to: f["보낸연락처"], text: `[썸류센터] 글쓴이가 "저예요!" 쪽지를 수락했어요 🎉\n센터장이 곧 연락드려서 연결해드릴게요.` }); } catch (e) {}
+      try { if (p.fields["연락처"] && sendSms) await sendSms({ to: p.fields["연락처"], text: `[썸류센터] 수락 완료! 센터장이 곧 연락드려서 연결해드릴게요 💛` }); } catch (e) {}
+      try { if (notify) await notify(`💌 그날 그 사람 — 수락!\n${label}\n글쓴이 ${p.fields["연락처"] || "?"} ❤ 저예요 ${f["보낸연락처"] || "?"}\n→ 양쪽에 연락해서 연결해주세요`); } catch (e) {}
     }
-    return { status: 200, json: { ok: true, status: answer, contact: answer === "수락" ? maskPhone(f["보낸연락처"]) : "" } };
+    return { status: 200, json: { ok: true, status: answer } };
   }
 
   return { status: 400, json: { error: "알 수 없는 요청" } };

@@ -1,7 +1,7 @@
 // "그때 그 사람 찾기" — 로테이션 소개팅에서 만났던 사람에게 쪽지 보내기
 //  - api/member.js 에서 action 이 "rc_" 로 시작하면 여기로 넘어옴 (함수 개수 절약)
 //  - 로그인(카카오) 필수. 내 로테이션 신청 기록(카카오ID 연결 + 입금확정 O)이 있어야 사용 가능
-//  - 하루 쪽지 3개 제한. 상대가 "수락" 해야만 서로 연락처가 열림 (양쪽 동의)
+//  - 하루 쪽지 3개 제한. 상대가 "수락" 하면 센터장에게 알림 → 센터장이 양쪽 연결 (연락처는 서로 공개 안 함)
 //  - Airtable 테이블 "쪽지" 필요 (필드: 보낸레코드ID 보낸카카오ID 보낸닉네임 받는레코드ID 받는닉네임 회차 내용 상태 보낸날짜 응답날짜)
 
 const ROT = "로테이션 신청";
@@ -14,7 +14,6 @@ function kstToday() {
 }
 function esc(s) { return String(s || "").replace(/["\\]/g, ""); }
 function roundKey(rd) { const m = String(rd || "").match(/(\d{1,2})\/(\d{1,2})/); return m ? parseInt(m[1]) * 100 + parseInt(m[2]) : 0; }
-function maskPhone(p) { const n = String(p || "").replace(/[^0-9]/g, ""); return n.length >= 10 ? n.slice(0, 3) + "-" + n.slice(3, 7) + "-" + n.slice(7) : n; }
 
 async function listAll(base, H, formula, fields) {
   let out = [], offset = "";
@@ -42,7 +41,7 @@ function pubPerson(r) {
   };
 }
 
-module.exports = async function reconnect({ action, body, TOKEN, BASE_ID, sendSms }) {
+module.exports = async function reconnect({ action, body, TOKEN, BASE_ID, sendSms, notify }) {
   const H = { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" };
   const rotBase = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(ROT)}`;
   const noteBase = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(NOTE)}`;
@@ -130,10 +129,6 @@ module.exports = async function reconnect({ action, body, TOKEN, BASE_ID, sendSm
       const f = n.fields || {};
       const item = { id: n.id, dir, round: f["회차"] || "", text: f["내용"] || "", status: f["상태"] || "대기",
         date: f["보낸날짜"] || "", from: f["보낸닉네임"] || "", to: f["받는닉네임"] || "" };
-      if (item.status === "수락") {
-        const otherId = dir === "received" ? f["보낸레코드ID"] : f["받는레코드ID"];
-        try { const o = await (await fetch(`${rotBase}/${otherId}`, { headers: H })).json(); item.contact = maskPhone((o.fields || {})["연락처"]); } catch (e) {}
-      }
       return item;
     };
     const items = [];
@@ -154,18 +149,19 @@ module.exports = async function reconnect({ action, body, TOKEN, BASE_ID, sendSm
     if (!f["받는레코드ID"] || !myIds.includes(f["받는레코드ID"])) return { status: 403, json: { error: "내 쪽지가 아니에요" } };
     if (f["상태"] && f["상태"] !== "대기") return { status: 409, json: { error: "이미 답한 쪽지예요" } };
     await fetch(`${noteBase}/${noteId}`, { method: "PATCH", headers: H, body: JSON.stringify({ typecast: true, fields: { "상태": answer, "응답날짜": kstToday() } }) });
-    let contact = "";
     if (answer === "수락") {
+      // 연락처는 서로 공개하지 않음 — 센터장이 양쪽에 연락해서 연결
       try {
         const s = await (await fetch(`${rotBase}/${f["보낸레코드ID"]}`, { headers: H })).json();
         const sf = s.fields || {};
-        contact = maskPhone(sf["연락처"]);
-        if (sf["연락처"] && sendSms) {
-          await sendSms({ to: sf["연락처"], text: `[썸류센터] ${f["받는닉네임"] || "상대"}님이 쪽지를 수락했어요 🎉\n연락처 확인: https://ssumcenter.vercel.app/reconnect` });
-        }
+        const meRec = mine.find(r => r.id === f["받는레코드ID"]) || mine[0];
+        const myPhone = (meRec.fields || {})["연락처"] || "";
+        if (sf["연락처"] && sendSms) await sendSms({ to: sf["연락처"], text: `[썸류센터] ${f["받는닉네임"] || "상대"}님이 쪽지를 수락했어요 🎉\n센터장이 곧 연락드려서 연결해드릴게요.` });
+        if (myPhone && sendSms) await sendSms({ to: myPhone, text: `[썸류센터] 수락 완료! 센터장이 곧 연락드려서 연결해드릴게요 💛` });
+        if (notify) await notify(`💌 그때 그 사람 — 수락!\n${f["회차"] || ""}\n${f["받는닉네임"] || "?"}(${myPhone || "?"}) ❤ ${f["보낸닉네임"] || "?"}(${sf["연락처"] || "?"})\n→ 양쪽에 연락해서 연결해주세요`);
       } catch (e) {}
     }
-    return { status: 200, json: { ok: true, status: answer, contact } };
+    return { status: 200, json: { ok: true, status: answer } };
   }
 
   return { status: 400, json: { error: "알 수 없는 요청" } };
