@@ -2,7 +2,8 @@
 //  - api/member.js 에서 action 이 "bd_" 로 시작하면 여기로 넘어옴
 //  - 글 보기: 누구나 / 글쓰기·"저예요" 쪽지: 카카오 로그인 필수
 //  - "저예요" 쪽지는 첫 1회 무료, 2회부터는 회원 테이블 "쪽지권"이 있어야 함 (센터장이 입금 확인 후 수동으로 +1)
-//  - Airtable 테이블 "익명찾기" (작성카카오ID 업체 날짜 장소 내묘사 상대묘사 하고싶은말 연락처 상태 작성일 신고수)
+//  - Airtable 테이블 "익명찾기" (작성카카오ID 업체 업체원문 날짜 장소 내호수 내닉네임 내묘사 상대호수 상대닉네임 상대묘사 하고싶은말 연락처 상태 작성일 응답수 신고수)
+//    업체는 초성으로만 저장·공개 (업체원문은 센터장 확인용)
 //    쪽지는 기존 "쪽지" 테이블 사용: 회차="익명게시판", 받는레코드ID=글ID, 보낸연락처 필드 추가 필요
 
 const BOARD = "익명찾기";
@@ -16,6 +17,9 @@ function clean(s, n) { return String(s || "").replace(/\s+/g, " ").trim().slice(
 function normPhone(p) { return String(p || "").replace(/[^0-9]/g, ""); }
 function maskPhone(p) { const n = normPhone(p); return n.length >= 10 ? n.slice(0, 3) + "-" + n.slice(3, 7) + "-" + n.slice(7) : n; }
 // 이름·전화번호·SNS 아이디 같은 식별 정보는 글에서 걸러냄
+// 한글 → 초성 (업체명 익명화: 썸류센터 → ㅆㄹㅅㅌ). 한글 아닌 글자는 그대로
+const CHO = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+function chosung(t) { return String(t || "").split("").map(c => { const code = c.charCodeAt(0); return (code >= 0xAC00 && code <= 0xD7A3) ? CHO[Math.floor((code - 0xAC00) / 588)] : c; }).join(""); }
 function hasPII(t) { return /01[016789][-\s]?\d{3,4}[-\s]?\d{4}/.test(t) || /@[A-Za-z0-9_.]{3,}/.test(t) || /(인스타|카톡|카카오톡|아이디|id\s*[:：])/i.test(t); }
 
 async function listAll(base, H, formula, fields, sort) {
@@ -39,6 +43,7 @@ function pubPost(r, kid) {
   return {
     id: r.id, company: f["업체"] || "", date: f["날짜"] || "", place: f["장소"] || "",
     me: f["내묘사"] || "", you: f["상대묘사"] || "", msg: f["하고싶은말"] || "",
+    meNo: f["내호수"] || "", meNick: f["내닉네임"] || "", youNo: f["상대호수"] || "", youNick: f["상대닉네임"] || "",
     created: f["작성일"] || "", replies: f["응답수"] || 0,
     mine: !!kid && f["작성카카오ID"] === kid
   };
@@ -53,7 +58,7 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms })
 
   // ---- 글 목록 (로그인 없이 가능) ----
   if (action === "bd_list") {
-    const posts = await listAll(bBase, H, `{상태}="공개"`, ["업체", "날짜", "장소", "내묘사", "상대묘사", "하고싶은말", "작성일", "응답수", "작성카카오ID"], "작성일");
+    const posts = await listAll(bBase, H, `{상태}="공개"`, ["업체", "날짜", "장소", "내묘사", "상대묘사", "하고싶은말", "내호수", "내닉네임", "상대호수", "상대닉네임", "작성일", "응답수", "작성카카오ID"], "작성일");
     let sentTo = {};
     if (kid) {
       const sent = await listAll(nBase, H, `AND({보낸카카오ID}="${kid}",{회차}="${TAG}")`, ["받는레코드ID", "상태"]);
@@ -66,16 +71,25 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms })
 
   // ---- 글 쓰기 ----
   if (action === "bd_post") {
-    const company = clean(body.company, 30), date = clean(body.date, 10), place = clean(body.place, 40);
-    const me = clean(body.me, 200), you = clean(body.you, 300), msg = clean(body.msg, 300);
+    const companyRaw = clean(body.company, 30), company = chosung(companyRaw), date = clean(body.date, 10), place = clean(body.place, 20);
+    // 묘사는 짧게만 (너무 자세하면 특정 가능) — 나 60자 / 상대 80자
+    const me = clean(body.me, 60), you = clean(body.you, 80), msg = clean(body.msg, 200);
+    const myG = body.myGender === "여" ? "여" : (body.myGender === "남" ? "남" : "");
+    const otherG = myG === "여" ? "남" : (myG === "남" ? "여" : "");
+    const meNoN = parseInt(body.meNo, 10), youNoN = parseInt(body.youNo, 10);
+    const meNo = myG && meNoN > 0 && meNoN < 100 ? `${myG} ${meNoN}호` : "";
+    const youNo = otherG && youNoN > 0 && youNoN < 100 ? `${otherG} ${youNoN}호` : "";
+    const meNick = clean(body.meNick, 12), youNick = clean(body.youNick, 12);
     const phone = normPhone(body.phone);
-    if (!company || !date || !place || !you) return { status: 400, json: { error: "업체·날짜·장소·상대 묘사는 꼭 적어주세요" } };
+    if (!companyRaw || !date || !place) return { status: 400, json: { error: "업체·날짜·장소는 꼭 적어주세요" } };
+    if (!youNo && !youNick && !you) return { status: 400, json: { error: "찾는 분의 번호·닉네임·인상 중 하나는 적어주세요" } };
     if (phone.length < 9) return { status: 400, json: { error: "연락처를 정확히 입력해주세요 (상대가 수락할 때만 공개돼요)" } };
-    if (hasPII(me + " " + you + " " + msg)) return { status: 400, json: { error: "글에는 전화번호·SNS 아이디·실명을 넣을 수 없어요. 그날의 인상만 적어주세요 :)" } };
+    if (hasPII(me + " " + you + " " + msg + " " + meNick + " " + youNick)) return { status: 400, json: { error: "글에는 전화번호·SNS 아이디·실명을 넣을 수 없어요. 그날의 인상만 적어주세요 :)" } };
     const myToday = await listAll(bBase, H, `AND({작성카카오ID}="${kid}",IS_SAME({작성일},"${kstToday()}","day"))`, ["상태"]);
     if (myToday.length >= 2) return { status: 429, json: { error: "글은 하루 2개까지만 올릴 수 있어요" } };
     const r = await fetch(bBase, { method: "POST", headers: H, body: JSON.stringify({ typecast: true, fields: {
-      "작성카카오ID": kid, "업체": company, "날짜": date, "장소": place, "내묘사": me, "상대묘사": you, "하고싶은말": msg,
+      "작성카카오ID": kid, "업체": company, "업체원문": companyRaw, "날짜": date, "장소": place, "내묘사": me, "상대묘사": you, "하고싶은말": msg,
+      "내호수": meNo, "내닉네임": meNick, "상대호수": youNo, "상대닉네임": youNick,
       "연락처": phone, "상태": "공개", "작성일": kstToday(), "응답수": 0
     } }) });
     const d = await r.json();
