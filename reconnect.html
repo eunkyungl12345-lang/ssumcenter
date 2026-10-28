@@ -195,7 +195,7 @@
       '<div class="ch">글 올리기</div>'+
       '<div class="tabs" style="margin-bottom:14px"><div class="tab on" id="t-find" onclick="setPostType(\'찾기\')">🔍 그 사람 찾기</div><div class="tab" id="t-self" onclick="setPostType(\'셀소\')">🙋 셀소 (저 여기 있었어요)</div></div>'+
       '<div class="rule" id="t-hint" style="margin:0 0 12px">그날 만난 분을 찾아요. 상대가 "저예요!" 하면 연결돼요.</div>'+
-      '<div class="two"><div class="fld"><label>어디 소개팅? <small>· 입력하면 바로 초성으로 바뀌어요</small></label><input id="f-co" maxlength="30" placeholder="예: 썸류센터 → ㅆㄹㅅㅌ" oninput="var c=chosung(this.value); if(c!==this.value){this.value=c;} $(\'f-co-prev\').textContent=c?\'이렇게 공개돼요: \'+c:\'\'" onchange="this.value=chosung(this.value)"><div id="f-co-prev" style="font-size:11px;color:var(--gold);margin-top:4px;min-height:14px"></div></div>'+
+      '<div class="two"><div class="fld"><label>어디 소개팅? <small>· 입력하면 바로 초성으로 바뀌어요</small></label><input id="f-co" maxlength="30" placeholder="예: 썸류센터 → ㅆㄹㅅㅌ" oninput="$(\'f-co-prev\').textContent=this.value?\'이렇게 공개돼요: \'+chosung(this.value):\'\'" onblur="this.value=chosung(this.value)"><div id="f-co-prev" style="font-size:11px;color:var(--gold);margin-top:4px;min-height:14px"></div></div>'+
       '<div class="fld"><label>날짜</label><input id="f-dt" type="date" max="'+today+'"></div></div>'+
       '<div class="fld"><label>장소 <small>· 동네 정도만</small></label><input id="f-pl" maxlength="20" placeholder="예: 강남역"></div>'+
       '<div class="fld"><label>저는</label><div class="two" style="grid-template-columns:1fr 1fr 1.4fr">'+
