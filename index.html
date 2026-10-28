@@ -298,6 +298,31 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 
 
 <!-- Reviews -->
+<!-- 센터장 3명 소개 (공통점 위주 — 개인이 특정되지 않게) -->
+<section class="sec" id="centers">
+  <style>
+  .ctr-avs{display:flex;justify-content:center;margin-top:28px}
+  .ctr-av{position:relative;margin:0 -6px;border-radius:50%;border:3px solid var(--bg);display:flex}
+  .ctr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px auto 0;max-width:720px;text-align:left}
+  .ctr-card{display:flex;gap:14px;align-items:flex-start;padding:18px;word-break:keep-all}
+  @media(max-width:640px){.ctr-grid{grid-template-columns:1fr;gap:10px}}
+  </style>
+  <div class="wrap" style="text-align:center">
+    <span class="pill pill-amber" data-r><i class="fa-solid fa-user-check"></i>WHO PICKS</span>
+    <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>신청서는 <span class="ac">센터장 3명</span>이<br>직접 읽어요</h2>
+    <div class="ctr-avs" data-r><span class="ctr-av" style="z-index:3"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="#F3C9C4"/><path d="M28 62 Q26 30 60 28 Q94 30 92 62 L94 106 Q60 116 26 106 Z" fill="#6B4430"/><ellipse cx="60" cy="68" rx="27" ry="29" fill="#F6D9BF"/><circle cx="50" cy="70" r="3.4" fill="#2A1810"/><circle cx="70" cy="70" r="3.4" fill="#2A1810"/><ellipse cx="44" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><ellipse cx="76" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><path d="M54 82 Q60 87 66 82" stroke="#2A1810" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M32 60 Q34 34 60 34 Q86 34 88 60 Q78 46 62 46 Q60 54 46 52 Q38 54 32 60 Z" fill="#7C5038"/><path d="M80 44 l3.5 -3.5 a2.8 2.8 0 0 1 4 4 l-7.5 7.5 l-7.5 -7.5 a2.8 2.8 0 0 1 4 -4 z" fill="#E8584F"/></svg></span><span class="ctr-av" style="z-index:2"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="#E8C27C"/><path d="M30 64 Q28 34 60 32 Q92 34 90 64 L90 90 Q84 94 80 88 L40 88 Q36 94 30 90 Z" fill="#2B211C"/><ellipse cx="60" cy="68" rx="27" ry="29" fill="#F6D9BF"/><circle cx="50" cy="70" r="3.4" fill="#2A1810"/><circle cx="70" cy="70" r="3.4" fill="#2A1810"/><ellipse cx="44" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><ellipse cx="76" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><path d="M54 82 Q60 87 66 82" stroke="#2A1810" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M33 62 Q34 38 60 38 Q86 38 87 62 L82 54 L76 58 L70 52 L62 57 L54 51 L46 57 L40 52 Z" fill="#3A2C25"/><ellipse cx="62" cy="36" rx="30" ry="10" fill="#D4952A" transform="rotate(-8 62 36)"/><circle cx="62" cy="25" r="4" fill="#D4952A"/><circle cx="50" cy="70" r="7.5" fill="none" stroke="#2A1810" stroke-width="2.2"/><circle cx="70" cy="70" r="7.5" fill="none" stroke="#2A1810" stroke-width="2.2"/><path d="M57.5 70 h5" stroke="#2A1810" stroke-width="2.2"/></svg></span><span class="ctr-av" style="z-index:1"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="#C9D8C0"/><path d="M78 34 Q104 36 102 70 Q100 90 90 96 Q94 74 84 56 Z" fill="#8A5634"/><ellipse cx="60" cy="68" rx="27" ry="29" fill="#F6D9BF"/><circle cx="50" cy="70" r="3.4" fill="#2A1810"/><circle cx="70" cy="70" r="3.4" fill="#2A1810"/><ellipse cx="44" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><ellipse cx="76" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><path d="M54 82 Q60 87 66 82" stroke="#2A1810" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M32 66 Q30 36 60 36 Q90 36 88 66 Q84 52 70 48 Q56 56 40 54 Q34 58 32 66 Z" fill="#9A6240"/><path d="M80 34 l-9 -6 l0 12 z M80 34 l9 -6 l0 12 z" fill="#F2A7A0"/><circle cx="80" cy="34" r="2.6" fill="#E8584F"/></svg></span></div>
+    <p style="font-size:12px;color:var(--dim);margin-top:8px" data-r>동탄 · 성수 · 강남 센터장</p>
+    <p style="font-size:15px;color:var(--cream);margin-top:18px;line-height:1.75;word-break:keep-all" data-r>주선이 취미였던 세 사람이 로테이션 소개팅까지 열게 됐고,<br>지금까지 <b class="ac">4,000건 넘게</b> 이어드렸어요.</p>
+    <h3 style="font-size:14px;color:var(--amber);font-weight:700;margin-top:36px;letter-spacing:.02em" data-r>우리 셋의 공통점</h3>
+    <div class="ctr-grid" data-r>
+      <div class="glass ctr-card"><div style="font-size:24px">💗</div><div><div style="font-size:15px;font-weight:700">셋 다 F예요</div><p style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.6">이야기를 끝까지 듣고 공감부터 해요. 신청서 한 줄도 그냥 넘기지 않아요.</p></div></div>
+      <div class="glass ctr-card"><div style="font-size:24px">💍</div><div><div style="font-size:15px;font-weight:700">진심인 분을 먼저 이어드려요</div><p style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.6">조건보다 먼저 보는 건 '연애·결혼을 정말 하고 싶은 마음'이에요.</p></div></div>
+      <div class="glass ctr-card"><div style="font-size:24px">☕</div><div><div style="font-size:15px;font-weight:700">맛집·카페 탐방이 취미</div><p style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.6">그래서 첫 만남 장소까지 골라드려요. <a href="/date-spots" style="color:var(--amber);font-weight:700">센터장 PICK 보기 →</a></p></div></div>
+      <div class="glass ctr-card"><div style="font-size:24px">👩</div><div><div style="font-size:15px;font-weight:700">모두 여성 센터장</div><p style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.6">여성분도 부담 없이 편하게 신청할 수 있어요.</p></div></div>
+    </div>
+  </div>
+</section>
+
 <section class="sec" id="reviews">
   <div class="wrap" style="text-align:center">
     <span class="pill pill-amber" data-r><i class="fa-solid fa-star"></i>REVIEWS</span>
