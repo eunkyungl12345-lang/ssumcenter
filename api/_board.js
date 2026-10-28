@@ -66,7 +66,7 @@ async function strike(mBase, H, kid) {
 function pubPost(r, kid) {
   const f = r.fields || {};
   return {
-    id: r.id, type: f["유형"] || "찾기", company: f["업체"] || "", date: f["날짜"] || "", place: f["장소"] || "",
+    id: r.id, type: f["유형"] || "찾기", company: f["업체"] || "", question: f["확인질문"] || "", date: f["날짜"] || "", place: f["장소"] || "",
     me: f["내묘사"] || "", you: f["상대묘사"] || "", msg: f["하고싶은말"] || "",
     meNo: f["내호수"] || "", meNick: f["내닉네임"] || "", youNo: f["상대호수"] || "", youNick: f["상대닉네임"] || "",
     created: f["작성일"] || "", replies: f["응답수"] || 0,
@@ -83,7 +83,8 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
 
   // ---- 글 목록 (로그인 없이 가능) ----
   if (action === "bd_list") {
-    const posts = await listAll(bBase, H, `{상태}="공개"`, ["유형", "업체", "날짜", "장소", "내묘사", "상대묘사", "하고싶은말", "내호수", "내닉네임", "상대호수", "상대닉네임", "작성일", "응답수", "작성카카오ID"], "작성일");
+    const cutoff = new Date(Date.now() + 9 * 3600 * 1000 - 30 * 86400 * 1000).toISOString().slice(0, 10);
+    const posts = await listAll(bBase, H, `AND({상태}="공개",IS_AFTER({작성일},"${cutoff}"))`, ["유형", "업체", "날짜", "장소", "확인질문", "내묘사", "상대묘사", "하고싶은말", "내호수", "내닉네임", "상대호수", "상대닉네임", "작성일", "응답수", "작성카카오ID"], "작성일");
     let sentTo = {};
     if (kid) {
       const sent = await listAll(nBase, H, `AND({보낸카카오ID}="${kid}",{회차}="${TAG}")`, ["받는레코드ID", "상태"]);
@@ -108,6 +109,7 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
     const youNo = otherG && youNoN > 0 && youNoN < 100 ? `${otherG} ${youNoN}호` : "";
     const meNick = clean(body.meNick, 12), youNick = chosung(clean(body.youNick, 12)); // 상대 닉네임은 초성만 (본인만 알아보게)
     const type = body.type === "셀소" ? "셀소" : "찾기";
+    const question = clean(body.question, 60);
     if (!companyRaw || !date || !place) return { status: 400, json: { error: "업체·날짜·장소는 꼭 적어주세요" } };
     if (type === "찾기" && !youNo && !youNick && !you) return { status: 400, json: { error: "찾는 분의 번호·닉네임·인상 중 하나는 적어주세요" } };
     if (type === "셀소" && !myG) return { status: 400, json: { error: "셀소는 내 성별을 골라주세요" } };
@@ -120,7 +122,7 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
     if (myToday.length >= 2) return { status: 429, json: { error: "글은 하루 2개까지만 올릴 수 있어요" } };
     const r = await fetch(bBase, { method: "POST", headers: H, body: JSON.stringify({ typecast: true, fields: {
       "작성카카오ID": kid, "유형": type, "업체": company, "날짜": date, "장소": place, "내묘사": me, "상대묘사": you, "하고싶은말": msg,
-      "내호수": meNo, "내닉네임": meNick, "상대호수": youNo, "상대닉네임": youNick,
+      "내호수": meNo, "내닉네임": meNick, "상대호수": youNo, "상대닉네임": youNick, "확인질문": question,
       "상태": "공개", "작성일": kstToday(), "응답수": 0
     } }) });
     const d = await r.json();
@@ -166,6 +168,16 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
     return { status: 200, json: { ok: true } };
   }
 
+  // ---- "이거 저인데 내려주세요" — 당사자 삭제 요청: 경고 없이 즉시 숨김 + 센터장 알림 ----
+  if (action === "bd_takedown") {
+    const p = await (await fetch(`${bBase}/${esc(body.postId)}`, { headers: H })).json();
+    const pf = p.fields || {};
+    if (!pf["작성카카오ID"]) return { status: 404, json: { error: "글을 찾을 수 없어요" } };
+    await fetch(`${bBase}/${p.id}`, { method: "PATCH", headers: H, body: JSON.stringify({ typecast: true, fields: { "상태": "숨김", "신고사유": ((pf["신고사유"] || "") + "\n[당사자 삭제요청] " + kid).trim() } }) });
+    try { if (notify) await notify(`🙈 당사자 삭제 요청 → 즉시 숨김\n${pf["업체"] || ""} ${pf["날짜"] || ""} · ${pf["상대호수"] || ""} ${pf["상대닉네임"] || ""}\n요청자 ${kid} (작성자에겐 제재 없음)`); } catch (e) {}
+    return { status: 200, json: { ok: true } };
+  }
+
   // ---- "저예요!" 쪽지 (1회 무료, 이후 쪽지권 필요) ----
   if (action === "bd_reply") {
     const postId = esc(body.postId), text = clean(body.text, 300);
@@ -178,6 +190,8 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
     const pf = p.fields || {};
     if (!pf["상태"] || pf["상태"] !== "공개") return { status: 404, json: { error: "글을 찾을 수 없어요" } };
     if (pf["작성카카오ID"] === kid) return { status: 400, json: { error: "내가 쓴 글이에요" } };
+    const answer = clean(body.answer, 100);
+    if (pf["확인질문"] && !answer) return { status: 400, json: { error: "확인 질문에 답을 적어주세요" } };
     const dup = await listAll(nBase, H, `AND({보낸카카오ID}="${kid}",{받는레코드ID}="${postId}")`, ["상태"]);
     if (dup.length) return { status: 409, json: { error: "이미 이 글에 쪽지를 보냈어요" } };
 
@@ -193,7 +207,7 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
 
     const r = await fetch(nBase, { method: "POST", headers: H, body: JSON.stringify({ typecast: true, fields: {
       "보낸레코드ID": "", "보낸카카오ID": kid, "보낸닉네임": "저예요",
-      "받는레코드ID": postId, "받는닉네임": "글쓴이", "회차": TAG, "내용": text, "상태": "대기", "보낸날짜": kstToday()
+      "받는레코드ID": postId, "받는닉네임": "글쓴이", "회차": TAG, "내용": text, "확인답변": answer, "상태": "대기", "보낸날짜": kstToday()
     } }) });
     const d = await r.json();
     if (!r.ok) return { status: r.status, json: { error: (d.error && d.error.message) || "저장 실패" } };
@@ -207,14 +221,14 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
 
   // ---- 쪽지함 (익명게시판 분) ----
   if (action === "bd_inbox") {
-    const myPosts = await listAll(bBase, H, `{작성카카오ID}="${kid}"`, ["업체", "날짜"]);
+    const myPosts = await listAll(bBase, H, `{작성카카오ID}="${kid}"`, ["업체", "날짜", "확인질문"]);
     const pMap = {}; myPosts.forEach(p => { pMap[p.id] = p.fields; });
     const received = myPosts.length ? await listAll(nBase, H, `AND({회차}="${TAG}",OR(${myPosts.map(p => `{받는레코드ID}="${p.id}"`).join(",")}))`) : [];
     const sent = await listAll(nBase, H, `AND({보낸카카오ID}="${kid}",{회차}="${TAG}")`);
     const items = [];
     received.forEach(n => { const f = n.fields || {}; if (f["상태"] === "삭제") return; const pf = pMap[f["받는레코드ID"]] || {};
       items.push({ id: n.id, dir: "received", board: true, round: `${pf["업체"] || ""} ${pf["날짜"] || ""}`.trim(), text: f["내용"] || "", status: f["상태"] || "대기", date: f["보낸날짜"] || "",
-        from: "저예요!", to: "" }); });
+        question: pf["확인질문"] || "", answer: f["확인답변"] || "", from: "저예요!", to: "" }); });
     const postIds = [...new Set(sent.map(n => n.fields["받는레코드ID"]))];
     const postMap = {};
     for (const id of postIds) { try { const p = await (await fetch(`${bBase}/${id}`, { headers: H })).json(); postMap[id] = p.fields || {}; } catch (e) {} }
