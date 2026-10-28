@@ -29,7 +29,7 @@ async function listAll(base, H, formula, fields, sort) {
     if (sort) url += `&sort%5B0%5D%5Bfield%5D=${encodeURIComponent(sort)}&sort%5B0%5D%5Bdirection%5D=desc`;
     if (offset) url += `&offset=${offset}`;
     const d = await (await fetch(url, { headers: H })).json();
-    if (d.error) throw new Error(d.error.message || JSON.stringify(d.error));
+    if (d.error) { const m = d.error.message || JSON.stringify(d.error); throw new Error(/model was not found|NOT_FOUND|Could not find table/i.test(m) ? "아직 준비 중이에요. 조금만 기다려주세요!" : m); }
     out = out.concat(d.records || []);
     if (!d.offset) break;
     offset = d.offset;
@@ -40,7 +40,7 @@ async function listAll(base, H, formula, fields, sort) {
 function pubPost(r, kid) {
   const f = r.fields || {};
   return {
-    id: r.id, company: f["업체"] || "", date: f["날짜"] || "", place: f["장소"] || "",
+    id: r.id, type: f["유형"] || "찾기", company: f["업체"] || "", date: f["날짜"] || "", place: f["장소"] || "",
     me: f["내묘사"] || "", you: f["상대묘사"] || "", msg: f["하고싶은말"] || "",
     meNo: f["내호수"] || "", meNick: f["내닉네임"] || "", youNo: f["상대호수"] || "", youNick: f["상대닉네임"] || "",
     created: f["작성일"] || "", replies: f["응답수"] || 0,
@@ -57,7 +57,7 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
 
   // ---- 글 목록 (로그인 없이 가능) ----
   if (action === "bd_list") {
-    const posts = await listAll(bBase, H, `{상태}="공개"`, ["업체", "날짜", "장소", "내묘사", "상대묘사", "하고싶은말", "내호수", "내닉네임", "상대호수", "상대닉네임", "작성일", "응답수", "작성카카오ID"], "작성일");
+    const posts = await listAll(bBase, H, `{상태}="공개"`, ["유형", "업체", "날짜", "장소", "내묘사", "상대묘사", "하고싶은말", "내호수", "내닉네임", "상대호수", "상대닉네임", "작성일", "응답수", "작성카카오ID"], "작성일");
     let sentTo = {};
     if (kid) {
       const sent = await listAll(nBase, H, `AND({보낸카카오ID}="${kid}",{회차}="${TAG}")`, ["받는레코드ID", "상태"]);
@@ -80,14 +80,17 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
     const youNo = otherG && youNoN > 0 && youNoN < 100 ? `${otherG} ${youNoN}호` : "";
     const meNick = clean(body.meNick, 12), youNick = clean(body.youNick, 12);
     const phone = normPhone(body.phone);
+    const type = body.type === "셀소" ? "셀소" : "찾기";
     if (!companyRaw || !date || !place) return { status: 400, json: { error: "업체·날짜·장소는 꼭 적어주세요" } };
-    if (!youNo && !youNick && !you) return { status: 400, json: { error: "찾는 분의 번호·닉네임·인상 중 하나는 적어주세요" } };
+    if (type === "찾기" && !youNo && !youNick && !you) return { status: 400, json: { error: "찾는 분의 번호·닉네임·인상 중 하나는 적어주세요" } };
+    if (type === "셀소" && !myG) return { status: 400, json: { error: "셀소는 내 성별을 골라주세요" } };
+    if (type === "셀소" && !meNo && !meNick && !me) return { status: 400, json: { error: "내 번호·닉네임·인상 중 하나는 적어주세요" } };
     if (phone.length < 9) return { status: 400, json: { error: "연락처를 정확히 입력해주세요 (상대에게 공개되지 않고, 알림과 연결 안내에만 써요)" } };
     if (hasPII(me + " " + you + " " + msg + " " + meNick + " " + youNick)) return { status: 400, json: { error: "글에는 전화번호·SNS 아이디·실명을 넣을 수 없어요. 그날의 인상만 적어주세요 :)" } };
     const myToday = await listAll(bBase, H, `AND({작성카카오ID}="${kid}",IS_SAME({작성일},"${kstToday()}","day"))`, ["상태"]);
     if (myToday.length >= 2) return { status: 429, json: { error: "글은 하루 2개까지만 올릴 수 있어요" } };
     const r = await fetch(bBase, { method: "POST", headers: H, body: JSON.stringify({ typecast: true, fields: {
-      "작성카카오ID": kid, "업체": company, "업체원문": companyRaw, "날짜": date, "장소": place, "내묘사": me, "상대묘사": you, "하고싶은말": msg,
+      "작성카카오ID": kid, "유형": type, "업체": company, "업체원문": companyRaw, "날짜": date, "장소": place, "내묘사": me, "상대묘사": you, "하고싶은말": msg,
       "내호수": meNo, "내닉네임": meNick, "상대호수": youNo, "상대닉네임": youNick,
       "연락처": phone, "상태": "공개", "작성일": kstToday(), "응답수": 0
     } }) });

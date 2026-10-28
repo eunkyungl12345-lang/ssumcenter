@@ -195,9 +195,9 @@
 
   /* ===== 익명 게시판: 다른 곳에서 만난 사람 ===== */
   async function renderBoard(){
-    var h='<button class="newbtn" onclick="openPostForm()">✍️ 그날 그 사람 찾는 글 쓰기</button>';
+    var h='<button class="newbtn" onclick="openPostForm()">✍️ 글 올리기 (그 사람 찾기 · 셀소)</button>';
     h+='<div id="postform"></div><div id="posts"><div class="spin"></div></div>';
-    h+='<div class="rule">· 어느 업체 소개팅이든 올릴 수 있어요. 업체명은 초성으로만 공개되고, 그날 번호(여 3호 등)·닉네임·한 줄 인상으로 찾아요<br>· 이름·전화번호·SNS·자세한 묘사는 올릴 수 없어요<br>· "저예요!" 쪽지는 <b style="color:var(--gold)">첫 1회 무료</b>, 두 번째부터는 쪽지권(1,000원)이 필요해요<br>· 상대가 수락하면 두 분께 1:1 매칭 신청 링크가 가고, 센터장이 신원 확인 후 연결해드려요 (연락처 비공개) · 부적절한 글은 신고 3회면 자동으로 내려가요</div>';
+    h+='<div class="rule">· 어느 업체 소개팅이든 올릴 수 있어요. 업체명은 초성으로만 공개되고, 그날 번호(여 3호 등)·닉네임·한 줄 인상으로 찾아요<br>· "찾기"는 그 사람을 찾는 글, "셀소"는 그날의 나를 올려두는 글이에요<br>· 이름·전화번호·SNS·자세한 묘사는 올릴 수 없어요<br>· 쪽지 보내기는 <b style="color:var(--gold)">첫 1회 무료</b>, 두 번째부터는 쪽지권(1,000원)이 필요해요. 받은 쪽지 수락은 무료<br>· 상대가 수락하면 두 분께 1:1 매칭 신청 링크가 가고, 센터장이 신원 확인 후 연결해드려요 (연락처 비공개) · 부적절한 글은 신고 3회면 자동으로 내려가요</div>';
     h+='<div class="card" style="margin-top:14px;text-align:center"><div style="font-size:14px;font-weight:900">아직 못 찾았어요?</div><div style="font-size:12.5px;color:var(--muted);margin:4px 0 10px">썸류센터 다음 회차에서 새 인연을 만나보세요</div><a href="rotation.html" class="save" style="display:block;text-decoration:none;text-align:center">썸류센터 소개팅 보러가기 →</a></div>';
     $("panel").innerHTML=h;
     var d=await api("bd_list");
@@ -209,11 +209,11 @@
       var btn;
       if(p.mine) btn='<button class="me" disabled>내가 쓴 글</button><button class="rp" onclick="hidePost(\''+p.id+'\')">내리기</button>';
       else if(p.sent) btn='<button class="me" disabled>'+(p.sent==="수락"?"수락됨 🎉":(p.sent==="거절"?"답장 없음":"쪽지 보냈어요 ✓"))+'</button>';
-      else btn='<button class="me" onclick="openModal(\'board\','+i+')">👋 저예요!</button><button class="rp" onclick="reportPost(\''+p.id+'\')">신고</button>';
-      g+='<div class="post"><div class="hd"><div><div class="co">'+esc(p.company)+' <span style="font-size:10.5px;color:var(--faint);font-weight:600">초성</span></div><div class="wh">'+esc(p.date)+' · '+esc(p.place)+'</div></div><span class="pill">저예요 '+(p.replies||0)+'</span></div>';
+      else btn='<button class="me" onclick="openModal(\'board\','+i+')">'+(p.type==="셀소"?"💌 쪽지 보내기":"👋 저예요!")+'</button><button class="rp" onclick="reportPost(\''+p.id+'\')">신고</button>';
+      g+='<div class="post"><div class="hd"><div><div class="co">'+esc(p.company)+' <span style="font-size:10.5px;color:var(--faint);font-weight:600">초성</span></div><div class="wh">'+esc(p.date)+' · '+esc(p.place)+'</div></div><div style="display:flex;gap:4px;flex-direction:column;align-items:flex-end"><span class="pill"'+(p.type==="셀소"?' style="background:rgba(232,143,176,.14);color:var(--female)"':'')+'>'+(p.type==="셀소"?"셀소":"찾는 중")+'</span><span class="pill">쪽지 '+(p.replies||0)+'</span></div></div>';
       function who(no,nick,desc){ var parts=[]; if(no) parts.push('<b>'+esc(no)+'</b>'); if(nick) parts.push('닉네임 <b>'+esc(nick)+'</b>'); var head=parts.join(' · '); return '<div class="bd">'+head+(head&&desc?'<br>':'')+esc(desc)+'</div>'; }
-      if(p.meNo||p.meNick||p.me) g+='<div class="lb">저는</div>'+who(p.meNo,p.meNick,p.me);
-      g+='<div class="lb">찾는 분</div>'+who(p.youNo,p.youNick,p.you);
+      if(p.meNo||p.meNick||p.me) g+='<div class="lb">'+(p.type==="셀소"?"저예요":"저는")+'</div>'+who(p.meNo,p.meNick,p.me);
+      if(p.type!=="셀소") g+='<div class="lb">찾는 분</div>'+who(p.youNo,p.youNick,p.you);
       if(p.msg) g+='<div class="lb">하고 싶은 말</div><div class="bd">'+esc(p.msg)+'</div>';
       g+='<div class="ft">'+btn+'</div></div>';
     });
@@ -223,7 +223,9 @@
     if(!KID){ needLogin(); return; }
     var today=new Date(Date.now()+9*3600*1000).toISOString().slice(0,10);
     $("postform").innerHTML='<div class="card">'+
-      '<div class="ch">그날 그 사람 찾기</div>'+
+      '<div class="ch">글 올리기</div>'+
+      '<div class="tabs" style="margin-bottom:14px"><div class="tab on" id="t-find" onclick="setPostType(\'찾기\')">🔍 그 사람 찾기</div><div class="tab" id="t-self" onclick="setPostType(\'셀소\')">🙋 셀소 (저 여기 있었어요)</div></div>'+
+      '<div class="rule" id="t-hint" style="margin:0 0 12px">그날 만난 분을 찾아요. 상대가 "저예요!" 하면 연결돼요.</div>'+
       '<div class="two"><div class="fld"><label>어디 소개팅? <small>· 초성으로만 공개돼요</small></label><input id="f-co" maxlength="30" placeholder="예: 썸류센터" oninput="$(\'f-co-prev\').textContent=this.value?\'공개될 이름: \'+chosung(this.value):\'\'"><div id="f-co-prev" style="font-size:11px;color:var(--gold);margin-top:4px;min-height:14px"></div></div>'+
       '<div class="fld"><label>날짜</label><input id="f-dt" type="date" max="'+today+'"></div></div>'+
       '<div class="fld"><label>장소 <small>· 동네 정도만</small></label><input id="f-pl" maxlength="20" placeholder="예: 강남역"></div>'+
@@ -231,7 +233,7 @@
         '<select id="f-mg" style="width:100%;background:var(--surface-2);border:1.5px solid var(--line-2);border-radius:12px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit"><option value="">성별</option><option value="남">남자</option><option value="여">여자</option></select>'+
         '<input id="f-mn" type="number" inputmode="numeric" min="1" max="99" placeholder="몇 호"><input id="f-mk" maxlength="12" placeholder="그날 닉네임"></div>'+
         '<input id="f-me" maxlength="60" placeholder="한 줄 인상 · 예: 검정 니트, 러닝 얘기" style="margin-top:8px"></div>'+
-      '<div class="fld"><label>찾는 분</label><div class="two">'+
+      '<div class="fld" id="f-you-w"><label>찾는 분</label><div class="two">'+
         '<input id="f-yn" type="number" inputmode="numeric" min="1" max="99" placeholder="몇 호"><input id="f-yk" maxlength="12" placeholder="그날 닉네임"></div>'+
         '<input id="f-you" maxlength="80" placeholder="한 줄 인상 · 예: 베이지 코트, 제주 한달살기" style="margin-top:8px"></div>'+
       '<div class="fld"><label>하고 싶은 말 <small>· 선택</small></label><textarea id="f-msg" maxlength="200" style="min-height:70px" placeholder="그때 번호 못 물어봐서 아쉬웠어요"></textarea></div>'+
@@ -240,8 +242,15 @@
       '<div class="row"><button class="btn g" onclick="$(\'postform\').innerHTML=\'\'">취소</button><button class="btn p" id="f-save" onclick="submitPost()">올리기</button></div><div class="msg" id="f-msg-out"></div></div>';
     $("f-co").focus();
   }
+  var postType="찾기";
+  function setPostType(t){
+    postType=t;
+    $("t-find").classList.toggle("on",t==="찾기"); $("t-self").classList.toggle("on",t==="셀소");
+    $("f-you-w").style.display=t==="셀소"?"none":"block";
+    $("t-hint").textContent=t==="셀소"?"그날 나를 올려둬요. 관심 있는 분이 쪽지를 보내면 수락해서 연결돼요.":"그날 만난 분을 찾아요. 상대가 \"저예요!\" 하면 연결돼요.";
+  }
   async function submitPost(){
-    var b={company:$("f-co").value,date:$("f-dt").value,place:$("f-pl").value,myGender:$("f-mg").value,meNo:$("f-mn").value,meNick:$("f-mk").value,me:$("f-me").value,youNo:$("f-yn").value,youNick:$("f-yk").value,you:$("f-you").value,msg:$("f-msg").value,phone:$("f-ph").value};
+    var b={type:postType,company:$("f-co").value,date:$("f-dt").value,place:$("f-pl").value,myGender:$("f-mg").value,meNo:$("f-mn").value,meNick:$("f-mk").value,me:$("f-me").value,youNo:$("f-yn").value,youNick:$("f-yk").value,you:$("f-you").value,msg:$("f-msg").value,phone:$("f-ph").value};
     $("f-save").disabled=true; $("f-msg-out").textContent="올리는 중...";
     var d=await api("bd_post",b);
     if(!d.ok){ $("f-msg-out").textContent=d.error||"실패"; $("f-save").disabled=false; return; }
@@ -289,7 +298,7 @@
     if(!KID){ needLogin(); return; }
     mode=m; target=(m==="rot"?people:posts)[i]; if(!target) return;
     if(m==="rot"){ $("m-title").textContent=target.nickname+"님께 쪽지"; $("m-sub").textContent=curRound+" 소개팅에서 만난 분이에요. 상대가 수락하면 센터장이 연결해드려요."; $("m-phone-w").style.display="none"; }
-    else { $("m-title").textContent="👋 저예요!"; $("m-sub").textContent=target.company+" "+target.date+" 글쓴이에게 보내요. 첫 쪽지는 무료, 두 번째부터는 쪽지권이 필요해요."; $("m-phone-w").style.display="block"; $("m-phone").value=""; }
+    else { $("m-title").textContent=target.type==="셀소"?"💌 쪽지 보내기":"👋 저예요!"; $("m-sub").textContent=target.company+" "+target.date+" 글쓴이에게 보내요. 첫 쪽지는 무료, 두 번째부터는 쪽지권이 필요해요."; $("m-phone-w").style.display="block"; $("m-phone").value=""; }
     $("m-text").value=""; $("m-len").textContent="0"; $("m-msg").textContent=""; $("m-send").disabled=false;
     $("modal").classList.add("on"); $("m-text").focus();
   }
