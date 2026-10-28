@@ -418,7 +418,12 @@ module.exports = async function handler(req, res) {
             await sendSms({ to, text: isMarriage ? 결혼접수문자(f["이름"] || "") : 일대일접수문자(f["이름"] || "") });
           }
         }
-      } catch (e) { console.error("[airtable] 1:1 접수문자 발송 실패:", e.message); }
+      } catch (e) {
+        console.error("[airtable] 1:1 접수문자 발송 실패:", e.message);
+        // 자동 문자는 실패해도 신청 자체는 성공시킨다.
+        // 다만 조용히 묻히면 센터장이 영영 모르므로 슬랙으로 알린다.
+        await notifySlack("⚠️ 1:1 접수 안내 문자가 안 나갔어요\n" + e.message + "\n수동으로 보내주세요!");
+      }
     }
 
     // 매칭 응답이 '거절'이면 → 양쪽을 '승인'으로 되돌림 (소개중 해제 → 다음 소개 가능, best-effort)
