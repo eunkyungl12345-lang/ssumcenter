@@ -73,7 +73,7 @@ footer a{color:var(--amber)}
   <section class="hero">
     <span class="pill">센터장 PICK</span>
     <h1>강남역·신논현역<br><span>소개팅 장소</span></h1>
-    <p class="lead">"어디서 만나지?" 고민될 때,<br>소개팅 센터 운영하면서 직접 고른 곳만 모았어요.</p>
+    <p class="lead">"어디서 만나지?" 고민될 때,<br>동탄·성수·강남 센터장 3명이 직접 고른 곳만 모았어요.</p>
   </section>
 
   <section class="rules">
@@ -90,7 +90,7 @@ footer a{color:var(--amber)}
     <div class="cat"><h2>☕ 카페</h2><p>첫 만남 · 밥 먹고 2차</p></div>
 
     <article class="spot">
-      <span class="badge">📍 동탄 · 성수 · 강남 센터장 PICK</span>
+      <span class="badge">💛 동탄 · 성수 · 강남 센터장 모두 PICK</span>
       <div class="spot-name">에이비카페</div>
       <div class="mood">🌴 발리 감성 분위기</div>
       <div class="meta">
@@ -139,7 +139,11 @@ footer a{color:var(--amber)}
   function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
   function card(f){
     var h='<article class="spot">';
-    if(f["지역"]) h+='<span class="badge">📍 '+esc(f["지역"])+' 센터장 PICK</span>';
+    var by=f["추천 센터장"]; by=Array.isArray(by)?by:String(by||"").split(/[,·\/\s]+/);
+    by=by.map(function(x){return String(x).replace("센터장","").trim()}).filter(Boolean);
+    var ORDER=["동탄","성수","강남"]; by.sort(function(a,b){return (ORDER.indexOf(a)+9)%9-(ORDER.indexOf(b)+9)%9});
+    if(by.length>=3) h+='<span class="badge">💛 '+esc(by.join(" · "))+' 센터장 모두 PICK</span>';
+    else if(by.length) h+='<span class="badge">💛 '+esc(by.join(" · "))+' 센터장 PICK</span>';
     else h+='<span class="badge">센터장 PICK</span>';
     h+='<div class="spot-name">'+esc(f["이름"])+'</div>';
     if(f["분위기"]) h+='<div class="mood">'+esc(f["분위기"])+'</div>';
