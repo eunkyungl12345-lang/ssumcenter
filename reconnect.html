@@ -164,7 +164,7 @@
   async function renderBoard(){
     var h='<button class="newbtn" onclick="openPostForm()">✍️ 글 올리기 (그 사람 찾기 · 셀소)</button>';
     h+='<div id="postform"></div><div id="posts"><div class="spin"></div></div>';
-    h+='<div class="rule">· 썸류센터든 어느 업체 로테이션 소개팅이든 올릴 수 있어요. 업체명은 초성으로만 공개되고, 그날 번호(여 3호 등)·닉네임·한 줄 인상으로 찾아요<br>· "찾기"는 그 사람을 찾는 글, "셀소"는 그날의 나를 올려두는 글이에요<br>· 이름·전화번호·SNS·자세한 묘사는 올릴 수 없어요<br>· 쪽지 보내기는 <b style="color:var(--gold)">첫 1회 무료</b>, 두 번째부터는 쪽지권(1,000원)이 필요해요. 받은 쪽지 수락은 무료<br>· 연락처는 받지 않아요. 상대가 수락하면 두 분 쪽지함에 1:1 매칭 신청 링크가 뜨고, 센터장이 신원 확인 후 연결해드려요<br>· 신고 1회면 글이 바로 내려가고 작성자에게 경고 — 2회 7일 정지, 3회 영구 정지<br>· 19금·욕설·비하·광고 금지 — <a href="javascript:void(0)" onclick="$(\'rules\').classList.add(\'on\')" style="color:var(--amber);font-weight:800">커뮤니티 규칙 전체 보기</a></div>';
+    h+='<div class="rule">· 썸류센터든 어느 업체 로테이션 소개팅이든 올릴 수 있어요. 업체명과 상대 닉네임은 초성으로만 공개되고, 그날 번호(여 3호 등)·한 줄 인상으로 찾아요<br>· "찾기"는 그 사람을 찾는 글, "셀소"는 그날의 나를 올려두는 글이에요<br>· 이름·전화번호·SNS·자세한 묘사는 올릴 수 없어요<br>· 쪽지 보내기는 <b style="color:var(--gold)">첫 1회 무료</b>, 두 번째부터는 쪽지권(1,000원)이 필요해요. 받은 쪽지 수락은 무료<br>· 연락처는 받지 않아요. 상대가 수락하면 두 분 쪽지함에 1:1 매칭 신청 링크가 뜨고, 센터장이 신원 확인 후 연결해드려요<br>· 신고 1회면 글이 바로 내려가고 작성자에게 경고 — 2회 7일 정지, 3회 영구 정지<br>· 19금·욕설·비하·광고 금지 — <a href="javascript:void(0)" onclick="$(\'rules\').classList.add(\'on\')" style="color:var(--amber);font-weight:800">커뮤니티 규칙 전체 보기</a></div>';
     h+='<div class="card" style="margin-top:14px;text-align:center"><div style="font-size:14px;font-weight:900">아직 못 찾았어요?</div><div style="font-size:12.5px;color:var(--muted);margin:4px 0 10px">썸류센터에서 새 인연을 만나보세요</div><div class="row"><a href="rotation.html" class="btn p" style="display:block;text-decoration:none;text-align:center">다음 회차 신청 →</a><a href="matching.html" class="btn p" style="display:block;text-decoration:none;text-align:center;background:var(--surface-2);color:var(--gold);border:1px solid var(--amber)">1:1 매칭 신청 →</a></div></div>';
     $("panel").innerHTML=h;
     var d=await api("bd_list");
@@ -203,7 +203,7 @@
         '<input id="f-mn" type="number" inputmode="numeric" min="1" max="99" placeholder="몇 호"><input id="f-mk" maxlength="12" placeholder="그날 닉네임"></div>'+
         '<input id="f-me" maxlength="60" placeholder="한 줄 인상 · 예: 검정 니트, 러닝 얘기" style="margin-top:8px"></div>'+
       '<div class="fld" id="f-you-w"><label>찾는 분</label><div class="two">'+
-        '<input id="f-yn" type="number" inputmode="numeric" min="1" max="99" placeholder="몇 호"><input id="f-yk" maxlength="12" placeholder="그날 닉네임"></div>'+
+        '<input id="f-yn" type="number" inputmode="numeric" min="1" max="99" placeholder="몇 호"><input id="f-yk" maxlength="12" placeholder="그날 닉네임 (초성으로 공개)" onblur="this.value=chosung(this.value)"></div>'+
         '<input id="f-you" maxlength="80" placeholder="한 줄 인상 · 예: 베이지 코트, 제주 한달살기" style="margin-top:8px"></div>'+
       '<div class="fld"><label>하고 싶은 말 <small>· 선택</small></label><textarea id="f-msg" maxlength="200" style="min-height:70px" placeholder="그때 번호 못 물어봐서 아쉬웠어요"></textarea></div>'+
       '<div class="rule" style="margin:0 0 12px">번호·닉네임·짧은 인상만 적어주세요. 실명·전화번호·SNS·너무 자세한 묘사, 욕설·19금 표현은 올라가지 않아요. <a href="javascript:void(0)" onclick="$(\'rules\').classList.add(\'on\')" style="color:var(--amber);font-weight:800">커뮤니티 규칙 보기</a></div>'+

@@ -106,7 +106,7 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
     const meNoN = parseInt(body.meNo, 10), youNoN = parseInt(body.youNo, 10);
     const meNo = myG && meNoN > 0 && meNoN < 100 ? `${myG} ${meNoN}호` : "";
     const youNo = otherG && youNoN > 0 && youNoN < 100 ? `${otherG} ${youNoN}호` : "";
-    const meNick = clean(body.meNick, 12), youNick = clean(body.youNick, 12);
+    const meNick = clean(body.meNick, 12), youNick = chosung(clean(body.youNick, 12)); // 상대 닉네임은 초성만 (본인만 알아보게)
     const type = body.type === "셀소" ? "셀소" : "찾기";
     if (!companyRaw || !date || !place) return { status: 400, json: { error: "업체·날짜·장소는 꼭 적어주세요" } };
     if (type === "찾기" && !youNo && !youNick && !you) return { status: 400, json: { error: "찾는 분의 번호·닉네임·인상 중 하나는 적어주세요" } };
