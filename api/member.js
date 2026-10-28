@@ -97,9 +97,9 @@ module.exports = async function handler(req, res) {
   const body = (req.method === "POST" && req.body) || {};
 
   // "그때 그 사람 찾기" 쪽지 기능 (고객용, 카카오 로그인 필요) → api/_reconnect.js
-  if (req.method === "POST" && typeof body.action === "string" && body.action.indexOf("rc_") === 0) {
+  if (req.method === "POST" && typeof body.action === "string" && (body.action.indexOf("rc_") === 0 || body.action.indexOf("bd_") === 0)) {
     try {
-      const reconnect = require("./_reconnect.js");
+      const reconnect = body.action.indexOf("bd_") === 0 ? require("./_board.js") : require("./_reconnect.js");
       let sendSms = null;
       try { sendSms = require("./_sms.js").sendSms; } catch (e) {}
       const out = await reconnect({ action: body.action, body, TOKEN, BASE_ID, sendSms });
