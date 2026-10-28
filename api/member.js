@@ -123,7 +123,7 @@ module.exports = async function handler(req, res) {
         : `https://api.airtable.com/v0/meta/bases/${BASE_ID}/tables/${body.tableId}/fields`;
       const payload = body.action === "createTable"
         ? { name: body.name, description: body.description || "", fields: body.fields || [] }
-        : { name: body.name, type: body.type || "multilineText", description: body.description || "" };
+        : Object.assign({ name: body.name, type: body.type || "multilineText", description: body.description || "" }, body.options ? { options: body.options } : {});
       const r = await fetch(url, {
         method: "POST",
         headers: { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" },

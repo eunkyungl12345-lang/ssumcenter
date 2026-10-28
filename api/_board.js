@@ -19,6 +19,9 @@ function normPhone(p) { return String(p || "").replace(/[^0-9]/g, ""); }
 // 한글 → 초성 (업체명 익명화: 썸류센터 → ㅆㄹㅅㅌ). 한글 아닌 글자는 그대로
 const CHO = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
 function chosung(t) { return String(t || "").split("").map(c => { const code = c.charCodeAt(0); return (code >= 0xAC00 && code <= 0xD7A3) ? CHO[Math.floor((code - 0xAC00) / 588)] : c; }).join(""); }
+// 욕설·비하·19금 표현 차단 (커뮤니티 규칙)
+const BAD = /(시발|씨발|ㅅㅂ|ㅆㅂ|병신|ㅂㅅ|개새|좆|존나|ㅈㄴ|지랄|미친년|미친놈|년아|놈아|꺼져|닥쳐|섹스|섹파|원나잇|야한|야동|자위|가슴\s*크|몸매\s*(좋|죽)|모텔|호텔\s*가|19금|성인|조건\s*만남|스폰|애인\s*대행|돈\s*줄)/i;
+function isBad(t) { return BAD.test(String(t || "")); }
 function hasPII(t) { return /01[016789][-\s]?\d{3,4}[-\s]?\d{4}/.test(t) || /@[A-Za-z0-9_.]{3,}/.test(t) || /(인스타|카톡|카카오톡|아이디|id\s*[:：])/i.test(t); }
 
 async function listAll(base, H, formula, fields, sort) {
@@ -86,6 +89,7 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
     if (type === "셀소" && !myG) return { status: 400, json: { error: "셀소는 내 성별을 골라주세요" } };
     if (type === "셀소" && !meNo && !meNick && !me) return { status: 400, json: { error: "내 번호·닉네임·인상 중 하나는 적어주세요" } };
     if (phone.length < 9) return { status: 400, json: { error: "연락처를 정확히 입력해주세요 (상대에게 공개되지 않고, 알림과 연결 안내에만 써요)" } };
+    if (isBad(me + " " + you + " " + msg + " " + meNick + " " + youNick + " " + companyRaw)) return { status: 400, json: { error: "욕설·비하·성적인 표현은 올릴 수 없어요. 커뮤니티 규칙을 확인해주세요" } };
     if (hasPII(me + " " + you + " " + msg + " " + meNick + " " + youNick)) return { status: 400, json: { error: "글에는 전화번호·SNS 아이디·실명을 넣을 수 없어요. 그날의 인상만 적어주세요 :)" } };
     const myToday = await listAll(bBase, H, `AND({작성카카오ID}="${kid}",IS_SAME({작성일},"${kstToday()}","day"))`, ["상태"]);
     if (myToday.length >= 2) return { status: 429, json: { error: "글은 하루 2개까지만 올릴 수 있어요" } };
@@ -122,6 +126,8 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
   if (action === "bd_reply") {
     const postId = esc(body.postId), text = clean(body.text, 300), phone = normPhone(body.phone);
     if (!postId || !text) return { status: 400, json: { error: "내용을 입력해주세요" } };
+    if (isBad(text)) return { status: 400, json: { error: "욕설·비하·성적인 표현은 보낼 수 없어요" } };
+    if (hasPII(text)) return { status: 400, json: { error: "쪽지에 전화번호·SNS 아이디는 넣을 수 없어요. 수락되면 센터장이 연결해드려요" } };
     if (phone.length < 9) return { status: 400, json: { error: "연락처를 정확히 입력해주세요 (상대에게 공개되지 않고, 알림과 연결 안내에만 써요)" } };
     const p = await (await fetch(`${bBase}/${postId}`, { headers: H })).json();
     const pf = p.fields || {};

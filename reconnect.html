@@ -89,7 +89,7 @@
 <div class="wrap">
   <div class="top">
     <div class="h">💌 그때 그 사람</div>
-    <div><a href="index.html">🏠 홈</a><a href="my.html">내 프로필</a></div>
+    <div><a href="javascript:void(0)" onclick="$('rules').classList.add('on')">📜 규칙</a><a href="index.html">🏠 홈</a><a href="my.html">내 프로필</a></div>
   </div>
 
   <div class="hero">
@@ -98,6 +98,23 @@
   </div>
 
   <div id="content"><div class="spin"></div></div>
+</div>
+
+<div class="modal" id="rules">
+  <div class="sheet">
+    <h3>📜 커뮤니티 규칙</h3>
+    <p>서로 기분 좋게 쓰려고 정한 약속이에요. 어기면 글·쪽지가 삭제되고 이용이 막힐 수 있어요.</p>
+    <div style="font-size:13.5px;line-height:1.75">
+      <div style="margin-bottom:10px"><b style="color:var(--gold)">1. 19금 · 성적인 표현 금지</b><br><span style="color:var(--muted)">외모를 성적으로 묘사하거나, 만남의 목적을 성적으로 쓰는 글·쪽지는 바로 삭제돼요.</span></div>
+      <div style="margin-bottom:10px"><b style="color:var(--gold)">2. 욕설 · 비하 · 조롱 금지</b><br><span style="color:var(--muted)">상대방이든 업체든, 깎아내리는 말은 안 돼요. 그날 소개팅 후기 비방도 금지예요.</span></div>
+      <div style="margin-bottom:10px"><b style="color:var(--gold)">3. 실명 · 연락처 · SNS 금지</b><br><span style="color:var(--muted)">이름, 전화번호, 인스타 아이디, 직장명처럼 사람을 특정할 수 있는 정보는 올릴 수 없어요. 업체명도 초성으로만 공개돼요.</span></div>
+      <div style="margin-bottom:10px"><b style="color:var(--gold)">4. 묘사는 그날의 인상까지만</b><br><span style="color:var(--muted)">"베이지 코트, 제주 얘기" 정도면 충분해요. 너무 자세한 외모·신상 묘사는 올라가지 않아요.</span></div>
+      <div style="margin-bottom:10px"><b style="color:var(--gold)">5. 광고 · 영업 · 조건 만남 금지</b><br><span style="color:var(--muted)">다른 서비스 홍보, 금전 거래, 조건 만남 제안은 즉시 삭제하고 이용을 막아요.</span></div>
+      <div style="margin-bottom:10px"><b style="color:var(--gold)">6. 쪽지는 한 사람에게 한 번</b><br><span style="color:var(--muted)">답이 없다고 다시 보내거나 다른 글로 또 보내지 마세요. 거절은 상대에게 알리지 않으니 편하게 눌러도 돼요.</span></div>
+      <div><b style="color:var(--gold)">7. 신고는 바로 처리</b><br><span style="color:var(--muted)">신고 3회면 자동으로 글이 내려가고, 센터장이 확인해요. 허위 신고도 제재 대상이에요.</span></div>
+    </div>
+    <button class="btn p" style="width:100%;margin-top:16px" onclick="$('rules').classList.remove('on')">확인했어요</button>
+  </div>
 </div>
 
 <div class="modal" id="modal">
@@ -197,7 +214,7 @@
   async function renderBoard(){
     var h='<button class="newbtn" onclick="openPostForm()">✍️ 글 올리기 (그 사람 찾기 · 셀소)</button>';
     h+='<div id="postform"></div><div id="posts"><div class="spin"></div></div>';
-    h+='<div class="rule">· 어느 업체 소개팅이든 올릴 수 있어요. 업체명은 초성으로만 공개되고, 그날 번호(여 3호 등)·닉네임·한 줄 인상으로 찾아요<br>· "찾기"는 그 사람을 찾는 글, "셀소"는 그날의 나를 올려두는 글이에요<br>· 이름·전화번호·SNS·자세한 묘사는 올릴 수 없어요<br>· 쪽지 보내기는 <b style="color:var(--gold)">첫 1회 무료</b>, 두 번째부터는 쪽지권(1,000원)이 필요해요. 받은 쪽지 수락은 무료<br>· 상대가 수락하면 두 분께 1:1 매칭 신청 링크가 가고, 센터장이 신원 확인 후 연결해드려요 (연락처 비공개) · 부적절한 글은 신고 3회면 자동으로 내려가요</div>';
+    h+='<div class="rule">· 어느 업체 소개팅이든 올릴 수 있어요. 업체명은 초성으로만 공개되고, 그날 번호(여 3호 등)·닉네임·한 줄 인상으로 찾아요<br>· "찾기"는 그 사람을 찾는 글, "셀소"는 그날의 나를 올려두는 글이에요<br>· 이름·전화번호·SNS·자세한 묘사는 올릴 수 없어요<br>· 쪽지 보내기는 <b style="color:var(--gold)">첫 1회 무료</b>, 두 번째부터는 쪽지권(1,000원)이 필요해요. 받은 쪽지 수락은 무료<br>· 상대가 수락하면 두 분께 1:1 매칭 신청 링크가 가고, 센터장이 신원 확인 후 연결해드려요 (연락처 비공개) · 부적절한 글은 신고 3회면 자동으로 내려가요<br>· 19금·욕설·비하·광고 금지 — <a href="javascript:void(0)" onclick="$(\'rules\').classList.add(\'on\')" style="color:var(--amber);font-weight:800">커뮤니티 규칙 전체 보기</a></div>';
     h+='<div class="card" style="margin-top:14px;text-align:center"><div style="font-size:14px;font-weight:900">아직 못 찾았어요?</div><div style="font-size:12.5px;color:var(--muted);margin:4px 0 10px">썸류센터 다음 회차에서 새 인연을 만나보세요</div><a href="rotation.html" class="save" style="display:block;text-decoration:none;text-align:center">썸류센터 소개팅 보러가기 →</a></div>';
     $("panel").innerHTML=h;
     var d=await api("bd_list");
@@ -238,7 +255,7 @@
         '<input id="f-you" maxlength="80" placeholder="한 줄 인상 · 예: 베이지 코트, 제주 한달살기" style="margin-top:8px"></div>'+
       '<div class="fld"><label>하고 싶은 말 <small>· 선택</small></label><textarea id="f-msg" maxlength="200" style="min-height:70px" placeholder="그때 번호 못 물어봐서 아쉬웠어요"></textarea></div>'+
       '<div class="fld"><label>내 연락처 <small>· 상대에게 공개 안 돼요. 알림·연결용</small></label><input id="f-ph" type="tel" inputmode="numeric" placeholder="01012345678"></div>'+
-      '<div class="rule" style="margin:0 0 12px">번호·닉네임·짧은 인상만 적어주세요. 실명·전화번호·SNS·너무 자세한 묘사는 올라가지 않아요.</div>'+
+      '<div class="rule" style="margin:0 0 12px">번호·닉네임·짧은 인상만 적어주세요. 실명·전화번호·SNS·너무 자세한 묘사, 욕설·19금 표현은 올라가지 않아요. <a href="javascript:void(0)" onclick="$(\'rules\').classList.add(\'on\')" style="color:var(--amber);font-weight:800">커뮤니티 규칙 보기</a></div>'+
       '<div class="row"><button class="btn g" onclick="$(\'postform\').innerHTML=\'\'">취소</button><button class="btn p" id="f-save" onclick="submitPost()">올리기</button></div><div class="msg" id="f-msg-out"></div></div>';
     $("f-co").focus();
   }
@@ -320,6 +337,7 @@
     setTimeout(function(){ closeModal(); if(mode==="rot") renderFind(); else renderBoard(); },900);
   }
   $("modal").addEventListener("click",function(e){ if(e.target===this) closeModal(); });
+  $("rules").addEventListener("click",function(e){ if(e.target===this) this.classList.remove("on"); });
 
   load();
 </script>
