@@ -13,7 +13,7 @@ function kstToday() {
   return d.toISOString().slice(0, 10);
 }
 function esc(s) { return String(s || "").replace(/["\\]/g, ""); }
-const BAD = /(시발|씨발|ㅅㅂ|ㅆㅂ|병신|ㅂㅅ|개새|좆|존나|ㅈㄴ|지랄|미친년|미친놈|년아|놈아|꺼져|닥쳐|섹스|섹파|원나잇|야한|야동|자위|가슴\s*크|몸매\s*(좋|죽)|모텔|호텔\s*가|19금|성인|조건\s*만남|스폰|애인\s*대행|돈\s*줄)/i;
+const BAD = /(시발|씨발|ㅅㅂ|ㅆㅂ|병신|ㅂㅅ|개새|좆|존나|ㅈㄴ|지랄|미친년|미친놈|년아|놈아|꺼져|닥쳐|섹스|섹파|원나잇|야한|야동|자위|가슴\s*크|몸매\s*(좋|죽)|모텔|호텔\s*가|19금|성인\s*(물|영상|사이트|만남|콘텐츠|용품)|조건\s*만남|스폰|애인\s*대행|돈\s*줄)/i;
 function hasPII(t) { return /01[016789][-\s]?\d{3,4}[-\s]?\d{4}/.test(t) || /@[A-Za-z0-9_.]{3,}/.test(t) || /(인스타|카톡|카카오톡|아이디|id\s*[:：])/i.test(t); }
 function roundKey(rd) { const m = String(rd || "").match(/(\d{1,2})\/(\d{1,2})/); return m ? parseInt(m[1]) * 100 + parseInt(m[2]) : 0; }
 
