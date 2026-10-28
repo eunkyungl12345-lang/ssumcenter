@@ -96,6 +96,17 @@ module.exports = async function handler(req, res) {
   const isAdmin = ADMIN_PW && req.headers["x-admin-key"] === ADMIN_PW;
   const body = (req.method === "POST" && req.body) || {};
 
+  // "그때 그 사람 찾기" 쪽지 기능 (고객용, 카카오 로그인 필요) → api/_reconnect.js
+  if (req.method === "POST" && typeof body.action === "string" && body.action.indexOf("rc_") === 0) {
+    try {
+      const reconnect = require("./_reconnect.js");
+      let sendSms = null;
+      try { sendSms = require("./_sms.js").sendSms; } catch (e) {}
+      const out = await reconnect({ action: body.action, body, TOKEN, BASE_ID, sendSms });
+      return res.status(out.status).json(out.json);
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
   if (isAdmin && body.action === "listTables") {
     try {
       const r = await fetch(`https://api.airtable.com/v0/meta/bases/${BASE_ID}/tables`, { headers: { "Authorization": `Bearer ${TOKEN}` } });
