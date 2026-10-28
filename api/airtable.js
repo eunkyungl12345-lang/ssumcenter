@@ -200,6 +200,9 @@ module.exports = async function handler(req, res) {
       // 개인정보(연락처·사진) 노출 방지: 매칭 응답 테이블 + 고객 본인 조회만 허용
       if (isCustomer) {
         custFilter = `{카카오ID}="${String(kakaoId).replace(/["\\]/g, "")}"`;
+      } else if (table === "데이트 장소") {
+        // 공개 페이지(/date-spots)용: '공개' 체크된 장소만 누구나 조회 (개인정보 없음)
+        custFilter = "{공개}";
       } else if (table !== "매칭 응답") {
         return res.status(401).json({ error: "인증이 필요합니다" });
       }

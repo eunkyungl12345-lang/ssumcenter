@@ -42,9 +42,8 @@ h1 span,.ac{color:var(--amber)}
 .cat h2{font-size:22px;font-weight:800}
 .cat p{font-size:13px;color:var(--dim)}
 .spot{border:1px solid var(--border);border-radius:20px;background:var(--surface);padding:24px 22px;margin-bottom:16px}
-.spot-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .spot-name{font-size:21px;font-weight:800}
-.badge{flex:none;font-size:11px;font-weight:700;background:var(--amber);color:#1a1006;padding:5px 11px;border-radius:100px}
+.badge{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);color:#1a1006;padding:5px 12px;border-radius:100px;margin-bottom:10px}
 .mood{font-size:14px;color:var(--amber-light);margin-top:4px;font-weight:600}
 .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .meta span{font-size:12.5px;color:var(--cream);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);padding:5px 11px;border-radius:10px}
@@ -87,19 +86,15 @@ footer a{color:var(--amber)}
     </ul>
   </section>
 
-  <section>
+  <section id="spots">
     <div class="cat"><h2>☕ 카페</h2><p>첫 만남 · 밥 먹고 2차</p></div>
 
     <article class="spot">
-      <div class="spot-head">
-        <div>
-          <div class="spot-name">에이비카페 강남</div>
-          <div class="mood">🌴 발리 감성 분위기</div>
-        </div>
-        <span class="badge">센터장 PICK</span>
-      </div>
+      <span class="badge">📍 동탄 · 성수 · 강남 센터장 PICK</span>
+      <div class="spot-name">에이비카페</div>
+      <div class="mood">🌴 발리 감성 분위기</div>
       <div class="meta">
-        <span>📍 강남대로102길 32</span>
+        <span>📍 강남점 · 강남대로102길 32</span>
         <span>🚶 신논현역 도보 약 5분</span>
         <span>🚶 강남역 도보 약 8분</span>
         <span>🌙 늦은 시간까지 영업</span>
@@ -135,5 +130,45 @@ footer a{color:var(--amber)}
   <p>강남 2030 소개팅 서비스 · <a href="https://instagram.com/ssum_center_official" target="_blank" rel="noopener">인스타그램</a></p>
   <p style="margin-top:6px">Copyright 2026 썸류센터. All rights reserved.</p>
 </footer>
+
+<script>
+/* 장소 목록: 에어테이블 '데이트 장소' 표에서 불러와요. (공개 체크된 것만)
+   표를 못 불러오면 위에 적힌 기본 내용(에이비카페)이 그대로 보여요. */
+(function(){
+  var CATS=[["카페","☕ 카페","첫 만남 · 밥 먹고 2차"],["점심","🍝 점심 소개팅","낮에 가볍게"],["저녁","🌙 저녁 소개팅","퇴근 후 천천히"]];
+  function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function card(f){
+    var h='<article class="spot">';
+    if(f["지역"]) h+='<span class="badge">📍 '+esc(f["지역"])+' 센터장 PICK</span>';
+    else h+='<span class="badge">센터장 PICK</span>';
+    h+='<div class="spot-name">'+esc(f["이름"])+'</div>';
+    if(f["분위기"]) h+='<div class="mood">'+esc(f["분위기"])+'</div>';
+    var meta=[];
+    if(f["주소"]) meta.push("📍 "+f["주소"]);
+    String(f["거리"]||"").split(/\n|,/).forEach(function(x){x=x.trim();if(x)meta.push("🚶 "+x)});
+    if(meta.length) h+='<div class="meta">'+meta.map(function(m){return '<span>'+esc(m)+'</span>'}).join("")+'</div>';
+    if(f["한마디"]) h+='<div class="tip"><b>센터장 한마디</b>'+esc(f["한마디"]).replace(/\n/g,"<br>")+'</div>';
+    var tips=String(f["꿀팁"]||"").split("\n").map(function(x){return x.replace(/^[-•·\s]+/,"").trim()}).filter(Boolean);
+    if(tips.length) h+='<div class="tip"><b>소개팅 꿀팁</b><ul>'+tips.map(function(t){return '<li>'+esc(t)+'</li>'}).join("")+'</ul></div>';
+    var link=f["지도링크"]||("https://map.naver.com/p/search/"+encodeURIComponent(f["이름"]||""));
+    if(!/^https?:\/\//.test(link)) link="https://map.naver.com/p/search/"+encodeURIComponent(f["이름"]||"");
+    h+='<a class="map" href="'+esc(link)+'" target="_blank" rel="noopener">네이버 지도에서 보기 →</a>';
+    h+='<p class="note">영업시간은 방문 전에 지도에서 한 번 더 확인해 주세요.</p></article>';
+    return h;
+  }
+  fetch("/api/airtable?table="+encodeURIComponent("데이트 장소")).then(function(r){return r.ok?r.json():null}).then(function(d){
+    var recs=((d&&d.records)||[]).map(function(r){return r.fields||{}}).filter(function(f){return f["이름"]});
+    if(!recs.length) return;
+    recs.sort(function(a,b){return (a["순서"]||999)-(b["순서"]||999)});
+    var html="";
+    CATS.forEach(function(c){
+      var list=recs.filter(function(f){return (f["분류"]||"카페")===c[0]});
+      html+='<div class="cat"><h2>'+c[1]+'</h2><p>'+c[2]+'</p></div>';
+      html+=list.length?list.map(card).join(""):'<div class="more">곧 추가할게요 🙂</div>';
+    });
+    document.getElementById("spots").innerHTML=html;
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>
