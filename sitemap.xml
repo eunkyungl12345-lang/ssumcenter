@@ -32,4 +32,8 @@
     <loc>https://ssumcenter.vercel.app/guide</loc>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://ssumcenter.vercel.app/date-spots</loc>
+    <priority>0.7</priority>
+  </url>
 </urlset>
