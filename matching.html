@@ -476,6 +476,7 @@
             <option value="쓰레드">쓰레드</option>
             <option value="지인소개">지인소개</option>
             <option value="인터넷">인터넷(검색 등)</option>
+            <option value="그날그사람">그날 그 사람 (쪽지 연결)</option>
           </select>
         </div>
       </div>
@@ -847,6 +848,14 @@ function aiFillForm(){
   for(var h=150;h<=195;h++){ var o=document.createElement("option"); o.value=String(h); o.textContent=h+"cm"; sel.appendChild(o); }
 })();
 
+// "그날 그 사람" 쪽지 수락 후 넘어온 경우 → 유입경로 자동 선택
+(function fromReconnect(){
+  const p = new URLSearchParams(location.search);
+  if(p.get("ref") !== "reconnect") return;
+  const sel = document.querySelector('select[name="inflow"]');
+  if(sel) sel.value = "그날그사람";
+})();
+
 // URL 파라미터에서 테스트 결과 읽기 (테스트 페이지에서 넘어온 경우 자동 채움)
 (function loadTestResult(){
   const p = new URLSearchParams(location.search);
@@ -1194,6 +1203,7 @@ async function handleSubmit(e){
       "성격키워드": [...selectedKeywords].join(", "), "이상형": payload.idealType || "", "자기소개": payload.intro || "",
       "유입경로": payload.inflow || "",
       "테스트결과": payload.testResult || "", "매칭유형": payload.matchType || "일반매칭", "매칭상태": "승인",
+      "쪽지연결": (new URLSearchParams(location.search).get("note") || ""),
       "신청일시": new Date().toLocaleString("ko-KR")
     };
     try{ var _u=JSON.parse(localStorage.getItem("ssumUser")||"null"); if(_u&&_u.id) fields["카카오ID"]=_u.id; }catch(e){}

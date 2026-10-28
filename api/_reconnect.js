@@ -156,9 +156,11 @@ module.exports = async function reconnect({ action, body, TOKEN, BASE_ID, sendSm
         const sf = s.fields || {};
         const meRec = mine.find(r => r.id === f["받는레코드ID"]) || mine[0];
         const myPhone = (meRec.fields || {})["연락처"] || "";
-        if (sf["연락처"] && sendSms) await sendSms({ to: sf["연락처"], text: `[썸류센터] ${f["받는닉네임"] || "상대"}님이 쪽지를 수락했어요 🎉\n센터장이 곧 연락드려서 연결해드릴게요.` });
-        if (myPhone && sendSms) await sendSms({ to: myPhone, text: `[썸류센터] 수락 완료! 센터장이 곧 연락드려서 연결해드릴게요 💛` });
-        if (notify) await notify(`💌 그때 그 사람 — 수락!\n${f["회차"] || ""}\n${f["받는닉네임"] || "?"}(${myPhone || "?"}) ❤ ${f["보낸닉네임"] || "?"}(${sf["연락처"] || "?"})\n→ 양쪽에 연락해서 연결해주세요`);
+        const link = "https://ssumcenter.vercel.app/matching?ref=reconnect&note=" + noteId;
+        const txt = `[썸류센터] 쪽지가 수락됐어요 🎉\n두 분 모두 1:1 매칭 신청서를 작성해주시면 센터장이 확인 후 연결해드려요.\n${link}`;
+        if (sf["연락처"] && sendSms) await sendSms({ to: sf["연락처"], text: txt });
+        if (myPhone && sendSms) await sendSms({ to: myPhone, text: txt });
+        if (notify) await notify(`💌 그때 그 사람 — 수락!\n${f["회차"] || ""}\n${f["받는닉네임"] || "?"}(${myPhone || "?"}) ❤ ${f["보낸닉네임"] || "?"}(${sf["연락처"] || "?"})\n양쪽에 1:1 매칭 신청 링크 문자 발송됨 (쪽지 ${noteId}) → 신청 들어오면 연결`);
       } catch (e) {}
     }
     return { status: 200, json: { ok: true, status: answer } };

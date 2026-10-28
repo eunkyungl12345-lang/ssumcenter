@@ -189,9 +189,11 @@ module.exports = async function board({ action, body, TOKEN, BASE_ID, sendSms, n
     if (answer === "수락") {
       // 연락처는 서로 공개하지 않음 — 센터장이 양쪽에 연락해서 연결
       const label = `${p.fields["업체"] || ""} ${p.fields["날짜"] || ""}`.trim();
-      try { if (f["보낸연락처"] && sendSms) await sendSms({ to: f["보낸연락처"], text: `[썸류센터] 글쓴이가 "저예요!" 쪽지를 수락했어요 🎉\n센터장이 곧 연락드려서 연결해드릴게요.` }); } catch (e) {}
-      try { if (p.fields["연락처"] && sendSms) await sendSms({ to: p.fields["연락처"], text: `[썸류센터] 수락 완료! 센터장이 곧 연락드려서 연결해드릴게요 💛` }); } catch (e) {}
-      try { if (notify) await notify(`💌 그날 그 사람 — 수락!\n${label}\n글쓴이 ${p.fields["연락처"] || "?"} ❤ 저예요 ${f["보낸연락처"] || "?"}\n→ 양쪽에 연락해서 연결해주세요`); } catch (e) {}
+      const link = "https://ssumcenter.vercel.app/matching?ref=reconnect&note=" + n.id;
+      const txt = `[썸류센터] "저예요!" 쪽지가 수락됐어요 🎉\n안전한 연결을 위해 두 분 모두 1:1 매칭 신청서를 작성해주세요. 센터장이 확인 후 연결해드려요.\n${link}`;
+      try { if (f["보낸연락처"] && sendSms) await sendSms({ to: f["보낸연락처"], text: txt }); } catch (e) {}
+      try { if (p.fields["연락처"] && sendSms) await sendSms({ to: p.fields["연락처"], text: txt }); } catch (e) {}
+      try { if (notify) await notify(`💌 그날 그 사람 — 수락!\n${label}\n글쓴이 ${p.fields["연락처"] || "?"} ❤ 저예요 ${f["보낸연락처"] || "?"}\n양쪽에 1:1 매칭 신청 링크 문자 발송됨 (쪽지 ${n.id}) → 신청 들어오면 검증 후 연결`); } catch (e) {}
     }
     return { status: 200, json: { ok: true, status: answer } };
   }

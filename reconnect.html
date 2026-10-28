@@ -94,7 +94,7 @@
 
   <div class="hero">
     <h2>소개팅 그날, 번호 못 물어본 사람<br>지금 물어볼래요?</h2>
-    <p>썸류센터 회차든, 다른 곳 소개팅이든. 쪽지를 보내고 상대가 수락하면 센터장이 두 분을 연결해드려요. 연락처는 서로 공개되지 않아요.</p>
+    <p>썸류센터 회차든, 다른 곳 소개팅이든. 쪽지를 보내고 상대가 수락하면, 두 분 모두 1:1 매칭 신청 후 센터장이 확인하고 연결해드려요. 연락처는 서로 공개되지 않아요.</p>
   </div>
 
   <div id="content"><div class="spin"></div></div>
@@ -177,7 +177,7 @@
     var h='<div class="card"><div class="ch">내가 참여한 회차 <small>'+esc(me.nickname)+' '+gdTag(me.gender)+'</small></div><div class="chips">';
     me.rounds.forEach(function(r){ h+='<div class="chip'+(r===curRound?" on":"")+'" onclick="pickRound(\''+esc(r).replace(/'/g,"")+'\')">'+esc(r)+'</div>'; });
     h+='</div><div id="people"><div class="spin"></div></div></div>';
-    h+='<div class="rule">· 쪽지는 하루 3개까지 보낼 수 있어요<br>· 상대가 수락하면 센터장이 두 분을 연결해드려요 (연락처는 서로 공개 안 됨). 거절하면 상대는 알 수 없어요<br>· 같은 분께는 한 번만 보낼 수 있어요</div>';
+    h+='<div class="rule">· 쪽지는 하루 3개까지 보낼 수 있어요<br>· 상대가 수락하면 두 분께 1:1 매칭 신청 링크가 가고, 센터장이 확인 후 연결해드려요 (연락처 비공개). 거절하면 상대는 알 수 없어요<br>· 같은 분께는 한 번만 보낼 수 있어요</div>';
     $("panel").innerHTML=h;
     var d=await api("rc_people",{round:curRound});
     if(!d.ok){ $("people").innerHTML='<div class="empty">'+esc(d.error||"불러오기 실패")+'</div>'; return; }
@@ -197,7 +197,7 @@
   async function renderBoard(){
     var h='<button class="newbtn" onclick="openPostForm()">✍️ 그날 그 사람 찾는 글 쓰기</button>';
     h+='<div id="postform"></div><div id="posts"><div class="spin"></div></div>';
-    h+='<div class="rule">· 어느 업체 소개팅이든 올릴 수 있어요. 업체명은 초성으로만 공개되고, 그날 번호(여 3호 등)·닉네임·한 줄 인상으로 찾아요<br>· 이름·전화번호·SNS·자세한 묘사는 올릴 수 없어요<br>· "저예요!" 쪽지는 <b style="color:var(--gold)">첫 1회 무료</b>, 두 번째부터는 쪽지권(1,000원)이 필요해요<br>· 상대가 수락하면 센터장이 두 분을 연결해드려요 (연락처 비공개) · 부적절한 글은 신고 3회면 자동으로 내려가요</div>';
+    h+='<div class="rule">· 어느 업체 소개팅이든 올릴 수 있어요. 업체명은 초성으로만 공개되고, 그날 번호(여 3호 등)·닉네임·한 줄 인상으로 찾아요<br>· 이름·전화번호·SNS·자세한 묘사는 올릴 수 없어요<br>· "저예요!" 쪽지는 <b style="color:var(--gold)">첫 1회 무료</b>, 두 번째부터는 쪽지권(1,000원)이 필요해요<br>· 상대가 수락하면 두 분께 1:1 매칭 신청 링크가 가고, 센터장이 신원 확인 후 연결해드려요 (연락처 비공개) · 부적절한 글은 신고 3회면 자동으로 내려가요</div>';
     h+='<div class="card" style="margin-top:14px;text-align:center"><div style="font-size:14px;font-weight:900">아직 못 찾았어요?</div><div style="font-size:12.5px;color:var(--muted);margin:4px 0 10px">썸류센터 다음 회차에서 새 인연을 만나보세요</div><a href="rotation.html" class="save" style="display:block;text-decoration:none;text-align:center">썸류센터 소개팅 보러가기 →</a></div>';
     $("panel").innerHTML=h;
     var d=await api("bd_list");
@@ -274,11 +274,11 @@
     var h='<div class="note"><div class="meta"><span>'+(n.board?'📋 ':'☕ ')+esc(n.round)+' · '+esc(n.date)+'</span>'+stTag(n.status)+'</div>';
     h+='<div class="who">'+(isRecv?esc(n.from)+(n.board?' 쪽지가 왔어요':'님이 보냄'):(n.to?esc(n.to)+'님에게':'보낸 쪽지'))+'</div><div class="txt">'+esc(n.text)+'</div>';
     if(isRecv&&n.status==="대기") h+='<div class="row"><button class="btn g" onclick="respond(\''+n.id+'\',\'거절\','+(n.board?'true':'false')+')">괜찮아요</button><button class="btn p" onclick="respond(\''+n.id+'\',\'수락\','+(n.board?'true':'false')+')">수락하기</button></div>';
-    if(n.status==="수락") h+='<div class="contact">🎉 수락됐어요! 센터장이 곧 두 분께 연락드려서 연결해드릴게요</div>';
+    if(n.status==="수락") h+='<div class="contact">🎉 수락됐어요! 두 분 모두 1:1 매칭 신청서를 작성하면 센터장이 확인 후 연결해드려요<br><a href="matching.html?ref=reconnect&note='+esc(n.id)+'" style="color:var(--ok);text-decoration:underline;font-weight:900">1:1 매칭 신청서 작성하기 →</a></div>';
     return h+'</div>';
   }
   async function respond(id,ans,isBoard){
-    if(ans==="수락"&&!confirm("수락하면 센터장이 두 분께 연락드려서 연결해드려요. 괜찮을까요?")) return;
+    if(ans==="수락"&&!confirm("수락하면 두 분 모두 1:1 매칭 신청서를 작성하고, 센터장이 확인 후 연결해드려요. 괜찮을까요?")) return;
     var d=await api(isBoard?"bd_respond":"rc_respond",{noteId:id,answer:ans});
     if(!d.ok){ alert(d.error||"처리 실패"); return; }
     renderBox();
