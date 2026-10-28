@@ -22,7 +22,7 @@
 <style>
 :root{--bg:#0c0a08;--surface:#161310;--border:rgba(200,170,110,.12);--amber:#D4952A;--amber-light:#E8B050;--cream:#EDE0CC;--muted:#998870;--dim:#6a5c4c}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Pretendard,'Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--cream);line-height:1.65;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+body{font-family:Pretendard,'Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--cream);line-height:1.65;word-break:keep-all;overflow-wrap:break-word;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 .top{position:sticky;top:0;z-index:10;background:rgba(12,10,8,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
 .top-in{max-width:680px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
@@ -40,17 +40,18 @@ h1 span,.ac{color:var(--amber)}
 .area h2{font-size:19px;font-weight:800;margin-bottom:12px;display:flex;align-items:baseline;gap:8px}
 .area h2 small{font-size:12.5px;color:var(--dim);font-weight:500}
 .list{list-style:none;border:1px solid var(--border);border-radius:18px;background:var(--surface);overflow:hidden}
-.item{display:flex;gap:14px;padding:18px;border-top:1px solid var(--border)}
+.item{display:flex;gap:12px;padding:18px 16px;border-top:1px solid var(--border)}
 .item:first-child{border-top:none}
-.ico{flex:none;width:42px;height:42px;border-radius:12px;background:rgba(212,149,42,.1);display:flex;align-items:center;justify-content:center;font-size:20px}
+.ico{flex:none;width:38px;height:38px;border-radius:11px;background:rgba(212,149,42,.1);display:flex;align-items:center;justify-content:center;font-size:20px}
 .body{flex:1;min-width:0}
+.head{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .name{font-size:17px;font-weight:800;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .tag{font-size:11px;font-weight:600;color:var(--muted);border:1px solid var(--border);padding:1px 8px;border-radius:100px}
 .pick{display:inline-block;font-size:11.5px;font-weight:700;color:var(--amber);margin-top:2px}
 .one{font-size:14px;margin-top:4px}
 .sub{font-size:12.5px;color:var(--dim);margin-top:4px}
 .story{font-size:13.5px;margin-top:8px;padding:9px 12px;border-radius:10px;background:rgba(212,149,42,.08);border-left:3px solid var(--amber)}
-.go{flex:none;align-self:center;font-size:12.5px;font-weight:700;color:var(--amber);white-space:nowrap}
+.go{flex:none;font-size:12.5px;font-weight:700;color:var(--amber);white-space:nowrap;padding:4px 10px;border:1px solid rgba(212,149,42,.3);border-radius:100px}
 .course{margin-bottom:12px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,rgba(212,149,42,.16),rgba(212,149,42,.04));border:1px solid rgba(212,149,42,.25);font-size:14px}
 .course b{color:var(--amber-light)}
 .note{font-size:12px;color:var(--dim);text-align:center;margin:-16px 0 40px}
@@ -87,22 +88,20 @@ footer a{color:var(--amber)}
         <li class="item">
           <div class="ico">☕</div>
           <div class="body">
-            <div class="name">에이비카페 <span class="tag">카페</span></div>
+            <div class="head"><div class="name">에이비카페 <span class="tag">카페</span></div><a class="go" href="https://map.naver.com/p/search/%EC%97%90%EC%9D%B4%EB%B9%84%EC%B9%B4%ED%8E%98%20%EA%B0%95%EB%82%A8" target="_blank" rel="noopener">지도 →</a></div>
             <div class="pick">💛 동탄 · 성수 · 강남 센터장 모두 PICK</div>
             <div class="one">🌴 발리 감성 분위기. 층마다 분위기가 달라서 조용한 자리 고르기 좋아요.</div>
             <div class="sub">신논현역 도보 약 5분 · 카운터·키오스크 주문 · 밥 먹고 2차로도 좋아요</div>
           </div>
-          <a class="go" href="https://map.naver.com/p/search/%EC%97%90%EC%9D%B4%EB%B9%84%EC%B9%B4%ED%8E%98%20%EA%B0%95%EB%82%A8" target="_blank" rel="noopener">지도 →</a>
         </li>
         <li class="item">
           <div class="ico">🍛</div>
           <div class="body">
-            <div class="name">스아게 강남점 <span class="tag">밥집</span></div>
+            <div class="head"><div class="name">스아게 강남점 <span class="tag">밥집</span></div><a class="go" href="https://map.naver.com/p/search/%EC%8A%A4%EC%95%84%EA%B2%8C%20%EA%B0%95%EB%82%A8%EC%A0%90" target="_blank" rel="noopener">지도 →</a></div>
             <div class="pick">💛 강남 센터장 PICK</div>
             <div class="one">삿포로식 수프카레. 흔한 메뉴가 아니라 "먹어본 적 있어요?"로 대화가 바로 시작돼요.</div>
             <div class="sub">신논현역 도보 약 4분 · 맵기·토핑 골라 먹는 재미 · 국물이라 밝은 옷 주의</div>
           </div>
-          <a class="go" href="https://map.naver.com/p/search/%EC%8A%A4%EC%95%84%EA%B2%8C%20%EA%B0%95%EB%82%A8%EC%A0%90" target="_blank" rel="noopener">지도 →</a>
         </li>
       </ul>
     </section>
@@ -114,23 +113,21 @@ footer a{color:var(--amber)}
         <li class="item">
           <div class="ico">🍜</div>
           <div class="body">
-            <div class="name">효뜨 <span class="tag">밥집</span></div>
+            <div class="head"><div class="name">효뜨 <span class="tag">밥집</span></div><a class="go" href="https://map.naver.com/p/search/%ED%9A%A8%EB%9C%A8%20%EC%9A%A9%EC%82%B0" target="_blank" rel="noopener">지도 →</a></div>
             <div class="pick">💛 동탄 센터장 PICK</div>
             <div class="one">베트남 골목 감성 베트남 음식점. 분위기 덕에 첫 만남 어색함이 금방 풀려요.</div>
-            <div class="story">💍 동탄 센터장, 신랑이랑 첫 만남이 여기였어요</div>
-            <div class="sub">신용산역 도보 약 3분 · 식사 시간엔 웨이팅 있을 수 있어요</div>
+            <div class="story">💍 동탄 센터장이 신랑을 처음 만난 곳</div>
+            <div class="sub">신용산역 도보 약 3분 · 식사 시간엔 웨이팅 있음</div>
           </div>
-          <a class="go" href="https://map.naver.com/p/search/%ED%9A%A8%EB%9C%A8%20%EC%9A%A9%EC%82%B0" target="_blank" rel="noopener">지도 →</a>
         </li>
         <li class="item">
           <div class="ico">☕</div>
           <div class="body">
-            <div class="name">도토리 용산 <span class="tag">카페</span></div>
+            <div class="head"><div class="name">도토리 용산 <span class="tag">카페</span></div><a class="go" href="https://map.naver.com/p/search/%EB%8F%84%ED%86%A0%EB%A6%AC%20%EC%9A%A9%EC%82%B0" target="_blank" rel="noopener">지도 →</a></div>
             <div class="pick">💛 동탄 센터장 PICK</div>
             <div class="one">지브리 영화 속 오두막 같은 카페. 효뜨에서 걸어서 2차로 딱이에요.</div>
             <div class="sub">효뜨에서 도보 약 6분 · 입구에서 웨이팅 등록</div>
           </div>
-          <a class="go" href="https://map.naver.com/p/search/%EB%8F%84%ED%86%A0%EB%A6%AC%20%EC%9A%A9%EC%82%B0" target="_blank" rel="noopener">지도 →</a>
         </li>
       </ul>
     </section>
@@ -169,12 +166,13 @@ footer a{color:var(--amber)}
     var cafe=/카페/.test(f["분류"]||"");
     var link=f["지도링크"]; if(!/^https?:\/\//.test(link||"")) link="https://map.naver.com/p/search/"+encodeURIComponent(f["이름"]||"");
     return '<li class="item"><div class="ico">'+(cafe?"☕":"🍽️")+'</div><div class="body">'
-      +'<div class="name">'+esc(f["이름"])+(f["분류"]?' <span class="tag">'+esc(f["분류"])+'</span>':'')+'</div>'
+      +'<div class="head"><div class="name">'+esc(f["이름"])+(f["분류"]?' <span class="tag">'+esc(f["분류"])+'</span>':'')+'</div>'
+      +'<a class="go" href="'+esc(link)+'" target="_blank" rel="noopener">지도 →</a></div>'
       +'<div class="pick">'+esc(pickText(f["추천 센터장"]))+'</div>'
       +(f["한줄소개"]?'<div class="one">'+esc(f["한줄소개"])+'</div>':'')
       +(f["스토리"]?'<div class="story">'+esc(f["스토리"])+'</div>':'')
       +(f["위치"]?'<div class="sub">'+esc(f["위치"])+'</div>':'')
-      +'</div><a class="go" href="'+esc(link)+'" target="_blank" rel="noopener">지도 →</a></li>';
+      +'</div></li>';
   }
   function buildTabs(){
     var areas=[].map.call(spots.querySelectorAll(".area"),function(a){return a.getAttribute("data-area")});
