@@ -365,7 +365,7 @@ module.exports = async function handler(req, res) {
         const mPhone = mA["연락처"] || "", wPhone = wA["연락처"] || "";
         const mName = mf["남자"] || mA["이름"] || "상대", wName = mf["여자"] || wA["이름"] || "상대";
         const clean = p => String(p || "").replace(/\D/g, "");
-        const msg = (otherName, otherPhone) => `[썸류센터] 💌 썸배달 도착!\n\n센터장이 이어드린 인연, ${otherName}님의 연락처예요 💛\n📞 ${otherPhone}\n\n먼저 가볍게 인사 건네보세요 :)\n좋은 인연 되시길 응원할게요!`;
+        const msg = (otherName, otherPhone) => `[썸류센터] 💌 썸배달 도착!\n\n센터장이 이어드린 인연, ${otherName}님의 연락처예요 💛\n📞 ${otherPhone}\n\n먼저 가볍게 인사 건네보세요 :)\n\n☕ 첫 만남 장소 고민되면\n센터장 PICK 리스트 👉 ssumcenter.vercel.app/date-spots\n\n좋은 인연 되시길 응원할게요!`;
         if (clean(mPhone).length >= 10 && wPhone) await sendSms({ to: clean(mPhone), text: msg(wName, wPhone) });
         if (clean(wPhone).length >= 10 && mPhone) await sendSms({ to: clean(wPhone), text: msg(mName, mPhone) });
         await notifySlack(`💌 연락처 전달 문자 자동발송\n${wName} ❤ ${mName}`);
