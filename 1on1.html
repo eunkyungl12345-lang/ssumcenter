@@ -102,6 +102,7 @@
   .toolbtn{display:flex;gap:8px;margin-top:12px}
   .toolbtn a{flex:1;text-align:center;font-size:12.5px;font-weight:800;padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--line-2);color:var(--muted);text-decoration:none}
 </style>
+<script src="/copy-helper.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -334,15 +335,9 @@
       .then(function(r){return r.json();}).then(function(d){ if(d && !d.error){ toast("✅ 연락처 전달 완료 처리됨!"); loadAll(); } else { toast("실패: "+((d&&d.error)||"")); btn.disabled=false; btn.textContent="💚 연락처 전달 완료"; } })
       .catch(function(){ toast("오류가 났어요"); btn.disabled=false; btn.textContent="💚 연락처 전달 완료"; });
   };
-  window.copyLink=function(url){
-    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(function(){toast("링크 복사됨! 카톡·문자에 붙여넣으세요 📲");},function(){toast("복사 실패 — 길게 눌러 복사");});
-    else toast("이 기기에선 자동복사가 안 돼요");
-  };
+  window.copyLink=function(url){ copyText(url,"링크 복사됨! 카톡·문자에 붙여넣으세요 📲"); };
   window.copyRemind=function(url,name){
-    var msg="[썸류센터] "+(name||"")+"님, 센터장이 찾은 매칭 상대 프로필이 도착했어요 💕\n아래 링크에서 확인하고 수락/거절을 선택해주세요! (가급적 48시간 내)\n\n"+url;
-    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(msg).then(function(){toast("재촉 문구+링크 복사됨! 카톡에 붙여넣으세요 📩");},function(){toast("복사 실패");});
-    else toast("이 기기에선 자동복사가 안 돼요");
-  };
+    var msg="[썸류센터] "+(name||"")+"님, 센터장이 찾은 매칭 상대 프로필이 도착했어요 💕\n아래 링크에서 확인하고 수락/거절을 선택해주세요! (가급적 48시간 내)\n\n"+url; copyText(msg,"재촉 문구+링크 복사됨! 카톡에 붙여넣으세요 📩"); };
 </script>
 </body>
 </html>

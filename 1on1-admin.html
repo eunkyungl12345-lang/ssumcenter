@@ -321,12 +321,12 @@
           <div>
             <div class="text-[10px] font-bold uppercase tracking-wider mb-1 text-[#B69CF7]"><span id="ai-name-1"></span>에게 보낼 추천 이유</div>
             <textarea id="ai-reason-1" rows="3" class="w-full bg-[#16140f] border border-[#1e1c17] rounded-lg px-3 py-2 text-xs text-white leading-relaxed"></textarea>
-            <button onclick="copyText('ai-reason-1')" class="mt-1 text-[11px] text-[#9a9080] hover:text-white">📋 추천이유 복사</button>
+            <button onclick="copyFieldById('ai-reason-1')" class="mt-1 text-[11px] text-[#9a9080] hover:text-white">📋 추천이유 복사</button>
           </div>
           <div>
             <div class="text-[10px] font-bold uppercase tracking-wider mb-1 text-[#B69CF7]"><span id="ai-name-2"></span>에게 보낼 추천 이유</div>
             <textarea id="ai-reason-2" rows="3" class="w-full bg-[#16140f] border border-[#1e1c17] rounded-lg px-3 py-2 text-xs text-white leading-relaxed"></textarea>
-            <button onclick="copyText('ai-reason-2')" class="mt-1 text-[11px] text-[#9a9080] hover:text-white">📋 추천이유 복사</button>
+            <button onclick="copyFieldById('ai-reason-2')" class="mt-1 text-[11px] text-[#9a9080] hover:text-white">📋 추천이유 복사</button>
           </div>
           <p class="text-[11px] text-[#555]">AI 초안이에요. 확인·수정 후 문자/카톡으로 보내주세요.</p>
         </div>
@@ -1045,11 +1045,7 @@ function matchMessage(url, name){
     + url + "\n\n"
     + "※ 수락한다고 바로 연락처가 가지 않아요. 두 분 모두 수락하셔야 성사돼요!";
 }
-function copyText(text, okMsg){
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(()=>toast(okMsg||"복사됐어요! 카톡에 붙여넣으세요"), ()=>toast("복사 실패"));
-  } else { toast("복사가 안 돼요 — 길게 눌러 복사해주세요"); }
-}
+// copyText 는 /copy-helper.js 에 있다 (clipboard 실패 시 글자를 띄워 길게 눌러 복사)
 // name 있으면 메시지 통째, 없으면(옛 호출) 링크만
 function copyLink(url, name){
   if(name !== undefined) copyText(matchMessage(url, name), "💬 안내 메시지를 복사했어요! 카톡에 붙여넣으세요");
@@ -1451,7 +1447,7 @@ function renderList(){
             <textarea id="sms-${r.id}" placeholder="여기에 보낼 문자 내용을 직접 쓰세요" style="width:100%;box-sizing:border-box;background:#16140f;border:1px solid #1e1c17;border-radius:9px;color:#fff;font-size:13px;font-family:inherit;padding:9px 10px;resize:vertical;min-height:64px;outline:none" oninput="const c=document.getElementById('smsc-${r.id}');if(c)c.textContent=this.value.length"></textarea>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
               <span style="color:#8a8070;font-size:10.5px"><span id="smsc-${r.id}">0</span>자</span>
-              <button onclick="event.stopPropagation();sendCustomSMS('${r.id}')" style="background:#E8B050;border:none;color:#000;font-size:12px;font-weight:800;padding:8px 16px;border-radius:9px;cursor:pointer">✉️ 이 내용으로 보내기</button>
+              <button onclick="event.stopPropagation();sendCustomSMSTo('${r.id}')" style="background:#E8B050;border:none;color:#000;font-size:12px;font-weight:800;padding:8px 16px;border-radius:9px;cursor:pointer">✉️ 이 내용으로 보내기</button>
             </div>
           </div>
           ${status === "대기" ? `
@@ -1606,7 +1602,9 @@ async function sendIntakeSMS(id){
 }
 
 // ✏️ 직접 쓴 문구를 그대로 보내기
-async function sendCustomSMS(id){
+// ⚠️ 아래쪽에 인자 없는 sendCustomSMS() 가 또 있어서 이 함수가 덮어쓰여 있었다.
+// 그래서 신청자 카드의 '✉️ 이 내용으로 보내기' 버튼이 엉뚱한 함수를 불렀다.
+async function sendCustomSMSTo(id){
   const rec = applicants.find(r => r.id === id);
   if(!rec) return;
   const f = rec.fields;
@@ -1806,7 +1804,9 @@ async function genAiReason(){
   }
 }
 
-function copyText(id){
+// ⚠️ 예전엔 이 함수 이름도 copyText 라서 위쪽의 copyText(text,okMsg)를 덮어썼다.
+// 그래서 카톡 메시지 복사 버튼이 메시지 전체를 id로 찾다가 조용히 아무것도 안 했다.
+function copyFieldById(id){
   const el = document.getElementById(id);
   if(!el) return;
   const done = () => { el.classList.add("ring-2","ring-[#8B5CF6]"); setTimeout(()=>el.classList.remove("ring-2","ring-[#8B5CF6]"), 600); };
