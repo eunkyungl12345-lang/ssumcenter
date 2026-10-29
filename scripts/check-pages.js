@@ -96,7 +96,31 @@ for (const full of files) {
     }
   }
 
-  // ── 3. 죽은 버튼 ──────────────────────────────────────────────────
+  // ── 3. 같은 이름의 함수가 두 번 ──────────────────────────────────
+  // 뒤에 정의된 것이 앞의 것을 조용히 덮어쓴다. 실제로 1on1-admin 의 copyText 와
+  // sendCustomSMS 가 두 번씩 정의돼 있어서 버튼이 아무 반응 없이 죽어 있었다.
+  // 단, 서로 다른 괄호 안(함수·즉시실행 안)에 있으면 충돌이 아니므로
+  // 맨 바깥(깊이 0)에 선언된 것만 센다.
+  const seen = new Map();
+  {
+    let depth = 0;
+    const tokens = /\/\*[\s\S]*?\*\/|\/\/[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\{|\}|(?:^|[\s;])function\s+([\p{L}_$][\p{L}\p{N}_$]*)\s*\(/gu;
+    let t;
+    while ((t = tokens.exec(allJs))) {
+      const s0 = t[0];
+      if (s0 === "{") { depth++; continue; }
+      if (s0 === "}") { depth = Math.max(0, depth - 1); continue; }
+      if (!t[1]) continue;            // 주석·문자열은 건너뜀
+      if (depth !== 0) continue;      // 다른 영역 안이면 충돌 아님
+      const n = t[1];
+      if (seen.has(n)) {
+        problem(rel, `같은 이름의 기능이 두 번 만들어져 있어요 → ${n}()`,
+          "나중 것이 앞의 것을 덮어써서, 앞의 것을 쓰는 버튼이 아무 반응 없이 죽습니다. 둘 중 하나의 이름을 바꾸세요.");
+      } else seen.set(n, true);
+    }
+  }
+
+  // ── 4. 죽은 버튼 ──────────────────────────────────────────────────
   // 함수 이름에 한글도 쓸 수 있으므로 유니코드 글자까지 인식
   const declared = new Set();
   for (const m of allJs.matchAll(/(?:^|[\s;{}])(?:async\s+)?function\s+([\p{L}_$][\p{L}\p{N}_$]*)/gu)) declared.add(m[1]);
