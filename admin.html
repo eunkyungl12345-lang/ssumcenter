@@ -35,6 +35,18 @@
           border-radius:13px;padding:12px;font-size:13px;font-weight:750;cursor:pointer;font-family:inherit}
   .logout:hover{border-color:var(--rose);color:var(--rose)}
   .logout:active{transform:scale(.98)}
+  .statusbtn{display:block;width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--ink);
+             border-radius:13px;padding:12px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit}
+  .statusbtn:hover{border-color:var(--amber);color:var(--amber)}
+  .statusbtn:active{transform:scale(.98)}
+  .statusout{display:none;margin-top:11px;font-size:12.5px;line-height:1.9}
+  .statusout.on{display:block}
+  .statusout .row{display:flex;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+  .statusout .row:first-child{border-top:none}
+  .statusout .k{color:var(--muted);flex:1}
+  .statusout .v{font-weight:800}
+  .statusout .bad{color:var(--rose);white-space:pre-wrap;word-break:break-all}
+  .statusout .note{color:var(--faint);font-size:11.5px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -43,6 +55,14 @@
     <span class="badge">SSUMLYU · ADMIN</span>
     <h1>썸류센터 관리자</h1>
     <p>관리할 걸 골라주세요</p>
+  </div>
+
+  <!-- 📊 상태판 — 지금 잘 돌아가는지 한눈에 -->
+  <div class="group">
+    <div class="gh" style="font-size:15px">📊 지금 상태</div>
+    <div class="gd">눌렀을 때만 확인해요. (자동으로 계속 조회하면 에어테이블 한도를 써버려서요)</div>
+    <button class="statusbtn" id="statusBtn">🔄 상태 확인하기</button>
+    <div id="statusOut" class="statusout"></div>
   </div>
 
   <!-- 로테이션 그룹 -->
@@ -100,6 +120,67 @@
   </div>
 </div>
 <script>
+  // 📊 상태판 — 버튼을 눌렀을 때만 조회한다 (자동 새로고침 없음)
+  document.getElementById("statusBtn").addEventListener("click", function(){
+    var btn = this, box = document.getElementById("statusOut");
+    var key = "";
+    try{ key = localStorage.getItem("admin_key") || ""; }catch(e){}
+    if(!key){
+      box.className = "statusout on";
+      box.innerHTML = '<div class="bad">관리자 로그인이 필요해요.\n아래 페이지에서 한 번 로그인하고 다시 눌러주세요.</div>';
+      return;
+    }
+    btn.disabled = true; var orig = btn.textContent; btn.textContent = "확인 중…";
+    box.className = "statusout on"; box.textContent = "불러오는 중…";
+
+    function read(res){
+      return res.text().then(function(t){
+        var d = null; try{ d = JSON.parse(t); }catch(e){}
+        if(!res.ok) throw new Error(res.status + " · " + ((d && d.error) || t.slice(0,160) || "응답 없음"));
+        if(d === null) throw new Error(res.status + " · 응답을 읽을 수 없어요");
+        return d;
+      });
+    }
+    var hdr = { "Content-Type":"application/json", "x-admin-key": key };
+
+    Promise.all([
+      fetch("/api/airtable?status=1", { headers: hdr }).then(read),
+      fetch("/api/send-sms", { method:"POST", headers: hdr, body: JSON.stringify({check:true}) }).then(read)
+        .catch(function(e){ return { "결론": "❌ 확인 실패: " + e.message }; })
+    ]).then(function(r){
+      var s = r[0], sms = r[1];
+      var h = "";
+      function row(k, v, bad){ h += '<div class="row"><span class="k">'+k+'</span><span class="v'+(bad?" bad":"")+'">'+v+'</span></div>'; }
+
+      if(s.ok){
+        var t = s["오늘"], p = s["진행중"];
+        row("오늘 신청", "로테이션 "+t["로테이션신청"]+" · 1:1 "+t["일대일신청"]);
+        row("오늘 매칭응답", t["매칭응답"] + "건");
+        row("승인 대기", p["로테이션_승인대기"] + "명");
+        row("소개중 / 성사", p["매칭_소개중"] + " / " + p["매칭_성사"]);
+        row("에어테이블", "🟢 정상");
+      } else {
+        row("에어테이블", "🔴 " + s["에어테이블"], true);
+        if(s["안내"]) h += '<div class="note">'+s["안내"]+'</div>';
+      }
+
+      var concl = sms["결론"] || "";
+      var smsOk = concl.indexOf("✅") === 0;
+      row("문자 발송", (smsOk ? "🟢 " : "🔴 ") + concl.replace(/^[✅❌]\s*/, ""), !smsOk);
+      if(!smsOk){
+        var detail = Object.keys(sms).filter(function(k){ return k !== "결론" && String(sms[k]).indexOf("❌") === 0; })
+          .map(function(k){ return k + " : " + sms[k]; }).join("\n");
+        if(detail) h += '<div class="note bad">'+detail+'</div>';
+      }
+      if(s["이번조회에쓴_에어테이블호출"] != null){
+        h += '<div class="note">이번 확인에 에어테이블 '+s["이번조회에쓴_에어테이블호출"]+'회 사용</div>';
+      }
+      box.innerHTML = h;
+    }).catch(function(e){
+      box.innerHTML = '<div class="bad">⚠️ 상태를 불러오지 못했어요\n'+(e && e.message ? e.message : e)+'</div>';
+    }).then(function(){ btn.disabled = false; btn.textContent = orig; });
+  });
+
   document.getElementById("logoutBtn").addEventListener("click", function(){
     if(!confirm("이 기기에 저장된 관리자 비밀번호를 지울까요?\n다음에 관리자 페이지를 열면 다시 입력해야 해요.")) return;
     try{ localStorage.removeItem("admin_key"); }catch(e){}
