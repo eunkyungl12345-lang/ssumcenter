@@ -13,10 +13,12 @@ const CENTERS = ["동탄", "성수", "강남"];
 
 function readRaw(req) {
   return new Promise((resolve, reject) => {
+    // 혹시 이미 파싱돼 버린 환경이면 스트림이 비어 있다. 5초 안에 안 끝나면 포기한다.
+    const timer = setTimeout(() => resolve(""), 5000);
     let data = "";
     req.on("data", (c) => { data += c; });
-    req.on("end", () => resolve(data));
-    req.on("error", reject);
+    req.on("end", () => { clearTimeout(timer); resolve(data); });
+    req.on("error", (e) => { clearTimeout(timer); reject(e); });
   });
 }
 
@@ -138,7 +140,20 @@ async function handleCommand(cmd, responseUrl) {
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).send("POST only");
   const raw = await readRaw(req);
-  if (!verifySlack(req, raw, process.env.SLACK_SIGNING_SECRET)) return res.status(401).send("invalid signature");
+
+  // 설정 문제는 슬랙 화면에 이유를 보여준다. 401 만 돌려주면 아무 반응 없이 끝나서
+  // 센터장이 무엇이 잘못됐는지 알 수 없다 (실제로 그래서 한참 헤맸다).
+  if (!process.env.SLACK_SIGNING_SECRET) {
+    return res.status(200).json({ response_type: "ephemeral",
+      text: "⚠️ 서버에 SLACK_SIGNING_SECRET 이 없어요.\nVercel 환경변수에 넣고 재배포해주세요." });
+  }
+  if (!raw) {
+    return res.status(200).json({ response_type: "ephemeral",
+      text: "⚠️ 슬랙이 보낸 내용을 읽지 못했어요 (본문 비어 있음).\n서버 설정 문제예요 — 센터장에게 알려주세요." });
+  }
+  if (!verifySlack(req, raw, process.env.SLACK_SIGNING_SECRET)) {
+    return res.status(401).send("invalid signature");
+  }
   const form = new URLSearchParams(raw);
 
   // 버튼 클릭 (공개하기 / 삭제)
@@ -173,6 +188,12 @@ module.exports = async function handler(req, res) {
   waitUntil(handleCommand(cmd, responseUrl));
   return res.status(200).json({ response_type: "ephemeral", text: `🔎 '${cmd.name}' 찾는 중이에요… 30초 정도 걸려요.` });
 };
+
+// ⚠️ 슬랙 서명 검증은 '보낸 그대로의 본문'이 있어야 한다.
+// Vercel 은 기본적으로 본문을 미리 파싱해버려서, 그러면 readRaw 가 빈 값을 받고
+// 서명이 절대 맞지 않는다(= 401 → 슬랙에서 아무 반응 없음).
+// ★ 반드시 module.exports = handler 뒤에 둘 것. 앞에 두면 통째로 덮어써져 사라진다.
+module.exports.config = { api: { bodyParser: false } };
 
 module.exports.parseCommand = parseCommand;
 module.exports.verifySlack = verifySlack;
