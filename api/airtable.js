@@ -106,6 +106,73 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: "서버 환경변수가 설정되지 않았습니다" });
   }
 
+  // 📊 관리자 상태판 — 지금 잘 돌아가는지 한눈에.
+  // 에어테이블 호출을 아끼려고 관리자가 버튼을 눌렀을 때만 돈다 (자동 새로고침 없음).
+  if (req.query.status === "1") {
+    if (!process.env.ADMIN_PASSWORD || req.headers["x-admin-key"] !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: "인증이 필요합니다" });
+    }
+    const H = { Authorization: `Bearer ${TOKEN}` };
+    let used = 0;
+    async function readAll(t) {
+      let recs = [], off;
+      do {
+        const p = new URLSearchParams({ pageSize: "100" });
+        if (off) p.set("offset", off);
+        const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(t)}?${p.toString()}`, { headers: H });
+        used++;
+        if (!r.ok) {
+          const body = await r.text().catch(() => "");
+          const e = new Error(r.status + " · " + (body || "").replace(/\s+/g, " ").trim().slice(0, 160));
+          e.status = r.status;
+          throw e;
+        }
+        const d = await r.json();
+        recs = recs.concat(d.records || []);
+        off = d.offset;
+      } while (off);
+      return recs;
+    }
+    // KST 기준 오늘 (레코드 생성시각으로 판단 — 신청일시는 글자라 믿기 어렵다)
+    const kstDay = (iso) => new Date(new Date(iso).getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+    const todayK = kstDay(new Date().toISOString());
+    const isToday = (r) => r.createdTime && kstDay(r.createdTime) === todayK;
+
+    try {
+      const rot = await readAll("로테이션 신청");
+      const one = await readAll("1:1 매칭 신청");
+      const resp = await readAll("매칭 응답");
+      const match = await readAll("매칭");
+      const cnt = (list, f) => list.filter(f).length;
+
+      return res.status(200).json({
+        ok: true,
+        에어테이블: "정상",
+        오늘: {
+          로테이션신청: cnt(rot, isToday),
+          일대일신청: cnt(one, isToday),
+          매칭응답: cnt(resp, isToday),
+        },
+        진행중: {
+          로테이션_승인대기: cnt(rot, (r) => (r.fields["승인상태"] || "대기") === "대기"),
+          일대일_소개중: cnt(one, (r) => r.fields["매칭상태"] === "소개중"),
+          매칭_소개중: cnt(match, (r) => r.fields["상태"] === "소개중"),
+          매칭_성사: cnt(match, (r) => r.fields["상태"] === "성사"),
+        },
+        이번조회에쓴_에어테이블호출: used,
+      });
+    } catch (e) {
+      return res.status(200).json({
+        ok: false,
+        에어테이블: "❌ " + e.message,
+        안내: e.status === 429
+          ? "에어테이블 한도를 넘었거나 요청이 몰렸어요. 플랜·사용량을 확인해주세요."
+          : "에어테이블 조회에 실패했어요.",
+        이번조회에쓴_에어테이블호출: used,
+      });
+    }
+  }
+
   // ☀️ 아침 브리핑 — Vercel cron이 매일 호출 → 슬랙에 현황 요약 (데이터 변경 없음, 슬랙 발송만)
   if (req.query.summary === "1") {
     try {
