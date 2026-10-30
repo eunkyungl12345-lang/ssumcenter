@@ -18,7 +18,6 @@
       ]
     },
     {
-      "_comment": "회차 목록·신청서는 캐시하지 않는다. 새 회차를 열었는데 옛날 목록이 보이면 안 되므로.",
       "source": "/(rounds.js|rotation-form|rotation-form.html|rotation-apply|rotation-apply.html)",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, must-revalidate" }
