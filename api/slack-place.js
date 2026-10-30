@@ -1,19 +1,17 @@
-// 슬랙 `/장소` 명령 → 데이트 장소 자동 등록
-// 사용법(슬랙):  /장소 효뜨, 용산, 동탄            (상호명, 동네, 추천 센터장)
-//               /장소 효뜨, 용산, 동탄, 신랑 첫 만남 장소   (4번째는 스토리, 선택)
-// 흐름: 가게 정보를 AI가 웹에서 찾아 → 에어테이블 '데이트 장소' 표에 비공개로 저장
-//       → 슬랙에 미리보기 + [공개하기] [삭제] 버튼 → 공개하기 누르면 사이트(/date-spots)에 바로 노출
-// 필요한 환경변수: SLACK_SIGNING_SECRET, ANTHROPIC_API_KEY, AIRTABLE_TOKEN, AIRTABLE_BASE_ID
+// 슬랙 슬래시 명령 처리:
+// 1. `/장소` → 데이트 장소 자동 등록
+// 2. `/매칭` → 1:1 소개팅 매칭 생성 및 현황 관리 (썸류센터봇)
+// 필요한 환경변수: SLACK_SIGNING_SECRET, AIRTABLE_TOKEN, AIRTABLE_BASE_ID (선택: ANTHROPIC_API_KEY)
+
 const crypto = require("crypto");
-const Anthropic = require("@anthropic-ai/sdk");
 const { waitUntil } = require("@vercel/functions");
 
-const TABLE = "데이트 장소";
+const BASE_ID = process.env.AIRTABLE_BASE_ID || "appgWdt1TeSuI77T1";
+const TOKEN = process.env.AIRTABLE_TOKEN;
 const CENTERS = ["동탄", "성수", "강남"];
 
 function readRaw(req) {
   return new Promise((resolve, reject) => {
-    // 혹시 이미 파싱돼 버린 환경이면 스트림이 비어 있다. 5초 안에 안 끝나면 포기한다.
     const timer = setTimeout(() => resolve(""), 5000);
     let data = "";
     req.on("data", (c) => { data += c; });
@@ -32,8 +30,42 @@ function verifySlack(req, raw, secret) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-// "효뜨, 용산, 동탄 성수, 스토리" → { name, area, centers[], story }
-function parseCommand(text) {
+function atHeaders() {
+  return {
+    Authorization: `Bearer ${process.env.AIRTABLE_TOKEN || TOKEN}`,
+    "Content-Type": "application/json"
+  };
+}
+
+async function slackReply(url, body) {
+  if (!url) return;
+  await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  }).catch((e) => console.error("[slack] reply error:", e.message));
+}
+
+async function fetchAll(tableName, filterFormula) {
+  let recs = [], offset;
+  const H = atHeaders();
+  do {
+    const p = new URLSearchParams({ pageSize: "100" });
+    if (offset) p.set("offset", offset);
+    if (filterFormula) p.set("filterByFormula", filterFormula);
+    const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}?${p.toString()}`, { headers: H });
+    if (!r.ok) break;
+    const d = await r.json();
+    recs = recs.concat(d.records || []);
+    offset = d.offset;
+  } while (offset);
+  return recs;
+}
+
+// ==========================================
+// 1. 데이트 장소 등록 (/장소 ...)
+// ==========================================
+function parsePlaceCommand(text) {
   const parts = String(text || "").split(/[,，]/).map((s) => s.trim()).filter(Boolean);
   const name = parts[0] || "";
   let area = parts[1] || "";
@@ -44,42 +76,7 @@ function parseCommand(text) {
   return { name, area, centers, story };
 }
 
-async function slackReply(url, body) {
-  await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-}
-
-function airtableUrl(id) {
-  const base = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE)}`;
-  return id ? `${base}/${id}` : base;
-}
-const atHeaders = () => ({ Authorization: `Bearer ${process.env.AIRTABLE_TOKEN}`, "Content-Type": "application/json" });
-
-// AI가 웹 검색으로 가게 정보 찾기 (확인 안 되는 건 비워둠)
-async function lookupPlace({ name, area }) {
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  const resp = await client.messages.create({
-    model: "claude-opus-4-8",
-    max_tokens: 1500,
-    tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 4 }],
-    system: `당신은 소개팅 서비스 '썸류센터'의 장소 리스트를 정리하는 도우미입니다.
-웹 검색으로 실제 존재하는 가게인지 확인하고 정보를 정리하세요.
-- 확인되지 않는 정보는 절대 지어내지 말고 빈 문자열로 두세요.
-- 한줄소개는 센터장 말투(~해요)로 35자 이내, 분위기·음식 종류 중심. 별점·리뷰 수는 쓰지 마세요.
-- 위치는 "OO역 도보 약 N분" 형식. 확실하지 않으면 빈 문자열.
-- 마지막에 JSON 하나만 출력하세요.`,
-    messages: [{
-      role: "user",
-      content: `상호명: ${name}\n동네: ${area || "(모름)"}\n\n아래 형식의 JSON으로 답하세요.
-{"found": true/false, "정식이름": "", "분류": "카페" 또는 "밥집" 또는 "미용실" 또는 "네일" 또는 "기타", "한줄소개": "", "위치": "", "주소": ""}`,
-    }],
-  });
-  const text = (resp.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n");
-  const m = text.match(/\{[\s\S]*\}/g);
-  if (!m) return { found: false };
-  try { return JSON.parse(m[m.length - 1]); } catch (e) { return { found: false }; }
-}
-
-function preview(fields, recId) {
+function placePreview(fields, recId) {
   const lines = [
     `*${fields["이름"]}*  ·  ${fields["분류"] || "분류 미정"}  ·  ${fields["동네"] || "동네 미정"}`,
     `💛 ${(fields["추천 센터장"] || []).join(" · ") || "센터장"} 센터장 PICK`,
@@ -102,10 +99,8 @@ function preview(fields, recId) {
   };
 }
 
-async function handleCommand(cmd, responseUrl) {
+async function handlePlaceCommand(cmd, responseUrl) {
   try {
-    // 💸 AI 자동검색 끔(무료 운영): 이름·동네·센터장만 저장하고, 분류·한줄소개·위치는 에어테이블에서 채워요.
-    //    AI 자동완성을 켜려면 아래 줄을 지우고 `const info = await lookupPlace(cmd);` 로 바꾸고 ANTHROPIC_API_KEY를 설정하세요.
     const info = { found: true };
     const name = (info.found && info["정식이름"]) || cmd.name;
     const fields = {
@@ -119,7 +114,9 @@ async function handleCommand(cmd, responseUrl) {
       "지도링크": "https://map.naver.com/p/search/" + encodeURIComponent(`${name} ${cmd.area.replace("·", " ")}`.trim()),
     };
     Object.keys(fields).forEach((k) => { if (fields[k] === "" || (Array.isArray(fields[k]) && !fields[k].length)) delete fields[k]; });
-    const r = await fetch(airtableUrl(), { method: "POST", headers: atHeaders(), body: JSON.stringify({ records: [{ fields }], typecast: true }) });
+    const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("데이트 장소")}`, {
+      method: "POST", headers: atHeaders(), body: JSON.stringify({ records: [{ fields }], typecast: true })
+    });
     const d = await r.json();
     if (!r.ok) {
       await slackReply(responseUrl, { response_type: "ephemeral", text: `⚠️ 에어테이블 저장 실패: ${(d.error && (d.error.message || d.error.type)) || r.status}\n'데이트 장소' 표와 칸 이름을 확인해 주세요.` });
@@ -127,73 +124,348 @@ async function handleCommand(cmd, responseUrl) {
     }
     const recId = d.records[0].id;
     fields["지도링크"] = fields["지도링크"] || "";
-    await slackReply(responseUrl, preview({ ...fields, "추천 센터장": cmd.centers }, recId));
-    if (!info.found) {
-      await slackReply(responseUrl, { response_type: "ephemeral", text: "ℹ️ 웹에서 가게를 정확히 못 찾았어요. 이름이 맞는지, 정보는 에어테이블에서 확인해 주세요." });
-    }
+    await slackReply(responseUrl, placePreview({ ...fields, "추천 센터장": cmd.centers }, recId));
   } catch (e) {
     console.error("[slack-place]", e);
     await slackReply(responseUrl, { response_type: "ephemeral", text: "⚠️ 장소를 등록하다 문제가 생겼어요. 잠시 후 다시 시도해 주세요." });
   }
 }
 
+// ==========================================
+// 2. 1:1 매칭 관리 (/매칭 ...)
+// ==========================================
+function getMatchHelp() {
+  return {
+    response_type: "ephemeral",
+    blocks: [{
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "💘 *[썸류센터봇] 1:1 매칭 명령어 안내*\n\n" +
+          "• `/매칭 대기` : 현재 매칭 대기 중인 남녀 회원 목록 보기\n" +
+          "• `/매칭 현황` : 현재 소개중인 커플과 성사 현황 요약\n" +
+          "• `/매칭 [남성이름], [여성이름]` : 두 회원 매칭 생성 및 전달 링크 발급\n" +
+          "   _예시: `/매칭 김철수, 이영희`_\n" +
+          "• `/매칭 취소 [남성이름], [여성이름]` : 진행 중인 소개 불발 처리\n" +
+          "   _예시: `/매칭 취소 김철수, 이영희`_"
+      }
+    }]
+  };
+}
+
+async function handleWaitingList(responseUrl) {
+  const applicants = await fetchAll("1:1 매칭 신청");
+  const waiting = applicants.filter(r => {
+    const f = r.fields || {};
+    const st = f["매칭상태"] || "대기";
+    return (st === "대기" || st === "승인") && f["이름"];
+  });
+
+  const men = waiting.filter(r => (r.fields || {})["성별"] === "남성");
+  const women = waiting.filter(r => (r.fields || {})["성별"] === "여성");
+
+  const fmt = r => {
+    const f = r.fields || {};
+    const specs = [f["출생연도"] ? `${f["출생연도"]}년생` : null, f["사는곳"] || null, f["직업"] || null].filter(Boolean).join(" · ");
+    return `• *${f["이름"]}* (${specs || "정보 없음"})`;
+  };
+
+  const menList = men.slice(0, 10).map(fmt).join("\n") || "_(대기 중인 남성 회원이 없어요)_";
+  const womenList = women.slice(0, 10).map(fmt).join("\n") || "_(대기 중인 여성 회원이 없어요)_";
+
+  await slackReply(responseUrl, {
+    response_type: "ephemeral",
+    blocks: [{
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `📋 *1:1 매칭 대기 명단* (남 ${men.length}명 / 여 ${women.length}명)\n\n` +
+          `👦 *남성 대기자 (최근 10명)*\n${menList}\n\n` +
+          `👧 *여성 대기자 (최근 10명)*\n${womenList}\n\n` +
+          `💡 *매칭 생성:* \`/매칭 [남성이름], [여성이름]\` 을 입력하세요.`
+      }
+    }]
+  });
+}
+
+async function handleMatchStatus(responseUrl) {
+  const matches = await fetchAll("매칭");
+  const intro = matches.filter(r => (r.fields || {})["상태"] === "소개중");
+  const success = matches.filter(r => (r.fields || {})["상태"] === "성사");
+  const broken = matches.filter(r => (r.fields || {})["상태"] === "결별");
+  const failed = matches.filter(r => (r.fields || {})["상태"] === "불발");
+
+  const introList = intro.map(r => {
+    const f = r.fields || {};
+    return `• ${f["남자"] || "?"} ❤ ${f["여자"] || "?"} (생성: ${f["생성일"] || "-"})`;
+  }).join("\n") || "_(현재 진행 중인 소개가 없어요)_";
+
+  await slackReply(responseUrl, {
+    response_type: "ephemeral",
+    blocks: [{
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `📊 *1:1 매칭 현황 요약*\n\n` +
+          `• 소개중: *${intro.length}쌍*\n` +
+          `• 성사 커플: *${success.length}쌍* 🎉\n` +
+          `• 불발: ${failed.length}건 / 결별: ${broken.length}건\n\n` +
+          `⏳ *현재 진행 중인 소개 목록*\n${introList}`
+      }
+    }]
+  });
+}
+
+async function handleCreateMatch(text, responseUrl, who) {
+  const rawParts = text.split(/[,，/·\s]+/).map(s => s.trim()).filter(Boolean);
+  if (rawParts.length < 2) {
+    await slackReply(responseUrl, { response_type: "ephemeral", text: "⚠️ 두 분의 이름을 쉼표로 구분해서 입력해 주세요.\n예시: `/매칭 김철수, 이영희`" });
+    return;
+  }
+
+  const name1 = rawParts[0], name2 = rawParts[1];
+  const applicants = await fetchAll("1:1 매칭 신청");
+
+  const found1 = applicants.filter(r => (r.fields || {})["이름"] === name1);
+  const found2 = applicants.filter(r => (r.fields || {})["이름"] === name2);
+
+  if (!found1.length) { await slackReply(responseUrl, { response_type: "ephemeral", text: `⚠️ '${name1}' 님을 신청자 명단에서 찾을 수 없어요.` }); return; }
+  if (!found2.length) { await slackReply(responseUrl, { response_type: "ephemeral", text: `⚠️ '${name2}' 님을 신청자 명단에서 찾을 수 없어요.` }); return; }
+
+  const p1 = found1[0], p2 = found2[0];
+  const f1 = p1.fields || {}, f2 = p2.fields || {};
+
+  let man = null, woman = null;
+  if (f1["성별"] === "남성" && f2["성별"] === "여성") { man = p1; woman = p2; }
+  else if (f1["성별"] === "여성" && f2["성별"] === "남성") { man = p2; woman = p1; }
+  else {
+    await slackReply(responseUrl, { response_type: "ephemeral", text: `⚠️ 두 분의 성별이 모두 '${f1["성별"] || "동일"}'입니다. 이성끼리만 매칭할 수 있어요.` });
+    return;
+  }
+
+  const mf = man.fields || {}, wf = woman.fields || {};
+  const matches = await fetchAll("매칭");
+  const isOngoing = matches.some(m => {
+    const f = m.fields || {};
+    const s = f["상태"] || "소개중";
+    return (s === "소개중" || s === "성사") &&
+      ((f["남자ID"] === man.id && f["여자ID"] === woman.id) || (f["남자ID"] === woman.id && f["여자ID"] === man.id));
+  });
+
+  if (isOngoing) {
+    await slackReply(responseUrl, { response_type: "ephemeral", text: `⚠️ ${mf["이름"]}님과 ${wf["이름"]}님은 이미 진행 중(소개중/성사)인 매칭이 있어요.` });
+    return;
+  }
+
+  const siteUrl = process.env.SITE_URL || "https://ssumcenter.vercel.app";
+  const t = Date.now();
+  const urlForMan = `${siteUrl}/response.html?id=${woman.id}&myId=${man.id}&t=${t}`;
+  const urlForWoman = `${siteUrl}/response.html?id=${man.id}&myId=${woman.id}&t=${t}`;
+
+  const createBody = {
+    records: [{
+      fields: {
+        "남자": mf["이름"] || "", "여자": wf["이름"] || "",
+        "남자ID": man.id, "여자ID": woman.id,
+        "남자링크": urlForMan, "여자링크": urlForWoman,
+        "상태": "소개중", "남자응답": "대기", "여자응답": "대기",
+        "생성일": new Date().toLocaleString("ko-KR")
+      }
+    }]
+  };
+
+  const createRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("매칭")}`, {
+    method: "POST", headers: atHeaders(), body: JSON.stringify(createBody)
+  });
+
+  if (!createRes.ok) {
+    await slackReply(responseUrl, { response_type: "ephemeral", text: "⚠️ 매칭 생성 실패 (에어테이블 에러)" });
+    return;
+  }
+
+  const createdData = await createRes.json();
+  const newMatchId = (createdData.records && createdData.records[0] && createdData.records[0].id) || "";
+
+  await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}`, {
+    method: "PATCH", headers: atHeaders(),
+    body: JSON.stringify({ records: [{ id: man.id, fields: { "매칭상태": "소개중" } }, { id: woman.id, fields: { "매칭상태": "소개중" } }] })
+  }).catch(() => {});
+
+  const manInfo = [mf["출생연도"] ? `${mf["출생연도"]}년생` : null, mf["사는곳"], mf["직업"]].filter(Boolean).join(" · ");
+  const womanInfo = [wf["출생연도"] ? `${wf["출생연도"]}년생` : null, wf["사는곳"], wf["직업"]].filter(Boolean).join(" · ");
+
+  await slackReply(responseUrl, {
+    response_type: "in_channel",
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `🎉 *새로운 1:1 매칭이 생성되었어요!* (담당: ${who})\n\n` +
+            `👦 *${mf["이름"]}* (${manInfo || "남성"})\n` +
+            `👧 *${wf["이름"]}* (${womanInfo || "여성"})\n\n` +
+            `💬 *${mf["이름"]}님 전달 링크 (카톡용):*\n<${urlForMan}|${urlForMan}>\n\n` +
+            `💬 *${wf["이름"]}님 전달 링크 (카톡용):*\n<${urlForWoman}|${urlForWoman}>\n\n` +
+            `_양쪽 모두에게 위 링크를 카톡으로 전달해 주세요. (48시간 동안 유효)_`
+        }
+      },
+      {
+        type: "actions",
+        elements: [{
+          type: "button", style: "danger", text: { type: "plain_text", text: "✖ 이 매칭 불발 취소" },
+          action_id: "match_cancel", value: `${newMatchId}:${man.id}:${woman.id}:${mf["이름"]}:${wf["이름"]}`,
+          confirm: {
+            title: { type: "plain_text", text: "매칭 취소 확인" },
+            text: { type: "plain_text", text: `${mf["이름"]} ↔ ${wf["이름"]} 매칭을 취소하고 대기 상태로 되돌릴까요?` },
+            confirm: { type: "plain_text", text: "취소하기" }, deny: { type: "plain_text", text: "유지" }
+          }
+        }]
+      }
+    ]
+  });
+}
+
+async function handleCancelMatch(text, responseUrl, who) {
+  const rawParts = text.replace(/^(취소|불발)\s*/, "").split(/[,，/·\s]+/).map(s => s.trim()).filter(Boolean);
+  if (rawParts.length < 2) {
+    await slackReply(responseUrl, { response_type: "ephemeral", text: "⚠️ 취소할 두 분의 이름을 입력해 주세요.\n예시: `/매칭 취소 김철수, 이영희`" });
+    return;
+  }
+  const name1 = rawParts[0], name2 = rawParts[1];
+  const matches = await fetchAll("매칭");
+  const ongoing = matches.find(m => {
+    const f = m.fields || {};
+    return (f["상태"] || "소개중") === "소개중" &&
+      ((f["남자"] === name1 && f["여자"] === name2) || (f["남자"] === name2 && f["여자"] === name1));
+  });
+
+  if (!ongoing) {
+    await slackReply(responseUrl, { response_type: "ephemeral", text: `⚠️ [${name1} ❤ ${name2}] 님의 '소개중' 매칭을 찾을 수 없어요.` });
+    return;
+  }
+
+  const mf = ongoing.fields || {};
+  await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("매칭")}/${ongoing.id}`, {
+    method: "PATCH", headers: atHeaders(), body: JSON.stringify({ fields: { "상태": "불발" } })
+  });
+
+  const idsToRevert = [mf["남자ID"], mf["여자ID"]].filter(Boolean);
+  if (idsToRevert.length) {
+    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}`, {
+      method: "PATCH", headers: atHeaders(),
+      body: JSON.stringify({ records: idsToRevert.map(id => ({ id, fields: { "매칭상태": "승인" } })) })
+    });
+  }
+
+  await slackReply(responseUrl, {
+    response_type: "in_channel",
+    text: `✖ *${mf["남자"]} ❤ ${mf["여자"]}* 매칭이 취소(불발 처리)되었습니다. (${who})`
+  });
+}
+
+// ==========================================
+// 메인 핸들러
+// ==========================================
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).send("POST only");
   const raw = await readRaw(req);
 
-  // 설정 문제는 슬랙 화면에 이유를 보여준다. 401 만 돌려주면 아무 반응 없이 끝나서
-  // 센터장이 무엇이 잘못됐는지 알 수 없다 (실제로 그래서 한참 헤맸다).
   if (!process.env.SLACK_SIGNING_SECRET) {
-    return res.status(200).json({ response_type: "ephemeral",
-      text: "⚠️ 서버에 SLACK_SIGNING_SECRET 이 없어요.\nVercel 환경변수에 넣고 재배포해주세요." });
+    return res.status(200).json({ response_type: "ephemeral", text: "⚠️ 서버에 SLACK_SIGNING_SECRET 이 없어요." });
   }
   if (!raw) {
-    return res.status(200).json({ response_type: "ephemeral",
-      text: "⚠️ 슬랙이 보낸 내용을 읽지 못했어요 (본문 비어 있음).\n서버 설정 문제예요 — 센터장에게 알려주세요." });
+    return res.status(200).json({ response_type: "ephemeral", text: "⚠️ 슬랙이 보낸 내용을 읽지 못했어요." });
   }
   if (!verifySlack(req, raw, process.env.SLACK_SIGNING_SECRET)) {
     return res.status(401).send("invalid signature");
   }
+
   const form = new URLSearchParams(raw);
 
-  // 버튼 클릭 (공개하기 / 삭제)
+  // 1. 버튼 클릭 인터랙션
   if (form.get("payload")) {
     const p = JSON.parse(form.get("payload"));
     const act = (p.actions || [])[0] || {};
     const who = (p.user && (p.user.name || p.user.username)) || "누군가";
-    const recId = act.value;
     res.status(200).send("");
+
     waitUntil((async () => {
       try {
         if (act.action_id === "place_publish") {
-          const r = await fetch(airtableUrl(recId), { method: "PATCH", headers: atHeaders(), body: JSON.stringify({ fields: { "공개": true } }) });
+          const recId = act.value;
+          const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("데이트 장소")}/${recId}`, {
+            method: "PATCH", headers: atHeaders(), body: JSON.stringify({ fields: { "공개": true } })
+          });
           const d = await r.json();
           const nm = (d.fields && d.fields["이름"]) || "장소";
-          await slackReply(p.response_url, { replace_original: true, text: r.ok ? `✅ *${nm}* 공개 완료! (${who})\nhttps://ssumcenter.vercel.app/date-spots` : `⚠️ 공개 실패: ${(d.error && d.error.message) || r.status}` });
+          await slackReply(p.response_url, { replace_original: true, text: r.ok ? `✅ *${nm}* 공개 완료! (${who})\nhttps://ssumcenter.vercel.app/date-spots` : `⚠️ 공개 실패` });
         } else if (act.action_id === "place_delete") {
-          const r = await fetch(airtableUrl(recId), { method: "DELETE", headers: atHeaders() });
-          await slackReply(p.response_url, { replace_original: true, text: r.ok ? `🗑️ 삭제했어요. (${who})` : "⚠️ 삭제 실패" });
+          const recId = act.value;
+          await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("데이트 장소")}/${recId}`, {
+            method: "DELETE", headers: atHeaders()
+          });
+          await slackReply(p.response_url, { replace_original: true, text: `🗑️ 삭제했어요. (${who})` });
+        } else if (act.action_id === "match_cancel") {
+          const [matchId, manId, womanId, manName, womanName] = String(act.value || "").split(":");
+          if (matchId) {
+            await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("매칭")}/${matchId}`, {
+              method: "PATCH", headers: atHeaders(), body: JSON.stringify({ fields: { "상태": "불발" } })
+            });
+          }
+          const idsToRevert = [manId, womanId].filter(id => id && id.startsWith("rec"));
+          if (idsToRevert.length) {
+            await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}`, {
+              method: "PATCH", headers: atHeaders(),
+              body: JSON.stringify({ records: idsToRevert.map(id => ({ id, fields: { "매칭상태": "승인" } })) })
+            });
+          }
+          await slackReply(p.response_url, {
+            replace_original: true,
+            text: `✖ *${manName || "남성"} ❤ ${womanName || "여성"}* 매칭이 취소(불발 처리)되었어요. (${who})`
+          });
         }
-      } catch (e) { console.error("[slack-place] action", e); }
+      } catch (e) { console.error("[slack] action error", e); }
     })());
     return;
   }
 
-  // 슬래시 명령 (/장소 ...)
-  const cmd = parseCommand(form.get("text"));
+  // 2. 슬래시 명령
+  const command = form.get("command") || "";
+  const text = (form.get("text") || "").trim();
+  const who = form.get("user_name") || "관리자";
+  const responseUrl = form.get("response_url");
+
+  // A. /매칭 명령
+  if (command === "/매칭") {
+    res.status(200).send("");
+    waitUntil((async () => {
+      try {
+        if (!text || text === "도움말" || text === "help") {
+          await slackReply(responseUrl, getMatchHelp());
+        } else if (text === "대기" || text === "목록") {
+          await handleWaitingList(responseUrl);
+        } else if (text === "현황") {
+          await handleMatchStatus(responseUrl);
+        } else if (text.startsWith("취소") || text.startsWith("불발")) {
+          await handleCancelMatch(text, responseUrl, who);
+        } else {
+          await handleCreateMatch(text, responseUrl, who);
+        }
+      } catch (e) {
+        console.error("[slack-match] error", e);
+        await slackReply(responseUrl, { response_type: "ephemeral", text: `⚠️ 오류가 발생했어요: ${e.message}` });
+      }
+    })());
+    return;
+  }
+
+  // B. /장소 명령
+  const cmd = parsePlaceCommand(text);
   if (!cmd.name) {
     return res.status(200).json({ response_type: "ephemeral", text: "사용법: `/장소 상호명, 동네, 추천 센터장`\n예) `/장소 효뜨, 용산, 동탄`\n예) `/장소 에이비카페, 강남, 동탄 성수 강남`" });
   }
-  const responseUrl = form.get("response_url");
-  waitUntil(handleCommand(cmd, responseUrl));
-  return res.status(200).json({ response_type: "ephemeral", text: `🔎 '${cmd.name}' 찾는 중이에요… 30초 정도 걸려요.` });
+  waitUntil(handlePlaceCommand(cmd, responseUrl));
+  return res.status(200).json({ response_type: "ephemeral", text: `🔎 '${cmd.name}' 등록 중이에요…` });
 };
 
-// ⚠️ 슬랙 서명 검증은 '보낸 그대로의 본문'이 있어야 한다.
-// Vercel 은 기본적으로 본문을 미리 파싱해버려서, 그러면 readRaw 가 빈 값을 받고
-// 서명이 절대 맞지 않는다(= 401 → 슬랙에서 아무 반응 없음).
-// ★ 반드시 module.exports = handler 뒤에 둘 것. 앞에 두면 통째로 덮어써져 사라진다.
 module.exports.config = { api: { bodyParser: false } };
-
-module.exports.parseCommand = parseCommand;
-module.exports.verifySlack = verifySlack;
