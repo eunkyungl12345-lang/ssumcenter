@@ -1,5 +1,5 @@
 const { syncMembers } = require("./member.js");
-const { sendSms, isValidPhone } = require("./_sms.js");
+const { sendSms, isValidPhone, checkSmsConfig } = require("./_sms.js");
 
 // 로테이션 접수 → 자동 입금안내 문자 (센터장 확정 문구)
 function 로테이션접수문자() {
@@ -242,7 +242,33 @@ module.exports = async function handler(req, res) {
         memberLine = `\n⚠️ 회원명부 적립 실패: ${e.message}`;
       }
 
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${waitLine}${memberLine}\n\n오늘도 화이팅이에요! 💪`;
+      // 📮 문자가 지금 나갈 수 있는 상태인지 — 브리핑에 같이 넣는다.
+      // 숫자만 알려주면 문자가 망가진 걸 모른 채 며칠이 간다.
+      // (솔라피 API 키 만료로 실제로 그랬다)
+      let smsLine = "\n📮 문자 — 확인 못 함";
+      try {
+        const c = await checkSmsConfig();
+        const concl = String(c["결론"] || "");
+        if (concl.indexOf("✅") === 0) {
+          const bal = String(c["잔액"] || "").replace(/(\d)(?=(\d{3})+원)/g, "$1,");
+          smsLine = `\n📮 문자 — 🟢 정상${bal ? " (잔액 " + bal + ")" : ""}`;
+        } else {
+          // ❌ 로 표시된 항목을 사유로 쓴다. 환경변수 항목은 값이 "없음" 뿐이라
+          // 칸 이름까지 붙여야 무엇이 없는지 알 수 있다.
+          const details = Object.keys(c)
+            .filter((k) => k !== "결론" && String(c[k]).indexOf("❌") === 0)
+            .map((k) => {
+              const v = String(c[k]).replace(/^❌\s*/, "");
+              return k.indexOf("환경변수 ") === 0 ? k.replace("환경변수 ", "") + " " + v : v;
+            });
+          const head = details.length ? details.join(" / ") : concl.replace(/^❌\s*/, "");
+          smsLine = `\n📮 문자 — 🔴 안 나가요: ${head}`;
+        }
+      } catch (e) {
+        smsLine = `\n📮 문자 — 확인 실패: ${e.message}`;
+      }
+
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${waitLine}${memberLine}${smsLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
