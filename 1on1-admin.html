@@ -204,7 +204,7 @@
   <div class="mb-4">
     <h2 class="text-lg font-black mb-3">소개 풀 (<span id="pool-count">0</span>명)</h2>
     <!-- 🔍 이름·연락처 검색 -->
-    <input type="text" id="matchSearch" oninput="matchSearch()" placeholder="🔍 이름 또는 연락처로 찾기" class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-2.5 text-xs text-white placeholder-[#555] focus:border-[#E8B050] focus:outline-none transition mb-3">
+    <input type="text" id="matchSearch" oninput="matchSearch()" placeholder="🔍 이름, 전화번호(010-0000-0000 또는 숫자만), 직업으로 찾기" class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-2.5 text-xs text-white placeholder-[#555] focus:border-[#E8B050] focus:outline-none transition mb-3">
     <!-- 필터: 상태 -->
     <div class="flex flex-wrap gap-2 mb-2 items-center">
       <span class="text-[10px] text-[#6b6358] font-bold mr-0.5 w-7">상태</span>
@@ -265,6 +265,8 @@
         <div id="pick-2" class="text-[13px] text-[#555]">카드 톡 선택</div>
       </div>
     </div>
+    <!-- 💡 찰떡 추천 상대 영역 -->
+    <div id="smart-recommendations" class="mb-2 hidden"></div>
     <button onclick="generateMatch()" id="match-btn" disabled
       class="bg-y text-black font-extrabold w-full px-6 py-3 rounded-xl text-sm transition hover:bg-[#D4952A] disabled:opacity-30 disabled:cursor-not-allowed">
       <i class="fa-solid fa-heart mr-1.5"></i>두 사람 매칭 만들기
@@ -1156,11 +1158,30 @@ async function loadMatches(){
       const cancel = (s==="소개중")
         ? '<div style="width:100%;margin-top:5px"><button onclick="markUnmatched(\''+r.id+'\',\''+(f["남자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["여자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["남자ID"]||"")+'\',\''+(f["여자ID"]||"")+'\')" style="width:100%;background:#0e0c0a;border:1px solid #6b6358;color:#c8b8a0;font-size:11px;font-weight:700;padding:6px;border-radius:8px;cursor:pointer">✖ 이 매칭 불발 처리 (취소)</button></div>'
         : '';
+      // ⏰ 미응답자 리마인드 문자 슝 버튼
+      const reminders = (s==="소개중")
+        ? '<div style="width:100%;display:flex;gap:6px;margin-top:5px">'
+          + (f["남자ID"] && f["남자링크"] ? '<button onclick="sendReminderSms(\''+f["남자ID"]+'\',\''+f["남자링크"]+'\',this)" style="flex:1;background:#1e1811;border:1px solid rgba(232,176,80,.4);color:#E8B050;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer"><i class="fa-solid fa-clock mr-1"></i>'+(f["남자"]||"남")+' 리마인드 슝</button>' : '')
+          + (f["여자ID"] && f["여자링크"] ? '<button onclick="sendReminderSms(\''+f["여자ID"]+'\',\''+f["여자링크"]+'\',this)" style="flex:1;background:#1e1811;border:1px solid rgba(232,176,80,.4);color:#E8B050;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer"><i class="fa-solid fa-clock mr-1"></i>'+(f["여자"]||"여")+' 리마인드 슝</button>' : '')
+          + '</div>'
+        : '';
+      // 🎉 성사 커플 원스톱 파이프라인
+      const couplePipeline = (s==="성사")
+        ? '<div style="width:100%;margin-top:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:8px 10px">'
+          + '<div style="font-size:11px;font-weight:800;color:#22c55e;margin-bottom:6px">🎉 성사 파이프라인</div>'
+          + '<div style="display:flex;gap:6px">'
+          + '<button onclick="sendDepositSmsForPair(\''+(f["남자ID"]||"")+'\',\''+(f["여자ID"]||"")+'\',this)" style="flex:1;background:#16140f;border:1px solid #E8B050;color:#E8B050;font-size:11px;font-weight:700;padding:6px;border-radius:8px;cursor:pointer">💰 입금안내 문자</button>'
+          + '<button onclick="sendContacts(\''+(f["남자ID"]||"")+'\',\''+(f["여자ID"]||"")+'\',this)" style="flex:1;background:#22c55e;border:none;color:#000;font-size:11px;font-weight:800;padding:6px;border-radius:8px;cursor:pointer">💌 연락처 전달하기</button>'
+          + '</div>'
+          + '</div>'
+        : '';
       return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #1e1c17;font-size:13px;flex-wrap:wrap">'
         +'<span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;'+badge(s)+'">'+s+'</span>'
         +'<b style="color:#60a5fa">'+(f["남자"]||"?")+'</b> <span style="color:#f472b6">❤</span> <b style="color:#f472b6">'+(f["여자"]||"?")+'</b>'
         +(f["결과"] ? '<span style="color:#8a8070;font-size:11px;margin-left:auto">'+f["결과"]+'</span>' : '')
         +links
+        +reminders
+        +couplePipeline
         +breakup
         +cancel
         +'</div>';
@@ -1202,6 +1223,43 @@ async function markUnmatched(matchId, man, woman, manId, womanId){
     loadMatches();
     if(typeof loadApplicants === "function") loadApplicants(); else location.reload();
   } catch(e){ console.error(e); alert("처리 실패: " + e.message); }
+}
+
+// ⏰ 소개중 미응답자 리마인드 문자 슝
+async function sendReminderSms(id, link, btn){
+  const rec = applicants.find(x => x.id === id);
+  if(!rec){ toast("신청자 정보를 찾을 수 없어요"); return; }
+  const phone = (rec.fields||{})["연락처"], name = (rec.fields||{})["이름"] || "회원";
+  if(!phone){ toast("연락처가 없어요"); return; }
+  if(!confirm(name + "님께 프로필 확인 리마인드 문자를 보낼까요?\n\n수신: " + phone)) return;
+  const orig = btn ? btn.innerHTML : "";
+  if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>발송 중...'; }
+  try {
+    const text = "[썸류센터] " + name + "님, 소개해드린 분의 프로필 확인 기한이 얼마 남지 않았어요! 💛\n\n아래 링크에서 프로필 확인 후 수락/거절을 선택해주세요 😊\n\n" + link + "\n\n※ 두 분 모두 수락하셔야 매칭이 성사됩니다.";
+    const ok = await sendSMS(phone, text);
+    if(ok) toast("⏰ " + name + "님께 리마인드 문자를 발송했어요!");
+    else alert("문자 발송에 실패했어요.");
+  } catch(e){ alert("발송 오류: " + e.message); }
+  finally { if(btn){ btn.disabled = false; btn.innerHTML = orig; } }
+}
+
+// 💰 성사 커플 입금안내 문자 일괄 발송
+async function sendDepositSmsForPair(idA, idB, btn){
+  const a = applicants.find(x => x.id === idA);
+  const b = applicants.find(x => x.id === idB);
+  if(!a && !b){ toast("신청자 정보를 찾을 수 없어요"); return; }
+  const names = [a ? a.fields["이름"] : "", b ? b.fields["이름"] : ""].filter(Boolean).join(" · ");
+  if(!confirm("성사된 커플(" + names + ")에게 입금 안내 문자를 보낼까요?")) return;
+  const orig = btn ? btn.innerHTML : "";
+  if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>발송 중...'; }
+  const depositText = (name) => "[썸류센터] 💌 매칭 성사를 축하드려요!\n\n" + name + "님, 서로의 프로필을 모두 수락하셔서 매칭이 성사되었습니다 🎉\n\n아래 계좌로 매칭비 입금 확인 후 서로의 연락처를 전달해 드릴게요 💛\n\n▸ 매칭비 19,900원\n▸ 카카오뱅크 장민 3333-34-1009531\n\n※ 입금자명과 신청서 이름이 일치해야 확인됩니다.";
+  let sent = 0;
+  try {
+    if(a && (a.fields||{})["연락처"]){ await sendSMS(a.fields["연락처"], depositText(a.fields["이름"]||"회원")); sent++; }
+    if(b && (b.fields||{})["연락처"]){ await sendSMS(b.fields["연락처"], depositText(b.fields["이름"]||"회원")); sent++; }
+    toast("💰 입금 안내 문자를 발송했어요 (" + sent + "명)");
+  } catch(e){ alert("발송 오류: " + e.message); }
+  finally { if(btn){ btn.disabled = false; btn.innerHTML = orig; } }
 }
 
 async function loadResponses(){
@@ -1375,11 +1433,16 @@ function renderList(){
     filtered = applicants.filter(r => r.fields["유입경로"] === "결혼매칭");
   }
 
-  // 🔍 이름·연락처 검색 (있으면 추가로 걸러냄)
+  // 🔍 이름·연락처 검색 (하이픈 무관, 부분 일치, 직업/지역도 검색 지원)
   if(matchSearchQuery){
-    filtered = filtered.filter(r => {
-      const f = r.fields;
-      return ((f["이름"]||"") + " " + (f["연락처"]||"")).toLowerCase().includes(matchSearchQuery);
+    const cleanQ = matchSearchQuery.replace(/[-\s]/g, "");
+    filtered = applicants.filter(r => {
+      const f = r.fields || {};
+      const name = String(f["이름"]||"").toLowerCase();
+      const phone = String(f["연락처"]||"");
+      const cleanPhone = phone.replace(/[-\s]/g, "");
+      const detail = (String(f["직업"]||"") + " " + String(f["사는곳"]||"")).toLowerCase();
+      return name.includes(matchSearchQuery) || (cleanQ.length >= 2 && cleanPhone.includes(cleanQ)) || phone.includes(matchSearchQuery) || detail.includes(matchSearchQuery);
     });
   }
 
@@ -1409,6 +1472,7 @@ function renderList(){
         <div class="pool-info">
           <div class="pool-birth">${memberNoMap[r.id] ? `<span style="font-size:11px;font-weight:700;color:#6b6358">#${memberNoMap[r.id]}</span> ` : ""}${f["출생연도"] || "?"}년생${f["키"] ? ` / ${f["키"]}cm` : ""} <span style="font-size:12px;font-weight:400;color:#9a9080">${gender} ${f["이름"] || ""}</span>${(f["유입경로"]==="결혼매칭"||f["매칭유형"]==="결혼매칭") ? ' <span style="font-size:10px;font-weight:800;color:#171208;background:#E8B050;padding:1px 7px;border-radius:20px">💍 결혼</span>' : ""}</div>
           <div class="pool-detail">${detail || "-"}</div>
+          <div style="font-size:10.5px;color:#7a7060;margin-top:2px"><i class="fa-regular fa-clock" style="font-size:9.5px;margin-right:3px"></i>신청: ${f["신청일시"] || r.createdTime || "-"}</div>
           <div class="pool-status" style="${statusColor}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · <span style="color:#E8B050">⚡슈퍼</span>' : ""}</div>
         </div>
         <div class="pool-thumb" ${photoUrl ? `onclick="event.stopPropagation();openPhoto('${photoUrl}')"` : ""}>
@@ -1664,6 +1728,7 @@ function toggleSelect(id){
   // 매칭 트레이: 한 명이라도 고르면 하단에 띄우고, 아무도 없으면 숨김
   const _tray = document.getElementById("match-tray"); if(_tray) _tray.classList.toggle("hidden", !(selected[0] || selected[1]));
   renderList();
+  updateSmartRecommendations();
 }
 
 function clearSelection(){
@@ -1674,6 +1739,80 @@ function clearSelection(){
   const tray = document.getElementById("match-tray"); if(tray) tray.classList.add("hidden");
   const mr = document.getElementById("match-result"); if(mr) mr.classList.add("hidden");
   renderList();
+  updateSmartRecommendations();
+}
+
+// 💡 선택 1에 어울리는 반대 성별 찰떡 추천 TOP 3
+function updateSmartRecommendations(){
+  const box = document.getElementById("smart-recommendations");
+  if(!box) return;
+  const p = (selected[0] && !selected[1]) ? selected[0] : ((selected[1] && !selected[0]) ? selected[1] : null);
+  if(!p){ box.innerHTML = ""; box.classList.add("hidden"); return; }
+  const pf = p.fields || {};
+  const myGender = pf["성별"] || "";
+  const oppGender = myGender === "남성" ? "여성" : (myGender === "여성" ? "남성" : "");
+  if(!oppGender){ box.innerHTML = ""; box.classList.add("hidden"); return; }
+
+  const candidates = applicants.filter(r => {
+    if(r.id === p.id) return false;
+    const f = r.fields || {};
+    if(f["성별"] !== oppGender) return false;
+    const st = f["매칭상태"] || "대기";
+    return st !== "소개중" && st !== "거절" && st !== "휴지통" && st !== "제외";
+  });
+  if(!candidates.length){ box.innerHTML = ""; box.classList.add("hidden"); return; }
+
+  const myBirth = parseInt(pf["출생연도"]) || 1995;
+  const myLoc = (pf["사는곳"] || "").toLowerCase();
+  const myCoffee = coffeeType(pf["테스트결과"]);
+  const coffeeBuddies = myCoffee ? coffeeMatchesFor(p) : [];
+
+  const scored = candidates.map(c => {
+    const cf = c.fields || {};
+    let score = 70;
+    const cBirth = parseInt(cf["출생연도"]) || 1995;
+    const diff = Math.abs(myBirth - cBirth);
+    if(diff <= 2) score += 15;
+    else if(diff <= 4) score += 10;
+    else if(diff <= 6) score += 5;
+
+    const cLoc = (cf["사는곳"] || "").toLowerCase();
+    if(myLoc && cLoc && (myLoc.includes(cLoc) || cLoc.includes(myLoc) || (myLoc.includes("서울") && cLoc.includes("서울")) || (myLoc.includes("경기") && cLoc.includes("경기")))){
+      score += 10;
+    }
+    if(coffeeBuddies.includes(c.id)){ score += 10; }
+    if(cf["매칭유형"] === "슈퍼매칭"){ score += 5; }
+
+    score = Math.min(score, 98);
+    return { record: c, score };
+  });
+
+  scored.sort((a,b) => b.score - a.score);
+  const top3 = scored.slice(0, 3);
+
+  let html = '<div style="background:#1a1712;border:1px solid rgba(232,176,80,.25);border-radius:12px;padding:10px 12px;margin-bottom:8px">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+  html += '<span style="font-size:11.5px;font-weight:800;color:#E8B050">✨ <b>' + (pf["이름"]||"선택1") + '</b>님 찰떡 상대 추천 TOP 3</span>';
+  html += '<span style="font-size:10px;color:#9a9080">탭하면 바로 선택2에 담겨요</span>';
+  html += '</div><div style="display:flex;flex-direction:column;gap:6px">';
+
+  top3.forEach(item => {
+    const r = item.record, f = r.fields || {};
+    const photo = (f["프로필사진"] && f["프로필사진"][0] && f["프로필사진"][0].url) || "";
+    const locJob = [f["사는곳"], f["직업"]].filter(Boolean).join(" · ");
+    html += '<div onclick="toggleSelect(\'' + r.id + '\')" style="display:flex;align-items:center;gap:8px;background:#0e0c0a;border:1px solid #2a2217;border-radius:10px;padding:7px 10px;cursor:pointer;transition:border-color .15s">';
+    if(photo) html += '<img src="' + photo + '" style="width:34px;height:34px;border-radius:8px;object-fit:cover;flex:none">';
+    html += '<div style="flex:1;min-width:0">';
+    html += '<div style="font-size:12.5px;font-weight:700;color:#fff">' + (f["이름"]||"") + ' <span style="font-size:11px;color:#9a9080;font-weight:400">' + (f["출생연도"]||"") + '년생</span></div>';
+    html += '<div style="font-size:11px;color:#7a7060;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (locJob || "-") + '</div>';
+    html += '</div>';
+    html += '<span style="font-size:10.5px;font-weight:800;color:#E8B050;background:rgba(232,176,80,.1);padding:3px 8px;border-radius:20px;border:1px solid rgba(232,176,80,.25)">' + item.score + '% 추천</span>';
+    html += '</div>';
+  });
+
+  html += '</div></div>';
+  box.innerHTML = html;
+  box.classList.remove("hidden");
 }
 
 function toggleMatchTool(force){
