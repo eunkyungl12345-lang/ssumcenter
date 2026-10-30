@@ -1,4 +1,4 @@
-const { upsertMember } = require("./member.js");
+const { syncMembers } = require("./member.js");
 const { sendSms, isValidPhone } = require("./_sms.js");
 
 // 로테이션 접수 → 자동 입금안내 문자 (센터장 확정 문구)
@@ -155,7 +155,28 @@ module.exports = async function handler(req, res) {
         catch (e) { console.error("[airtable] 대기안내 문자 실패:", e.message); }
       }
       const waitLine = waitSent.length ? `\n💌 7일째 대기 안내 문자 ${waitSent.length}명 발송 (${waitSent.join(", ")})` : "";
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${waitLine}\n\n오늘도 화이팅이에요! 💪`;
+
+      // 회원 명부 일괄 적립 — 신청 때마다 하지 않고 하루 한 번 몰아서 한다.
+      // (신청 1건당 에어테이블 호출을 3회 → 1회로 줄이기 위해)
+      let memberLine = "";
+      try {
+        const rot = await all("로테이션 신청");
+        const fin = await all("재테크 커피팅");
+        const st = await syncMembers({
+          TOKEN, BASE_ID,
+          sources: [
+            { table: "1:1 매칭 신청", records: one },
+            { table: "로테이션 신청", records: rot },
+            { table: "재테크 커피팅", records: fin },
+          ],
+        });
+        if (st.새회원 || st.갱신) memberLine = `\n📇 회원명부 — 신규 ${st.새회원} · 갱신 ${st.갱신}`;
+      } catch (e) {
+        console.error("[airtable] 회원명부 일괄 적립 실패:", e.message);
+        memberLine = `\n⚠️ 회원명부 적립 실패: ${e.message}`;
+      }
+
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${waitLine}${memberLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
@@ -322,13 +343,12 @@ module.exports = async function handler(req, res) {
 
     if (!response.ok) return res.status(response.status).json(data);
 
-    // 신청서 제출 성공 → 회원 통합 명부에 자동 적립 (실패해도 신청은 성공 처리)
-    if (req.method === "POST" && ["1:1 매칭 신청", "로테이션 신청", "재테크 커피팅"].includes(table)) {
-      try {
-        const recs = (req.body && req.body.records) || [];
-        for (const rc of recs) { await upsertMember({ table, fields: (rc && rc.fields) || {}, TOKEN, BASE_ID }); }
-      } catch (e) { /* 명부 적립 실패는 무시 */ }
-    }
+    // 회원 명부 적립은 여기서 하지 않는다.
+    // 예전에는 신청 1건마다 upsertMember 를 불러서 에어테이블을 3번(저장 + 회원조회 +
+    // 회원갱신) 썼다. 신청이 몰리면 에어테이블 월 한도에 금방 닿는다
+    // (2026-09-24 실제로 한도 초과로 신청·관리자 조회가 전부 막혔다).
+    // 이제 신청 때는 저장만 하고, 적립은 하루 한 번 cron 에서 일괄로 한다
+    // (api/member.js 의 syncMembers). 신청 1건당 호출이 3회 → 1회가 된다.
 
     // 새 신청 → 슬랙 팀 알림
     if (req.method === "POST" && !isAdmin && (table === "1:1 매칭 신청" || table === "로테이션 신청")) {
