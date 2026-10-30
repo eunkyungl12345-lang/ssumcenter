@@ -139,7 +139,7 @@ module.exports = async function handler(req, res) {
     const isToday = (r) => r.createdTime && kstDay(r.createdTime) === todayK;
 
     try {
-      const rot = await readAll("로테이션 신청");
+      // 로테이션은 상태판에서 뺐다(1:1만 본다). 안 읽으니 에어테이블 호출도 하나 줄었다.
       const one = await readAll("1:1 매칭 신청");
       const resp = await readAll("매칭 응답");
       const match = await readAll("매칭");
@@ -149,12 +149,11 @@ module.exports = async function handler(req, res) {
         ok: true,
         에어테이블: "정상",
         오늘: {
-          로테이션신청: cnt(rot, isToday),
           일대일신청: cnt(one, isToday),
           매칭응답: cnt(resp, isToday),
         },
         진행중: {
-          로테이션_승인대기: cnt(rot, (r) => (r.fields["승인상태"] || "대기") === "대기"),
+          일대일_대기: cnt(one, (r) => (r.fields["매칭상태"] || "대기") === "대기"),
           일대일_소개중: cnt(one, (r) => r.fields["매칭상태"] === "소개중"),
           매칭_소개중: cnt(match, (r) => r.fields["상태"] === "소개중"),
           매칭_성사: cnt(match, (r) => r.fields["상태"] === "성사"),
