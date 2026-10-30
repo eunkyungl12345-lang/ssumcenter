@@ -1998,7 +1998,6 @@ async function generateMatch(){
   const _mh = document.getElementById("make-hint"); if(_mh) _mh.classList.add("hidden");
   if(typeof showMatchTab === "function") showMatchTab("make");
 
-  const idA = selected[0].id, idB = selected[1].id;
   try {
     // Airtable 매칭상태 업데이트 + 커플 기록
     await updateMatchStatus(idA);
