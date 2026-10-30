@@ -83,6 +83,106 @@ async function upsertMember({ table, fields, TOKEN, BASE_ID }) {
   }
 }
 
+/**
+ * 회원 명부 일괄 적립 (하루 한 번 cron 에서 호출)
+ *
+ * 예전에는 신청이 들어올 때마다 upsertMember 를 불렀다. 신청 1건에
+ * 에어테이블을 3번(신청 저장 + 회원 조회 + 회원 갱신) 쓰게 되고,
+ * 신청이 몰리면 에어테이블 한도에 금방 닿는다. 실제로 2026-09-24 에
+ * 월 한도를 넘겨 신청·관리자 조회가 전부 막혔다.
+ *
+ * 그래서 신청 때는 저장만(1번) 하고, 적립은 여기서 몰아서 한다.
+ *   · 회원 명부를 통째로 한 번 읽어 전화번호 → 레코드 로 만든다
+ *   · 쓰기는 10건씩 묶어서 보낸다 (에어테이블 한 번에 10건)
+ * 신청이 몇 건이든 쓰는 호출 수가 거의 늘지 않는다.
+ *
+ * 같은 사람을 여러 번 돌려도 안전하다. 빈 칸만 채우고 참여이력은
+ * 이미 있으면 더하지 않는다.
+ */
+async function syncMembers({ TOKEN, BASE_ID, sources }) {
+  const H = { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" };
+  const base = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(MEMBER_TABLE)}`;
+  const stat = { 읽음: 0, 새회원: 0, 갱신: 0, 건너뜀: 0, 호출: 0 };
+
+  // 1) 회원 명부 전체를 한 번만 읽는다
+  const byPhone = new Map();
+  let off;
+  do {
+    const p = new URLSearchParams({ pageSize: "100" });
+    if (off) p.set("offset", off);
+    const r = await fetch(`${base}?${p.toString()}`, { headers: H });
+    stat.호출++;
+    if (!r.ok) throw new Error("회원 명부 조회 실패 (" + r.status + ")");
+    const d = await r.json();
+    (d.records || []).forEach((rec) => {
+      const ph = normPhone((rec.fields || {})["전화번호"]);
+      if (ph && !byPhone.has(ph)) byPhone.set(ph, rec);
+    });
+    off = d.offset;
+  } while (off);
+
+  // 2) 신청 기록을 돌며 만들 것 / 고칠 것을 모은다
+  const creates = [], patches = [];
+  for (const { table, records } of sources) {
+    for (const rec of records || []) {
+      stat.읽음++;
+      const fields = rec.fields || {};
+      const phone = normPhone(fields["연락처"] || fields["전화번호"]);
+      if (!phone) { stat.건너뜀++; continue; }
+
+      const { m, photos } = mapToMember(fields);
+      const src = sourceLabel(table);
+      const histKey = src + (fields["회차"] ? " " + fields["회차"] : "");
+      const histTag = histKey + " (" + today() + ")";
+      const existing = byPhone.get(phone);
+
+      if (!existing) {
+        const fresh = Object.assign({}, m);
+        if (photos.length) fresh["프로필사진"] = photos;
+        fresh["유입경로"] = src;
+        fresh["상태"] = "활성";
+        fresh["가입일"] = today();
+        fresh["참여이력"] = histTag;
+        creates.push({ fields: fresh });
+        // 같은 사람이 같은 회차에 두 번 들어오지 않게 자리만 잡아둔다
+        byPhone.set(phone, { id: null, fields: fresh });
+        continue;
+      }
+
+      const ex = existing.fields || {};
+      const upd = {};
+      Object.keys(m).forEach((k) => { if (m[k] && !ex[k]) upd[k] = m[k]; });
+      if (photos.length && !(ex["프로필사진"] && ex["프로필사진"].length)) upd["프로필사진"] = photos;
+      const hist = ex["참여이력"] || "";
+      if (hist.indexOf(histKey) < 0) upd["참여이력"] = (hist ? hist + "\n" : "") + histTag;
+
+      if (Object.keys(upd).length && existing.id) {
+        patches.push({ id: existing.id, fields: upd });
+        existing.fields = Object.assign({}, ex, upd); // 같은 실행 안에서 중복 반영 방지
+      }
+    }
+  }
+
+  // 3) 10건씩 묶어서 쓴다
+  async function writeBatches(list, method) {
+    for (let i = 0; i < list.length; i += 10) {
+      const r = await fetch(base, {
+        method, headers: H, body: JSON.stringify({ records: list.slice(i, i + 10) }),
+      });
+      stat.호출++;
+      if (!r.ok) {
+        const t = await r.text().catch(() => "");
+        throw new Error("회원 " + (method === "POST" ? "생성" : "갱신") + " 실패 (" + r.status + ") " + t.slice(0, 120));
+      }
+    }
+  }
+  await writeBatches(creates, "POST");
+  await writeBatches(patches, "PATCH");
+  stat.새회원 = creates.length;
+  stat.갱신 = patches.length;
+  return stat;
+}
+
 // 관리자 셋업 엔드포인트: 테이블/필드 생성 (Metadata API, 함수 개수 절약 위해 여기 통합)
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -137,3 +237,4 @@ module.exports = async function handler(req, res) {
 };
 
 module.exports.upsertMember = upsertMember;
+module.exports.syncMembers = syncMembers;
