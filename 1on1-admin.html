@@ -77,25 +77,19 @@
   #applicant-list.vm-compact .pool-status{font-size:11px}
 
   /* 소개 풀 카드 */
-  .appcard{background:#16140f;border:1px solid #1e1c17;border-radius:16px;padding:4px 15px 14px;margin-bottom:12px;transition:border-color .15s}
-  .appcard.sel{border-color:#E8B050;background:rgba(255,212,0,.05)}
-  .pool-row{display:flex;align-items:center;gap:12px;padding:13px 0 11px;cursor:pointer}
+  .appcard{background:#16140f;border:1px solid #1e1c17;border-radius:16px;padding:12px 14px;margin-bottom:10px;transition:all .15s}
+  .appcard.sel{border-color:#E8B050;background:rgba(232,176,80,.04);box-shadow:0 0 12px rgba(232,176,80,.15)}
+  .pool-row{display:flex;align-items:flex-start;gap:12px;cursor:pointer}
   .pool-row:hover{background:transparent}
   .pool-row.selected{background:transparent}
   .pool-info{flex:1;min-width:0}
-  .pool-birth{font-size:17px;font-weight:900;line-height:1.2}
-  .pool-detail{font-size:12px;color:#9a9080;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .pool-status{font-size:10px;font-weight:700;margin-top:3px}
-  .pool-thumb{width:64px;height:64px;border-radius:12px;overflow:hidden;flex-shrink:0;background:#1e1c17;display:flex;align-items:center;justify-content:center}
+  .pool-thumb{width:56px;height:56px;border-radius:12px;overflow:hidden;flex-shrink:0;background:#1e1c17;display:flex;align-items:center;justify-content:center}
   .pool-thumb img{width:100%;height:100%;object-fit:cover}
   .pool-thumb i{color:#555;font-size:18px}
 
   /* 아코디언 상세 */
-  .pool-expand{display:block;padding:0}
+  .pool-expand{display:none;padding-top:12px;border-top:1px solid #1e1c17;margin-top:10px}
   .pool-expand.open{display:block}
-  .pool-birth{font-size:15px;font-weight:800}
-  .pool-detail{font-size:12.5px;color:#9a9080;margin-top:2px}
-  .pool-status{font-size:11px;font-weight:750;margin-top:5px}
 </style>
 </head>
 <body class="min-h-screen selection:bg-[#E8B050] selection:text-black">
@@ -170,19 +164,19 @@
   <div class="grid grid-cols-4 gap-3 mb-6">
     <button type="button" onclick="filterBy('all')" class="bg-[#16140f] border border-[#1e1c17] rounded-2xl py-4 text-center transition hover:border-[#E8B050] cursor-pointer">
       <div class="text-2xl font-black y" id="stat-total">-</div>
-      <div class="text-[11px] text-[#9a9080] mt-1">전체 신청</div>
+      <div class="text-[11px] text-[#9a9080] mt-1">전체 회원</div>
     </button>
     <button type="button" onclick="showMatchTab('status')" class="bg-[#16140f] border border-[#1e1c17] rounded-2xl py-4 text-center transition hover:border-[#E8B050] cursor-pointer">
       <div class="text-2xl font-black text-emerald-400" id="stat-waiting">-</div>
-      <div class="text-[11px] text-[#9a9080] mt-1">성사 🎉</div>
+      <div class="text-[11px] text-[#9a9080] mt-1">성사 커플</div>
     </button>
     <button type="button" onclick="filterBy('승인')" class="bg-[#16140f] border border-[#1e1c17] rounded-2xl py-4 text-center transition hover:border-[#E8B050] cursor-pointer">
-      <div class="text-2xl font-black text-emerald-400" id="stat-approved">-</div>
-      <div class="text-[11px] text-[#9a9080] mt-1">승인</div>
+      <div class="text-2xl font-black text-[#E8B050]" id="stat-approved">-</div>
+      <div class="text-[11px] text-[#9a9080] mt-1">매칭 대기</div>
     </button>
-    <button type="button" onclick="filterBy('소개중')" class="bg-[#16140f] border border-[#1e1c17] rounded-2xl py-4 text-center transition hover:border-[#E8B050] cursor-pointer">
+    <button type="button" onclick="showMatchTab('status')" class="bg-[#16140f] border border-[#1e1c17] rounded-2xl py-4 text-center transition hover:border-[#E8B050] cursor-pointer">
       <div class="text-2xl font-black text-blue-400" id="stat-matched">-</div>
-      <div class="text-[11px] text-[#9a9080] mt-1">소개중</div>
+      <div class="text-[11px] text-[#9a9080] mt-1">소개중 (진행)</div>
     </button>
   </div>
 
@@ -942,6 +936,7 @@ function openPhoto(url){
 
 let applicants = [];
 let matchResponses = [];
+let cachedMatches = [];
 let statusLoaded = false; // '현황' 탭 처음 열 때만 매칭·응답 로드 (API 호출 절약)
 let selected = [null, null];
 let currentFilter = "all";
@@ -949,6 +944,63 @@ let matchSearchQuery = "";
 function matchSearch(){
   matchSearchQuery = (document.getElementById("matchSearch")?.value || "").trim().toLowerCase();
   renderList();
+}
+
+// 🕒 직관적인 신청 일시 포맷 ("오늘 14:30", "어제 09:15", "10/28 11:00")
+function formatDateText(d){
+  if(!d) return "-";
+  const s = String(d).trim();
+  const m = s.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.?(?:\s*(오전|오후))?\s*(\d{1,2}):(\d{2})/);
+  if(m){
+    const now = new Date();
+    const yr = +m[1], mo = +m[2], day = +m[3];
+    let hr = +m[5];
+    if(m[4] === "오후" && hr < 12) hr += 12;
+    if(m[4] === "오전" && hr === 12) hr = 0;
+    const min = m[6];
+    if(now.getFullYear() === yr && now.getMonth()+1 === mo && now.getDate() === day){
+      return `오늘 ${hr}:${min}`;
+    }
+    const yest = new Date(now.getTime() - 86400000);
+    if(yest.getFullYear() === yr && yest.getMonth()+1 === mo && yest.getDate() === day){
+      return `어제 ${hr}:${min}`;
+    }
+    return `${mo}/${day} ${hr}:${min}`;
+  }
+  return s.length > 16 ? s.slice(0, 16) : s;
+}
+
+// 📂 카드 아코디언 토글
+function toggleExpand(id){
+  const el = document.getElementById("expand-" + id);
+  const btn = document.getElementById("exp-text-" + id);
+  if(!el) return;
+  const isOpen = el.classList.toggle("open");
+  if(btn){
+    btn.innerHTML = isOpen ? '접기 <i class="fa-solid fa-chevron-up ml-0.5"></i>' : '상세보기 <i class="fa-solid fa-chevron-down ml-0.5"></i>';
+  }
+}
+
+// 🛡️ 과거 매칭·거절 이력 확인 (이미 만났거나 거절했던 사람 자동 제외)
+function hasPastMatchHistory(idA, idB){
+  if(!idA || !idB) return false;
+  // 1. 매칭 응답 기록 (수락/거절 불문)
+  if(matchResponses && matchResponses.length){
+    const foundR = matchResponses.some(r => {
+      const f = r.fields || {};
+      return (f["응답자ID"] === idA && f["매칭ID"] === idB) || (f["응답자ID"] === idB && f["매칭ID"] === idA);
+    });
+    if(foundR) return true;
+  }
+  // 2. 매칭 테이블 (과거 소개/커플 기록)
+  if(cachedMatches && cachedMatches.length){
+    const foundM = cachedMatches.some(r => {
+      const f = r.fields || {};
+      return (f["남자ID"] === idA && f["여자ID"] === idB) || (f["남자ID"] === idB && f["여자ID"] === idA);
+    });
+    if(foundM) return true;
+  }
+  return false;
 }
 
 // 서브탭 전환: 신청자(pool) / 매칭하기(make) / 현황(status)
@@ -978,7 +1030,8 @@ async function loadApplicants(){
     applicants = data.records || [];
     updateStats();
     applyMatchSort(); // 정렬 기준·방향 적용 + 하이라이트 동기화 후 렌더
-    // 매칭·응답은 '현황' 탭을 처음 열 때 로드 (showMatchTab에서 lazy — API 호출 절약)
+    // 백그라운드에서 매칭·응답 기록도 미리 로드 (추천 시 과거 거절자 제외용)
+    if(!statusLoaded){ loadResponses(); loadMatches(); }
   } catch(err) {
     console.error(err);
     document.getElementById("applicant-list").innerHTML = '<p class="text-center text-red-400 py-10">데이터를 불러올 수 없습니다</p>';
@@ -1135,11 +1188,13 @@ async function loadMatches(){
     if(!res.ok) return;
     const data = await res.json();
     const recs = data.records || [];
+    cachedMatches = recs;
     if(!recs.length){ box.innerHTML = ""; const s0=document.getElementById("stat-waiting"); if(s0) s0.textContent="0"; return; }
     const order = {"소개중":0,"성사":1,"결별":2,"불발":3};
     recs.sort((a,b)=> (order[(a.fields||{})["상태"]] ?? 9) - (order[(b.fields||{})["상태"]] ?? 9));
     const cnt = s => recs.filter(r=>(r.fields||{})["상태"]===s).length;
-    const stW = document.getElementById("stat-waiting"); if(stW) stW.textContent = cnt("성사");
+    const stW = document.getElementById("stat-waiting"); if(stW) stW.textContent = cnt("성사") + "쌍";
+    const stM = document.getElementById("stat-matched"); if(stM) stM.textContent = cnt("소개중") + "쌍";
     const badge = s => s==="성사" ? 'background:#22c55e;color:#000' : s==="소개중" ? 'background:#3b82f6;color:#fff' : s==="결별" ? 'background:#7f1d1d;color:#fca5a5' : 'background:#3a3a37;color:#9a9080';
     let html = '<div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-4">';
     html += '<div class="font-black text-sm mb-3">💑 매칭 현황 <span class="text-[11px] text-[#9a9080] font-normal">(소개중 '+cnt("소개중")+' · 성사 '+cnt("성사")+' · 💔결별 '+cnt("결별")+' · 불발 '+cnt("불발")+')</span></div>';
@@ -1335,9 +1390,20 @@ function updateStats(){
   const matched = applicants.filter(r => r.fields["매칭상태"] === "소개중").length;
   const excluded = applicants.filter(r => r.fields["매칭상태"] === "제외").length;
   const trashed = applicants.filter(r => r.fields["매칭상태"] === "휴지통").length;
-  document.getElementById("stat-total").textContent = total;
-  document.getElementById("stat-approved").textContent = approved;
-  document.getElementById("stat-matched").textContent = matched;
+  document.getElementById("stat-total").textContent = total + "명";
+  document.getElementById("stat-approved").textContent = approved + "명";
+  const sm = document.getElementById("stat-matched");
+  if(sm){
+    if(cachedMatches && cachedMatches.length){
+      sm.textContent = cachedMatches.filter(r=>(r.fields||{})["상태"]==="소개중").length + "쌍";
+    } else {
+      sm.textContent = Math.floor(matched / 2) + "쌍";
+    }
+  }
+  const sw = document.getElementById("stat-waiting");
+  if(sw && cachedMatches && cachedMatches.length){
+    sw.textContent = cachedMatches.filter(r=>(r.fields||{})["상태"]==="성사").length + "쌍";
+  }
   // 필터 버튼의 개수 배지 갱신
   const cw = document.getElementById("cnt-wait"); if(cw) cw.textContent = waiting;
   const cx = document.getElementById("cnt-excl"); if(cx) cx.textContent = excluded;
@@ -1411,6 +1477,7 @@ function coffeeMatchesFor(rec){
     if(o.id === rec.id) return false;
     const of = o.fields || {};
     if(myGender && of["성별"] && of["성별"] === myGender) return false; // 이성만
+    if(hasPastMatchHistory(rec.id, o.id)) return false; // 과거 이력자 제외
     const ot = coffeeType(of["테스트결과"]);
     if(!ot) return false;
     if(wants.includes("*") || wants.includes(ot) || ot === "플랫화이트") return true;
@@ -1455,28 +1522,64 @@ function renderList(){
   }
 
   const cardHtml = (r) => {
-    const f = r.fields;
+    const f = r.fields || {};
     const isSelected = selected[0]?.id === r.id || selected[1]?.id === r.id;
     const status = f["매칭상태"] || "대기";
-    const statusColor = status === "대기" ? "color:#E8B050" : status === "승인" ? "color:#22c55e" : status === "소개중" ? "color:#3b82f6" : status === "거절" ? "color:#ef4444" : "color:#9a9080";
     const photoUrl = f["프로필사진"] && f["프로필사진"][0] ? f["프로필사진"][0].url : null;
     const photos = f["프로필사진"] || [];
-    const gender = f["성별"] === "여성" ? "♀" : f["성별"] === "남성" ? "♂" : "";
-    const detail = [f["사는곳"], f["직업"]].filter(Boolean).join(" · ");
     const myCoffee = coffeeType(f["테스트결과"]);
     const coffeeBuddies = myCoffee ? coffeeMatchesFor(r) : [];
+
+    const birth = parseInt(f["출생연도"]) || 0;
+    const age = birth ? (2026 - birth + 1) : "";
+    const ageText = age ? ` (${age}세)` : "";
+    const genderBadge = f["성별"] === "여성"
+      ? `<span style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.3);color:#f472b6;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px">👧 ${f["출생연도"]||"?"}년생${ageText}</span>`
+      : `<span style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#60a5fa;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px">👦 ${f["출생연도"]||"?"}년생${ageText}</span>`;
+
+    let pickBadge = "";
+    if(selected[0]?.id === r.id) pickBadge = `<span style="background:#E8B050;color:#000;font-size:10px;font-weight:900;padding:2px 7px;border-radius:6px">선택 1 ✓</span>`;
+    else if(selected[1]?.id === r.id) pickBadge = `<span style="background:#E8B050;color:#000;font-size:10px;font-weight:900;padding:2px 7px;border-radius:6px">선택 2 ✓</span>`;
+
+    const statusBg = status === "승인" ? "background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3)"
+      : status === "소개중" ? "background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)"
+      : status === "대기" ? "background:rgba(232,176,80,.15);color:#E8B050;border:1px solid rgba(232,176,80,.3)"
+      : "background:#2a2217;color:#9a9080;border:1px solid #3a3224";
+    const statusBadge = `<span style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:20px;${statusBg}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · ⚡슈퍼' : ""}</span>`;
+
+    const chips = [];
+    if(f["사는곳"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">📍 ${f["사는곳"]}</span>`);
+    if(f["직업"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">💼 ${f["직업"]}</span>`);
+    if(f["키"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">📏 ${f["키"]}cm</span>`);
+    if(myCoffee) chips.push(`<span style="font-size:11px;color:#E8B050;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.2);padding:2px 7px;border-radius:6px">☕ ${myCoffee}</span>`);
+    const chipsHtml = chips.join(" ");
 
     return `<div class="appcard ${isSelected ? 'sel' : ''} ${shareMode && shareSel[r.id] ? 'share-on' : ''}">
       <div class="pool-row" onclick="onCardTap('${r.id}')">
         ${shareMode ? `<div class="share-check ${shareSel[r.id] ? 'on' : ''}">✓</div>` : ""}
-        <div class="pool-info">
-          <div class="pool-birth">${memberNoMap[r.id] ? `<span style="font-size:11px;font-weight:700;color:#6b6358">#${memberNoMap[r.id]}</span> ` : ""}${f["출생연도"] || "?"}년생${f["키"] ? ` / ${f["키"]}cm` : ""} <span style="font-size:12px;font-weight:400;color:#9a9080">${gender} ${f["이름"] || ""}</span>${(f["유입경로"]==="결혼매칭"||f["매칭유형"]==="결혼매칭") ? ' <span style="font-size:10px;font-weight:800;color:#171208;background:#E8B050;padding:1px 7px;border-radius:20px">💍 결혼</span>' : ""}</div>
-          <div class="pool-detail">${detail || "-"}</div>
-          <div style="font-size:10.5px;color:#7a7060;margin-top:2px"><i class="fa-regular fa-clock" style="font-size:9.5px;margin-right:3px"></i>신청: ${f["신청일시"] || r.createdTime || "-"}</div>
-          <div class="pool-status" style="${statusColor}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · <span style="color:#E8B050">⚡슈퍼</span>' : ""}</div>
-        </div>
         <div class="pool-thumb" ${photoUrl ? `onclick="event.stopPropagation();openPhoto('${photoUrl}')"` : ""}>
           ${photoUrl ? `<img src="${photoUrl}" alt="">` : `<i class="fa-solid fa-user"></i>`}
+        </div>
+        <div class="pool-info">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            ${memberNoMap[r.id] ? `<span style="font-size:10px;font-weight:700;color:#6b6358">#${memberNoMap[r.id]}</span>` : ""}
+            ${genderBadge}
+            <b style="font-size:15px;color:#fff">${f["이름"] || ""}</b>
+            ${(f["유입경로"]==="결혼매칭"||f["매칭유형"]==="결혼매칭") ? '<span style="font-size:10px;font-weight:800;color:#171208;background:#E8B050;padding:1px 6px;border-radius:4px">💍 결혼</span>' : ''}
+            <div style="margin-left:auto;display:flex;align-items:center;gap:5px">
+              ${statusBadge}
+              ${pickBadge}
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
+            ${chipsHtml || '<span style="font-size:11px;color:#666">-</span>'}
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:7px">
+            <span style="font-size:10.5px;color:#7a7060"><i class="fa-regular fa-clock" style="font-size:9.5px;margin-right:2px"></i>${formatDateText(f["신청일시"] || r.createdTime)}</span>
+            <button type="button" onclick="event.stopPropagation();toggleExpand('${r.id}')" style="background:transparent;border:none;color:#9a9080;font-size:11px;font-weight:700;cursor:pointer;padding:2px 4px">
+              <span id="exp-text-${r.id}">상세보기 <i class="fa-solid fa-chevron-down ml-0.5"></i></span>
+            </button>
+          </div>
         </div>
       </div>
       <div class="pool-expand" id="expand-${r.id}">
@@ -1758,7 +1861,10 @@ function updateSmartRecommendations(){
     const f = r.fields || {};
     if(f["성별"] !== oppGender) return false;
     const st = f["매칭상태"] || "대기";
-    return st !== "소개중" && st !== "거절" && st !== "휴지통" && st !== "제외";
+    if(st === "소개중" || st === "거절" || st === "휴지통" || st === "제외") return false;
+    // 🛡️ 과거 매칭·거절 이력 확인 (이미 만났거나 거절했던 사람 배제)
+    if(hasPastMatchHistory(p.id, r.id)) return false;
+    return true;
   });
   if(!candidates.length){ box.innerHTML = ""; box.classList.add("hidden"); return; }
 
@@ -1854,6 +1960,19 @@ async function generateMatch(){
   // 🛡️ 같은 성별 차단 (실수로 남-남 / 여-여 매칭 방지)
   if(a["성별"] && b["성별"] && a["성별"] === b["성별"]){
     alert(`⚠️ ${a["이름"]||"선택1"}님과 ${b["이름"]||"선택2"}님은 둘 다 ${a["성별"]}이에요.\n이성끼리만 매칭할 수 있어요. 다시 골라주세요.`);
+    return;
+  }
+
+  const idA = selected[0].id, idB = selected[1].id;
+  // 🛡️ 중복 매칭 방지: 이미 진행 중인 매칭(소개중/성사)이 있는지 확인
+  const isDupe = (cachedMatches || []).some(m => {
+    const mf = m.fields || {};
+    const s = mf["상태"] || "소개중";
+    return (s === "소개중" || s === "성사") &&
+      ((mf["남자ID"] === idA && mf["여자ID"] === idB) || (mf["남자ID"] === idB && mf["여자ID"] === idA));
+  });
+  if(isDupe){
+    alert(`⚠️ ${a["이름"]||"선택1"}님과 ${b["이름"]||"선택2"}님은 이미 진행 중인 매칭(소개중/성사)이 있어요.\n중복 매칭을 방지하기 위해 새 매칭 생성을 중단합니다.\n(기존 매칭 카드에서 링크 복사나 상태 변경을 이용해 주세요)`);
     return;
   }
 
