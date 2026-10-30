@@ -30,11 +30,29 @@
     <div class="ky">💛 썸배달 · 로테이션 소개팅</div>
     <h1>어느 회차에<br>신청하시겠어요?</h1>
     <div class="sub">날짜를 선택하면 신청서로 이동해요</div>
-    <div class="opt">
-      <a href="/rotation-1008"><span class="em">📦</span><span class="t">10월 8일 (목)<small>저녁 7:45 · 강남역 인근</small></span><span class="ar">→</span></a>
-      <a href="/rotation-1022"><span class="em">📦</span><span class="t">10월 22일 (목)<small>저녁 7:45 · 강남역 인근</small></span><span class="ar">→</span></a>
-    </div>
+    <div class="opt" id="round-list"></div>
     <a class="home" href="/">← 홈으로</a>
   </div>
+<script src="/rounds.js"></script>
+<script>
+// 회차 목록(rounds.js)에서 버튼을 만든다. 새 회차를 열면 여기도 자동으로 늘어난다.
+(function(){
+  var box = document.getElementById("round-list");
+  var list = window.ROTATION_ROUNDS || [];
+  if(!list.length){
+    box.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:18px 0">'
+      + '지금은 열린 회차가 없어요.<br>곧 새 일정을 올릴게요 💛</div>';
+    return;
+  }
+  box.innerHTML = list.map(function(r){
+    var day = r.dateText.split(")")[0] + ")";           // "10월 22일 (목)"
+    var time = (r.dateText.split(")")[1] || "").trim();  // "19:45"
+    return '<a href="/rotation-form?r=' + encodeURIComponent(r.key) + '">'
+      + '<span class="em">📦</span>'
+      + '<span class="t">' + day + '<small>' + (time ? time + " · " : "") + '강남역 인근</small></span>'
+      + '<span class="ar">→</span></a>';
+  }).join("");
+})();
+</script>
 </body>
 </html>
