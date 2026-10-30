@@ -112,10 +112,17 @@ async function submit(name, table, fields) {
   });
 
   const results = [];
-  for (const round of ["10/8 (목)", "10/22 (목)"]) {
-    const file = round.startsWith("10/8") ? "rotation-1008.html" : "rotation-1022.html";
-    const fields = fieldsFromForm(file, "fields", rotStub(round));
-    results.push(await submit(round + " 로테이션 신청  (" + file + ")", "로테이션 신청", fields));
+  // 회차별 신청서는 rotation-form.html 하나로 합쳐졌다. rounds.js 의 회차를 돌면서 확인한다.
+  const roundsCtx = { window: {} };
+  roundsCtx.window = roundsCtx;
+  vm.createContext(roundsCtx);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, "rounds.js"), "utf8"), roundsCtx);
+  const rounds = (roundsCtx.ROTATION_ROUNDS || []).filter((r) => ["1008", "1022"].includes(r.key));
+  if (rounds.length !== 2) { console.log("❌ rounds.js 에서 10/8·10/22 회차를 못 찾음"); process.exit(1); }
+
+  for (const r of rounds) {
+    const fields = fieldsFromForm("rotation-form.html", "fields", rotStub(r.label));
+    results.push(await submit(r.label + " 로테이션 신청  (rotation-form.html?r=" + r.key + ")", "로테이션 신청", fields));
   }
 
   const oneFields = fieldsFromForm("matching.html", "fields", {
