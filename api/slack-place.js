@@ -5,6 +5,7 @@
 
 const crypto = require("crypto");
 const { waitUntil } = require("@vercel/functions");
+const { sendSms } = require("./_sms.js");
 
 const BASE_ID = process.env.AIRTABLE_BASE_ID || "appgWdt1TeSuI77T1";
 const TOKEN = process.env.AIRTABLE_TOKEN;
@@ -357,6 +358,18 @@ async function handleCreateMatch(text, responseUrl, who) {
     body: JSON.stringify({ records: [{ id: man.id, fields: { "매칭상태": "소개중" } }, { id: woman.id, fields: { "매칭상태": "소개중" } }] })
   }).catch(() => {});
 
+  // 💌 양쪽에 프로필 링크 문자 자동 발송
+  const introSms = (nm, url) => `[썸류센터] ${nm}님, 센터장이 찾은 매칭 상대 프로필이 도착했어요! 💕\n\n아래 링크에서 프로필을 확인하고 수락/거절을 선택해주세요. (48시간 내 응답)\n\n${url}`;
+  const clean = (p) => String(p || "").replace(/\D/g, "");
+  const smsSent = [], smsFailed = [];
+  for (const [nm, phone, url] of [[mf["이름"], mf["연락처"], urlForMan], [wf["이름"], wf["연락처"], urlForWoman]]) {
+    const to = clean(phone);
+    if (to.length < 10) { smsFailed.push(`${nm}(번호없음)`); continue; }
+    try { await sendSms({ to, text: introSms(nm, url) }); smsSent.push(nm); }
+    catch (e) { smsFailed.push(`${nm}(${e.message})`); }
+  }
+  const smsLine = `\n\n📨 *문자:* ${smsSent.length ? "✅ " + smsSent.join(", ") + " 발송됨" : ""}${smsFailed.length ? "   ⚠️ 실패: " + smsFailed.join(", ") : ""}`;
+
   const manInfo = [mf["출생연도"] ? `${mf["출생연도"]}년생` : null, mf["사는곳"], mf["직업"]].filter(Boolean).join(" · ");
   const womanInfo = [wf["출생연도"] ? `${wf["출생연도"]}년생` : null, wf["사는곳"], wf["직업"]].filter(Boolean).join(" · ");
 
@@ -369,10 +382,11 @@ async function handleCreateMatch(text, responseUrl, who) {
           type: "mrkdwn",
           text: `🎉 *새로운 1:1 매칭이 생성되었어요!* (담당: ${who})\n\n` +
             `👦 *${mf["이름"]}* (${manInfo || "남성"})\n` +
-            `👧 *${wf["이름"]}* (${womanInfo || "여성"})\n\n` +
-            `💬 *${mf["이름"]}님 전달 링크 (카톡용):*\n<${urlForMan}|${urlForMan}>\n\n` +
-            `💬 *${wf["이름"]}님 전달 링크 (카톡용):*\n<${urlForWoman}|${urlForWoman}>\n\n` +
-            `_양쪽 모두에게 위 링크를 카톡으로 전달해 주세요. (48시간 동안 유효)_`
+            `👧 *${wf["이름"]}* (${womanInfo || "여성"})` +
+            smsLine + `\n\n` +
+            `💬 *${mf["이름"]}님 링크 (카톡 재전송용):*\n<${urlForMan}|${urlForMan}>\n` +
+            `💬 *${wf["이름"]}님 링크 (카톡 재전송용):*\n<${urlForWoman}|${urlForWoman}>\n\n` +
+            `_문자가 자동 발송됐어요. 혹시 실패하면 위 링크를 카톡으로 보내주세요. (48시간 유효)_`
         }
       },
       {
