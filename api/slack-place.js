@@ -171,15 +171,21 @@ async function handleLookup(text, responseUrl) {
     });
     if (!hits.length) { await slackReply(responseUrl, { response_type: "ephemeral", text: `'${q}' 신청자를 못 찾았어요.` }); return; }
     const nowY = new Date(Date.now() + 9 * 3600 * 1000).getUTCFullYear();
-    const lines = hits.slice(0, 6).map((r) => {
+    const blocks = [{ type: "section", text: { type: "mrkdwn", text: `🔍 *'${q}' 조회 결과* (${hits.length}건)` } }];
+    hits.slice(0, 6).forEach((r) => {
       const f = r.fields || {};
       const y = parseInt(f["출생연도"]); const age = y ? (nowY - y + 1) + "세" : "";
       const g = f["성별"] === "여성" ? "여" : f["성별"] === "남성" ? "남" : "";
       let days = "";
       const d = new Date(r.createdTime); if (!isNaN(d)) days = ` · 신청 ${Math.floor((Date.now() - d.getTime()) / 86400000)}일째`;
-      return `*${f["이름"] || "?"}* (${g}${age ? " " + age : ""})${f["직업"] ? " · " + f["직업"] : ""}\n상태: ${f["매칭상태"] || "대기"}${days} · 선호: ${f["선호나이대"] || "-"}\n📞 ${f["연락처"] || "-"}`;
+      const txt = `*${f["이름"] || "?"}* (${g}${age ? " " + age : ""}${f["키"] ? " · 키 " + f["키"] : ""})${f["직업"] ? " · " + f["직업"] : ""}\n상태: ${f["매칭상태"] || "대기"}${days} · 선호: ${f["선호나이대"] || "-"}\n📞 ${f["연락처"] || "-"}`;
+      const block = { type: "section", text: { type: "mrkdwn", text: txt } };
+      const photos = f["프로필사진"];
+      const url = Array.isArray(photos) && photos[0] && photos[0].url;
+      if (url) block.accessory = { type: "image", image_url: url, alt_text: f["이름"] || "프로필" };
+      blocks.push(block);
     });
-    await slackReply(responseUrl, { response_type: "in_channel", text: `🔍 *'${q}' 조회 결과* (${hits.length}건)\n\n` + lines.join("\n\n") });
+    await slackReply(responseUrl, { response_type: "in_channel", blocks });
   } catch (e) {
     console.error("[slack-place] lookup", e);
     await slackReply(responseUrl, { response_type: "ephemeral", text: "⚠️ 조회 중 문제가 생겼어요." });
@@ -221,7 +227,7 @@ async function handleWaitingList(responseUrl) {
 
   const fmt = r => {
     const f = r.fields || {};
-    const specs = [f["출생연도"] ? `${f["출생연도"]}년생` : null, f["사는곳"] || null, f["직업"] || null].filter(Boolean).join(" · ");
+    const specs = [f["출생연도"] ? `${f["출생연도"]}년생` : null, f["키"] ? `키 ${f["키"]}` : null, f["사는곳"] || null, f["직업"] || null].filter(Boolean).join(" · ");
     return `• *${f["이름"]}* (${specs || "정보 없음"})`;
   };
 
