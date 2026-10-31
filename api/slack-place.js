@@ -209,7 +209,7 @@ function getMatchHelp() {
         type: "mrkdwn",
         text: "💘 *[썸류센터봇] 1:1 매칭 명령어 안내*\n\n" +
           "• `/매칭 대기` : 현재 매칭 대기 중인 남녀 회원 목록 보기\n" +
-          "• `/매칭 현황` : 현재 소개중인 커플과 성사 현황 요약\n" +
+          "• `/매칭 현황` : 제안중(응답대기)·성사 커플 현황 요약\n" +
           "• `/매칭 [남성이름], [여성이름]` : 두 회원 매칭 생성 및 전달 링크 발급\n" +
           "   _예시: `/매칭 김철수, 이영희`_\n" +
           "• `/매칭 취소 [남성이름], [여성이름]` : 진행 중인 소개 불발 처리\n" +
@@ -273,10 +273,10 @@ async function handleMatchStatus(responseUrl) {
       text: {
         type: "mrkdwn",
         text: `📊 *1:1 매칭 현황 요약*\n\n` +
-          `• 소개중: *${intro.length}쌍*\n` +
-          `• 성사 커플: *${success.length}쌍* 🎉\n` +
+          `• 제안중(양쪽 응답 대기): *${intro.length}쌍*\n` +
+          `• 성사 커플(양쪽 수락): *${success.length}쌍* 🎉\n` +
           `• 불발: ${failed.length}건 / 결별: ${broken.length}건\n\n` +
-          `⏳ *현재 진행 중인 소개 목록*\n${introList}`
+          `⏳ *제안중 — 응답 기다리는 커플*\n${introList}`
       }
     }]
   });
