@@ -155,6 +155,37 @@ async function handlePlaceDelete(text, responseUrl) {
   }
 }
 
+// /조회 전화번호 or 이름 → 신청자 1초 조회 (개인정보라 본인에게만 ephemeral)
+async function handleLookup(text, responseUrl) {
+  try {
+    const q = String(text || "").trim();
+    if (!q) { await slackReply(responseUrl, { response_type: "ephemeral", text: "사용법: `/조회 전화번호 또는 이름`\n예) `/조회 0670`  ·  `/조회 김철수`" }); return; }
+    const digits = q.replace(/\D/g, "");
+    const applicants = await fetchAll("1:1 매칭 신청");
+    const hits = applicants.filter((r) => {
+      const f = r.fields || {};
+      const nameHit = String(f["이름"] || "").includes(q);
+      const phone = String(f["연락처"] || "").replace(/\D/g, "");
+      const phoneHit = digits.length >= 3 && phone.includes(digits);
+      return nameHit || phoneHit;
+    });
+    if (!hits.length) { await slackReply(responseUrl, { response_type: "ephemeral", text: `'${q}' 신청자를 못 찾았어요.` }); return; }
+    const nowY = new Date(Date.now() + 9 * 3600 * 1000).getUTCFullYear();
+    const lines = hits.slice(0, 6).map((r) => {
+      const f = r.fields || {};
+      const y = parseInt(f["출생연도"]); const age = y ? (nowY - y + 1) + "세" : "";
+      const g = f["성별"] === "여성" ? "여" : f["성별"] === "남성" ? "남" : "";
+      let days = "";
+      const d = new Date(r.createdTime); if (!isNaN(d)) days = ` · 신청 ${Math.floor((Date.now() - d.getTime()) / 86400000)}일째`;
+      return `*${f["이름"] || "?"}* (${g}${age ? " " + age : ""})${f["직업"] ? " · " + f["직업"] : ""}\n상태: ${f["매칭상태"] || "대기"}${days} · 선호: ${f["선호나이대"] || "-"}\n📞 ${f["연락처"] || "-"}`;
+    });
+    await slackReply(responseUrl, { response_type: "ephemeral", text: `🔍 *'${q}' 조회 결과* (${hits.length}건)\n\n` + lines.join("\n\n") });
+  } catch (e) {
+    console.error("[slack-place] lookup", e);
+    await slackReply(responseUrl, { response_type: "ephemeral", text: "⚠️ 조회 중 문제가 생겼어요." });
+  }
+}
+
 // ==========================================
 // 2. 1:1 매칭 관리 (/매칭 ...)
 // ==========================================
@@ -487,6 +518,12 @@ module.exports = async function handler(req, res) {
   if (command === "/장소삭제") {
     waitUntil(handlePlaceDelete(text, responseUrl));
     return res.status(200).json({ response_type: "ephemeral", text: "🔎 찾는 중…" });
+  }
+
+  // A-3. /조회 명령 (신청자 1초 조회)
+  if (command === "/조회") {
+    waitUntil(handleLookup(text, responseUrl));
+    return res.status(200).json({ response_type: "ephemeral", text: "🔍 조회 중…" });
   }
 
   // B. /장소 명령
