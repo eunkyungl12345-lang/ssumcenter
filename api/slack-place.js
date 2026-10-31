@@ -131,6 +131,30 @@ async function handlePlaceCommand(cmd, responseUrl) {
   }
 }
 
+// /장소삭제 상호명 → 이름으로 찾아 [삭제] 버튼 띄우기 (버튼은 기존 place_delete 액션 재사용)
+async function handlePlaceDelete(text, responseUrl) {
+  try {
+    const q = String(text || "").trim();
+    if (!q) { await slackReply(responseUrl, { response_type: "ephemeral", text: "사용법: `/장소삭제 상호명`\n예) `/장소삭제 효뜨`" }); return; }
+    const spots = await fetchAll("데이트 장소");
+    const matches = spots.filter((r) => String((r.fields || {})["이름"] || "").includes(q));
+    if (!matches.length) { await slackReply(responseUrl, { response_type: "ephemeral", text: `'${q}' 장소를 못 찾았어요.` }); return; }
+    const blocks = [{ type: "section", text: { type: "mrkdwn", text: `🗑️ *'${q}' 검색 결과* — 삭제할 곳의 버튼을 눌러주세요` } }];
+    matches.slice(0, 5).forEach((r) => {
+      const f = r.fields || {};
+      blocks.push({
+        type: "section",
+        text: { type: "mrkdwn", text: `*${f["이름"]}*${f["동네"] ? " · " + f["동네"] : ""}` },
+        accessory: { type: "button", style: "danger", text: { type: "plain_text", text: "삭제" }, action_id: "place_delete", value: r.id }
+      });
+    });
+    await slackReply(responseUrl, { response_type: "in_channel", blocks });
+  } catch (e) {
+    console.error("[slack-place] delete", e);
+    await slackReply(responseUrl, { response_type: "ephemeral", text: "⚠️ 장소를 찾다 문제가 생겼어요." });
+  }
+}
+
 // ==========================================
 // 2. 1:1 매칭 관리 (/매칭 ...)
 // ==========================================
@@ -174,7 +198,7 @@ async function handleWaitingList(responseUrl) {
   const womenList = women.slice(0, 10).map(fmt).join("\n") || "_(대기 중인 여성 회원이 없어요)_";
 
   await slackReply(responseUrl, {
-    response_type: "ephemeral",
+    response_type: "in_channel",
     blocks: [{
       type: "section",
       text: {
@@ -201,7 +225,7 @@ async function handleMatchStatus(responseUrl) {
   }).join("\n") || "_(현재 진행 중인 소개가 없어요)_";
 
   await slackReply(responseUrl, {
-    response_type: "ephemeral",
+    response_type: "in_channel",
     blocks: [{
       type: "section",
       text: {
@@ -457,6 +481,12 @@ module.exports = async function handler(req, res) {
       }
     })());
     return;
+  }
+
+  // A-2. /장소삭제 명령
+  if (command === "/장소삭제") {
+    waitUntil(handlePlaceDelete(text, responseUrl));
+    return res.status(200).json({ response_type: "ephemeral", text: "🔎 찾는 중…" });
   }
 
   // B. /장소 명령
