@@ -178,7 +178,12 @@ async function handleLookup(text, responseUrl) {
       const g = f["성별"] === "여성" ? "여" : f["성별"] === "남성" ? "남" : "";
       let days = "";
       const d = new Date(r.createdTime); if (!isNaN(d)) days = ` · 신청 ${Math.floor((Date.now() - d.getTime()) / 86400000)}일째`;
-      const txt = `*${f["이름"] || "?"}* (${g}${age ? " " + age : ""}${f["키"] ? " · 키 " + f["키"] : ""})${f["직업"] ? " · " + f["직업"] : ""}\n상태: ${f["매칭상태"] || "대기"}${days} · 선호: ${f["선호나이대"] || "-"}\n📞 ${f["연락처"] || "-"}`;
+      const yr = f["출생연도"] ? `${f["출생연도"]}년생` : "";
+      const head = `*${f["이름"] || "?"}* (${[g, age, yr].filter(Boolean).join(" · ") || "정보 없음"})`;
+      const l2 = [f["키"] ? `📏 키 ${f["키"]}` : null, f["직업"] ? `💼 ${f["직업"]}` : null].filter(Boolean).join("   ");
+      const l3 = [f["사는곳"] ? `📍 ${f["사는곳"]}` : null, f["종교"] ? `🙏 ${f["종교"]}` : null].filter(Boolean).join("   ");
+      const l4 = `💛 선호 ${f["선호나이대"] || "-"}   ·   상태 ${f["매칭상태"] || "대기"}${days}`;
+      const txt = [head, l2, l3, l4, `📞 ${f["연락처"] || "-"}`].filter(Boolean).join("\n");
       const block = { type: "section", text: { type: "mrkdwn", text: txt } };
       const photos = f["프로필사진"];
       const url = Array.isArray(photos) && photos[0] && photos[0].url;
@@ -227,7 +232,7 @@ async function handleWaitingList(responseUrl) {
 
   const fmt = r => {
     const f = r.fields || {};
-    const specs = [f["출생연도"] ? `${f["출생연도"]}년생` : null, f["키"] ? `키 ${f["키"]}` : null, f["사는곳"] || null, f["직업"] || null].filter(Boolean).join(" · ");
+    const specs = [f["출생연도"] ? `${f["출생연도"]}년생` : null, f["키"] ? `키 ${f["키"]}` : null, f["사는곳"] || null, f["직업"] || null, f["종교"] || null].filter(Boolean).join(" · ");
     return `• *${f["이름"]}* (${specs || "정보 없음"})`;
   };
 
