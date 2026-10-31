@@ -179,7 +179,7 @@ async function handleLookup(text, responseUrl) {
       const d = new Date(r.createdTime); if (!isNaN(d)) days = ` · 신청 ${Math.floor((Date.now() - d.getTime()) / 86400000)}일째`;
       return `*${f["이름"] || "?"}* (${g}${age ? " " + age : ""})${f["직업"] ? " · " + f["직업"] : ""}\n상태: ${f["매칭상태"] || "대기"}${days} · 선호: ${f["선호나이대"] || "-"}\n📞 ${f["연락처"] || "-"}`;
     });
-    await slackReply(responseUrl, { response_type: "ephemeral", text: `🔍 *'${q}' 조회 결과* (${hits.length}건)\n\n` + lines.join("\n\n") });
+    await slackReply(responseUrl, { response_type: "in_channel", text: `🔍 *'${q}' 조회 결과* (${hits.length}건)\n\n` + lines.join("\n\n") });
   } catch (e) {
     console.error("[slack-place] lookup", e);
     await slackReply(responseUrl, { response_type: "ephemeral", text: "⚠️ 조회 중 문제가 생겼어요." });
