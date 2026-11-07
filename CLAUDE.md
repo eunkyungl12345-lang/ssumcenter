@@ -61,5 +61,13 @@
   ```
 - 신청서는 `rotation-form.html` **하나**다. 주소로 회차를 받는다 → `/rotation-form?r=1119`
 - `label` 은 에어테이블 '회차' 칸에 그대로 저장되고 관리자 회차 탭 이름이 된다. 형식을 지킬 것.
-- 옛 주소(`/rotation-1008` 등)는 리다이렉트만 남아 있다. 새 회차는 리다이렉트를 만들 필요 없다.
-- 홈(`index.html`)·안내(`rotation.html`)의 신청 버튼 링크는 아직 수동이다. 회차를 바꾸면 여기 href도 같이 고칠 것.
+- 옛 주소(`/rotation-1008` 등)는 `/rotation-apply` 로 가는 리다이렉트만 남아 있다. 새 회차는 리다이렉트를 만들 필요 없다.
+- 홈(`index.html`)의 신청 모달 날짜 버튼도 `rounds.js` 에서 자동 생성된다. **HTML에 날짜를 직접 적지 말 것.**
+
+### ⚠️ 회차가 끝나면 반드시 `rounds.js` 에서 뺄 것
+지난 날짜가 손님 화면에 남아 있으면 "여기 끝난 서비스인가?" 오해를 주고 바로 이탈한다.
+- 끝난 회차는 `ROTATION_ROUNDS` 에서 빼서 `ROTATION_PAST_ROUNDS` 로 옮긴다.
+- `ROTATION_ROUNDS` 가 비면 홈 모달·`/rotation-apply`·`rotation.html` 이 전부
+  **"상시 접수 중 · 센터장 검토"** 로 바뀌고, 1:1 매칭으로 안내한다. (1:1 과 같은 문구로 통일)
+- 지난 회차 주소(`?r=1008`)로 들어오면 `findRound` 가 못 찾아서 `/rotation-apply` 로 보낸다.
+- `npm run check` 가 손님 화면에 남은 지난 날짜를 경고로 알려준다 (배포는 막지 않음).

@@ -39,13 +39,20 @@
 (function(){
   var box = document.getElementById("round-list");
   var list = window.ROTATION_ROUNDS || [];
+  // 열린 회차가 없을 때: '끝난 서비스'처럼 보이지 않게 상시 운영 중인 1:1로 안내한다
   if(!list.length){
-    box.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:18px 0">'
-      + '지금은 열린 회차가 없어요.<br>곧 새 일정을 올릴게요 💛</div>';
+    var h = document.querySelector("h1"), s = document.querySelector(".sub");
+    if(h) h.innerHTML = "지금은<br>상시 접수 중이에요";
+    if(s) s.textContent = "로테이션 회차는 준비 중이에요";
+    box.innerHTML = '<div style="color:var(--muted);font-size:13.5px;line-height:1.8;padding:2px 0 14px">'
+      + '회차가 열리면 신청해주신 분께 <b style="color:var(--amber)">가장 먼저</b> 문자로 안내드려요 💛</div>'
+      + '<a href="/oneone"><span class="em">🎁</span>'
+      + '<span class="t">1:1 맞춤 소개팅<small>상시 접수 중 · 센터장 검토</small></span>'
+      + '<span class="ar">→</span></a>';
     return;
   }
   box.innerHTML = list.map(function(r){
-    var day = r.dateText.split(")")[0] + ")";           // "10월 22일 (목)"
+    var day = r.dateText.split(")")[0] + ")";           // 예) "11월 19일 (수)"
     var time = (r.dateText.split(")")[1] || "").trim();  // "19:45"
     return '<a href="/rotation-form?r=' + encodeURIComponent(r.key) + '">'
       + '<span class="em">📦</span>'

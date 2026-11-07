@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>로테이션 소개팅 신청 | 썸류센터</title>
-<!-- 회차별 신청서는 /rotation-form 하나로 합쳤습니다. 기존 주소는 여기로 넘겨줍니다. -->
-<script>location.replace("/rotation-form?r=1022" + location.hash);</script>
-<meta http-equiv="refresh" content="0; url=/rotation-form?r=1022">
+<meta name="robots" content="noindex">
+<!-- 지난 회차 주소입니다. 회차별 신청서는 /rotation-form 하나로 합쳤고,
+     지난 날짜가 손님 화면에 남지 않도록 회차 안내 화면으로 넘겨줍니다. -->
+<script>location.replace("/rotation-apply");</script>
+<meta http-equiv="refresh" content="0; url=/rotation-apply">
 </head>
-<body><p style="font-family:system-ui;padding:24px">신청서로 이동 중…
-<a href="/rotation-form?r=1022">바로 가기</a></p></body>
+<body><p style="font-family:system-ui;padding:24px">로테이션 소개팅 안내로 이동 중…
+<a href="/rotation-apply">바로 가기</a></p></body>
 </html>
