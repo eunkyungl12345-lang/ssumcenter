@@ -176,8 +176,11 @@ const staleHits = [];
   for (const f of files) {
     const rel = path.relative(ROOT, f);
     if (STALE_SKIP.test(rel)) continue;
-    // HTML 주석 안(꺼둔 블록)은 손님에게 안 보이므로 뺀다
-    const src = fs.readFileSync(f, "utf8").replace(/<!--[\s\S]*?-->/g, "");
+    const raw = fs.readFileSync(f, "utf8");
+    // "잠시 쉼 안내" 가 덮고 있는 페이지는 본문이 손님에게 안 보이므로 건너뛴다
+    if (/잠시 쉼 안내/.test(raw)) continue;
+    // HTML 주석 안(꺼둔 블록)도 손님에게 안 보이므로 뺀다
+    const src = raw.replace(/<!--[\s\S]*?-->/g, "");
     const found = new Set();
     for (const m of src.matchAll(/(\d{1,2})월\s*(\d{1,2})일/g)) {
       const mon = Number(m[1]), day = Number(m[2]);
