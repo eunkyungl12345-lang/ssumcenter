@@ -99,6 +99,8 @@
   .fnext{flex:1;background:#E8B050;color:#0b0906;border:none;font-weight:800;font-size:15px;padding:15px;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px -8px rgba(232,176,80,.4)}
   .fprev{background:transparent;border:1px solid #2e2214;color:#CBB994;font-weight:700;font-size:14px;padding:15px 20px;border-radius:14px;cursor:pointer;font-family:inherit}
 </style>
+<!-- 방문 통계 (Vercel Web Analytics: 대시보드에서 켜야 집계됨) -->
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body class="min-h-screen selection:bg-[#E8B050] selection:text-black">
 
@@ -164,6 +166,17 @@
         <div class="fchip" data-s="4"><b>4</b> 제출</div>
       </div>
       <div class="fstep on" data-step="1">
+
+      <!-- 준비물 안내: 시작 전에 미리 알면 중간 이탈이 줄어요 -->
+      <div style="background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:16px;padding:14px 16px;margin-bottom:18px">
+        <div style="font-size:13.5px;font-weight:800;color:#E8B050">📋 시작 전에 준비해 주세요 · 약 5분</div>
+        <div style="font-size:12.5px;color:#cfc6b8;line-height:1.7;margin-top:6px">
+          📸 내 사진 1~3장<br>
+          🪪 명함 · 사원증 · 재직증명서 중 1개 <span style="color:#8a8070">(폰으로 찍어서 올려도 돼요)</span><br>
+          💾 중간에 나가도 <b style="color:#E8B050">작성 내용은 자동 저장</b>돼요
+        </div>
+        <div style="font-size:11.5px;color:#8a8070;margin-top:8px">재직 인증은 센터장만 확인하고 바로 폐기해요. 그래서 전원 직장인만 만나요.</div>
+      </div>
 
       <!-- AI 자동입력 -->
       <div class="ai-section" data-reveal>

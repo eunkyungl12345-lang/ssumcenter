@@ -203,6 +203,14 @@ module.exports = async function handler(req, res) {
         const dk = new Date(d.getTime() + 9 * 3600 * 1000);
         return dk.getUTCFullYear() === curY && dk.getUTCMonth() === curM;
       });
+      // 📋 어제(KST) 1:1 신청 수 — 글 반응이 신청으로 이어졌는지 매일 확인용
+      const yK = new Date(nowK.getTime() - 86400000);
+      const yday = one.filter(r => {
+        const d = new Date(r.createdTime); if (isNaN(d)) return false;
+        const dk = new Date(d.getTime() + 9 * 3600 * 1000);
+        return dk.getUTCFullYear() === yK.getUTCFullYear() && dk.getUTCMonth() === yK.getUTCMonth() && dk.getUTCDate() === yK.getUTCDate();
+      });
+      const yLine = `\n📋 어제 1:1 신청 — ${yday.length}명 (👧 ${yday.filter(r => r.fields["성별"] === "여성").length} · 👦 ${yday.filter(r => r.fields["성별"] === "남성").length})`;
       const newF = thisMonth.filter(r => r.fields["성별"] === "여성").length;
       const newM = thisMonth.filter(r => r.fields["성별"] === "남성").length;
       // 💌 신청 7일째인데 아직 대기·승인(소개 전)인 분 → 기다림 안내 문자
@@ -268,7 +276,7 @@ module.exports = async function handler(req, res) {
         smsLine = `\n📮 문자 — 확인 실패: ${e.message}`;
       }
 
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${waitLine}${memberLine}${smsLine}\n\n오늘도 화이팅이에요! 💪`;
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${memberLine}${smsLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
