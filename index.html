@@ -109,10 +109,19 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 @keyframes fp{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
 .float-pkg{animation:fp 4s ease-in-out infinite}
 
-/* Trust */
-.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 36px;padding:24px 32px;background:rgba(22,19,16,.6);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.03)}
-.trust-item{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.01em}
-.trust-ico{width:34px;height:34px;border-radius:10px;background:rgba(212,149,42,.08);display:grid;place-items:center;color:var(--amber);font-size:13px;flex-shrink:0}
+/* '장소 리스트 전체 보기' — 글자 링크는 엄지로 누르기 어려워서 반투명 버튼으로.
+   data-r(스크롤 등장 효과)이 transform 을 쓰므로 여기서는 transform 을 건드리지 않는다. */
+.spots-all{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;min-height:50px;padding:13px 28px;border-radius:16px;font-size:14px;font-weight:700;color:var(--amber-light);letter-spacing:.01em;background:rgba(255,255,255,.04);border:1px solid rgba(212,149,42,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);-webkit-tap-highlight-color:transparent;transition:opacity .6s ease,transform .6s ease,background .2s ease,border-color .2s ease}
+.spots-all:hover,.spots-all:active{background:rgba(212,149,42,.1);border-color:rgba(212,149,42,.42)}
+@media(max-width:640px){.spots-all{display:flex;max-width:480px;margin-left:auto;margin-right:auto}}
+
+/* 버튼 아래 신뢰 문구 한 줄 */
+.hero-points{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 10px;margin-top:22px;font-size:13px;line-height:1.6;color:var(--muted);letter-spacing:.01em}
+.hero-points span{white-space:nowrap}
+.hero-points .dot{color:var(--dim)}
+@media(max-width:350px){.hero-points .dot{display:none}}
+/* 좁은 폰에서 "드/려요"처럼 낱말 중간이 끊기지 않게 */
+.hero h1,.hero p{word-break:keep-all}
 
 /* Program cards */
 .prog-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:720px;margin:0 auto}
@@ -161,7 +170,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 </head>
 <body>
 
-<!-- 상단 광고 띠 -->
+<!-- 상단 광고 띠 — 첫 화면이 꽉 차 보여서 숨김. 다시 켜려면 아래 주석만 풀면 된다.
 <div class="ticker" aria-hidden="true">
   <div class="ticker-track">
     <span class="it">📌 당신을 위한 “썸류센터 1:1 맞춤 소개팅”<span class="sep">✦</span></span>
@@ -172,6 +181,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     <span class="it">💛 지금 많이많이 신청해주세요!<span class="sep">✦</span></span>
   </div>
 </div>
+-->
 
 <!-- Nav -->
 <nav class="nav">
@@ -206,10 +216,6 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 <section class="hero">
   <div class="hero-bg"></div>
   <div style="position:relative;z-index:1;max-width:600px">
-    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:32px">
-      <span class="pill pill-amber"><i class="fa-solid fa-truck-fast"></i>설렘 배송 서비스</span>
-      <span class="pill pill-ghost"><i class="fa-solid fa-shield-check ac"></i>승인제 · 신분 확인</span>
-    </div>
     <h1 class="gm" style="font-size:clamp(32px,8vw,56px);font-weight:700;line-height:1.15;letter-spacing:-.03em">
       설렘을 포장해서<br><span class="ac">당신에게 배송해 드려요</span>
     </h1>
@@ -226,20 +232,15 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
       <button class="cta cta-glow" onclick="openModal()"><i class="fa-solid fa-truck-fast"></i>신청하기</button>
       <a href="test/ideal.html" class="cta" style="background:var(--glass);color:var(--cream);border:1px solid var(--glass-border);box-shadow:none;animation:none"><i class="fa-solid fa-flask"></i>유형 테스트</a>
     </div>
-    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-top:32px;font-size:12px;color:var(--dim)">
-      <span><i class="fa-solid fa-globe ac" style="margin-right:4px"></i>온라인 매칭 · 지역 무관</span>
-      <span><i class="fa-solid fa-users ac" style="margin-right:4px"></i>누적 4,000+ 매칭</span>
-      <span><i class="fa-solid fa-coins ac" style="margin-right:4px"></i>성사 시에만 비용</span>
-    </div>
+    <!-- 버튼 아래 신뢰 문구는 이 한 줄만. 여기에 뱃지를 다시 늘리지 말 것 —
+         같은 말이 위아래로 반복되면 [신청하기] 버튼이 묻힌다. -->
+    <p class="hero-points">
+      <span><b class="ac">✓</b> 신청비 0원 (매칭 성사 시 결제)</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span><b class="ac">✓</b> 센터장 1:1 심사</span>
+    </p>
   </div>
 </section>
-
-<!-- Trust -->
-<div class="trust">
-  <div class="trust-item"><div class="trust-ico"><i class="fa-solid fa-user-shield"></i></div>센터장 승인제</div>
-  <div class="trust-item"><div class="trust-ico"><i class="fa-solid fa-coins"></i></div>매칭 안 되면 0원</div>
-  <div class="trust-item"><div class="trust-ico"><i class="fa-solid fa-lock"></i></div>개인정보 보호</div>
-</div>
 
 <!-- Program (카테고리) -->
 <section class="sec" id="program">
@@ -290,15 +291,20 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
   .ctr-avs{display:flex;justify-content:center;margin-top:28px}
   .ctr-av{position:relative;margin:0 -6px;border-radius:50%;border:3px solid var(--bg);display:flex}
   .ctr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px auto 0;max-width:720px;text-align:left}
-  .ctr-card{display:flex;gap:14px;align-items:flex-start;padding:18px;word-break:keep-all}
+  /* 은은한 골드 테두리 + 살짝 떠오르는 느낌. (.glass 기본값보다 테두리는 또렷하게, 움직임은 작고 빠르게) */
+  .ctr-card{display:flex;gap:14px;align-items:flex-start;padding:18px;word-break:keep-all;border:1px solid rgba(212,149,42,.12);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+  .ctr-card:hover,.ctr-card:active{transform:translateY(-2px)}
   @media(max-width:640px){.ctr-grid{grid-template-columns:1fr;gap:10px}}
+  /* 폰에서는 문장이 길어 "됐고,"만 혼자 다음 줄로 떨어진다 → 폰에서만 한 번 더 끊는다 */
+  .ctr-br{display:none}
+  @media(max-width:640px){.ctr-br{display:inline}}
   </style>
   <div class="wrap" style="text-align:center">
     <span class="pill pill-amber" data-r><i class="fa-solid fa-user-check"></i>WHO PICKS</span>
     <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>신청서는 <span class="ac">센터장 3명</span>이<br>직접 읽어요</h2>
     <div class="ctr-avs" data-r><span class="ctr-av" style="z-index:3"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="#F3C9C4"/><path d="M28 62 Q26 30 60 28 Q94 30 92 62 L94 106 Q60 116 26 106 Z" fill="#6B4430"/><ellipse cx="60" cy="68" rx="27" ry="29" fill="#F6D9BF"/><circle cx="50" cy="70" r="3.4" fill="#2A1810"/><circle cx="70" cy="70" r="3.4" fill="#2A1810"/><ellipse cx="44" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><ellipse cx="76" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><path d="M54 82 Q60 87 66 82" stroke="#2A1810" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M32 60 Q34 34 60 34 Q86 34 88 60 Q78 46 62 46 Q60 54 46 52 Q38 54 32 60 Z" fill="#7C5038"/><path d="M80 44 l3.5 -3.5 a2.8 2.8 0 0 1 4 4 l-7.5 7.5 l-7.5 -7.5 a2.8 2.8 0 0 1 4 -4 z" fill="#E8584F"/></svg></span><span class="ctr-av" style="z-index:2"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="#E8C27C"/><path d="M30 64 Q28 34 60 32 Q92 34 90 64 L90 90 Q84 94 80 88 L40 88 Q36 94 30 90 Z" fill="#2B211C"/><ellipse cx="60" cy="68" rx="27" ry="29" fill="#F6D9BF"/><circle cx="50" cy="70" r="3.4" fill="#2A1810"/><circle cx="70" cy="70" r="3.4" fill="#2A1810"/><ellipse cx="44" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><ellipse cx="76" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><path d="M54 82 Q60 87 66 82" stroke="#2A1810" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M33 62 Q34 38 60 38 Q86 38 87 62 L82 54 L76 58 L70 52 L62 57 L54 51 L46 57 L40 52 Z" fill="#3A2C25"/><ellipse cx="62" cy="36" rx="30" ry="10" fill="#D4952A" transform="rotate(-8 62 36)"/><circle cx="62" cy="25" r="4" fill="#D4952A"/><circle cx="50" cy="70" r="7.5" fill="none" stroke="#2A1810" stroke-width="2.2"/><circle cx="70" cy="70" r="7.5" fill="none" stroke="#2A1810" stroke-width="2.2"/><path d="M57.5 70 h5" stroke="#2A1810" stroke-width="2.2"/></svg></span><span class="ctr-av" style="z-index:1"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="#C9D8C0"/><path d="M78 34 Q104 36 102 70 Q100 90 90 96 Q94 74 84 56 Z" fill="#8A5634"/><ellipse cx="60" cy="68" rx="27" ry="29" fill="#F6D9BF"/><circle cx="50" cy="70" r="3.4" fill="#2A1810"/><circle cx="70" cy="70" r="3.4" fill="#2A1810"/><ellipse cx="44" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><ellipse cx="76" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><path d="M54 82 Q60 87 66 82" stroke="#2A1810" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M32 66 Q30 36 60 36 Q90 36 88 66 Q84 52 70 48 Q56 56 40 54 Q34 58 32 66 Z" fill="#9A6240"/><path d="M80 34 l-9 -6 l0 12 z M80 34 l9 -6 l0 12 z" fill="#F2A7A0"/><circle cx="80" cy="34" r="2.6" fill="#E8584F"/></svg></span></div>
     <p style="font-size:12px;color:var(--dim);margin-top:8px" data-r>동탄 · 성수 · 강남 센터장</p>
-    <p style="font-size:15px;color:var(--cream);margin-top:18px;line-height:1.75;word-break:keep-all" data-r>주선이 취미였던 세 사람이 로테이션 소개팅까지 열게 됐고,<br>지금까지 <b class="ac">4,000건 넘게</b> 이어드렸어요.</p>
+    <p style="font-size:15px;color:var(--cream);margin-top:18px;line-height:1.75;word-break:keep-all" data-r>주선이 취미였던 세 사람이<br class="ctr-br"> 1:1 맞춤 소개팅까지 열게 됐고,<br>지금까지 <b class="ac">4,000건 넘게</b> 이어드렸어요.</p>
     <h3 style="font-size:14px;color:var(--amber);font-weight:700;margin-top:36px;letter-spacing:.02em" data-r>우리 셋의 공통점</h3>
     <div class="ctr-grid" data-r>
       <div class="glass ctr-card"><div style="font-size:24px">🙋‍♀️</div><div><div style="font-size:15px;font-weight:700">AI 말고 센터장이 직접 봐요</div><p style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.6">자동으로 거르지 않아요. 신청서는 사람이 한 장씩 읽어요.</p></div></div>
@@ -334,7 +340,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
         <i class="fa-solid fa-chevron-right" style="flex:none;font-size:11px;color:var(--dim)"></i>
       </a>
     </div>
-    <a href="/date-spots" style="display:inline-flex;align-items:center;gap:6px;margin-top:24px;font-size:13px;font-weight:600;color:var(--amber)" data-r>장소 리스트 전체 보기 <i class="fa-solid fa-arrow-right" style="font-size:11px"></i></a>
+    <a href="/date-spots" class="spots-all" data-r>장소 리스트 전체 보기 <i class="fa-solid fa-arrow-right" style="font-size:12px"></i></a>
   </div>
 </section>
 
