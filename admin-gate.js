@@ -49,8 +49,9 @@
         .then(function (d) {
           if (d && d.ok) {
             try { localStorage.setItem(KEY, v); } catch (e) {}
-            box.remove();
-            var h = document.getElementById("admin-gate-hide"); if (h) h.remove();
+            // 페이지를 새로 연다. 잠겨 있는 동안 불러오려다 실패한 자료(활동 기록 등)가
+            // 로그인한 상태로 다시 불러와지게 하기 위해서다.
+            location.reload();
           } else {
             btn.disabled = false; btn.textContent = "열기";
             msg.textContent = "비밀번호가 틀렸어요.";
