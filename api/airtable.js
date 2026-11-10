@@ -714,6 +714,29 @@ module.exports = async function handler(req, res) {
     const response = await fetch(url, options);
     const data = await response.json();
 
+    // 📄 관리자 목록 조회는 100건이 넘어도 끝까지 읽어서 준다.
+    //    에어테이블은 한 번에 100건만 주고 '다음 장 표시(offset)'를 붙여주는데,
+    //    관리자 화면 대부분이 그걸 안 읽어서 101번째부터는 조용히 사라졌다
+    //    (예전 신청자가 목록에서 빠지고, "이미 만났던 사이" 확인도 빠진다).
+    //    다음 장이 있을 때만 더 읽으므로 100건 이하일 땐 호출 수가 그대로다.
+    //    한 번에 최대 20장(2,000건)까지만 — 그보다 많으면 offset 을 그대로 돌려줘서
+    //    화면 쪽이 이어 읽게 한다 (서버 제한 시간을 넘기지 않기 위해).
+    if (response.ok && isAdmin && req.method === "GET" && !recordId && !offset && data && data.offset && Array.isArray(data.records)) {
+      const baseUrl = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}`;
+      let next = data.offset, all = data.records;
+      for (let i = 0; next && i < 19; i++) {
+        const p2 = new URLSearchParams(params.toString());
+        p2.set("offset", next);
+        const r2 = await fetch(`${baseUrl}?${p2.toString()}`, options);
+        if (!r2.ok) break;                         // 중간에 실패하면 읽은 데까지만 + offset 유지
+        const d2 = await r2.json();
+        all = all.concat(d2.records || []);
+        next = d2.offset;
+      }
+      data.records = all;
+      if (next) data.offset = next; else delete data.offset;
+    }
+
     if (!response.ok) {
       // ⚠️ 에어테이블에 없는 칸으로 저장을 시도한 경우.
       // 신청 폼은 그 칸을 빼고 다시 보내서 신청 자체는 성공하지만,
