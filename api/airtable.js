@@ -1,5 +1,71 @@
 const { syncMembers } = require("./member.js");
 const { sendSms, isValidPhone, checkSmsConfig } = require("./_sms.js");
+const { searchVolume, checkNaverConfig } = require("./_naver.js");
+
+// 📈 네이버 검색량 — 에어테이블 '검색키워드' 표를 읽어 네이버에서 월간 검색량을 받아온다.
+//    하루에 한 번만 저장한다 (에어테이블 월 1,000건 한도를 아끼기 위해).
+const KEYWORD_TABLE = "검색키워드";
+async function loadKeywordVolumes({ TOKEN, BASE_ID, onlyKeywords }) {
+  const H = { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" };
+  const base = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(KEYWORD_TABLE)}`;
+  let calls = 0;
+
+  // 1) 관리 중인 키워드 목록 (에어테이블 호출 1번)
+  const r = await fetch(base + "?pageSize=100", { headers: H });
+  calls++;
+  if (!r.ok) {
+    const t = await r.text();
+    throw new Error(`'${KEYWORD_TABLE}' 표를 읽지 못했어요 (${r.status}). 에어테이블에 표가 있는지 확인해주세요. ${t.slice(0, 120)}`);
+  }
+  const recs = ((await r.json()).records) || [];
+  let wanted = recs;
+  if (onlyKeywords && onlyKeywords.length) {
+    const set = new Set(onlyKeywords);
+    wanted = recs.filter((x) => set.has(String((x.fields || {})["키워드"] || "").trim()));
+  }
+  const keywords = wanted.map((x) => String((x.fields || {})["키워드"] || "").trim()).filter(Boolean);
+  if (!keywords.length) return { rows: [], saved: false, calls };
+
+  // 2) 네이버에서 검색량 (에어테이블 호출 아님 — 무료)
+  const vols = await searchVolume(keywords);
+  const byKeyword = new Map(vols.map((v) => [v.keyword, v]));
+
+  const today = new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10); // KST 기준 날짜
+  const rows = [];
+  const toSave = [];
+  for (const rec of wanted) {
+    const f = rec.fields || {};
+    const kw = String(f["키워드"] || "").trim();
+    const v = byKeyword.get(kw);
+    if (!v) continue;
+    const prevSaved = Number(f["최근검색량"]) || 0;
+    const updatedAt = String(f["갱신일"] || "");
+    // 오늘 이미 저장했으면 '지난 값'을 그대로 쓰고, 아니면 어제까지의 값이 비교 대상이 된다.
+    const prev = updatedAt === today ? (Number(f["지난검색량"]) || 0) : prevSaved;
+    rows.push({
+      id: rec.id, 키워드: kw, 메모: f["메모"] || "",
+      pc: v.pc, mobile: v.mobile, total: v.total, found: v.found,
+      prev, diff: prev ? Math.round(((v.total - prev) / prev) * 100) : null,
+    });
+    if (updatedAt !== today) {
+      toSave.push({ id: rec.id, fields: { "최근검색량": v.total, "지난검색량": prevSaved, "갱신일": today } });
+    }
+  }
+
+  // 3) 하루 한 번만 저장 (10개씩 묶어 보냄)
+  let saved = false;
+  for (let i = 0; i < toSave.length; i += 10) {
+    const res = await fetch(base, {
+      method: "PATCH", headers: H,
+      body: JSON.stringify({ records: toSave.slice(i, i + 10) }),
+    });
+    calls++;
+    if (res.ok) saved = true;
+    else console.error("[airtable] 검색키워드 저장 실패:", res.status, (await res.text()).slice(0, 120));
+  }
+  rows.sort((a, b) => b.total - a.total);
+  return { rows, saved, calls };
+}
 
 // 로테이션 접수 → 자동 입금안내 문자 (센터장 확정 문구)
 function 로테이션접수문자() {
@@ -104,6 +170,25 @@ module.exports = async function handler(req, res) {
 
   if (!TOKEN || !BASE_ID) {
     return res.status(500).json({ error: "서버 환경변수가 설정되지 않았습니다" });
+  }
+
+  // 📈 네이버 검색량 — 관리자가 '새로고침'을 눌렀을 때만 돈다.
+  //    ⚠️ Vercel 함수가 12개(한도)로 꽉 차서 새 파일을 못 만든다. 그래서 여기에 얹었다.
+  if (req.query.keywords === "1") {
+    if (!process.env.ADMIN_PASSWORD || req.headers["x-admin-key"] !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: "인증이 필요합니다" });
+    }
+    // 설정 점검 — 검색량이 안 나올 때 '어디서 막혔는지' 보여준다
+    if (req.query.check === "1") {
+      try { return res.status(200).json(await checkNaverConfig()); }
+      catch (e) { return res.status(200).json({ 결론: "❌ 점검 실패: " + e.message }); }
+    }
+    try {
+      const out = await loadKeywordVolumes({ TOKEN, BASE_ID });
+      return res.status(200).json(Object.assign({ ok: true }, out));
+    } catch (e) {
+      return res.status(200).json({ ok: false, error: e.message });
+    }
   }
 
   // 📊 관리자 상태판 — 지금 잘 돌아가는지 한눈에.
@@ -276,7 +361,26 @@ module.exports = async function handler(req, res) {
         smsLine = `\n📮 문자 — 확인 실패: ${e.message}`;
       }
 
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${memberLine}${smsLine}\n\n오늘도 화이팅이에요! 💪`;
+      // 📈 네이버 검색량 — 브랜드 인지도가 오르는지 숫자로 본다.
+      //    릴스·블로그를 올린 주에 "썸류센터" 검색이 실제로 늘었는지가 여기서 보인다.
+      //    아직 설정 전이거나 '검색키워드' 표가 없으면 브리핑에서 조용히 뺀다
+      //    (없는 기능 때문에 매일 빨간 줄이 뜨면 진짜 문제를 못 본다).
+      let keywordLine = "";
+      if (process.env.NAVER_AD_API_KEY) {
+        try {
+          const kw = await loadKeywordVolumes({ TOKEN, BASE_ID });
+          const brand = kw.rows.find((x) => x.키워드.replace(/\s/g, "") === "썸류센터");
+          const arrow = (d) => (d == null ? "" : d > 0 ? ` (▲${d}%)` : d < 0 ? ` (▼${Math.abs(d)}%)` : " (변화 없음)");
+          if (brand) keywordLine = `\n📈 '썸류센터' 검색 — 월 ${brand.total.toLocaleString()}회${arrow(brand.diff)}`;
+          const top = kw.rows.filter((x) => x.키워드.replace(/\s/g, "") !== "썸류센터").slice(0, 3);
+          if (top.length) keywordLine += `\n🔎 많이 찾는 키워드 — ${top.map((x) => `${x.키워드} ${x.total.toLocaleString()}`).join(" · ")}`;
+        } catch (e) {
+          console.error("[airtable] 검색량 조회 실패:", e.message);
+          keywordLine = `\n📈 검색량 — 확인 실패: ${e.message.slice(0, 80)}`;
+        }
+      }
+
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
