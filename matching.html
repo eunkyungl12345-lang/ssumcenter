@@ -468,6 +468,9 @@
           <textarea name="idealType" id="ideal-type" required maxlength="150" rows="3"
             placeholder="예: 대화 잘 통하고 유머 있는 분, 결혼 생각 있는 분, 운동 좋아하면 좋아요 (150자 이내)"
             class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white placeholder-[#6b6358] focus:border-[#E8B050] focus:outline-none transition resize-none"></textarea>
+          <p class="text-right text-[11px] mt-1">
+            <span id="ideal-count" class="counter text-[#6b6358]">0</span><span class="text-[#6b6358]"> / 150자</span>
+          </p>
         </div>
 
         <!-- 자기소개 -->
@@ -676,6 +679,13 @@
       <a href="/rotation-0917" class="inline-block mt-2.5 text-[12px] font-bold text-[#E8B050]">→ 9/17 로테이션 신청하기</a>
     </div>
     -->
+    <!-- 💌 친구 소개 — 손님 기분이 제일 좋은 순간이라 여기에 둔다.
+         ⚠️ 할인 금액은 적지 않는다. 아직 정해진 보상이 없는데 숫자를 쓰면 약속이 되어버린다. -->
+    <div class="bg-[#16140f] border border-[#E8B050]/25 rounded-2xl p-4 mt-4 text-left">
+      <p class="text-[13px] text-[#E8B050] font-bold">💌 주변에 소개해주고 싶은 분이 있나요?</p>
+      <p class="text-[12px] text-[#8a8070] mt-1.5 leading-relaxed" style="word-break:keep-all">내 이름이 담긴 링크로 신청하면 소개해주신 걸 센터장이 알 수 있어요. 챙겨드릴게요 💛</p>
+      <a href="/invite" id="success-invite" class="inline-block mt-2.5 text-[12px] font-bold text-[#E8B050]">→ 내 초대 링크 받기</a>
+    </div>
     <a href="index.html" class="inline-block mt-6 bg-[#16140f] border border-[#1e1c17] text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#E8B050] transition">
       <i class="fa-solid fa-arrow-left mr-1.5"></i>홈으로 돌아가기
     </a>
@@ -1137,12 +1147,21 @@ window.addEventListener("load", function(){
   }catch(e){}
 });
 
-// 자기소개 글자수 카운터
-document.getElementById("intro").addEventListener("input", function(){
-  const len = this.value.length;
-  const counter = document.getElementById("intro-count");
-  counter.textContent = len;
-  counter.classList.toggle("over", len > 100);
+// 글자수 카운터 — 이상형(150자) · 자기소개(100자)
+// 카운터가 없으면 maxlength 에 걸렸을 때 아무 말 없이 입력이 멈춰서
+// 손님은 "왜 안 써지지?" 하고 당황한다. 둘 다 붙여준다.
+[["intro","intro-count",100], ["ideal-type","ideal-count",150]].forEach(function(cfg){
+  var ta = document.getElementById(cfg[0]), counter = document.getElementById(cfg[1]);
+  if(!ta || !counter) return;
+  var sync = function(){
+    var len = ta.value.length;          // 줄바꿈도 1글자로 센다 (에어테이블에도 그대로 저장됨)
+    counter.textContent = len;
+    counter.classList.toggle("over", len >= cfg[2]);
+  };
+  // input 만 쓰면 한글 조합 중에 숫자가 튀는 폰이 있어서 조합 끝날 때도 한 번 더 맞춘다
+  ta.addEventListener("input", sync);
+  ta.addEventListener("compositionend", sync);
+  sync();
 });
 
 // 동의 체크박스 커스텀
@@ -1304,6 +1323,9 @@ async function handleSubmit(e){
       var hdr = document.querySelector("header"); if(hdr) hdr.classList.add("hidden");
       var infoSec = document.querySelector("section.px-5.pb-16"); if(infoSec) infoSec.classList.add("hidden");
       var success = document.getElementById("success-screen"); if(success) success.classList.remove("hidden");
+      // 방금 쓴 이름을 초대 페이지로 넘겨서 또 입력하지 않게 한다
+      var inv = document.getElementById("success-invite");
+      if(inv && fields["이름"]) inv.href = "/invite?name=" + encodeURIComponent(fields["이름"]);
       window.scrollTo({top: 0, behavior: "smooth"});
     } catch(_) { /* 화면 전환 실패해도 신청은 이미 성공 처리 */ }
     return false;
