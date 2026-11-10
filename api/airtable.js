@@ -2,6 +2,7 @@ const { syncMembers } = require("./member.js");
 const { sendSms, isValidPhone, checkSmsConfig } = require("./_sms.js");
 const { searchVolume, checkNaverConfig } = require("./_naver.js");
 const { checkPair, isRecId } = require("./_match.js");
+const { inflowLine } = require("./_inflow.js");
 
 // 📈 네이버 검색량 — 에어테이블 '검색키워드' 표를 읽어 네이버에서 월간 검색량을 받아온다.
 //    하루에 한 번만 저장한다 (에어테이블 월 1,000건 한도를 아끼기 위해).
@@ -408,6 +409,10 @@ module.exports = async function handler(req, res) {
       const yLine = `\n📋 어제 1:1 신청 — ${yday.length}명 (👧 ${yday.filter(r => r.fields["성별"] === "여성").length} · 👦 ${yday.filter(r => r.fields["성별"] === "남성").length})`;
       const newF = thisMonth.filter(r => r.fields["성별"] === "여성").length;
       const newM = thisMonth.filter(r => r.fields["성별"] === "남성").length;
+      // 📣 이번 달 손님이 어디서 왔나 — 릴스·스레드·블로그가 실제 신청으로 이어졌는지 본다.
+      //    위에서 이미 읽어둔 목록을 세기만 해서 에어테이블 호출은 늘지 않는다.
+      //    결혼매칭은 유입경로 칸에 '결혼매칭'이 들어가 있어 따로 센다 (아래 💍 줄).
+      const inLine = inflowLine(thisMonth.filter(r => !isMarriage(r.fields)));
       // 💌 신청 7일째인데 아직 대기·승인(소개 전)인 분 → 기다림 안내 문자
       const dayKST = t => Math.floor((new Date(t).getTime() + 9 * 3600 * 1000) / 86400000);
       const todayK = dayKST(Date.now()), startK = dayKST(대기안내_시작일 + "T00:00:00+09:00");
@@ -517,7 +522,7 @@ module.exports = async function handler(req, res) {
         }
       }
 
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${matchLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)${inLine}\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${matchLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
