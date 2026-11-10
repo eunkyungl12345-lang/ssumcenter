@@ -483,7 +483,7 @@ async function respond(action, isSuper){
   };
   if(action === "accept") fields["매칭유형"] = isSuper ? "슈퍼매칭" : "일반매칭";
 
-  var saved = false;
+  var saved = false, failWhy = "";
   try {
     // 없는 필드(예: 매칭유형)는 자동으로 빼고 재시도 → 전송이 통째로 실패하지 않게
     var attempt = Object.assign({}, fields), ok = false;
@@ -495,7 +495,8 @@ async function respond(action, isSuper){
       });
       if(res.ok){ ok = true; break; }
       var msg = "";
-      try { var j = await res.json(); msg = (j.error && j.error.message) || ""; } catch(_) {}
+      try { var j = await res.json(); msg = (j.error && j.error.message) || (typeof j.error === "string" ? j.error : ""); } catch(_) {}
+      failWhy = msg;
       var m = msg.match(/Unknown field name:\s*"([^"]+)"/);
       if(m && Object.prototype.hasOwnProperty.call(attempt, m[1])){ delete attempt[m[1]]; continue; }
       break;
@@ -511,7 +512,10 @@ async function respond(action, isSuper){
   if(!saved){
     ["btn-accept","btn-super","btn-reject"].forEach(function(id){ var b=document.getElementById(id); if(b) b.disabled=false; });
     if(cb) cb.innerHTML = cbLabel;
-    alert("응답을 저장하지 못했어요 😢\n\n인터넷 상태를 확인하고 한 번 더 눌러주세요.\n계속 안 되면 센터장에게 알려주세요!");
+    // 서버가 이유를 알려줬으면(기한 지남·종료된 매칭 등) 그대로 보여준다
+    alert(failWhy && !/Unknown field/.test(failWhy)
+      ? "응답을 저장하지 못했어요 😢\n\n" + failWhy
+      : "응답을 저장하지 못했어요 😢\n\n인터넷 상태를 확인하고 한 번 더 눌러주세요.\n계속 안 되면 센터장에게 알려주세요!");
     return;
   }
 
@@ -676,6 +680,23 @@ function slidePhoto(dir){
   });
 }
 
+// 프로필을 보여줄 수 없을 때의 안내. 이유에 맞는 말을 해준다.
+// (예전에는 프로필을 못 불러오면 "20대 후반 · IT/개발" 예시 프로필에 수락 버튼까지 떴다)
+function showClosed(reason){
+  var T = {
+    closed:   ["종료된 매칭이에요", "이 매칭은 종료되었어요.<br>다음 매칭을 기다려주세요 🙏"],
+    error:    ["잠시 후 다시 열어주세요", "지금은 프로필을 불러오지 못했어요.<br>1~2분 뒤에 링크를 다시 눌러주세요. 계속 안 되면 센터에 알려주세요 🙏"]
+  };
+  var t = T[reason] || ["유효하지 않은 링크예요", "문자로 받은 링크 전체를 눌러서 다시 들어와 주세요.<br>계속 안 되면 센터에 알려주세요 🙏"];
+  var sec = document.getElementById("expired-screen");
+  if(sec){
+    var h = sec.querySelector("h2"), p = sec.querySelector("p");
+    if(h) h.textContent = t[0];
+    if(p) p.innerHTML = t[1];
+  }
+  showScreen("expired");
+}
+
 async function checkMyResponse(){
   const myId = params.get("myId");
   if(!myId || !matchId) return null;
@@ -699,11 +720,15 @@ async function checkMyResponse(){
     ["btn-accept","btn-super","btn-reject"].forEach(function(id){ var b=document.getElementById(id); if(b){ b.disabled=true; b.style.opacity=".45"; } });
   }
   let data = null;
-  if(matchId){
+  // 🔒 서버가 "두 분이 지금 소개 중인 사이인지" 확인한 뒤에만 프로필을 내준다.
+  //    거절되면 이유를 기억해 둔다 (expired 기한 지남 / closed 종료됨 / notfound·badid 잘못된 링크 / error 일시 장애)
+  let denied = null;
+  if(matchId && params.get("myId")){
     try{
-      const r = await fetch("/api/roster",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"profile",id:matchId})});
+      const r = await fetch("/api/roster",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"profile",id:matchId,myId:params.get("myId")})});
       if(r.ok) data = await r.json();
-    }catch(e){}
+      else { try{ denied = (await r.json()).reason || "notfound"; }catch(_){ denied = "error"; } }
+    }catch(e){ denied = "error"; }
   }
   loadProfile(data);
   // 먼저 이미 응답했는지 확인 → 응답한 사람은 프로필 다시 안 보여줌
@@ -711,7 +736,7 @@ async function checkMyResponse(){
   try { mine = await checkMyResponse(); } catch(e){}
   // ⏰ 48시간 만료 체크 (아직 응답 안 한 사람만) — t 파라미터 기준
   const _t = params.get("t");
-  if(!mine && _t && /^\d+$/.test(_t) && Date.now() > (parseInt(_t,10) + 48*60*60*1000)){
+  if(!mine && (denied === "expired" || (_t && /^\d+$/.test(_t) && Date.now() > (parseInt(_t,10) + 48*60*60*1000)))){
     showScreen("expired");   // 미응답 + 48시간 지남 → 만료 화면
     // 📢 센터장에게 슬랙 알림 (중복 방지는 서버에서 처리)
     try { fetch("/api/roster",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"expiredNotify",id:matchId,myId:params.get("myId")})}); } catch(e){}
@@ -740,6 +765,7 @@ async function checkMyResponse(){
         if(badge) badge.classList.remove("hidden");
       }
     } catch(e){}
+    if(denied){ showClosed(denied); return; }   // 프로필을 못 받았으면 예시 프로필을 보여주지 않는다
     showScreen("match");           // 처음 보는 사람만 프로필 + 수락/거절 공개
   }
 })();

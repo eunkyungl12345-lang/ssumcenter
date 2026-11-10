@@ -1,6 +1,7 @@
 const { syncMembers } = require("./member.js");
 const { sendSms, isValidPhone, checkSmsConfig } = require("./_sms.js");
 const { searchVolume, checkNaverConfig } = require("./_naver.js");
+const { checkPair, isRecId } = require("./_match.js");
 
 // 📈 네이버 검색량 — 에어테이블 '검색키워드' 표를 읽어 네이버에서 월간 검색량을 받아온다.
 //    하루에 한 번만 저장한다 (에어테이블 월 1,000건 한도를 아끼기 위해).
@@ -596,7 +597,16 @@ module.exports = async function handler(req, res) {
       } else if (table === "데이트 장소") {
         // 공개 페이지(/date-spots)용: '공개' 체크된 장소만 누구나 조회 (개인정보 없음)
         custFilter = "{공개}";
-      } else if (table !== "매칭 응답") {
+      } else if (table === "매칭 응답") {
+        // 🔒 응답 기록은 '두 사람 사이의 것'만 볼 수 있다.
+        //    예전에는 조건 없이 전부 내줘서, 누구나 모든 회원의 고유번호와
+        //    누가 누구를 수락·거절했는지를 통째로 볼 수 있었다.
+        //    응답 페이지가 보내는 조건 모양(응답자ID=…, 매칭ID=…)만 허용한다.
+        const m = String(filter || "").match(/^AND\(\{응답자ID\}="([^"]+)",\{매칭ID\}="([^"]+)"\)$/);
+        if (!m || !isRecId(m[1]) || !isRecId(m[2]) || recordId || offset) {
+          return res.status(401).json({ error: "인증이 필요합니다" });
+        }
+      } else {
         return res.status(401).json({ error: "인증이 필요합니다" });
       }
     } else if (req.method === "POST") {
@@ -604,6 +614,29 @@ module.exports = async function handler(req, res) {
       const allowedTables = ["재테크 커피팅", "1:1 매칭 신청", "매칭 응답", "로테이션 신청"];
       if (!allowedTables.includes(table)) {
         return res.status(401).json({ error: "인증이 필요합니다" });
+      }
+      // 🔒 수락·거절은 '지금 소개 중인 두 사람'만 남길 수 있다.
+      //    예전에는 확인 없이 저장해서, 남의 수락·거절을 대신 눌러버릴 수 있었다
+      //    (양쪽 수락이 쌓이면 입금 안내 문자까지 나간다).
+      if (table === "매칭 응답") {
+        const recs = (req.body && req.body.records) || [];
+        const f = (recs[0] && recs[0].fields) || {};
+        if (recs.length !== 1 || !isRecId(f["응답자ID"]) || !isRecId(f["매칭ID"]) || (f["응답"] !== "수락" && f["응답"] !== "거절")) {
+          return res.status(400).json({ error: "유효하지 않은 매칭 링크예요. 문자로 받은 링크로 다시 들어와 주세요." });
+        }
+        let pair;
+        try {
+          pair = await checkPair({ TOKEN, BASE_ID, me: f["응답자ID"], other: f["매칭ID"] });
+        } catch (e) {
+          return res.status(503).json({ error: "지금은 저장할 수 없어요. 잠시 후 다시 눌러주세요." });
+        }
+        if (!pair.ok || pair.state !== "소개중") {
+          const why = !pair.ok && pair.reason === "expired" ? "응답 기한이 지났어요. 센터에 문의해주세요."
+            : pair.ok ? "이미 성사된 매칭이에요."
+            : pair.reason === "closed" ? "이미 종료된 매칭이에요."
+            : "유효하지 않은 매칭 링크예요. 문자로 받은 링크로 다시 들어와 주세요.";
+          return res.status(403).json({ error: why });
+        }
       }
     } else if (req.method === "PATCH") {
       // 매칭응답 페이지의 "매칭상태 → 수락" 업데이트만 허용

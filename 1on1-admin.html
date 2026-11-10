@@ -1945,13 +1945,16 @@ function toggleMatchTool(force){
 }
 
 // 매칭 테이블에 커플 한 줄 기록 (관계형)
-function saveMatchRecord(p0, p1){
+// ⚠️ 이 기록이 저장돼야 손님이 링크를 열 수 있다.
+//    서버가 '매칭' 표에 두 사람의 기록이 있을 때만 프로필을 보여주기 때문이다.
+//    그래서 저장에 실패하면 조용히 넘어가지 않고 바로 알린다.
+async function saveMatchRecord(p0, p1){
   if(!p0 || !p1) return;
   try {
     const man = p0.fields["성별"] === "남성" ? p0 : p1;
     const woman = p0.fields["성별"] === "남성" ? p1 : p0;
     const t = Date.now(); // 링크 만든 시각 (48시간 만료 계산용)
-    fetch("/api/airtable?table=매칭", {
+    const res = await fetch("/api/airtable?table=매칭", {
       method: "POST", headers: apiHeaders(),
       body: JSON.stringify({ records: [{ fields: {
         "남자": man.fields["이름"] || "", "여자": woman.fields["이름"] || "",
@@ -1961,8 +1964,15 @@ function saveMatchRecord(p0, p1){
         "상태": "소개중", "남자응답": "대기", "여자응답": "대기",
         "생성일": new Date().toLocaleString("ko-KR")
       }}]})
-    }).catch(()=>{});
-  } catch(e){ console.error(e); }
+    });
+    if(!res.ok){
+      const d = await res.json().catch(()=>({}));
+      throw new Error((d.error && (d.error.message || d.error)) || ("오류 " + res.status));
+    }
+  } catch(e){
+    console.error(e);
+    alert("⚠️ 매칭 기록을 저장하지 못했어요.\n\n이 상태로 링크를 보내면 손님 화면에 '유효하지 않은 링크'가 떠요.\n링크를 보내지 말고, 잠시 뒤 [매칭하기]를 다시 눌러주세요.\n\n[원인] " + e.message);
+  }
 }
 
 async function generateMatch(){
