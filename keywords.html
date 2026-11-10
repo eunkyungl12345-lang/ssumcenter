@@ -75,6 +75,7 @@
         <button id="addBtn" class="btn">추가</button>
       </div>
       <p class="sub" id="countLine" style="margin-top:9px"></p>
+      <button id="seedBtn" class="btn-ghost" style="margin-top:8px">✨ 추천 키워드 한 번에 넣기</button>
     </div>
 
     <!-- 목록 -->
@@ -189,6 +190,45 @@
     out.innerHTML = html + '</tbody></table></div>';
     Array.prototype.forEach.call(out.querySelectorAll(".del"), function(b){
       b.addEventListener("click", function(){ delKeyword(b.getAttribute("data-id"), b.getAttribute("data-kw")); });
+    });
+  }
+
+  // ✨ 처음 쓰실 때 뭘 넣어야 할지 막막하지 않게, 소개팅 서비스에 맞는 기본 묶음을 넣어준다.
+  //    브랜드(인지도 지표) + 사람들이 대신 찾는 서비스 + 고민하는 순간 키워드.
+  //    에어테이블은 한 번에 10개까지 만들 수 있어서 호출 1건으로 끝난다.
+  var 추천키워드 = [
+    "썸류센터",        // 브랜드 인지도 — 릴스 올린 주에 올랐는지 보는 지표
+    "소개팅 어플",     // 손님이 지금 쓰고 있는 대안
+    "결혼정보회사",    // 윗동네 대안 (가격·부담)
+    "소개팅 주선",     // 우리 방식 그대로를 찾는 사람
+    "강남 소개팅",     // 지역
+    "2030 소개팅",     // 나이대
+    "직장인 소개팅",   // 상황
+    "솔로탈출",        // 고민하는 순간
+    "자만추",          // 고민하는 순간
+    "연애 상담",       // 고민하는 순간
+  ];
+
+  document.getElementById("seedBtn").addEventListener("click", seed);
+  function seed(){
+    var btn = document.getElementById("seedBtn");
+    // 이미 있는 건 빼고 넣는다 (같은 키워드가 두 줄로 생기면 지저분해진다)
+    var 있는것 = {};
+    Array.prototype.forEach.call(document.querySelectorAll("tbody .del"), function(b){
+      있는것[b.getAttribute("data-kw").replace(/\s/g,"")] = true;
+    });
+    var 넣을것 = 추천키워드.filter(function(k){ return !있는것[k.replace(/\s/g,"")]; });
+    if(!넣을것.length){ alert("추천 키워드가 이미 다 들어가 있어요 👍"); return; }
+    if(!confirm("추천 키워드 " + 넣을것.length + "개를 넣을까요?\n\n" + 넣을것.join(", ") + "\n\n마음에 안 드는 건 나중에 ✕로 빼시면 돼요.")) return;
+    btn.disabled = true; btn.textContent = "넣는 중…";
+    api("/api/airtable?table=" + encodeURIComponent("검색키워드"), {
+      method: "POST", headers: hdr(),
+      body: JSON.stringify({ records: 넣을것.map(function(k){ return { fields: { "키워드": k } }; }) })
+    }).then(function(){
+      btn.disabled = false; btn.textContent = "✨ 추천 키워드 한 번에 넣기"; load();
+    }).catch(function(e){
+      btn.disabled = false; btn.textContent = "✨ 추천 키워드 한 번에 넣기";
+      alert("넣기 실패: " + e.message);
     });
   }
 

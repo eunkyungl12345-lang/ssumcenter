@@ -209,9 +209,14 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     <h1 class="gm" style="font-size:clamp(32px,8vw,56px);font-weight:700;line-height:1.15;letter-spacing:-.03em">
       설렘을 포장해서<br><span class="ac">당신에게 배송해 드려요</span>
     </h1>
+    <!-- 👤 '누구에게 · 언제' 필요한지를 먼저 말한다.
+         이게 없으면 "좋아 보이는데 나랑 상관있나?" 하고 그냥 나가버린다.
+         다른 각도로 바꾸고 싶으면 아래 한 줄만 고치면 됨:
+           · 연애 공백 축 — "연애를 오래 쉬었는데, 어떻게 시작할지 모르겠다면"
+           · 주선자 부재 축 — "주변에 소개해 줄 사람이 이제 없다면" -->
     <p style="font-size:16px;color:var(--muted);margin-top:20px;line-height:1.7">
-      검증된 2030 싱글, 센터장이 직접 이어드려요.<br>
-      오직 당신만을 위한 단 한 사람.
+      <b style="color:var(--cream)">소개팅 앱은 지쳤고,<br>결혼정보회사는 부담스러운 분들께.</b><br>
+      주선이 취미였던 센터장 3명이 직접 이어드려요.
     </p>
     <div style="margin-top:36px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px">
       <button class="cta cta-glow" onclick="openModal()"><i class="fa-solid fa-truck-fast"></i>신청하기</button>
