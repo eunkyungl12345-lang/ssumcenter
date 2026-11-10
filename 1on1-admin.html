@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>센터장 매칭 관리 | 썸류센터</title>
+<meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -121,7 +122,7 @@
       <span class="text-xl font-black tracking-tight">썸류<span class="y">센터</span></span>
       <span class="text-[10px] bg-[#E8B050]/15 text-[#E8B050] border border-[#E8B050]/30 font-bold px-2 py-0.5 rounded-full">ADMIN</span>
     </div>
-    <button onclick="loadApplicants();loadCoffeeApplicants()" class="text-sm text-[#9a9080] hover:text-white transition">
+    <button onclick="refreshAll()" class="text-sm text-[#9a9080] hover:text-white transition">
       <i class="fa-solid fa-arrows-rotate mr-1"></i>새로고침
     </button>
   </div>
@@ -868,7 +869,39 @@ function S(key){
   return (settings[key] !== undefined && settings[key] !== "") ? settings[key] : SETTING_DEFAULTS[key];
 }
 
-async function loadSettings(){
+// 📄 에어테이블은 한 번에 100건까지만 준다. 더 있으면 '다음 장 표시(offset)'를 같이 주는데,
+//    예전에는 그걸 안 읽어서 100건이 넘으면 나머지가 조용히 사라졌다
+//    (예전 신청자가 목록에서 빠지고, "이미 만났던 사이" 확인에서도 빠진다).
+//    다음 장이 있을 때만 추가로 읽으므로, 100건 이하일 땐 호출 수가 그대로다.
+async function fetchAllPages(url){
+  let out = [], offset = "", first = null;
+  for(let i = 0; i < 30; i++){          // 최대 3,000건 (무한 반복 방지)
+    const res = await fetch(url + (offset ? "&offset=" + encodeURIComponent(offset) : ""), {headers: apiHeaders()});
+    if(i === 0) first = res;
+    if(!res.ok) return { ok:false, status:res.status, res:res, records:out };
+    const data = await res.json();
+    out = out.concat(data.records || []);
+    if(!data.offset) break;
+    offset = data.offset;
+  }
+  return { ok:true, status:200, res:first, records:out };
+}
+
+// ⚙️ 설정은 거의 안 바뀌므로 하루 동안 이 기기에 기억해 둔다.
+//    페이지를 열 때마다 에어테이블을 1건씩 쓰고 있었다 (월 1,000건 한도).
+//    설정을 저장한 직후에는 force=true 로 새로 읽는다.
+const SETTINGS_CACHE_KEY = "ssum_settings_cache";
+async function loadSettings(force){
+  if(!force){
+    try {
+      const c = JSON.parse(localStorage.getItem(SETTINGS_CACHE_KEY) || "null");
+      if(c && c.at && (Date.now() - c.at) < 24*60*60*1000 && c.settings){
+        settings = c.settings; settingsRecordIds = c.ids || {}; settingsTableOk = true;
+        applySettings();
+        return;
+      }
+    } catch(e){}
+  }
   try {
     const res = await fetch("/api/airtable?table=설정", {headers: apiHeaders()});
     if(!res.ok) throw new Error();
@@ -879,6 +912,7 @@ async function loadSettings(){
       if(k){ settings[k] = r.fields["값"] || ""; settingsRecordIds[k] = r.id; }
     });
     settingsTableOk = true;
+    try { localStorage.setItem(SETTINGS_CACHE_KEY, JSON.stringify({ at: Date.now(), settings: settings, ids: settingsRecordIds })); } catch(e){}
   } catch(e){
     settingsTableOk = false;
   }
@@ -904,7 +938,7 @@ function fillSettingsForm(){
 
 async function saveSettings(){
   if(!settingsTableOk){
-    await loadSettings();
+    await loadSettings(true);   // 저장 직후엔 기억해 둔 것 말고 새로 읽는다
     if(!settingsTableOk){ toast("Airtable에 '설정' 테이블(키/값 필드)을 먼저 만들어주세요"); return; }
   }
   const keys = ["행사제목","행사부제","회차키","입금안내문자","확정안내문자","장소안내문자","행사후문자"];
@@ -923,7 +957,7 @@ async function saveSettings(){
       const r = await fetch("/api/airtable?table=설정", {method: "POST", headers: apiHeaders(), body: JSON.stringify({records: creates})});
       if(!r.ok) throw new Error();
     }
-    await loadSettings();
+    await loadSettings(true);   // 저장 직후엔 기억해 둔 것 말고 새로 읽는다
     toast("설정 저장 완료! 화면·문자에 바로 반영돼요");
   } catch(e){
     toast("설정 저장 실패 — Airtable '설정' 테이블(키/값)을 확인해주세요");
@@ -1019,21 +1053,31 @@ function showMatchTab(t){
   if(t === "status" && !statusLoaded){ statusLoaded = true; loadResponses(); loadMatches(); }
 }
 
+// ↻ 새로고침 버튼 — 신청자뿐 아니라 매칭·응답 기록까지 전부 새로 읽는다.
+//   (평소에는 한 번 읽은 매칭·응답을 다시 읽지 않아서, 직접 누를 때만 갱신된다)
+function refreshAll(){
+  statusLoaded = false;
+  loadApplicants();
+  if(typeof loadCoffeeApplicants === "function") loadCoffeeApplicants();
+}
+
 async function loadApplicants(){
   try {
-    const res = await fetch("/api/airtable?table=1:1 매칭 신청&sort=신청일시", {headers: apiHeaders()});
-    if(!res.ok){
+    const pg = await fetchAllPages("/api/airtable?table=1:1 매칭 신청&sort=신청일시");
+    const res = pg.res;
+    if(!pg.ok){
       const list = document.getElementById("applicant-list");
       if(res.status === 401){ list.innerHTML = '<p class="text-center text-red-400 py-10">비밀번호가 맞지 않아요.<br>새로고침(F5) 후 올바른 비밀번호로 다시 로그인해주세요.</p>'; }
       else { list.innerHTML = '<p class="text-center text-red-400 py-10">데이터를 불러올 수 없습니다 (오류 '+res.status+')</p>'; }
       return;
     }
-    const data = await res.json();
-    applicants = data.records || [];
+    applicants = pg.records;
     updateStats();
     applyMatchSort(); // 정렬 기준·방향 적용 + 하이라이트 동기화 후 렌더
     // 백그라운드에서 매칭·응답 기록도 미리 로드 (추천 시 과거 거절자 제외용)
-    if(!statusLoaded){ loadResponses(); loadMatches(); }
+    // ⚠️ 여기서 읽었으면 '읽었다'고 표시해 둔다. 예전에는 표시를 안 해서
+    //    승인·거절을 누를 때마다, 그리고 현황 탭을 열 때 또 2건씩 다시 읽었다.
+    if(!statusLoaded){ statusLoaded = true; loadResponses(); loadMatches(); }
   } catch(err) {
     console.error(err);
     document.getElementById("applicant-list").innerHTML = '<p class="text-center text-red-400 py-10">데이터를 불러올 수 없습니다</p>';
@@ -1186,10 +1230,9 @@ async function loadMatches(){
   const box = document.getElementById("match-board-status");
   if(!box) return;
   try {
-    const res = await fetch("/api/airtable?table=매칭&sort=생성일", {headers: apiHeaders()});
-    if(!res.ok) return;
-    const data = await res.json();
-    const recs = data.records || [];
+    const pg = await fetchAllPages("/api/airtable?table=매칭&sort=생성일");
+    if(!pg.ok) return;
+    const recs = pg.records;
     cachedMatches = recs;
     if(!recs.length){ box.innerHTML = ""; const s0=document.getElementById("stat-waiting"); if(s0) s0.textContent="0"; return; }
     const order = {"소개중":0,"성사":1,"결별":2,"불발":3};
@@ -1333,10 +1376,9 @@ async function sendDepositSmsForPair(idA, idB, btn){
 
 async function loadResponses(){
   try {
-    const res = await fetch("/api/airtable?table=매칭 응답&sort=응답일시", {headers: apiHeaders()});
-    if(!res.ok) return;
-    const data = await res.json();
-    matchResponses = data.records || [];
+    const pg = await fetchAllPages("/api/airtable?table=매칭 응답&sort=응답일시");
+    if(!pg.ok) return;
+    matchResponses = pg.records;
     renderResponses(matchResponses);
     renderList(); // 카드에 매칭 이력 반영
   } catch(e){ console.error(e); }
@@ -1945,13 +1987,16 @@ function toggleMatchTool(force){
 }
 
 // 매칭 테이블에 커플 한 줄 기록 (관계형)
-function saveMatchRecord(p0, p1){
+// ⚠️ 이 기록이 저장돼야 손님이 링크를 열 수 있다.
+//    서버가 '매칭' 표에 두 사람의 기록이 있을 때만 프로필을 보여주기 때문이다.
+//    그래서 저장에 실패하면 조용히 넘어가지 않고 바로 알린다.
+async function saveMatchRecord(p0, p1){
   if(!p0 || !p1) return;
   try {
     const man = p0.fields["성별"] === "남성" ? p0 : p1;
     const woman = p0.fields["성별"] === "남성" ? p1 : p0;
     const t = Date.now(); // 링크 만든 시각 (48시간 만료 계산용)
-    fetch("/api/airtable?table=매칭", {
+    const res = await fetch("/api/airtable?table=매칭", {
       method: "POST", headers: apiHeaders(),
       body: JSON.stringify({ records: [{ fields: {
         "남자": man.fields["이름"] || "", "여자": woman.fields["이름"] || "",
@@ -1961,8 +2006,15 @@ function saveMatchRecord(p0, p1){
         "상태": "소개중", "남자응답": "대기", "여자응답": "대기",
         "생성일": new Date().toLocaleString("ko-KR")
       }}]})
-    }).catch(()=>{});
-  } catch(e){ console.error(e); }
+    });
+    if(!res.ok){
+      const d = await res.json().catch(()=>({}));
+      throw new Error((d.error && (d.error.message || d.error)) || ("오류 " + res.status));
+    }
+  } catch(e){
+    console.error(e);
+    alert("⚠️ 매칭 기록을 저장하지 못했어요.\n\n이 상태로 링크를 보내면 손님 화면에 '유효하지 않은 링크'가 떠요.\n링크를 보내지 말고, 잠시 뒤 [매칭하기]를 다시 눌러주세요.\n\n[원인] " + e.message);
+  }
 }
 
 async function generateMatch(){

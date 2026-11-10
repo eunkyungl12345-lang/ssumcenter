@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>1:1 온라인 매칭 신청 | 썸류센터</title>
+<meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -135,6 +136,11 @@
       </span>
       <span class="inline-flex items-center gap-2 bg-[#E8B050]/20 border border-[#E8B050]/50 rounded-full px-4 py-1.5 text-xs y font-bold">
 👑 슈퍼매칭 39,800원
+      </span>
+      <!-- 🏷️ BETA 오픈 특별가 — 4단계(결제 안내)에만 있어서 처음엔 안 보였다.
+           지금 신청할 명분이 되는 문구라 가격 바로 옆으로 올린다. -->
+      <span class="inline-flex items-center gap-2 bg-white/90 text-black rounded-full px-4 py-1.5 text-xs font-black">
+🏷️ BETA 오픈 특별가
       </span>
     </div>
     <div style="margin-top:16px;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;text-align:left;">
@@ -878,7 +884,10 @@ function aiFillForm(){
 (function(){
   try{
     if(!localStorage.getItem('ssumUser')){
-      location.replace('login.html?redirect=matching.html');
+      // ⚠️ 주소 뒤의 정보(?ref=소개해준 사람, ?result=테스트 결과 등)를 같이 들고 간다.
+      //    예전에는 'matching.html' 로만 돌아와서, 초대 링크로 온 친구가 로그인하는 사이에
+      //    "누가 소개했는지"가 사라졌다 (초대받은 분은 대부분 로그인 전이다).
+      location.replace('login.html?redirect=' + encodeURIComponent('matching.html' + location.search));
     }
   }catch(e){}
 })();

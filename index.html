@@ -246,7 +246,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 
     <div class="prog-grid" style="margin-top:40px;grid-template-columns:minmax(0,360px);justify-content:center" data-r>
       <a href="oneone.html" class="glass prog-card">
-        <span class="prog-tag">오픈 기념가</span>
+        <span class="prog-tag">BETA 오픈 특별가</span>
         <div class="prog-emoji">🎁</div>
         <div class="prog-title gm">특급 배송</div>
         <div class="prog-sub">1:1 맞춤 매칭<br>나만을 위한 단 한 사람</div>
@@ -343,18 +343,20 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     <div style="display:flex;justify-content:center;gap:clamp(16px,4vw,32px);margin-top:28px;margin-bottom:12px" data-r>
       <div style="text-align:center">
         <div class="ac gm" style="font-size:clamp(28px,6vw,40px);font-weight:800" id="cnt-events">21<span style="font-size:clamp(16px,3vw,24px)">회+</span></div>
-        <div style="font-size:11px;color:var(--dim);margin-top:4px">회 진행</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">로테이션 진행</div>
       </div>
       <div style="text-align:center">
         <div class="ac gm" style="font-size:clamp(28px,6vw,40px);font-weight:800" id="cnt-people">600<span style="font-size:clamp(16px,3vw,24px)">명+</span></div>
-        <div style="font-size:11px;color:var(--dim);margin-top:4px">명 참여</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">누적 참여</div>
       </div>
       <div style="text-align:center">
         <div class="ac gm" style="font-size:clamp(28px,6vw,40px);font-weight:800" id="cnt-match">50<span style="font-size:clamp(18px,4vw,28px)">%</span></div>
         <div style="font-size:11px;color:var(--dim);margin-top:4px">커플 매칭률</div>
       </div>
     </div>
-    <p style="font-size:11px;color:var(--faint);margin-bottom:32px" data-r>재참여·동반 참여율 높음</p>
+    <!-- 이 숫자들은 오프라인 로테이션 소개팅 실적이다. 위쪽의 "누적 4,000+ 매칭"(센터장 세 명의 주선 합계)과
+         기준이 달라서, 설명 없이 나란히 두면 손님 눈에는 숫자가 서로 안 맞아 보인다. 그래서 기준을 적어준다. -->
+    <p style="font-size:11px;color:var(--faint);margin-bottom:32px" data-r>오프라인 로테이션 소개팅 기준 · 재참여·동반 참여율 높음</p>
 
     <div data-r>
       <div class="rv-track" id="rv">
@@ -448,7 +450,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
       <a href="#" onclick="goMatching();return false" style="position:relative;display:flex;align-items:center;gap:14px;background:var(--amber);color:#000;font-weight:800;padding:16px 18px;border-radius:18px;text-align:left;transition:all .2s;font-size:15px">
         <span style="font-size:24px">🎁</span>
         <div style="flex:1"><div>특급 배송 · 1:1 매칭</div><div style="font-size:11px;font-weight:500;opacity:.6;margin-top:2px">상시 접수 · 신청하기 →</div></div>
-        <span style="font-size:9px;background:rgba(0,0,0,.15);padding:2px 8px;border-radius:100px;font-weight:700">오픈 기념가</span>
+        <span style="font-size:9px;background:rgba(0,0,0,.15);padding:2px 8px;border-radius:100px;font-weight:700">BETA 오픈 특별가</span>
       </a>
       <!-- 로테이션(썸배달) 잠시 쉼 — 재개하려면 이 주석을 풀어주세요
       <button onclick="closeModal();openDateModal()" style="display:flex;align-items:center;gap:14px;background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);font-weight:800;padding:16px 18px;border-radius:18px;cursor:pointer;transition:all .2s;font-family:inherit;font-size:15px;text-align:left">
@@ -545,7 +547,8 @@ if(cntEl) cntObserver.observe(cntEl.parentElement.parentElement);
 /* Auth guard */
 function goMatching(){
   closeModal();
-  // 로그인 벽 제거 — 바로 신청서로 (멤버십 런칭 시 로그인 되살리려면 아래 주석 복원)
+  // 신청서(matching.html)로 보낸다. 카카오 로그인 여부는 신청서가 직접 확인해서,
+  // 로그인이 안 돼 있으면 로그인 화면을 거쳐 다시 신청서로 돌아온다. (여기서는 따로 막지 않는다)
   window.location.href='matching.html';
   // if(localStorage.getItem('ssumUser'))window.location.href='matching.html';
   // else window.location.href='login.html?redirect=matching.html';

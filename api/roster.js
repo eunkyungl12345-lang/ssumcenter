@@ -1,5 +1,7 @@
 // 참여자 미리보기 전용 (공개) — 승인된 로테이션 참가자의 "안전한 정보만" 반환
 // 실명·연락처·사진·상세지역은 절대 내보내지 않음
+const { checkPair, isRecId } = require("./_match.js");
+
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -14,8 +16,23 @@ module.exports = async function handler(req, res) {
   const body = req.body || {};
 
   // 매칭 프로필 조회 (response 페이지용) — 이름·연락처 제외, 안전 정보만
+  // 🔒 '매칭' 표에 두 사람의 진행 중인 기록이 있을 때만 내준다.
+  //    예전에는 회원 고유번호(id)만 보내면 누구의 프로필이든 사진까지 돌려줬다.
   if (body.action === "profile") {
     if (!body.id) return res.status(400).json({ error: "id 필요" });
+    let pair;
+    try {
+      pair = await checkPair({ TOKEN, BASE_ID, me: String(body.myId || ""), other: String(body.id || "") });
+    } catch (e) {
+      // 확인 자체를 못 한 경우(에어테이블 장애·한도) — '유효하지 않은 링크'와 구분해서 알려준다
+      return res.status(503).json({ error: "지금은 확인할 수 없어요. 잠시 후 다시 열어주세요.", reason: "error" });
+    }
+    if (!pair.ok) {
+      const msg = pair.reason === "expired" ? "응답 기한이 지났어요"
+        : pair.reason === "closed" ? "종료된 매칭이에요"
+        : "유효하지 않은 매칭 링크예요";
+      return res.status(pair.reason === "expired" ? 410 : 403).json({ error: msg, reason: pair.reason });
+    }
     const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}/${encodeURIComponent(body.id)}`,
       { headers: { Authorization: `Bearer ${TOKEN}` } });
     if (!r.ok) return res.status(404).json({ error: "프로필을 찾을 수 없어요" });
@@ -40,7 +57,7 @@ module.exports = async function handler(req, res) {
   if (body.action === "expiredNotify") {
     try {
       const me = String(body.id || ""), other = String(body.myId || "");   // response.html의 id/myId
-      if (!me || !other) return res.status(200).json({ ok: false });
+      if (!isRecId(me) || !isRecId(other)) return res.status(200).json({ ok: false });
       const AUTH = { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" };
       const MTBL = encodeURIComponent("매칭");
       const formula = `AND({상태}="소개중",OR(AND({남자ID}="${me}",{여자ID}="${other}"),AND({남자ID}="${other}",{여자ID}="${me}")))`;

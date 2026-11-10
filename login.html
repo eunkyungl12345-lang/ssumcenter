@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>로그인 | 썸류센터</title>
+<meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -51,6 +52,18 @@ a{text-decoration:none;color:inherit}
 
     <div id="ctx" class="ctx hidden"></div>
 
+    <!-- 📱 인스타·스레드·페이스북 앱 안에서 열린 경우 안내.
+         릴스를 보고 들어온 손님은 대부분 이 '앱 안 브라우저'인데, 여기서는 카카오 로그인이
+         막히거나 사진 올리기가 안 되는 일이 잦다. 막지는 않고, 안 될 때 빠져나갈 길을 알려준다. -->
+    <div id="inapp" style="display:none;margin:0 0 14px;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:14px;padding:13px 14px;text-align:left">
+      <div style="font-size:13px;font-weight:700;color:#E8B050;line-height:1.5">📱 <span id="inapp-name">앱</span> 안에서 열렸어요</div>
+      <div style="font-size:12px;color:#9a9080;line-height:1.65;margin-top:4px" id="inapp-how">로그인이 안 되면 기본 브라우저에서 열어주세요.</div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="inapp-open" style="display:none;flex:1;background:#E8B050;color:#000;border:none;font-weight:800;font-size:12.5px;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit">크롬으로 열기</button>
+        <button id="inapp-copy" style="flex:1;background:#16140f;border:1px solid #3a2e1f;color:#EDE0CC;font-weight:700;font-size:12.5px;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit">🔗 주소 복사</button>
+      </div>
+    </div>
+
     <button class="btn-kakao" onclick="kakaoLogin()">
       <svg width="20" height="20" viewBox="0 0 18 18"><path fill="#191919" d="M9 1C4.58 1 1 3.8 1 7.2c0 2.18 1.45 4.1 3.63 5.2-.16.56-.57 2.03-.66 2.35-.1.39.14.39.3.28.12-.08 1.94-1.32 2.72-1.85.64.09 1.3.14 1.97.14 4.42 0 8-2.8 8-6.2C17 3.8 13.42 1 9 1"/></svg>
       카카오로 로그인
@@ -74,6 +87,49 @@ function kakaoLogin(){
     state:redirect
   });
 }
+// 로그인 뒤 돌아갈 곳 — 우리 사이트 안의 주소만 허용
+function safeNext(rd){
+  var path = String(rd||'').split('?')[0];
+  return (/^\/?[A-Za-z0-9_\-\/]+(\.html)?$/.test(path) && path.indexOf('//') !== 0) ? rd : '';
+}
+// 이미 로그인한 사람이 다시 이 화면에 오면 바로 원래 가려던 곳으로 보낸다
+(function(){
+  try{
+    if(localStorage.getItem('ssumUser')){
+      var rd = safeNext(new URLSearchParams(location.search).get('redirect')||'');
+      location.replace(rd || 'my.html');
+    }
+  }catch(e){}
+})();
+// 📱 앱 안 브라우저 안내
+(function(){
+  var ua = navigator.userAgent || '';
+  var name = /Instagram/i.test(ua) ? '인스타그램' : /Barcelona/i.test(ua) ? '스레드' : /FBAN|FBAV|FB_IAB/i.test(ua) ? '페이스북' : /Line\//i.test(ua) ? '라인' : '';
+  if(!name) return;                      // 카카오톡 안 브라우저는 카카오 로그인이 잘 되므로 안내하지 않는다
+  var box = document.getElementById('inapp'); if(!box) return;
+  document.getElementById('inapp-name').textContent = name;
+  var isAndroid = /Android/i.test(ua);
+  document.getElementById('inapp-how').innerHTML = isAndroid
+    ? '카카오 로그인이 안 되면 <b style="color:#EDE0CC">크롬에서 열어주세요.</b>'
+    : '카카오 로그인이 안 되면 오른쪽 위 <b style="color:#EDE0CC">⋯ → "외부 브라우저로 열기"</b>를 눌러주세요.';
+  // 로그인 뒤 가려던 곳(신청서 등)까지 그대로 담은 주소
+  var here = location.href;
+  if(isAndroid){
+    var openBtn = document.getElementById('inapp-open');
+    openBtn.style.display = 'block';
+    openBtn.addEventListener('click', function(){
+      // 안드로이드에서 크롬으로 넘기는 특수 주소 (intent). 배포 전 검사가 '없는 페이지 링크'로 오해하지 않게 나눠 적는다.
+      var toChrome = ['intent', '://'].join('') + here.replace(/^https?:\/\//,'') + '#Intent;scheme=https;package=com.android.chrome;end';
+      window.location.assign(toChrome);
+    });
+  }
+  document.getElementById('inapp-copy').addEventListener('click', function(){
+    var b = this, done = function(){ b.textContent = '복사됨! 브라우저에 붙여넣기'; };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(here).then(done, function(){ prompt('아래 주소를 복사해서 브라우저에 붙여넣어 주세요', here); });
+    else prompt('아래 주소를 복사해서 브라우저에 붙여넣어 주세요', here);
+  });
+  box.style.display = 'block';
+})();
 // 어디서 왔는지에 따라 안내 문구
 (function(){
   var rd=new URLSearchParams(location.search).get('redirect')||'';
