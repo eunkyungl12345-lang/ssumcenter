@@ -1247,7 +1247,6 @@ async function handleSubmit(e){
       "선호나이대": [...selectedAges].join(", "),
       "성격키워드": [...selectedKeywords].join(", "), "이상형": payload.idealType || "", "자기소개": payload.intro || "",
       "유입경로": payload.inflow || "",
-      "추천인이름": payload.inflow === "지인소개" ? (payload.referralName || "") : "",
       "테스트결과": payload.testResult || "", "매칭유형": payload.matchType || "일반매칭", "매칭상태": "승인",
       "쪽지연결": (new URLSearchParams(location.search).get("note") || ""),
       "신청일시": new Date().toLocaleString("ko-KR")
@@ -1255,6 +1254,12 @@ async function handleSubmit(e){
     try{ var _u=JSON.parse(localStorage.getItem("ssumUser")||"null"); if(_u&&_u.id) fields["카카오ID"]=_u.id; }catch(e){}
     if(photoUrls.length > 0) fields["프로필사진"] = photoUrls;
     if(docJobUrl) fields["재직증명서"] = [{url: docJobUrl}];
+    // 🏆 '지인소개'이고 실제로 이름을 적었을 때만 보낸다.
+    // 빈 값까지 늘 보내면, 에어테이블에 '추천인이름' 칸이 없을 때 모든 신청이
+    // 한 번씩 헛돌고 재시도하게 된다 (아래 재시도 로직이 받아주긴 하지만 느려진다).
+    if(payload.inflow === "지인소개" && String(payload.referralName || "").trim()){
+      fields["추천인이름"] = String(payload.referralName).trim();
+    }
 
     // Airtable에 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)
     let attempt = { ...fields };
