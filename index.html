@@ -109,10 +109,13 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 @keyframes fp{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
 .float-pkg{animation:fp 4s ease-in-out infinite}
 
-/* Trust */
-.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 36px;padding:24px 32px;background:rgba(22,19,16,.6);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.03)}
-.trust-item{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.01em}
-.trust-ico{width:34px;height:34px;border-radius:10px;background:rgba(212,149,42,.08);display:grid;place-items:center;color:var(--amber);font-size:13px;flex-shrink:0}
+/* 버튼 아래 신뢰 문구 한 줄 */
+.hero-points{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 10px;margin-top:22px;font-size:13px;line-height:1.6;color:var(--muted);letter-spacing:.01em}
+.hero-points span{white-space:nowrap}
+.hero-points .dot{color:var(--dim)}
+@media(max-width:350px){.hero-points .dot{display:none}}
+/* 좁은 폰에서 "드/려요"처럼 낱말 중간이 끊기지 않게 */
+.hero h1,.hero p{word-break:keep-all}
 
 /* Program cards */
 .prog-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:720px;margin:0 auto}
@@ -161,7 +164,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 </head>
 <body>
 
-<!-- 상단 광고 띠 -->
+<!-- 상단 광고 띠 — 첫 화면이 꽉 차 보여서 숨김. 다시 켜려면 아래 주석만 풀면 된다.
 <div class="ticker" aria-hidden="true">
   <div class="ticker-track">
     <span class="it">📌 당신을 위한 “썸류센터 1:1 맞춤 소개팅”<span class="sep">✦</span></span>
@@ -172,6 +175,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     <span class="it">💛 지금 많이많이 신청해주세요!<span class="sep">✦</span></span>
   </div>
 </div>
+-->
 
 <!-- Nav -->
 <nav class="nav">
@@ -206,10 +210,6 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 <section class="hero">
   <div class="hero-bg"></div>
   <div style="position:relative;z-index:1;max-width:600px">
-    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:32px">
-      <span class="pill pill-amber"><i class="fa-solid fa-truck-fast"></i>설렘 배송 서비스</span>
-      <span class="pill pill-ghost"><i class="fa-solid fa-shield-check ac"></i>승인제 · 신분 확인</span>
-    </div>
     <h1 class="gm" style="font-size:clamp(32px,8vw,56px);font-weight:700;line-height:1.15;letter-spacing:-.03em">
       설렘을 포장해서<br><span class="ac">당신에게 배송해 드려요</span>
     </h1>
@@ -226,20 +226,15 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
       <button class="cta cta-glow" onclick="openModal()"><i class="fa-solid fa-truck-fast"></i>신청하기</button>
       <a href="test/ideal.html" class="cta" style="background:var(--glass);color:var(--cream);border:1px solid var(--glass-border);box-shadow:none;animation:none"><i class="fa-solid fa-flask"></i>유형 테스트</a>
     </div>
-    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-top:32px;font-size:12px;color:var(--dim)">
-      <span><i class="fa-solid fa-globe ac" style="margin-right:4px"></i>온라인 매칭 · 지역 무관</span>
-      <span><i class="fa-solid fa-users ac" style="margin-right:4px"></i>누적 4,000+ 매칭</span>
-      <span><i class="fa-solid fa-coins ac" style="margin-right:4px"></i>성사 시에만 비용</span>
-    </div>
+    <!-- 버튼 아래 신뢰 문구는 이 한 줄만. 여기에 뱃지를 다시 늘리지 말 것 —
+         같은 말이 위아래로 반복되면 [신청하기] 버튼이 묻힌다. -->
+    <p class="hero-points">
+      <span><b class="ac">✓</b> 신청비 0원 (매칭 성사 시 결제)</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span><b class="ac">✓</b> 센터장 1:1 심사</span>
+    </p>
   </div>
 </section>
-
-<!-- Trust -->
-<div class="trust">
-  <div class="trust-item"><div class="trust-ico"><i class="fa-solid fa-user-shield"></i></div>센터장 승인제</div>
-  <div class="trust-item"><div class="trust-ico"><i class="fa-solid fa-coins"></i></div>매칭 안 되면 0원</div>
-  <div class="trust-item"><div class="trust-ico"><i class="fa-solid fa-lock"></i></div>개인정보 보호</div>
-</div>
 
 <!-- Program (카테고리) -->
 <section class="sec" id="program">
