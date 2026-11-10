@@ -1944,8 +1944,8 @@ function saveMatchRecord(p0, p1){
       body: JSON.stringify({ records: [{ fields: {
         "남자": man.fields["이름"] || "", "여자": woman.fields["이름"] || "",
         "남자ID": man.id, "여자ID": woman.id,
-        "남자링크": `${SITE_URL}/response.html?id=${woman.id}&myId=${man.id}&t=${t}`,
-        "여자링크": `${SITE_URL}/response.html?id=${man.id}&myId=${woman.id}&t=${t}`,
+        "남자링크": `${SITE_URL}/response?id=${woman.id}&myId=${man.id}&t=${t}`,
+        "여자링크": `${SITE_URL}/response?id=${man.id}&myId=${woman.id}&t=${t}`,
         "상태": "소개중", "남자응답": "대기", "여자응답": "대기",
         "생성일": new Date().toLocaleString("ko-KR")
       }}]})
@@ -1987,9 +1987,9 @@ async function generateMatch(){
 
   const _t = Date.now(); // 48시간 만료 기준 시각
   // A에게 보낼 링크 (B의 프로필, myId=A의 ID)
-  const urlForA = `${SITE_URL}/response.html?id=${selected[1].id}&myId=${selected[0].id}&t=${_t}`;
+  const urlForA = `${SITE_URL}/response?id=${selected[1].id}&myId=${selected[0].id}&t=${_t}`;
   // B에게 보낼 링크 (A의 프로필, myId=B의 ID)
-  const urlForB = `${SITE_URL}/response.html?id=${selected[0].id}&myId=${selected[1].id}&t=${_t}`;
+  const urlForB = `${SITE_URL}/response?id=${selected[0].id}&myId=${selected[1].id}&t=${_t}`;
 
   document.getElementById("result-name-1").textContent = a["이름"];
   document.getElementById("url-for-1").value = urlForA;
@@ -2197,6 +2197,7 @@ async function approveApplicant(recordId, ev){
           headers: apiHeaders(),
           body: JSON.stringify({
             to: phone,
+            subject: "썸류센터 신청 승인 안내",
             text: `[썸류센터] ${name}님, 1:1 매칭 프로필이 승인되었습니다! 🎉\n\n센터장이 어울리는 분을 찾아 매칭해드릴게요. 매칭 상대가 정해지면 프로필 카드를 문자로 보내드립니다.\n\n궁금한 점은 카카오채널 @썸류센터로 문의해주세요.`
           })
         });
@@ -2268,6 +2269,7 @@ async function sendMatchSms(idx, skipConfirm){
       headers: apiHeaders(),
       body: JSON.stringify({
         to: phone,
+        subject: "썸류센터 매칭 프로필 도착",
         text: `[썸류센터] ${name}님, 센터장이 찾은 매칭 상대 프로필이 도착했어요! 💕\n\n아래 링크에서 프로필을 확인하고 수락/거절을 선택해주세요. (48시간 내 응답)\n\n${url}`
       })
     });

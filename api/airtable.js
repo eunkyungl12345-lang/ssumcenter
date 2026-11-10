@@ -225,7 +225,7 @@ module.exports = async function handler(req, res) {
       for (const r of waitTargets) {
         const to = String(r.fields["연락처"] || "").replace(/\D/g, "");
         if (to.length < 10) continue;
-        try { await sendSms({ to, text: 대기안내문자(r.fields["이름"] || "") }); waitSent.push(r.fields["이름"] || "이름없음"); }
+        try { await sendSms({ to, text: 대기안내문자(r.fields["이름"] || ""), subject: "썸류센터 매칭 준비 안내" }); waitSent.push(r.fields["이름"] || "이름없음"); }
         catch (e) { console.error("[airtable] 대기안내 문자 실패:", e.message); }
       }
       const waitLine = waitSent.length ? `\n💌 7일째 대기 안내 문자 ${waitSent.length}명 발송 (${waitSent.join(", ")})` : "";
@@ -518,8 +518,8 @@ module.exports = async function handler(req, res) {
         const mName = mf["남자"] || mA["이름"] || "상대", wName = mf["여자"] || wA["이름"] || "상대";
         const clean = p => String(p || "").replace(/\D/g, "");
         const msg = (otherName, otherPhone) => `[썸류센터] 💌 썸배달 도착!\n\n센터장이 이어드린 인연, ${otherName}님의 연락처예요 💛\n📞 ${otherPhone}\n\n먼저 가볍게 인사 건네보세요 :)\n\n☕ 첫 만남 장소 고민되면\n센터장 PICK 리스트 👉 ssumcenter.vercel.app/date-spots\n\n좋은 인연 되시길 응원할게요!`;
-        if (clean(mPhone).length >= 10 && wPhone) await sendSms({ to: clean(mPhone), text: msg(wName, wPhone) });
-        if (clean(wPhone).length >= 10 && mPhone) await sendSms({ to: clean(wPhone), text: msg(mName, mPhone) });
+        if (clean(mPhone).length >= 10 && wPhone) await sendSms({ to: clean(mPhone), text: msg(wName, wPhone), subject: "썸류센터 연락처 안내" });
+        if (clean(wPhone).length >= 10 && mPhone) await sendSms({ to: clean(wPhone), text: msg(mName, mPhone), subject: "썸류센터 연락처 안내" });
         await notifySlack(`💌 연락처 전달 문자 자동발송\n${wName} ❤ ${mName}`);
       } catch (e) { /* 문자 실패해도 전달 처리는 성공 */ }
     }
@@ -535,7 +535,7 @@ module.exports = async function handler(req, res) {
           const to = f["연락처"] || "";
           const isMarriage = String(f["유입경로"] || "").indexOf("결혼") >= 0 || String(f["매칭유형"] || "").indexOf("결혼") >= 0;
           if (isValidPhone(to)) {
-            await sendSms({ to, text: isMarriage ? 결혼접수문자(f["이름"] || "") : 일대일접수문자(f["이름"] || "") });
+            await sendSms({ to, text: isMarriage ? 결혼접수문자(f["이름"] || "") : 일대일접수문자(f["이름"] || ""), subject: "썸류센터 신청 접수 완료" });
           }
         }
       } catch (e) {
@@ -623,7 +623,7 @@ module.exports = async function handler(req, res) {
                 const isMarriage = mtype.indexOf("결혼") >= 0 || String(pf["유입경로"] || "").indexOf("결혼") >= 0;
                 const amount = isMarriage ? "100,000원" : (mtype.indexOf("슈퍼") >= 0 ? "39,800원" : "19,900원");
                 if (isValidPhone(to)) {
-                  await sendSms({ to, text: 매칭입금문자(firstName, amount, isMarriage ? "결혼" : "") });
+                  await sendSms({ to, text: 매칭입금문자(firstName, amount, isMarriage ? "결혼" : ""), subject: "썸류센터 입금 안내" });
                 }
               }
               await notifySlack(`🎉 1:1 매칭 성사!\n${mf["여자"] || ""} ♥ ${mf["남자"] || ""}\n→ 먼저 수락한 ${firstName || ""}님께 입금 안내 문자 발송했어요`);

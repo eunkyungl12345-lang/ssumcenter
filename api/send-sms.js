@@ -19,7 +19,7 @@ module.exports = async function handler(req, res) {
     return res.status(401).json({ error: "인증이 필요합니다" });
   }
 
-  const { to, text, notify, slackOnly, check } = req.body || {};
+  const { to, text, notify, slackOnly, check, subject } = req.body || {};
 
   // 🩺 문자 설정 점검 — 문자를 보내지 않고 "어디서 막히는지"만 확인한다.
   // 솔라피 메시지 목록에 아무것도 안 뜰 때, 요청이 솔라피까지 가기도 전에
@@ -41,7 +41,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const result = await sendSms({ to, text });
+    const result = await sendSms({ to, text, subject });
     if (notify) await slack("📤 문자 발송 → " + to + "\n" + String(text).slice(0, 60));
     return res.status(200).json({ ok: true, result });
   } catch (err) {

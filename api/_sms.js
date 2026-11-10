@@ -8,8 +8,33 @@ function isValidPhone(to) {
   return /^[0-9]{9,}$/.test(String(to || "").replace(/[^0-9]/g, ""));
 }
 
+// 문자 길이 재기 (한글은 2바이트). 90바이트가 넘으면 '긴 문자(LMS)'가 된다.
+function smsBytes(text) {
+  let n = 0;
+  for (const ch of String(text || "")) n += ch.charCodeAt(0) > 0x7f ? 2 : 1;
+  return n;
+}
+function isLongMessage(text) { return smsBytes(text) > 90; }
+
+// 긴 문자(LMS)의 '제목'. 제목을 안 넣으면 통신사가 본문 앞부분을 잘라서
+// 제목으로 만들어버린다 → 휴대폰에 같은 말이 두 번 나와서 어색해 보인다.
+//   (예) 제목: "임미리님, 안녕하세요. 썸류센터입니당 1:1"
+//        본문: "임미리님, 안녕하세요. 썸류센터입니당 ..."  ← 중복
+// 제목은 40바이트(한글 20자) 제한이라 길면 잘라서 보낸다.
+const 기본제목 = "썸류센터";
+function trimSubject(s) {
+  let out = "", n = 0;
+  for (const ch of String(s || "")) {
+    const w = ch.charCodeAt(0) > 0x7f ? 2 : 1;
+    if (n + w > 40) break;
+    out += ch; n += w;
+  }
+  return out;
+}
+
 // 문자 발송. 성공 시 솔라피 결과, 실패 시 throw.
-async function sendSms({ to, text }) {
+//   subject — 긴 문자(LMS)일 때 휴대폰에 굵게 뜨는 제목. 생략하면 "썸류센터".
+async function sendSms({ to, text, subject }) {
   const API_KEY = process.env.SOLAPI_API_KEY;
   const API_SECRET = process.env.SOLAPI_API_SECRET;
   const SENDER = process.env.SOLAPI_SENDER;
@@ -19,11 +44,26 @@ async function sendSms({ to, text }) {
   if (!to || !text) throw new Error("수신번호와 메시지 내용이 필요합니다");
 
   const svc = new SolapiMessageService(API_KEY, API_SECRET);
-  const result = await svc.send([{
+  const base = {
     to: String(to).replace(/[^0-9]/g, ""),
     from: String(SENDER).replace(/[^0-9]/g, ""),
     text,
-  }]);
+  };
+  // 짧은 문자(SMS)에는 제목 칸이 없으므로 긴 문자일 때만 붙인다.
+  const withSubject = isLongMessage(text)
+    ? Object.assign({}, base, { type: "LMS", subject: trimSubject(subject || 기본제목) })
+    : base;
+
+  let result;
+  try {
+    result = await svc.send([withSubject]);
+  } catch (e) {
+    // 제목 때문에 거절당하는 일이 생기면 문자가 아예 안 나가는 게 제일 큰 사고다.
+    // 그래서 제목 없이 한 번 더 보내본다 (예전과 똑같은 방식).
+    if (withSubject === base) throw e;
+    console.error("문자 제목과 함께 보내기 실패 — 제목 없이 다시 시도합니다:", e && e.message);
+    result = await svc.send([base]);
+  }
 
   // ⚠️ 솔라피는 '접수 실패'를 예외로 던지지 않는다.
   // 발신번호 미등록 · 잔액 부족 · 수신거부 같은 경우에도 호출 자체는 성공으로 돌아오고,
@@ -111,4 +151,4 @@ async function checkSmsConfig() {
   }
 }
 
-module.exports = { sendSms, isValidPhone, checkSmsConfig };
+module.exports = { sendSms, isValidPhone, checkSmsConfig, smsBytes, isLongMessage, trimSubject };
