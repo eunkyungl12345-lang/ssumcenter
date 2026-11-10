@@ -249,8 +249,29 @@ module.exports = async function handler(req, res) {
         if (!byRef.has(ref)) byRef.set(ref, []);
         byRef.get(ref).push(name(f["이름"]) || "이름없음");
       }
+      // 추천인의 연락처 찾기 — 이미 읽어온 신청 기록에서 같은 이름을 찾는다.
+      // (감사 인사를 드리려면 번호가 필요한데, 이름만 있으면 다시 뒤져야 한다)
+      // 에어테이블을 더 부르지 않으므로 호출 비용은 0이다.
+      // ⚠️ 번호는 '숫자만' 뽑아서 비교한다. 같은 사람이 010-1111-1111 / 01011111111 처럼
+      //    다르게 적어놓은 걸 서로 다른 번호로 세면, 멀쩡한 분이 '동명이인'으로 잡힌다.
+      const 이름별연락처 = new Map();
+      for (const r of [...one, ...rot]) {
+        const f = r.fields || {};
+        const nm = name(f["이름"]), ph = name(f["연락처"]), key = phone(ph);
+        if (!nm || !key) continue;
+        if (!이름별연락처.has(nm)) 이름별연락처.set(nm, new Map());
+        if (!이름별연락처.get(nm).has(key)) 이름별연락처.get(nm).set(key, ph); // 보기 좋은 원본을 쓴다
+      }
       const 추천인 = [...byRef.entries()]
-        .map(([이름, 데려온사람]) => ({ 이름, 횟수: 데려온사람.length, 데려온사람 }))
+        .map(([이름, 데려온사람]) => {
+          const phones = [...(이름별연락처.get(이름) || new Map()).values()];
+          return {
+            이름, 횟수: 데려온사람.length, 데려온사람,
+            연락처: phones.length === 1 ? phones[0] : "",
+            // 같은 이름이 여러 명이면 함부로 한 명으로 정하지 않는다 (엉뚱한 분께 연락 가면 안 됨)
+            연락처여러개: phones.length > 1 ? phones : null,
+          };
+        })
         .sort((a, b) => b.횟수 - a.횟수);
 
       return res.status(200).json({
@@ -618,7 +639,21 @@ module.exports = async function handler(req, res) {
     const response = await fetch(url, options);
     const data = await response.json();
 
-    if (!response.ok) return res.status(response.status).json(data);
+    if (!response.ok) {
+      // ⚠️ 에어테이블에 없는 칸으로 저장을 시도한 경우.
+      // 신청 폼은 그 칸을 빼고 다시 보내서 신청 자체는 성공하지만,
+      // 손님이 적어준 값은 조용히 사라진다. 그걸 모르고 몇 달이 가면 안 되므로 알린다.
+      const why = (data && data.error && (data.error.message || data.error.type)) || "";
+      const miss = String(why).match(/Unknown field name:\s*"([^"]+)"/);
+      if (miss && (req.method === "POST" || req.method === "PATCH")) {
+        notifySlack(
+          `⚠️ 에어테이블 '${table}' 표에 **${miss[1]}** 칸이 없어요.\n` +
+          `손님이 적어준 '${miss[1]}' 값이 저장되지 않고 버려집니다. (신청 자체는 정상 접수돼요)\n` +
+          `에어테이블에서 '${table}' 표에 '${miss[1]}' 칸을 추가해주세요.`
+        ).catch(() => {});
+      }
+      return res.status(response.status).json(data);
+    }
 
     // 회원 명부 적립은 여기서 하지 않는다.
     // 예전에는 신청 1건마다 upsertMember 를 불러서 에어테이블을 3번(저장 + 회원조회 +

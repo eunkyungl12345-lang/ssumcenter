@@ -65,11 +65,12 @@
     </div>
 
     <div class="card">
-      <button id="refreshBtn" class="btn-ghost">↻ 다시 찾기</button>
+      <button id="refreshBtn" class="btn">🔍 찾아보기</button>
       <span id="meta" class="sub" style="margin-left:10px"></span>
     </div>
 
-    <div id="out"><p class="msg">불러오는 중…</p></div>
+    <div id="out"><div class="card"><p class="msg">위 <b style="color:var(--amber)">🔍 찾아보기</b>를 눌러주세요.<br>
+      <span style="color:var(--faint)">신청 기록을 전부 훑기 때문에 들어올 때마다 자동으로 돌지 않아요.<br>에어테이블 월 한도를 아끼려고요.</span></p></div></div>
   </div>
 
 </div>
@@ -102,7 +103,11 @@
     document.getElementById("login").classList.add("hide");
     document.getElementById("console").classList.remove("hide");
   }
-  if(key()){ showConsole(); load(); }
+  // ⚠️ 열자마자 조회하지 않는다.
+  // 이 페이지는 신청 기록을 전부 훑어서 에어테이블 호출을 여러 건 쓴다.
+  // 들어올 때마다 자동으로 돌면 월 1,000건 한도가 금방 닳는다
+  // (2026-09 에 실제로 한도 초과로 신청·관리자 조회가 전부 막힌 적이 있다).
+  if(key()) showConsole();
 
   document.getElementById("loginBtn").addEventListener("click", doLogin);
   document.getElementById("pw").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
@@ -110,7 +115,7 @@
     var pw = document.getElementById("pw").value; if(!pw) return;
     fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})})
       .then(function(r){return r.json();}).then(function(d){
-        if(d.ok){ localStorage.setItem(KEY, pw); showConsole(); load(); }
+        if(d.ok){ localStorage.setItem(KEY, pw); showConsole(); }
         else { document.getElementById("login-msg").textContent = "비밀번호가 틀렸어요."; }
       }).catch(function(){ document.getElementById("login-msg").textContent = "오류가 났어요. 잠시 후 다시 해주세요."; });
   }
@@ -121,6 +126,7 @@
     btn.disabled = true; out.innerHTML = '<p class="msg">신청 기록을 훑어보는 중…</p>';
     api("/api/airtable?people=1").then(function(d){
       btn.disabled = false;
+      btn.textContent = "↻ 다시 찾기"; btn.className = "btn-ghost";
       if(!d.ok){ out.innerHTML = '<div class="card"><div class="err">못 불러왔어요.\n\n' + esc(d.error||"") + '</div></div>'; return; }
       render(d);
     }).catch(function(e){
@@ -164,7 +170,13 @@
       + '<p class="sub">신청서에 "이분이 소개해줬다"고 적힌 이름이에요.</p>';
     if(d.추천인 && d.추천인.length){
       html += '<div style="margin-top:10px">'
-        + people(d.추천인, medal, function(p){ return "데려온 분: " + p.데려온사람.join(", "); }, null)
+        + people(d.추천인, medal, function(p){
+            var line = "데려온 분: " + p.데려온사람.join(", ");
+            // 같은 이름이 여러 명이면 번호를 함부로 하나로 정하지 않는다 (엉뚱한 분께 연락 가면 안 됨)
+            if(p.연락처여러개) line += " · ⚠️ 같은 이름이 " + p.연락처여러개.length + "명이라 번호 확인 필요";
+            else if(!p.연락처) line += " · 번호를 못 찾았어요";
+            return line;
+          }, function(p){ return p.연락처 || ""; })
         + '</div>';
     } else {
       html += '<p class="msg">아직 기록된 추천인이 없어요.</p>';
