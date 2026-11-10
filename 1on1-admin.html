@@ -1249,12 +1249,24 @@ async function loadMatches(){
 }
 
 // 💔 성사됐던 커플이 만나봤는데 잘 안 됨 → '결별'로 기록 (재소개 시 참고용)
+// '왜' 안 됐는지도 같이 받는다. 결과만 쌓이고 이유가 없으면 다음에 뭘 고칠지 알 수가 없다.
+// 이게 쌓이면 "연락 끊김이 제일 많네 → 소개 직후 안내를 바꾸자" 같은 판단이 가능해진다.
+const 결별사유 = ["연락이 끊김", "만났는데 안 맞음", "한쪽만 적극적", "일정이 안 맞음", "이미 다른 분과 잘 됨"];
 async function markBrokenUp(matchId, man, woman){
   if(!confirm((man||"")+"님과 "+(woman||"")+"님이 만나봤는데 잘 안 됐나요?\n\n'결별'로 기록해요. 나중에 두 분이 다시 겹치지 않게 참고돼요.")) return;
+  // 이유는 '선택'이다. 비워둬도 기록은 된다 (귀찮아서 아예 기록을 안 하면 더 손해)
+  const ans = prompt(
+    "왜 안 됐는지 알려주세요 (몰라도 괜찮아요 — 비우고 확인)\n\n"
+    + 결별사유.map((s,i)=>(i+1)+". "+s).join("\n")
+    + "\n\n번호를 쓰거나 직접 적어주세요", "");
+  if(ans === null) return;   // 취소를 누르면 기록도 안 한다
+  const t = String(ans).trim();
+  const why = /^[1-5]$/.test(t) ? 결별사유[Number(t)-1] : t;
+  const 결과 = (man||"")+"·"+(woman||"")+" 만난 후 결별" + (why ? " — " + why : "");
   try {
     const r = await fetch("/api/airtable?table=매칭", {
       method: "PATCH", headers: apiHeaders(),
-      body: JSON.stringify({ records: [{ id: matchId, fields: { "상태": "결별", "결과": (man||"")+"·"+(woman||"")+" 만난 후 결별" } }], typecast: true })
+      body: JSON.stringify({ records: [{ id: matchId, fields: { "상태": "결별", "결과": 결과 } }], typecast: true })
     });
     if(!r.ok){ const d = await r.json().catch(()=>({})); throw new Error(d.error || ("오류 " + r.status)); }
     toast("💔 결별로 기록했어요");

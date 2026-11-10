@@ -455,6 +455,33 @@ module.exports = async function handler(req, res) {
         smsLine = `\n📮 문자 — 확인 실패: ${e.message}`;
       }
 
+      // 💑 매칭이 실제로 어떻게 끝나는지 — 소개만 하고 끝인지, 진짜 이어지는지.
+      //    이게 안 보이면 "신청 몇 명"만 보다가 정작 서비스가 잘 되고 있는지를 모른다.
+      let matchLine = "";
+      try {
+        const mrecs = await all("매칭");
+        const st = (r) => String((r.fields || {})["상태"] || "소개중");
+        const c = { 소개중: 0, 성사: 0, 결별: 0, 불발: 0 };
+        for (const r of mrecs) { const s = st(r); if (c[s] !== undefined) c[s]++; }
+        const 끝난것 = c.성사 + c.결별 + c.불발;
+        const rate = 끝난것 ? Math.round((c.성사 / 끝난것) * 100) : null;
+        matchLine = `\n💑 매칭 — 소개중 ${c.소개중} · 성사 ${c.성사} · 💔결별 ${c.결별} · 불발 ${c.불발}`
+          + (rate !== null ? ` (성사율 ${rate}%)` : "");
+
+        // 💬 왜 안 됐는지 — 가장 많은 이유를 알려준다. 이게 다음에 고칠 것이다.
+        const why = new Map();
+        for (const r of mrecs) {
+          if (st(r) !== "결별") continue;
+          const m = String((r.fields || {})["결과"] || "").split("—")[1];
+          const w = (m || "").trim();
+          if (w) why.set(w, (why.get(w) || 0) + 1);
+        }
+        const top = [...why.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2);
+        if (top.length) matchLine += `\n💬 안 된 이유 — ${top.map(([w, n]) => `${w} ${n}건`).join(" · ")}`;
+      } catch (e) {
+        console.error("[airtable] 매칭 현황 집계 실패:", e.message);
+      }
+
       // 📈 네이버 검색량 — 브랜드 인지도가 오르는지 숫자로 본다.
       //    릴스·블로그를 올린 주에 "썸류센터" 검색이 실제로 늘었는지가 여기서 보인다.
       //    아직 설정 전이거나 '검색키워드' 표가 없으면 브리핑에서 조용히 뺀다
@@ -474,7 +501,7 @@ module.exports = async function handler(req, res) {
         }
       }
 
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${matchLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }

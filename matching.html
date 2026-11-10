@@ -891,6 +891,19 @@ function aiFillForm(){
   };
   sel.addEventListener("change", sync);
   sync();
+
+  // 💌 초대 링크(/matching?ref=이름)로 들어온 경우 — 자동으로 채워준다.
+  // 손님이 직접 타이핑하면 오타가 나서 추천인을 못 찾는다. 링크로 받으면 정확하다.
+  const ref = (new URLSearchParams(location.search).get("ref") || "").trim().slice(0, 20);
+  if(!ref) return;
+  sel.value = "지인소개";
+  sync();
+  const input = box.querySelector('input[name="referralName"]');
+  if(input) input.value = ref;
+  const b = document.createElement("div");
+  b.style.cssText = "margin-top:12px;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:12px;padding:12px 14px;font-size:13px;color:#E8B050;line-height:1.6";
+  b.textContent = "💌 " + ref + "님이 소개해주셨네요! 반가워요.";
+  box.parentNode.insertBefore(b, box);
 })();
 
 // "그날 그 사람" 쪽지 수락 후 넘어온 경우 → 유입경로 자동 선택
