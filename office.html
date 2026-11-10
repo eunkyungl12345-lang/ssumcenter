@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>썸류센터 AI 오피스</title>
+<script src="/admin-gate.js"></script>
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -395,7 +396,7 @@
   function esc(s){ return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
   function loadActivity(){
     if(!actlog) return;
-    fetch("/api/activity").then(function(r){return r.json();}).then(function(d){
+    fetch("/api/activity",{headers:{"x-admin-key":(function(){try{return localStorage.getItem("admin_key")||"";}catch(e){return "";}})()}}).then(function(r){return r.json();}).then(function(d){
       if(!d||!d.events||!d.events.length){
         actlog.innerHTML='<div class="actlog-empty">아직 활동이 없어요 — 신청이 들어오면 여기 실시간으로 떠요 🌱</div>'; return;
       }

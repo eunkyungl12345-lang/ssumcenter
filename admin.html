@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>관리자 홈 | 썸류센터</title>
+<script src="/admin-gate.js"></script>
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -116,6 +117,15 @@
     </div>
   </div>
 
+  <!-- 🔧 에어테이블 준비 — 새 기능에 필요한 칸·표를 버튼 하나로 만든다 -->
+  <div class="group">
+    <div class="gh" style="font-size:15px">🔧 에어테이블 준비</div>
+    <div class="gd">초대 링크·커피 보상·검색량 기능에 필요한 칸과 표를 한 번에 만들어요.<br>
+      이미 있는 건 건드리지 않아서, 여러 번 눌러도 괜찮아요.</div>
+    <button class="logout" id="setupBtn" style="border-color:#E8B050;color:#E8B050">🔧 필요한 칸 한 번에 만들기</button>
+    <div id="setupOut" style="display:none;margin-top:10px;background:#0e0c0a;border:1px solid var(--line,#2a261e);border-radius:11px;padding:12px 14px;font-size:12.5px;line-height:1.85;color:#c9bfa8;white-space:pre-wrap"></div>
+  </div>
+
   <!-- 로그아웃 -->
   <div class="group">
     <div class="gh" style="font-size:15px">🔒 로그인</div>
@@ -131,6 +141,66 @@
   </div>
 </div>
 <script>
+  // 🔧 에어테이블 준비 — 새 기능이 쓰는 칸·표를 만든다.
+  //    칸이 없으면 손님이 적어준 값(추천인 이름 등)이 조용히 버려지기 때문에,
+  //    센터장이 에어테이블을 직접 열어 만들지 않아도 되게 버튼으로 뒀다.
+  //    서버(/api/member 의 createField · createTable)가 대신 만들어 준다.
+  document.getElementById("setupBtn").addEventListener("click", async function(){
+    var btn = this, box = document.getElementById("setupOut");
+    var key = ""; try{ key = localStorage.getItem("admin_key") || ""; }catch(e){}
+    box.style.display = "block";
+    if(!key){ box.textContent = "관리자 로그인이 필요해요. 페이지를 새로 열어 로그인한 뒤 다시 눌러주세요."; return; }
+    btn.disabled = true; var orig = btn.textContent; btn.textContent = "만드는 중…";
+    var lines = [];
+    function show(){ box.textContent = lines.join("\n"); }
+    async function call(body){
+      var r = await fetch("/api/member", { method:"POST", headers:{ "Content-Type":"application/json", "x-admin-key":key }, body: JSON.stringify(body) });
+      var t = await r.text(); var d = null; try{ d = JSON.parse(t); }catch(e){}
+      // 응답 코드가 정상이어도 본문에 error 가 들어 있으면 실패로 본다
+      return { ok:r.ok && !(d && d.error), status:r.status, d:d, raw:t };
+    }
+    function why(x){ return (x.d && x.d.error && (x.d.error.message || x.d.error.type || x.d.error)) || x.raw.slice(0,120) || ("오류 " + x.status); }
+    try {
+      var lt = await call({ action:"listTables" });
+      if(!lt.ok || !lt.d || !lt.d.tables){
+        lines.push("❌ 에어테이블 표 목록을 읽지 못했어요.\n   " + why(lt));
+        lines.push("\n에어테이블 토큰에 '표 구조 수정' 권한(schema.bases:write)이 없으면 이렇게 떠요.\n그럴 땐 에어테이블에서 직접 칸을 만들어주세요.");
+        show(); return;
+      }
+      var byName = {}; lt.d.tables.forEach(function(t){ byName[t.name] = t.id; });
+
+      // ① '1:1 매칭 신청' 표에 칸 2개
+      var T = "1:1 매칭 신청";
+      if(!byName[T]){ lines.push("❌ '" + T + "' 표를 찾지 못했어요."); }
+      else {
+        var fields = [ ["추천인이름", "누가 소개했는지 (초대 링크)"], ["추천보상", "커피 보냈는지 기록"] ];
+        for(var i=0;i<fields.length;i++){
+          var r = await call({ action:"createField", tableId:byName[T], name:fields[i][0], type:"singleLineText", description:fields[i][1] });
+          if(r.ok) lines.push("✅ '" + fields[i][0] + "' 칸을 만들었어요");
+          else if(/DUPLICATE|already exists|duplicate/i.test(why(r))) lines.push("👌 '" + fields[i][0] + "' 칸은 이미 있어요");
+          else lines.push("❌ '" + fields[i][0] + "' 칸을 못 만들었어요 — " + why(r));
+          show();
+        }
+      }
+
+      // ② '검색키워드' 표 (네이버 검색량 보기용)
+      var K = "검색키워드";
+      if(byName[K]) lines.push("👌 '" + K + "' 표는 이미 있어요");
+      else {
+        var r2 = await call({ action:"createTable", name:K, description:"네이버 검색량 보기(/keywords)가 쓰는 표",
+          fields:[ { name:"키워드", type:"singleLineText" }, { name:"최근검색량", type:"number", options:{ precision:0 } },
+                   { name:"지난검색량", type:"number", options:{ precision:0 } }, { name:"갱신일", type:"singleLineText" }, { name:"메모", type:"singleLineText" } ] });
+        lines.push(r2.ok ? "✅ '" + K + "' 표를 만들었어요" : "❌ '" + K + "' 표를 못 만들었어요 — " + why(r2));
+      }
+      lines.push("\n끝났어요. ❌ 가 있으면 이 화면을 캡처해서 보내주세요.");
+      show();
+    } catch(e){
+      lines.push("❌ 오류: " + e.message); show();
+    } finally {
+      btn.disabled = false; btn.textContent = orig;
+    }
+  });
+
   // 📊 상태판 — 버튼을 눌렀을 때만 조회한다 (자동 새로고침 없음)
   document.getElementById("statusBtn").addEventListener("click", function(){
     var btn = this, box = document.getElementById("statusOut");
