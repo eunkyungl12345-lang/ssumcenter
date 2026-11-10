@@ -209,9 +209,14 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     <h1 class="gm" style="font-size:clamp(32px,8vw,56px);font-weight:700;line-height:1.15;letter-spacing:-.03em">
       설렘을 포장해서<br><span class="ac">당신에게 배송해 드려요</span>
     </h1>
+    <!-- 👤 '누구에게 · 언제' 필요한지를 먼저 말한다.
+         이게 없으면 "좋아 보이는데 나랑 상관있나?" 하고 그냥 나가버린다.
+         다른 각도로 바꾸고 싶으면 아래 한 줄만 고치면 됨:
+           · 연애 공백 축 — "연애를 오래 쉬었는데, 어떻게 시작할지 모르겠다면"
+           · 주선자 부재 축 — "주변에 소개해 줄 사람이 이제 없다면" -->
     <p style="font-size:16px;color:var(--muted);margin-top:20px;line-height:1.7">
-      검증된 2030 싱글, 센터장이 직접 이어드려요.<br>
-      오직 당신만을 위한 단 한 사람.
+      <b style="color:var(--cream)">소개팅 앱은 지쳤고,<br>결혼정보회사는 부담스러운 분들께.</b><br>
+      주선이 취미였던 센터장 3명이 직접 이어드려요.
     </p>
     <div style="margin-top:36px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px">
       <button class="cta cta-glow" onclick="openModal()"><i class="fa-solid fa-truck-fast"></i>신청하기</button>
@@ -253,7 +258,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
         <div class="prog-emoji">📦</div>
         <div class="prog-title gm">썸배달</div>
         <div class="prog-sub">로테이션 소개팅<br>여러 설렘을 한 번에</div>
-        <div style="margin-top:12px;font-size:11px;color:var(--amber);font-weight:700">10/8 · 10/22 (목)</div>
+        <div style="margin-top:12px;font-size:11px;color:var(--amber);font-weight:700" data-date-text>상시 접수 중 · 센터장 검토</div>
         <div class="prog-arrow">신청하기 →</div>
       </a>
       -->
@@ -448,7 +453,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
       <!-- 로테이션(썸배달) 잠시 쉼 — 재개하려면 이 주석을 풀어주세요
       <button onclick="closeModal();openDateModal()" style="display:flex;align-items:center;gap:14px;background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);font-weight:800;padding:16px 18px;border-radius:18px;cursor:pointer;transition:all .2s;font-family:inherit;font-size:15px;text-align:left">
         <span style="font-size:24px">📦</span>
-        <div style="flex:1"><div>썸배달 · 로테이션</div><div style="font-size:11px;font-weight:500;color:var(--amber);margin-top:2px">10/8 · 10/22 (목) · 신청하기 →</div></div>
+        <div style="flex:1"><div>썸배달 · 로테이션</div><div style="font-size:11px;font-weight:500;color:var(--amber);margin-top:2px"><span data-date-text>상시 접수 중 · 센터장 검토</span> · 신청하기 →</div></div>
       </button>
       -->
       <!-- 재테크 미팅 신청 숨김 (홈 노출 중단) — 되살리려면 이 주석을 풀어주세요
@@ -468,22 +473,39 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
     <button onclick="closeDateModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer">✕</button>
     <div style="text-align:center;margin-bottom:24px">
       <span class="pill pill-amber" style="margin-bottom:12px"><i class="fa-solid fa-mug-hot"></i>썸배달</span>
-      <h3 class="gm" style="font-size:20px;font-weight:700;margin-top:12px">참여할 날짜를<br><span class="ac">선택해주세요</span></h3>
+      <h3 class="gm" style="font-size:20px;font-weight:700;margin-top:12px" id="date-title">참여할 날짜를<br><span class="ac">선택해주세요</span></h3>
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <a href="/rotation-1008" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center;font-size:15px"><span>10월 8일 (목)</span><span style="font-size:11px;font-weight:500;opacity:.6">신청하기 →</span></a>
-      <a href="/rotation-1022" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center;font-size:15px"><span>10월 22일 (목)</span><span style="font-size:11px;font-weight:500;opacity:.6">신청하기 →</span></a>
-    </div>
+    <!-- 날짜 버튼은 rounds.js 의 회차 목록에서 자동으로 만들어요.
+         ⚠️ 여기에 날짜를 직접 적지 마세요 — 회차가 지나면 지난 날짜가 그대로 남아버립니다. -->
+    <div style="display:flex;flex-direction:column;gap:10px" id="date-list"></div>
     <!-- 참여자 0명 동안 잠시 숨김 (나중에 되살리기): <a href="/rotation-preview" style="display:block;text-align:center;margin-top:16px;font-size:12.5px;color:var(--amber);text-decoration:none;font-weight:700">👀 이런 분들이 참여해요 →</a> -->
     <p style="font-size:11px;color:var(--faint);text-align:center;margin-top:14px">확정 문자를 별도로 보내드려요</p>
   </div>
 </div>
 
+<script src="/rounds.js"></script>
 <script>
-/* Date */
-const NEXT_DATE="10/8 · 10/22 (목)",NEXT_FORM="/rotation-1008";
-document.querySelectorAll('[data-date-text]').forEach(el=>el.textContent=NEXT_DATE);
-document.querySelectorAll('[data-date-link]').forEach(el=>el.href=NEXT_FORM);
+/* 회차 날짜 — rounds.js 한 곳에서만 관리해요 (여기에 날짜를 직접 적지 마세요) */
+(function(){
+  const list=(window.ROTATION_ROUNDS||[]);
+  // 로테이션 날짜를 보여주는 곳(data-date-text / data-date-link)을 회차 목록에 맞춰 채움
+  const txt=list.length?list.map(r=>r.label).join(' · '):'상시 접수 중 · 센터장 검토';
+  const link=list.length?('/rotation-form?r='+encodeURIComponent(list[0].key)):'/rotation-apply';
+  document.querySelectorAll('[data-date-text]').forEach(el=>el.textContent=txt);
+  document.querySelectorAll('[data-date-link]').forEach(el=>el.href=link);
+
+  // 신청 모달의 날짜 버튼. 열린 회차가 없으면 지난 날짜 대신 '상시 접수' 안내를 띄움
+  const box=document.getElementById('date-list');
+  if(!box)return;
+  if(!list.length){
+    const t=document.getElementById('date-title');
+    if(t)t.innerHTML='지금은 <span class="ac">상시 접수 중</span>이에요';
+    box.innerHTML='<p style="font-size:13.5px;color:var(--muted);line-height:1.8;text-align:center;padding:4px 0 14px">로테이션 회차는 준비 중이에요.<br>신청서를 남겨주시면 <b style="color:var(--amber)">회차가 열릴 때 가장 먼저</b> 문자로 안내드려요 💛</p>'
+      +'<a href="/oneone" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center;font-size:15px"><span>1:1 맞춤 소개팅</span><span style="font-size:11px;font-weight:500;opacity:.6">상시 접수 중 · 센터장 검토 →</span></a>';
+    return;
+  }
+  box.innerHTML=list.map(r=>'<a href="/rotation-form?r='+encodeURIComponent(r.key)+'" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--amber);color:#000;font-weight:800;padding:18px;border-radius:18px;text-align:center;font-size:15px"><span>'+r.dateText.split(')')[0]+')</span><span style="font-size:11px;font-weight:500;opacity:.6">신청하기 →</span></a>').join('');
+})();
 
 /* Reviews */
 const rv=document.getElementById('rv');

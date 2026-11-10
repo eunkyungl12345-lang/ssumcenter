@@ -13,6 +13,7 @@
  *   3. 죽은 버튼      — 눌러도 아무 일도 안 일어나는 버튼
  *   4. 관리자 로그인  — 페이지마다 로그인이 따로 놀지 않게
  *   5. 프로젝트 규칙  — Tailwind CDN 사용 금지 (CLAUDE.md)
+ *   6. 지난 날짜      — 손님 화면에 남은 지난 날짜 (끝난 서비스로 보이게 함) ⚠️ 경고만
  */
 
 const fs = require("fs");
@@ -43,6 +44,7 @@ const files = htmlFiles(ROOT).sort();
 const ADMIN_PAGES = new Set([
   "admin.html", "rotation-admin.html", "1on1-admin.html", "1on1.html",
   "vote-admin.html", "lineup.html", "attendance.html", "participants.html",
+  "keywords.html", "vip.html",
 ]);
 
 // onclick 안에서 함수처럼 보이지만 자바스크립트 기본 기능이라 정의가 필요 없는 것들
@@ -164,11 +166,48 @@ for (const full of files) {
   }
 }
 
+// ── 6. 손님 화면에 남은 지난 날짜 ──────────────────────────────────────
+// "10월 8일 (목)" 같은 지난 날짜가 손님 화면에 남아 있으면
+// "여기 끝난 서비스인가?" 하는 오해를 주고 손님이 바로 뒤로가기를 누른다.
+// 배포를 막지는 않고 경고만 한다 (일부러 지난 날짜를 적는 안내문도 있을 수 있어서).
+const STALE_SKIP = /admin|attendance|lineup|vote|dev|office|participants|seatmap|guide|patch|links|members|auth|login|response|reconnect|setup|test|demo|preview|memo|ops/i;
+const staleHits = [];
+{
+  const today = new Date();
+  for (const f of files) {
+    const rel = path.relative(ROOT, f);
+    if (STALE_SKIP.test(rel)) continue;
+    const raw = fs.readFileSync(f, "utf8");
+    // "잠시 쉼 안내" 가 덮고 있는 페이지는 본문이 손님에게 안 보이므로 건너뛴다
+    if (/잠시 쉼 안내/.test(raw)) continue;
+    // HTML 주석 안(꺼둔 블록)도 손님에게 안 보이므로 뺀다
+    const src = raw.replace(/<!--[\s\S]*?-->/g, "");
+    const found = new Set();
+    for (const m of src.matchAll(/(\d{1,2})월\s*(\d{1,2})일/g)) {
+      const mon = Number(m[1]), day = Number(m[2]);
+      if (mon < 1 || mon > 12 || day < 1 || day > 31) continue;
+      // 올해 날짜로 보고, 이미 1년 가까이 지났으면 내년 날짜로 적은 것으로 본다
+      let d = new Date(today.getFullYear(), mon - 1, day);
+      if (d - today < -300 * 86400000) d = new Date(today.getFullYear() + 1, mon - 1, day);
+      // 3일 넘게 지난 날짜만 경고 (오늘·어제 날짜는 정상 운영 중일 수 있음)
+      if (today - d > 3 * 86400000) found.add(`${mon}월 ${day}일`);
+    }
+    if (found.size) staleHits.push({ file: rel, dates: [...found] });
+  }
+  if (staleHits.length) {
+    notes.push("⚠️  손님 화면에 지난 날짜가 남아 있어요 (배포는 막지 않았습니다):");
+    for (const h of staleHits) notes.push(`   📄 ${h.file} — ${h.dates.join(", ")}`);
+    notes.push("   └ 지난 날짜가 보이면 '끝난 서비스'로 오해받아요. 지우거나 '상시 접수 중'으로 바꿔주세요.");
+    notes.push("   └ 로테이션 회차는 rounds.js 한 곳에서만 관리합니다.\n");
+  }
+}
+
 // ── 결과 출력 ──────────────────────────────────────────────────────────
 console.log(`\n🔍 썸류센터 배포 전 검사 — HTML ${files.length}개 확인했습니다.\n`);
 
 if (problems.length === 0) {
   console.log("✅ 문제 없습니다. 배포해도 좋아요.\n");
+  notes.forEach((n) => console.log(n));
   process.exit(0);
 }
 

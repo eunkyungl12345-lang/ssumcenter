@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검색량 보기 | 썸류센터</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+  :root{color-scheme:dark;--bg:#0e0c0a;--card:#16140f;--line:#1e1c17;--ink:#f5f0ea;--muted:#9a9080;--amber:#E8B050;--up:#22c55e;--down:#ef4444}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;padding:18px;letter-spacing:-.01em}
+  .wrap{max-width:860px;margin:0 auto}
+  .hide{display:none!important}
+  h1{font-size:20px;font-weight:800}
+  .sub{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.65}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+  input,button{font-family:inherit;font-size:14px}
+  .txt{width:100%;background:#0e0c0a;border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:11px 13px;outline:none}
+  .txt:focus{border-color:var(--amber)}
+  .btn{background:var(--amber);color:#000;border:none;font-weight:800;padding:11px 18px;border-radius:11px;cursor:pointer;white-space:nowrap}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn-ghost{background:#16140f;border:1px solid var(--line);color:var(--muted);font-weight:700;padding:9px 14px;border-radius:11px;cursor:pointer;font-size:12.5px}
+  .row{display:flex;gap:8px}
+  /* 좁은 화면에서 표가 찌그러지지 않게 가로로 밀어서 본다 */
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{width:100%;border-collapse:collapse;margin-top:4px;min-width:330px}
+  .sub2{font-size:11px;color:var(--muted);font-weight:500;margin-top:3px}
+  td.big{font-size:15px;font-weight:800;white-space:nowrap}
+  th,td{padding:11px 8px;text-align:right;font-size:13.5px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-size:11.5px;font-weight:700;white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  /* 한글 단어가 '썸류센 터'처럼 중간에서 잘리지 않게 */
+  td.kw{font-weight:700;word-break:keep-all}
+  .pill{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px}
+  .pill.up{background:rgba(34,197,94,.12);color:var(--up)}
+  .pill.down{background:rgba(239,68,68,.12);color:var(--down)}
+  .pill.same{background:#1e1c17;color:var(--muted)}
+  .del{background:none;border:none;color:#6b6358;cursor:pointer;font-size:14px;padding:4px 6px}
+  .del:hover{color:var(--down)}
+  .msg{font-size:13px;color:var(--muted);padding:18px 0;text-align:center;line-height:1.7}
+  .err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#ffb4b4;border-radius:11px;padding:12px 14px;font-size:12.5px;line-height:1.7;margin-top:10px;white-space:pre-wrap}
+  pre{white-space:pre-wrap;word-break:break-all;font-size:12px;line-height:1.75;color:var(--muted);font-family:inherit}
+  a.back{color:var(--muted);font-size:12.5px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 로그인 -->
+  <div id="login" class="card">
+    <h1>🔒 검색량 보기</h1>
+    <p class="sub">관리자 비밀번호를 입력해주세요.</p>
+    <div class="row" style="margin-top:14px">
+      <input id="pw" class="txt" type="password" placeholder="비밀번호" autocomplete="current-password">
+      <button id="loginBtn" class="btn">열기</button>
+    </div>
+    <p id="login-msg" class="sub" style="color:#ffb4b4"></p>
+  </div>
+
+  <!-- 본문 -->
+  <div id="console" class="hide">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+      <div>
+        <h1>📈 검색량 보기</h1>
+        <p class="sub">네이버에서 한 달 동안 몇 명이 검색했는지 보여줘요.<br>숫자가 큰 키워드가 사람들이 실제로 찾는 주제예요.</p>
+      </div>
+      <a class="back" href="/admin">← 어드민</a>
+    </div>
+
+    <!-- 키워드 추가 -->
+    <div class="card">
+      <div class="row">
+        <input id="newKw" class="txt" placeholder="추가할 키워드 (예: 강남 소개팅)">
+        <button id="addBtn" class="btn">추가</button>
+      </div>
+      <p class="sub" id="countLine" style="margin-top:9px"></p>
+      <button id="seedBtn" class="btn-ghost" style="margin-top:8px">✨ 추천 키워드 한 번에 넣기</button>
+    </div>
+
+    <!-- 목록 -->
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:10px">
+        <button id="refreshBtn" class="btn-ghost">↻ 새로고침</button>
+        <button id="checkBtn" class="btn-ghost">🩺 설정 점검</button>
+      </div>
+      <div id="checkOut" class="err hide"></div>
+      <div id="out"><p class="msg">불러오는 중…</p></div>
+    </div>
+
+    <p class="sub" style="text-align:center;margin-top:16px">
+      검색량은 <b>최근 30일 기준</b>이에요. 하루에 한 번 저장해서 전날과 비교해드려요.
+    </p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var KEY = "admin_key";
+  // 로그인 정보는 localStorage에 저장 (다른 관리자 페이지와 동일 — 한 번 로그인하면 전부 열림)
+  function key(){ return localStorage.getItem(KEY) || ""; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  function num(n){ return Number(n||0).toLocaleString(); }
+
+  // 응답을 반드시 본문까지 읽어서, 왜 실패했는지 화면에 보여준다.
+  // (조용히 실패해서 "키워드가 없어요"만 뜨면 진짜 0개인지 오류인지 알 수 없다)
+  function api(url, opt){
+    return fetch(url, opt).then(function(r){
+      return r.text().then(function(t){
+        var d=null; try{ d=JSON.parse(t); }catch(e){}
+        if(!r.ok){
+          var why=(d&&d.error&&(d.error.message||d.error))||String(t||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim().slice(0,200)||"응답 본문 없음";
+          var vh=r.headers.get("x-vercel-error"); if(vh) why+=" · x-vercel-error="+vh;
+          throw new Error(r.status+" · "+why);
+        }
+        if(d===null) throw new Error(r.status+" · 서버가 보낸 응답을 읽을 수 없어요");
+        return d;
+      });
+    });
+  }
+  function hdr(){ return {"Content-Type":"application/json","x-admin-key":key()}; }
+
+  function showConsole(){
+    document.getElementById("login").classList.add("hide");
+    document.getElementById("console").classList.remove("hide");
+  }
+  if(key()){ showConsole(); load(); }
+
+  document.getElementById("loginBtn").addEventListener("click", doLogin);
+  document.getElementById("pw").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
+  function doLogin(){
+    var pw = document.getElementById("pw").value; if(!pw) return;
+    fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ localStorage.setItem(KEY, pw); showConsole(); load(); }
+        else { document.getElementById("login-msg").textContent = "비밀번호가 틀렸어요."; }
+      }).catch(function(){ document.getElementById("login-msg").textContent = "오류가 났어요. 잠시 후 다시 해주세요."; });
+  }
+
+  document.getElementById("refreshBtn").addEventListener("click", load);
+  document.getElementById("addBtn").addEventListener("click", addKeyword);
+  document.getElementById("newKw").addEventListener("keydown", function(e){ if(e.key==="Enter") addKeyword(); });
+  document.getElementById("checkBtn").addEventListener("click", check);
+
+  function load(){
+    var out = document.getElementById("out");
+    var btn = document.getElementById("refreshBtn");
+    btn.disabled = true; out.innerHTML = '<p class="msg">네이버에서 검색량을 가져오는 중…</p>';
+    api("/api/airtable?keywords=1", { headers: hdr() })
+      .then(function(d){
+        btn.disabled = false;
+        if(!d.ok){ out.innerHTML = '<div class="err">검색량을 못 가져왔어요.\n\n' + esc(d.error||"") + '\n\n아래 [🩺 설정 점검]을 눌러보세요.</div>'; return; }
+        render(d.rows || []);
+      })
+      .catch(function(e){
+        btn.disabled = false;
+        out.innerHTML = '<div class="err">불러오기 실패\n\n' + esc(e.message) + '</div>';
+      });
+  }
+
+  function render(rows){
+    var out = document.getElementById("out");
+    document.getElementById("countLine").textContent = rows.length + "개 키워드를 보고 있어요";
+    if(!rows.length){
+      out.innerHTML = '<p class="msg">아직 등록한 키워드가 없어요.<br>위에 "썸류센터" 부터 넣어보세요 💛</p>';
+      return;
+    }
+    // 📱 센터장님이 폰으로 보시는 경우가 많아서, 폰에서 제일 중요한 3개(키워드·합계·전날대비)가
+    //    먼저 보이게 했다. PC·모바일 숫자는 키워드 아래 작은 글씨로 붙인다.
+    var html = '<div class="scroll"><table><thead><tr>'
+      + '<th>키워드</th><th>한 달 검색</th><th>전날 대비</th><th></th>'
+      + '</tr></thead><tbody>';
+    rows.forEach(function(r){
+      var p = "";
+      if(r.diff === null || r.diff === undefined) p = '<span class="pill same">첫 기록</span>';
+      else if(r.diff > 0) p = '<span class="pill up">▲ ' + r.diff + '%</span>';
+      else if(r.diff < 0) p = '<span class="pill down">▼ ' + Math.abs(r.diff) + '%</span>';
+      else p = '<span class="pill same">-</span>';
+      var sub = r.found
+        ? 'PC ' + num(r.pc) + ' · 모바일 ' + num(r.mobile)
+        : '검색이 거의 없는 키워드예요';
+      html += '<tr>'
+        + '<td class="kw">' + esc(r["키워드"]) + '<div class="sub2">' + sub + '</div></td>'
+        + '<td class="big">' + num(r.total) + '</td>'
+        + '<td>' + p + '</td>'
+        + '<td><button class="del" data-id="' + esc(r.id) + '" data-kw="' + esc(r["키워드"]) + '" title="삭제">✕</button></td>'
+        + '</tr>';
+    });
+    out.innerHTML = html + '</tbody></table></div>';
+    Array.prototype.forEach.call(out.querySelectorAll(".del"), function(b){
+      b.addEventListener("click", function(){ delKeyword(b.getAttribute("data-id"), b.getAttribute("data-kw")); });
+    });
+  }
+
+  // ✨ 처음 쓰실 때 뭘 넣어야 할지 막막하지 않게, 소개팅 서비스에 맞는 기본 묶음을 넣어준다.
+  //    브랜드(인지도 지표) + 사람들이 대신 찾는 서비스 + 고민하는 순간 키워드.
+  //    에어테이블은 한 번에 10개까지 만들 수 있어서 호출 1건으로 끝난다.
+  var 추천키워드 = [
+    "썸류센터",        // 브랜드 인지도 — 릴스 올린 주에 올랐는지 보는 지표
+    "소개팅 어플",     // 손님이 지금 쓰고 있는 대안
+    "결혼정보회사",    // 윗동네 대안 (가격·부담)
+    "소개팅 주선",     // 우리 방식 그대로를 찾는 사람
+    "강남 소개팅",     // 지역
+    "2030 소개팅",     // 나이대
+    "직장인 소개팅",   // 상황
+    "솔로탈출",        // 고민하는 순간
+    "자만추",          // 고민하는 순간
+    "연애 상담",       // 고민하는 순간
+  ];
+
+  document.getElementById("seedBtn").addEventListener("click", seed);
+  function seed(){
+    var btn = document.getElementById("seedBtn");
+    // 이미 있는 건 빼고 넣는다 (같은 키워드가 두 줄로 생기면 지저분해진다)
+    var 있는것 = {};
+    Array.prototype.forEach.call(document.querySelectorAll("tbody .del"), function(b){
+      있는것[b.getAttribute("data-kw").replace(/\s/g,"")] = true;
+    });
+    var 넣을것 = 추천키워드.filter(function(k){ return !있는것[k.replace(/\s/g,"")]; });
+    if(!넣을것.length){ alert("추천 키워드가 이미 다 들어가 있어요 👍"); return; }
+    if(!confirm("추천 키워드 " + 넣을것.length + "개를 넣을까요?\n\n" + 넣을것.join(", ") + "\n\n마음에 안 드는 건 나중에 ✕로 빼시면 돼요.")) return;
+    btn.disabled = true; btn.textContent = "넣는 중…";
+    api("/api/airtable?table=" + encodeURIComponent("검색키워드"), {
+      method: "POST", headers: hdr(),
+      body: JSON.stringify({ records: 넣을것.map(function(k){ return { fields: { "키워드": k } }; }) })
+    }).then(function(){
+      btn.disabled = false; btn.textContent = "✨ 추천 키워드 한 번에 넣기"; load();
+    }).catch(function(e){
+      btn.disabled = false; btn.textContent = "✨ 추천 키워드 한 번에 넣기";
+      alert("넣기 실패: " + e.message);
+    });
+  }
+
+  function addKeyword(){
+    var el = document.getElementById("newKw");
+    var kw = (el.value || "").trim();
+    if(!kw) return;
+    var btn = document.getElementById("addBtn");
+    btn.disabled = true; btn.textContent = "추가 중…";
+    api("/api/airtable?table=" + encodeURIComponent("검색키워드"), {
+      method: "POST", headers: hdr(),
+      body: JSON.stringify({ records: [{ fields: { "키워드": kw } }] })
+    }).then(function(){
+      el.value = ""; btn.disabled = false; btn.textContent = "추가"; load();
+    }).catch(function(e){
+      btn.disabled = false; btn.textContent = "추가";
+      alert("추가 실패: " + e.message);
+    });
+  }
+
+  function delKeyword(id, kw){
+    if(!confirm("'" + kw + "' 키워드를 목록에서 뺄까요?")) return;
+    api("/api/airtable?table=" + encodeURIComponent("검색키워드") + "&recordId=" + encodeURIComponent(id), {
+      method: "DELETE", headers: hdr()
+    }).then(load).catch(function(e){ alert("삭제 실패: " + e.message); });
+  }
+
+  // 🩺 설정 점검 — 검색량이 안 나올 때 어디서 막혔는지만 확인
+  function check(){
+    var box = document.getElementById("checkOut");
+    var btn = document.getElementById("checkBtn");
+    btn.disabled = true; btn.textContent = "확인 중…";
+    box.classList.remove("hide"); box.innerHTML = "네이버 설정을 확인하는 중…";
+    api("/api/airtable?keywords=1&check=1", { headers: hdr() })
+      .then(function(d){
+        btn.disabled = false; btn.textContent = "🩺 설정 점검";
+        var lines = Object.keys(d).map(function(k){ return k + " — " + d[k]; });
+        box.innerHTML = "<pre>" + esc(lines.join("\n")) + "</pre>";
+      })
+      .catch(function(e){
+        btn.disabled = false; btn.textContent = "🩺 설정 점검";
+        box.innerHTML = "<pre>" + esc("점검 실패\n\n" + e.message) + "</pre>";
+      });
+  }
+})();
+</script>
+</body>
+</html>

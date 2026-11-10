@@ -1,5 +1,71 @@
 const { syncMembers } = require("./member.js");
 const { sendSms, isValidPhone, checkSmsConfig } = require("./_sms.js");
+const { searchVolume, checkNaverConfig } = require("./_naver.js");
+
+// 📈 네이버 검색량 — 에어테이블 '검색키워드' 표를 읽어 네이버에서 월간 검색량을 받아온다.
+//    하루에 한 번만 저장한다 (에어테이블 월 1,000건 한도를 아끼기 위해).
+const KEYWORD_TABLE = "검색키워드";
+async function loadKeywordVolumes({ TOKEN, BASE_ID, onlyKeywords }) {
+  const H = { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" };
+  const base = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(KEYWORD_TABLE)}`;
+  let calls = 0;
+
+  // 1) 관리 중인 키워드 목록 (에어테이블 호출 1번)
+  const r = await fetch(base + "?pageSize=100", { headers: H });
+  calls++;
+  if (!r.ok) {
+    const t = await r.text();
+    throw new Error(`'${KEYWORD_TABLE}' 표를 읽지 못했어요 (${r.status}). 에어테이블에 표가 있는지 확인해주세요. ${t.slice(0, 120)}`);
+  }
+  const recs = ((await r.json()).records) || [];
+  let wanted = recs;
+  if (onlyKeywords && onlyKeywords.length) {
+    const set = new Set(onlyKeywords);
+    wanted = recs.filter((x) => set.has(String((x.fields || {})["키워드"] || "").trim()));
+  }
+  const keywords = wanted.map((x) => String((x.fields || {})["키워드"] || "").trim()).filter(Boolean);
+  if (!keywords.length) return { rows: [], saved: false, calls };
+
+  // 2) 네이버에서 검색량 (에어테이블 호출 아님 — 무료)
+  const vols = await searchVolume(keywords);
+  const byKeyword = new Map(vols.map((v) => [v.keyword, v]));
+
+  const today = new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10); // KST 기준 날짜
+  const rows = [];
+  const toSave = [];
+  for (const rec of wanted) {
+    const f = rec.fields || {};
+    const kw = String(f["키워드"] || "").trim();
+    const v = byKeyword.get(kw);
+    if (!v) continue;
+    const prevSaved = Number(f["최근검색량"]) || 0;
+    const updatedAt = String(f["갱신일"] || "");
+    // 오늘 이미 저장했으면 '지난 값'을 그대로 쓰고, 아니면 어제까지의 값이 비교 대상이 된다.
+    const prev = updatedAt === today ? (Number(f["지난검색량"]) || 0) : prevSaved;
+    rows.push({
+      id: rec.id, 키워드: kw, 메모: f["메모"] || "",
+      pc: v.pc, mobile: v.mobile, total: v.total, found: v.found,
+      prev, diff: prev ? Math.round(((v.total - prev) / prev) * 100) : null,
+    });
+    if (updatedAt !== today) {
+      toSave.push({ id: rec.id, fields: { "최근검색량": v.total, "지난검색량": prevSaved, "갱신일": today } });
+    }
+  }
+
+  // 3) 하루 한 번만 저장 (10개씩 묶어 보냄)
+  let saved = false;
+  for (let i = 0; i < toSave.length; i += 10) {
+    const res = await fetch(base, {
+      method: "PATCH", headers: H,
+      body: JSON.stringify({ records: toSave.slice(i, i + 10) }),
+    });
+    calls++;
+    if (res.ok) saved = true;
+    else console.error("[airtable] 검색키워드 저장 실패:", res.status, (await res.text()).slice(0, 120));
+  }
+  rows.sort((a, b) => b.total - a.total);
+  return { rows, saved, calls };
+}
 
 // 로테이션 접수 → 자동 입금안내 문자 (센터장 확정 문구)
 function 로테이션접수문자() {
@@ -104,6 +170,98 @@ module.exports = async function handler(req, res) {
 
   if (!TOKEN || !BASE_ID) {
     return res.status(500).json({ error: "서버 환경변수가 설정되지 않았습니다" });
+  }
+
+  // 📈 네이버 검색량 — 관리자가 '새로고침'을 눌렀을 때만 돈다.
+  //    ⚠️ Vercel 함수가 12개(한도)로 꽉 차서 새 파일을 못 만든다. 그래서 여기에 얹었다.
+  if (req.query.keywords === "1") {
+    if (!process.env.ADMIN_PASSWORD || req.headers["x-admin-key"] !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: "인증이 필요합니다" });
+    }
+    // 설정 점검 — 검색량이 안 나올 때 '어디서 막혔는지' 보여준다
+    if (req.query.check === "1") {
+      try { return res.status(200).json(await checkNaverConfig()); }
+      catch (e) { return res.status(200).json({ 결론: "❌ 점검 실패: " + e.message }); }
+    }
+    try {
+      const out = await loadKeywordVolumes({ TOKEN, BASE_ID });
+      return res.status(200).json(Object.assign({ ok: true }, out));
+    } catch (e) {
+      return res.status(200).json({ ok: false, error: e.message });
+    }
+  }
+
+  // 🏆 진짜 유저 찾기 — 관리자가 버튼을 눌렀을 때만 돈다.
+  //    로테이션은 '또 온 분'(재미있었다는 뜻), 1:1은 '데려온 분'(믿는다는 뜻)이 진짜 유저다.
+  //    ※ 소개팅은 잘되면 떠나는 서비스라, 재방문이 적은 게 정상일 수 있다.
+  //       그래서 1:1은 재신청이 아니라 '추천'을 본다.
+  if (req.query.people === "1") {
+    if (!process.env.ADMIN_PASSWORD || req.headers["x-admin-key"] !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: "인증이 필요합니다" });
+    }
+    const H = { Authorization: `Bearer ${TOKEN}` };
+    let calls = 0;
+    async function readAll(t) {
+      let recs = [], off;
+      do {
+        const u = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(t)}?pageSize=100${off ? "&offset=" + off : ""}`;
+        const r = await fetch(u, { headers: H });
+        calls++;
+        if (!r.ok) throw new Error(`'${t}' 읽기 실패 (${r.status})`);
+        const d = await r.json();
+        recs = recs.concat(d.records || []);
+        off = d.offset;
+      } while (off);
+      return recs;
+    }
+    const phone = (s) => String(s || "").replace(/[^0-9]/g, "");
+    const name = (s) => String(s || "").trim();
+    try {
+      const [rot, one] = await Promise.all([readAll("로테이션 신청"), readAll("1:1 매칭 신청")]);
+
+      // 🔁 로테이션 단골 — 같은 연락처로 2회 이상 신청한 분
+      //    (이름은 같은 사람이 여럿일 수 있어서 연락처를 기준으로 센다)
+      const byPhone = new Map();
+      for (const r of rot) {
+        const f = r.fields || {};
+        const p = phone(f["연락처"]);
+        if (!p) continue;
+        if (!byPhone.has(p)) byPhone.set(p, { 이름: name(f["이름"]), 연락처: f["연락처"] || "", 회차: [], 성별: f["성별"] || "" });
+        const e = byPhone.get(p);
+        const round = name(f["회차"]) || "회차 미상";
+        if (e.회차.indexOf(round) < 0) e.회차.push(round);   // 같은 회차 중복 신청은 1회로 본다
+        if (!e.이름) e.이름 = name(f["이름"]);
+      }
+      const 로테이션단골 = [...byPhone.values()]
+        .filter((e) => e.회차.length >= 2)
+        .map((e) => ({ 이름: e.이름, 연락처: e.연락처, 성별: e.성별, 횟수: e.회차.length, 회차: e.회차 }))
+        .sort((a, b) => b.횟수 - a.횟수);
+
+      // 🏆 1:1 추천인 — 신청서에 "누가 소개해주셨어요?"로 적힌 이름을 모은다
+      const byRef = new Map();
+      let 지인소개수 = 0, 추천인이름없음 = 0;
+      for (const r of one) {
+        const f = r.fields || {};
+        if (name(f["유입경로"]) !== "지인소개") continue;
+        지인소개수++;
+        const ref = name(f["추천인이름"]);
+        if (!ref) { 추천인이름없음++; continue; }
+        if (!byRef.has(ref)) byRef.set(ref, []);
+        byRef.get(ref).push(name(f["이름"]) || "이름없음");
+      }
+      const 추천인 = [...byRef.entries()]
+        .map(([이름, 데려온사람]) => ({ 이름, 횟수: 데려온사람.length, 데려온사람 }))
+        .sort((a, b) => b.횟수 - a.횟수);
+
+      return res.status(200).json({
+        ok: true, 로테이션단골, 추천인,
+        지인소개수, 추천인이름없음,
+        전체: { 로테이션신청: rot.length, 일대일신청: one.length },
+        이번조회에쓴_에어테이블호출: calls,
+      });
+    } catch (e) {
+      return res.status(200).json({ ok: false, error: e.message, 이번조회에쓴_에어테이블호출: calls });
+    }
   }
 
   // 📊 관리자 상태판 — 지금 잘 돌아가는지 한눈에.
@@ -225,7 +383,7 @@ module.exports = async function handler(req, res) {
       for (const r of waitTargets) {
         const to = String(r.fields["연락처"] || "").replace(/\D/g, "");
         if (to.length < 10) continue;
-        try { await sendSms({ to, text: 대기안내문자(r.fields["이름"] || "") }); waitSent.push(r.fields["이름"] || "이름없음"); }
+        try { await sendSms({ to, text: 대기안내문자(r.fields["이름"] || ""), subject: "썸류센터 매칭 준비 안내" }); waitSent.push(r.fields["이름"] || "이름없음"); }
         catch (e) { console.error("[airtable] 대기안내 문자 실패:", e.message); }
       }
       const waitLine = waitSent.length ? `\n💌 7일째 대기 안내 문자 ${waitSent.length}명 발송 (${waitSent.join(", ")})` : "";
@@ -276,7 +434,26 @@ module.exports = async function handler(req, res) {
         smsLine = `\n📮 문자 — 확인 실패: ${e.message}`;
       }
 
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${memberLine}${smsLine}\n\n오늘도 화이팅이에요! 💪`;
+      // 📈 네이버 검색량 — 브랜드 인지도가 오르는지 숫자로 본다.
+      //    릴스·블로그를 올린 주에 "썸류센터" 검색이 실제로 늘었는지가 여기서 보인다.
+      //    아직 설정 전이거나 '검색키워드' 표가 없으면 브리핑에서 조용히 뺀다
+      //    (없는 기능 때문에 매일 빨간 줄이 뜨면 진짜 문제를 못 본다).
+      let keywordLine = "";
+      if (process.env.NAVER_AD_API_KEY) {
+        try {
+          const kw = await loadKeywordVolumes({ TOKEN, BASE_ID });
+          const brand = kw.rows.find((x) => x.키워드.replace(/\s/g, "") === "썸류센터");
+          const arrow = (d) => (d == null ? "" : d > 0 ? ` (▲${d}%)` : d < 0 ? ` (▼${Math.abs(d)}%)` : " (변화 없음)");
+          if (brand) keywordLine = `\n📈 '썸류센터' 검색 — 월 ${brand.total.toLocaleString()}회${arrow(brand.diff)}`;
+          const top = kw.rows.filter((x) => x.키워드.replace(/\s/g, "") !== "썸류센터").slice(0, 3);
+          if (top.length) keywordLine += `\n🔎 많이 찾는 키워드 — ${top.map((x) => `${x.키워드} ${x.total.toLocaleString()}`).join(" · ")}`;
+        } catch (e) {
+          console.error("[airtable] 검색량 조회 실패:", e.message);
+          keywordLine = `\n📈 검색량 — 확인 실패: ${e.message.slice(0, 80)}`;
+        }
+      }
+
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
@@ -518,8 +695,8 @@ module.exports = async function handler(req, res) {
         const mName = mf["남자"] || mA["이름"] || "상대", wName = mf["여자"] || wA["이름"] || "상대";
         const clean = p => String(p || "").replace(/\D/g, "");
         const msg = (otherName, otherPhone) => `[썸류센터] 💌 썸배달 도착!\n\n센터장이 이어드린 인연, ${otherName}님의 연락처예요 💛\n📞 ${otherPhone}\n\n먼저 가볍게 인사 건네보세요 :)\n\n☕ 첫 만남 장소 고민되면\n센터장 PICK 리스트 👉 ssumcenter.vercel.app/date-spots\n\n좋은 인연 되시길 응원할게요!`;
-        if (clean(mPhone).length >= 10 && wPhone) await sendSms({ to: clean(mPhone), text: msg(wName, wPhone) });
-        if (clean(wPhone).length >= 10 && mPhone) await sendSms({ to: clean(wPhone), text: msg(mName, mPhone) });
+        if (clean(mPhone).length >= 10 && wPhone) await sendSms({ to: clean(mPhone), text: msg(wName, wPhone), subject: "썸류센터 연락처 안내" });
+        if (clean(wPhone).length >= 10 && mPhone) await sendSms({ to: clean(wPhone), text: msg(mName, mPhone), subject: "썸류센터 연락처 안내" });
         await notifySlack(`💌 연락처 전달 문자 자동발송\n${wName} ❤ ${mName}`);
       } catch (e) { /* 문자 실패해도 전달 처리는 성공 */ }
     }
@@ -535,7 +712,7 @@ module.exports = async function handler(req, res) {
           const to = f["연락처"] || "";
           const isMarriage = String(f["유입경로"] || "").indexOf("결혼") >= 0 || String(f["매칭유형"] || "").indexOf("결혼") >= 0;
           if (isValidPhone(to)) {
-            await sendSms({ to, text: isMarriage ? 결혼접수문자(f["이름"] || "") : 일대일접수문자(f["이름"] || "") });
+            await sendSms({ to, text: isMarriage ? 결혼접수문자(f["이름"] || "") : 일대일접수문자(f["이름"] || ""), subject: "썸류센터 신청 접수 완료" });
           }
         }
       } catch (e) {
@@ -623,7 +800,7 @@ module.exports = async function handler(req, res) {
                 const isMarriage = mtype.indexOf("결혼") >= 0 || String(pf["유입경로"] || "").indexOf("결혼") >= 0;
                 const amount = isMarriage ? "100,000원" : (mtype.indexOf("슈퍼") >= 0 ? "39,800원" : "19,900원");
                 if (isValidPhone(to)) {
-                  await sendSms({ to, text: 매칭입금문자(firstName, amount, isMarriage ? "결혼" : "") });
+                  await sendSms({ to, text: 매칭입금문자(firstName, amount, isMarriage ? "결혼" : ""), subject: "썸류센터 입금 안내" });
                 }
               }
               await notifySlack(`🎉 1:1 매칭 성사!\n${mf["여자"] || ""} ♥ ${mf["남자"] || ""}\n→ 먼저 수락한 ${firstName || ""}님께 입금 안내 문자 발송했어요`);

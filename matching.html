@@ -495,6 +495,16 @@
             <option value="그날그사람">그날 그 사람 (쪽지 연결)</option>
           </select>
         </div>
+
+        <!-- 🏆 누가 데려왔는지 — '지인소개'를 고른 경우에만 보여준다.
+             이걸 안 받으면 "지인소개 12명"까지만 알고, 정작 누가 데려왔는지는 영영 모른다.
+             친구를 데려오는 분이 썸류센터의 진짜 유저라서, 그분을 찾으려면 이름이 필요하다. -->
+        <div id="referrer-box" style="display:none;margin-top:14px">
+          <label class="block text-xs font-bold text-[#9a9080] mb-2">누가 소개해주셨어요?</label>
+          <input type="text" name="referralName" placeholder="소개해주신 분 이름 (선택)"
+            class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#E8B050] focus:outline-none transition">
+          <p class="text-[11px] text-[#6b6358] mt-2">소개해주신 분께 감사 인사를 드리려고 해요 💛</p>
+        </div>
       </div>
 
       <div class="fnav">
@@ -869,6 +879,20 @@ function aiFillForm(){
   for(var h=150;h<=195;h++){ var o=document.createElement("option"); o.value=String(h); o.textContent=h+"cm"; sel.appendChild(o); }
 })();
 
+// 🏆 '지인소개'를 고르면 "누가 소개해주셨어요?" 칸을 보여준다
+(function referrerToggle(){
+  const sel = document.querySelector('select[name="inflow"]');
+  const box = document.getElementById("referrer-box");
+  if(!sel || !box) return;
+  const sync = function(){
+    const on = sel.value === "지인소개";
+    box.style.display = on ? "block" : "none";
+    if(!on){ const i = box.querySelector('input[name="referralName"]'); if(i) i.value = ""; }
+  };
+  sel.addEventListener("change", sync);
+  sync();
+})();
+
 // "그날 그 사람" 쪽지 수락 후 넘어온 경우 → 유입경로 자동 선택
 (function fromReconnect(){
   const p = new URLSearchParams(location.search);
@@ -1223,6 +1247,7 @@ async function handleSubmit(e){
       "선호나이대": [...selectedAges].join(", "),
       "성격키워드": [...selectedKeywords].join(", "), "이상형": payload.idealType || "", "자기소개": payload.intro || "",
       "유입경로": payload.inflow || "",
+      "추천인이름": payload.inflow === "지인소개" ? (payload.referralName || "") : "",
       "테스트결과": payload.testResult || "", "매칭유형": payload.matchType || "일반매칭", "매칭상태": "승인",
       "쪽지연결": (new URLSearchParams(location.search).get("note") || ""),
       "신청일시": new Date().toLocaleString("ko-KR")

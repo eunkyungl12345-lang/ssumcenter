@@ -326,8 +326,8 @@ async function handleCreateMatch(text, responseUrl, who) {
 
   const siteUrl = process.env.SITE_URL || "https://ssumcenter.vercel.app";
   const t = Date.now();
-  const urlForMan = `${siteUrl}/response.html?id=${woman.id}&myId=${man.id}&t=${t}`;
-  const urlForWoman = `${siteUrl}/response.html?id=${man.id}&myId=${woman.id}&t=${t}`;
+  const urlForMan = `${siteUrl}/response?id=${woman.id}&myId=${man.id}&t=${t}`;
+  const urlForWoman = `${siteUrl}/response?id=${man.id}&myId=${woman.id}&t=${t}`;
 
   const createBody = {
     records: [{
@@ -365,7 +365,7 @@ async function handleCreateMatch(text, responseUrl, who) {
   for (const [nm, phone, url] of [[mf["이름"], mf["연락처"], urlForMan], [wf["이름"], wf["연락처"], urlForWoman]]) {
     const to = clean(phone);
     if (to.length < 10) { smsFailed.push(`${nm}(번호없음)`); continue; }
-    try { await sendSms({ to, text: introSms(nm, url) }); smsSent.push(nm); }
+    try { await sendSms({ to, text: introSms(nm, url), subject: "썸류센터 매칭 프로필 도착" }); smsSent.push(nm); }
     catch (e) { smsFailed.push(`${nm}(${e.message})`); }
   }
   const smsLine = `\n\n📨 *문자:* ${smsSent.length ? "✅ " + smsSent.join(", ") + " 발송됨" : ""}${smsFailed.length ? "   ⚠️ 실패: " + smsFailed.join(", ") : ""}`;

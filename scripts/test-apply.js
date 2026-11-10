@@ -117,8 +117,13 @@ async function submit(name, table, fields) {
   roundsCtx.window = roundsCtx;
   vm.createContext(roundsCtx);
   vm.runInContext(fs.readFileSync(path.join(ROOT, "rounds.js"), "utf8"), roundsCtx);
-  const rounds = (roundsCtx.ROTATION_ROUNDS || []).filter((r) => ["1008", "1022"].includes(r.key));
-  if (rounds.length !== 2) { console.log("❌ rounds.js 에서 10/8·10/22 회차를 못 찾음"); process.exit(1); }
+  // 열린 회차가 있으면 그 회차로 확인한다.
+  // 열린 회차가 없을 때(로테이션 쉬는 중)는 지난 회차 하나를 빌려서 신청 경로만 확인한다 —
+  // 회차가 없다고 테스트를 건너뛰면 다시 열 때 고장난 걸 모르고 배포하게 된다.
+  const open = roundsCtx.ROTATION_ROUNDS || [];
+  const rounds = open.length ? open : (roundsCtx.ROTATION_PAST_ROUNDS || []).slice(0, 1);
+  if (!rounds.length) { console.log("❌ rounds.js 에 확인할 회차가 하나도 없음"); process.exit(1); }
+  if (!open.length) console.log("ℹ️  열린 로테이션 회차가 없어서 지난 회차로 신청 경로만 확인합니다.\n");
 
   for (const r of rounds) {
     const fields = fieldsFromForm("rotation-form.html", "fields", rotStub(r.label));
@@ -139,8 +144,10 @@ async function submit(name, table, fields) {
   results.push(await submit("1:1 매칭 신청  (matching.html)", "1:1 매칭 신청", oneFields));
 
   console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  // 회차 수에 따라 테스트 건수가 달라지므로 실제 실행한 개수로 센다 (예전엔 3건으로 고정돼 있었음)
+  const total = results.length;
   const okCount = results.filter((s) => s === 200).length;
-  console.log(okCount === 3 ? "✅ 테스트 3건 모두 통과" : "❌ " + (3 - okCount) + "건 실패");
+  console.log(okCount === total ? "✅ 테스트 " + total + "건 모두 통과" : "❌ " + (total - okCount) + "건 실패");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  process.exit(okCount === 3 ? 0 : 1);
+  process.exit(okCount === total ? 0 : 1);
 })();
