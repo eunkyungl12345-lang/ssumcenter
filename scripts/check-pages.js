@@ -14,6 +14,7 @@
  *   4. 관리자 로그인  — 페이지마다 로그인이 따로 놀지 않게
  *   5. 프로젝트 규칙  — Tailwind CDN 사용 금지 (CLAUDE.md)
  *   6. 지난 날짜      — 손님 화면에 남은 지난 날짜 (끝난 서비스로 보이게 함) ⚠️ 경고만
+ *   7. sitemap        — 검색엔진에 내는 목록에 쉬는 프로그램·내부 문서가 섞이지 않게
  */
 
 const fs = require("fs");
@@ -199,6 +200,25 @@ const staleHits = [];
     for (const h of staleHits) notes.push(`   📄 ${h.file} — ${h.dates.join(", ")}`);
     notes.push("   └ 지난 날짜가 보이면 '끝난 서비스'로 오해받아요. 지우거나 '상시 접수 중'으로 바꿔주세요.");
     notes.push("   └ 로테이션 회차는 rounds.js 한 곳에서만 관리합니다.\n");
+  }
+}
+
+// ── 7. 검색엔진에 내는 주소 목록(sitemap.xml) ─────────────────────────
+// 지난 회차 · 쉬는 프로그램 · 내부 문서가 들어 있으면 검색 결과에 그대로 뜬다.
+// (실제로 지난 회차 2개, 쉬는 프로그램 2개, 내부 진행 대본이 들어 있었다)
+{
+  const sm = path.join(ROOT, "sitemap.xml");
+  if (fs.existsSync(sm)) {
+    const locs = [...fs.readFileSync(sm, "utf8").matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    for (const loc of locs) {
+      let p = loc.replace(/^https?:\/\/[^/]+/, "").replace(/\/$/, "") || "/index";
+      const file = path.join(ROOT, p.replace(/^\//, "") + (path.extname(p) ? "" : ".html"));
+      if (!fs.existsSync(file)) { problem("sitemap.xml", `없는 페이지가 들어 있어요: ${loc}`, "sitemap.xml 에서 그 줄을 지워주세요."); continue; }
+      const html = fs.readFileSync(file, "utf8");
+      if (/name="robots"[^>]*noindex/.test(html)) problem("sitemap.xml", `검색 제외(noindex)로 해둔 페이지가 들어 있어요: ${loc}`, "sitemap.xml 에서 지우거나, 그 페이지의 noindex 를 풀어주세요.");
+      else if (/잠시 쉼 안내/.test(html)) problem("sitemap.xml", `쉬고 있는 프로그램 페이지가 들어 있어요: ${loc}`, "다시 열 때까지 sitemap.xml 에서 빼주세요.");
+      else if (/location\.replace\(/.test(html) && html.length < 1500) problem("sitemap.xml", `다른 곳으로 넘기기만 하는 페이지가 들어 있어요: ${loc}`, "실제 페이지 주소로 바꿔주세요.");
+    }
   }
 }
 

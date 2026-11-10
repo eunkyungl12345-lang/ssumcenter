@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 구글·네이버에 "이 페이지들을 보여주세요" 하고 내는 목록.
+     ⚠️ 지금 운영 중인 손님용 페이지만 넣는다.
+        지난 회차 · 쉬는 프로그램 · 내부 문서를 넣으면 검색 결과에 그대로 뜬다.
+        (npm run check 가 잘못 들어간 주소를 잡아준다) -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ssumcenter.vercel.app/</loc>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://ssumcenter.vercel.app/rotation</loc>
+    <loc>https://ssumcenter.vercel.app/oneone</loc>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://ssumcenter.vercel.app/rotation-1008</loc>
-    <priority>0.8</priority>
+    <loc>https://ssumcenter.vercel.app/process</loc>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ssumcenter.vercel.app/rotation-1022</loc>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ssumcenter.vercel.app/oneone</loc>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ssumcenter.vercel.app/fintech</loc>
+    <loc>https://ssumcenter.vercel.app/reviews</loc>
     <priority>0.7</priority>
   </url>
   <url>
@@ -29,11 +25,11 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://ssumcenter.vercel.app/guide</loc>
+    <loc>https://ssumcenter.vercel.app/date-spots</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://ssumcenter.vercel.app/date-spots</loc>
-    <priority>0.7</priority>
+    <loc>https://ssumcenter.vercel.app/invite</loc>
+    <priority>0.4</priority>
   </url>
 </urlset>

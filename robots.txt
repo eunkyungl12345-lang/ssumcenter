@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+
+# 관리자 화면 (처음부터 막아둔 것)
 Disallow: /admin
 Disallow: /rotation-admin
 Disallow: /1on1-admin
@@ -8,5 +10,11 @@ Disallow: /participants
 Disallow: /attendance
 Disallow: /lineup
 Disallow: /dev
+Disallow: /api/
+
+# ⚠️ 내부 문서·데모·지난 회차 페이지는 여기에 적지 않는다.
+#    그 페이지들에는 <meta name="robots" content="noindex"> 를 넣어뒀는데,
+#    여기서 막아버리면 검색엔진이 그 표시를 읽지 못해서
+#    이미 검색에 걸린 페이지가 오히려 계속 남는다.
 
 Sitemap: https://ssumcenter.vercel.app/sitemap.xml
