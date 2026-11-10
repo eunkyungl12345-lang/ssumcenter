@@ -95,13 +95,20 @@
       c.innerHTML='<div class="hello">'+avatar()+'<div><div class="nm">'+esc(user.name||"회원")+'님</div><div class="sub">환영해요 💛</div></div></div>'
         + claimCardHtml(true)
         +'<div class="card"><div class="empty">아직 신청 내역이 없어요.<br>신청하면 여기서 내 정보를 보고 수정할 수 있어요!'
-        +'<div><a href="oneone.html">💘 1:1 신청</a><a href="rotation-0917.html">🎡 커피팅 신청</a></div></div></div>';
+        +'<div><a href="oneone.html">💘 1:1 신청</a><a href="/rotation-apply">🎡 커피팅 신청</a></div></div></div>';
       bindClaim();
       return;
     }
     var html='<div class="hello">'+avatar()+'<div><div class="nm">'+esc(user.name||"회원")+'님</div><div class="sub">내 신청 정보를 보고 수정할 수 있어요 ✏️</div></div></div>';
     list.forEach(function(it,idx){ html+=cardHtml(it.t, it.rec, idx); });
     html+=claimCardHtml(false);
+    // 💌 친구 소개하기 — 내 이름이 담긴 링크를 바로 만들 수 있게
+    var myNm = "";
+    list.forEach(function(it){ var n=(it.rec.fields||{})["이름"]; if(!myNm && n) myNm=n; });
+    html+='<div class="card"><div class="empty" style="text-align:left">'
+      +'<b style="color:#E8B050">💌 좋았다면 친구에게도 이어주세요</b><br>'
+      +'내 이름이 담긴 링크로 신청하면, 소개해주신 걸 센터장이 알 수 있어요.'
+      +'<div><a href="/invite'+(myNm?('?name='+encodeURIComponent(myNm)):'')+'">💌 내 초대 링크 받기</a></div></div></div>';
     c.innerHTML=html;
     bindClaim();
     // 파일 input 이벤트

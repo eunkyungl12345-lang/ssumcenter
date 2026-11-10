@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>친구 소개하기 | 썸류센터</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:title" content="썸류센터 — 친구 소개하고 할인받기">
+<meta property="og:description" content="주선이 취미였던 센터장 3명이 직접 이어드려요.">
+<style>
+  :root{color-scheme:dark;--bg:#0c0a08;--card:#161310;--line:#3a2e1f;--ink:#EDE0CC;--muted:#998870;--faint:#6b6358;--amber:#E8B050}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;min-height:100vh;padding:24px 18px 48px;letter-spacing:-.01em}
+  .wrap{max-width:430px;margin:0 auto}
+  .ky{font-size:12px;font-weight:750;color:var(--amber);letter-spacing:.04em;text-align:center}
+  h1{font-size:25px;font-weight:800;margin:10px 0 8px;line-height:1.35;text-align:center;word-break:keep-all}
+  .sub{font-size:13.5px;color:var(--muted);line-height:1.75;text-align:center;word-break:keep-all}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;margin-top:18px}
+  label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px}
+  input{width:100%;background:#0e0c0a;border:1.5px solid var(--line);border-radius:13px;color:var(--ink);padding:13px 15px;font-size:16px;font-family:inherit;outline:none}
+  input:focus{border-color:var(--amber)}
+  .btn{width:100%;background:var(--amber);color:#171208;border:none;font-weight:800;padding:15px;border-radius:14px;cursor:pointer;font-size:15px;font-family:inherit;margin-top:11px}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn2{width:100%;background:#1e1811;border:1.5px solid var(--line);color:var(--ink);font-weight:700;padding:13px;border-radius:13px;cursor:pointer;font-size:13.5px;font-family:inherit;margin-top:9px}
+  .btn2:hover{border-color:var(--amber)}
+  .linkbox{background:#0e0c0a;border:1.5px dashed var(--line);border-radius:13px;padding:13px 15px;font-size:12.5px;color:var(--amber);word-break:break-all;line-height:1.6;margin-top:4px}
+  .steps{display:flex;flex-direction:column;gap:11px;margin-top:14px}
+  .step{display:flex;gap:12px;align-items:flex-start}
+  .no{flex:0 0 auto;width:23px;height:23px;border-radius:50%;background:rgba(232,176,80,.14);color:var(--amber);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .step p{font-size:13.5px;color:var(--muted);line-height:1.6;word-break:keep-all}
+  .step b{color:var(--ink)}
+  .hide{display:none!important}
+  .home{display:block;text-align:center;margin-top:22px;font-size:12.5px;color:var(--faint);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="ky">💌 친구 소개하기</div>
+  <h1>좋았다면,<br><span style="color:var(--amber)">친구에게도 이어주세요</span></h1>
+  <p class="sub">
+    내 이름이 담긴 링크를 보내주시면<br>
+    소개해주신 걸 저희가 알 수 있어요.<br>
+    <b style="color:var(--amber)">☕ 친구가 승인되면 커피 한 잔 보내드려요</b>
+  </p>
+
+  <!-- 이름 입력 -->
+  <div class="card" id="step1">
+    <label for="nm">신청서에 쓰신 이름</label>
+    <input id="nm" placeholder="예: 김보경" autocomplete="name" maxlength="20">
+    <button class="btn" id="makeBtn">내 초대 링크 만들기</button>
+    <p class="sub" style="font-size:11.5px;color:var(--faint);margin-top:11px;text-align:left">
+      신청서에 쓰신 이름과 <b style="color:var(--muted)">똑같이</b> 적어주세요.<br>달라지면 누가 소개했는지 못 찾아요.
+    </p>
+  </div>
+
+  <!-- 결과 -->
+  <div class="card hide" id="step2">
+    <label>💛 <span id="whose"></span>님의 초대 링크</label>
+    <div class="linkbox" id="link"></div>
+    <button class="btn" id="copyLinkBtn">🔗 링크 복사하기</button>
+    <button class="btn2" id="copyMsgBtn">💬 카톡에 보낼 문구까지 복사</button>
+    <button class="btn2" id="againBtn" style="border-style:dashed">✏️ 이름 다시 입력</button>
+  </div>
+
+  <!-- 안내 -->
+  <div class="card">
+    <label>어떻게 되나요?</label>
+    <div class="steps">
+      <div class="step"><div class="no">1</div><p>위 링크를 친구에게 보내주세요.</p></div>
+      <div class="step"><div class="no">2</div><p>친구가 링크로 신청하면 <b>소개해주신 분에 이름이 자동으로 들어가요.</b> 친구가 따로 적을 필요 없어요.</p></div>
+      <div class="step"><div class="no">3</div><p>친구가 <b>승인되면</b> 소개해주신 분께 <b style="color:var(--amber)">커피 기프티콘</b>을 보내드려요 ☕</p></div>
+    </div>
+  </div>
+
+  <a class="home" href="/">← 썸류센터 홈으로</a>
+</div>
+
+<script src="/copy-helper.js"></script>
+<script>
+(function(){
+  var SITE = location.origin;
+  var nm = document.getElementById("nm");
+  var step1 = document.getElementById("step1"), step2 = document.getElementById("step2");
+  var linkBox = document.getElementById("link");
+  var myLink = "", myName = "";
+
+  function make(){
+    var v = (nm.value || "").trim();
+    if(!v){ nm.focus(); return; }
+    myName = v;
+    // 이름에 공백·특수문자가 있어도 주소에서 깨지지 않게 감싼다
+    myLink = SITE + "/matching?ref=" + encodeURIComponent(v);
+    document.getElementById("whose").textContent = v;
+    // 화면에는 한글 그대로 보여주고(읽기 편하게), 복사는 인코딩된 주소로 한다(어디서나 안 깨지게)
+    linkBox.textContent = SITE + "/matching?ref=" + v;
+    step1.classList.add("hide"); step2.classList.remove("hide");
+    try{ localStorage.setItem("ssumInviteName", v); }catch(e){}
+  }
+  document.getElementById("makeBtn").addEventListener("click", make);
+  nm.addEventListener("keydown", function(e){ if(e.key === "Enter") make(); });
+
+  document.getElementById("againBtn").addEventListener("click", function(){
+    step2.classList.add("hide"); step1.classList.remove("hide"); nm.focus();
+  });
+
+  // copy-helper.js 의 copyText 사용 (클립보드가 막히면 직접 복사할 수 있는 창을 띄워준다)
+  function copy(text, okMsg){
+    if(window.copyText) window.copyText(text, okMsg);
+    else { try{ navigator.clipboard.writeText(text); alert(okMsg); }catch(e){ prompt("아래 내용을 복사해주세요", text); } }
+  }
+  document.getElementById("copyLinkBtn").addEventListener("click", function(){
+    copy(myLink, "링크를 복사했어요! 친구에게 붙여넣기 하세요 💛");
+  });
+  document.getElementById("copyMsgBtn").addEventListener("click", function(){
+    copy(
+      "나 여기서 소개받았는데 괜찮더라 😊\n"
+      + "썸류센터라고, 센터장이 직접 보고 한 명만 소개해주는 데야.\n"
+      + "앱처럼 혼자 넘겨볼 필요 없어서 편했어.\n"
+      + "아래 링크로 신청하면 돼 👇\n\n"
+      + myLink,
+      "카톡에 보낼 문구까지 복사했어요 💬"
+    );
+  });
+
+  // 내 페이지에서 ?name= 으로 넘어왔으면 바로 링크까지 만들어준다
+  var fromUrl = (new URLSearchParams(location.search).get("name") || "").trim().slice(0, 20);
+  if(fromUrl){ nm.value = fromUrl; make(); }
+  else {
+    // 전에 만들었던 이름이 있으면 미리 채워둔다
+    try{ var saved = localStorage.getItem("ssumInviteName"); if(saved){ nm.value = saved; } }catch(e){}
+  }
+})();
+</script>
+</body>
+</html>

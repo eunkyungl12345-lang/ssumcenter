@@ -247,7 +247,16 @@ module.exports = async function handler(req, res) {
         const ref = name(f["추천인이름"]);
         if (!ref) { 추천인이름없음++; continue; }
         if (!byRef.has(ref)) byRef.set(ref, []);
-        byRef.get(ref).push(name(f["이름"]) || "이름없음");
+        // ☕ 커피 기프티콘은 '피추천인이 승인됐을 때' 드린다.
+        //    신청만으로 드리면 이름만 빌려서 커피를 타먹는 일이 생기고,
+        //    성사까지 기다리면 몇 주가 걸려서 추천인이 잊어버린다.
+        const 상태 = name(f["매칭상태"]);
+        byRef.get(ref).push({
+          id: r.id,
+          이름: name(f["이름"]) || "이름없음",
+          승인됨: 상태 !== "" && 상태 !== "대기" && 상태 !== "거절" && 상태 !== "휴지통" && 상태 !== "제외",
+          보상지급: !!name(f["추천보상"]),
+        });
       }
       // 추천인의 연락처 찾기 — 이미 읽어온 신청 기록에서 같은 이름을 찾는다.
       // (감사 인사를 드리려면 번호가 필요한데, 이름만 있으면 다시 뒤져야 한다)
@@ -263,16 +272,22 @@ module.exports = async function handler(req, res) {
         if (!이름별연락처.get(nm).has(key)) 이름별연락처.get(nm).set(key, ph); // 보기 좋은 원본을 쓴다
       }
       const 추천인 = [...byRef.entries()]
-        .map(([이름, 데려온사람]) => {
+        .map(([이름, 목록]) => {
           const phones = [...(이름별연락처.get(이름) || new Map()).values()];
+          // 아직 커피를 못 드린 분 (승인된 피추천인 중 지급 안 한 건)
+          const 보낼것 = 목록.filter((x) => x.승인됨 && !x.보상지급);
           return {
-            이름, 횟수: 데려온사람.length, 데려온사람,
+            이름, 횟수: 목록.length,
+            데려온사람: 목록.map((x) => x.이름),
+            승인된사람: 목록.filter((x) => x.승인됨).map((x) => x.이름),
+            커피보낼건수: 보낼것.length,
+            커피대상: 보낼것.map((x) => ({ id: x.id, 이름: x.이름 })),
             연락처: phones.length === 1 ? phones[0] : "",
             // 같은 이름이 여러 명이면 함부로 한 명으로 정하지 않는다 (엉뚱한 분께 연락 가면 안 됨)
             연락처여러개: phones.length > 1 ? phones : null,
           };
         })
-        .sort((a, b) => b.횟수 - a.횟수);
+        .sort((a, b) => (b.커피보낼건수 - a.커피보낼건수) || (b.횟수 - a.횟수));
 
       return res.status(200).json({
         ok: true, 로테이션단골, 추천인,
@@ -455,6 +470,33 @@ module.exports = async function handler(req, res) {
         smsLine = `\n📮 문자 — 확인 실패: ${e.message}`;
       }
 
+      // 💑 매칭이 실제로 어떻게 끝나는지 — 소개만 하고 끝인지, 진짜 이어지는지.
+      //    이게 안 보이면 "신청 몇 명"만 보다가 정작 서비스가 잘 되고 있는지를 모른다.
+      let matchLine = "";
+      try {
+        const mrecs = await all("매칭");
+        const st = (r) => String((r.fields || {})["상태"] || "소개중");
+        const c = { 소개중: 0, 성사: 0, 결별: 0, 불발: 0 };
+        for (const r of mrecs) { const s = st(r); if (c[s] !== undefined) c[s]++; }
+        const 끝난것 = c.성사 + c.결별 + c.불발;
+        const rate = 끝난것 ? Math.round((c.성사 / 끝난것) * 100) : null;
+        matchLine = `\n💑 매칭 — 소개중 ${c.소개중} · 성사 ${c.성사} · 💔결별 ${c.결별} · 불발 ${c.불발}`
+          + (rate !== null ? ` (성사율 ${rate}%)` : "");
+
+        // 💬 왜 안 됐는지 — 가장 많은 이유를 알려준다. 이게 다음에 고칠 것이다.
+        const why = new Map();
+        for (const r of mrecs) {
+          if (st(r) !== "결별") continue;
+          const m = String((r.fields || {})["결과"] || "").split("—")[1];
+          const w = (m || "").trim();
+          if (w) why.set(w, (why.get(w) || 0) + 1);
+        }
+        const top = [...why.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2);
+        if (top.length) matchLine += `\n💬 안 된 이유 — ${top.map(([w, n]) => `${w} ${n}건`).join(" · ")}`;
+      } catch (e) {
+        console.error("[airtable] 매칭 현황 집계 실패:", e.message);
+      }
+
       // 📈 네이버 검색량 — 브랜드 인지도가 오르는지 숫자로 본다.
       //    릴스·블로그를 올린 주에 "썸류센터" 검색이 실제로 늘었는지가 여기서 보인다.
       //    아직 설정 전이거나 '검색키워드' 표가 없으면 브리핑에서 조용히 뺀다
@@ -474,7 +516,7 @@ module.exports = async function handler(req, res) {
         }
       }
 
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${matchLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
