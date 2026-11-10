@@ -207,6 +207,8 @@
       <button onclick="filterBy('대기')" class="filter-btn bg-[#16140f] border border-[#E8B050]/50 text-[#E8B050] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#E8B050]" data-filter="대기">대기 <span id="cnt-wait" class="ml-0.5">0</span></button>
       <button onclick="filterBy('승인')" class="filter-btn bg-[#16140f] border border-[#1e1c17] text-[#9a9080] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#E8B050]" data-filter="승인">승인</button>
       <button onclick="filterBy('소개중')" class="filter-btn bg-[#16140f] border border-[#1e1c17] text-[#9a9080] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#E8B050]" data-filter="소개중">소개중</button>
+      <!-- 🆕 승인됐는데 아직 한 번도 소개가 안 나간 분 — "지금 매칭이 필요한 사람"만 추려본다 -->
+      <button onclick="filterBy('미소개')" class="filter-btn bg-[#16140f] border border-[#1e1c17] text-[#9a9080] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#E8B050]" data-filter="미소개">🆕 미소개 <span id="cnt-new" class="ml-0.5"></span></button>
       <button onclick="filterBy('거절')" class="filter-btn bg-[#16140f] border border-[#1e1c17] text-[#9a9080] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#E8B050]" data-filter="거절">거절</button>
       <button onclick="filterBy('제외')" class="filter-btn bg-[#16140f] border border-[#1e1c17] text-[#9a9080] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#E8B050]" data-filter="제외">제외 <span id="cnt-excl" class="ml-0.5">0</span></button>
       <button onclick="filterBy('휴지통')" class="filter-btn bg-[#16140f] border border-[#1e1c17] text-[#9a9080] text-xs font-bold px-3 py-1.5 rounded-full transition hover:border-[#E8B050]" data-filter="휴지통">🗑️ 휴지통 <span id="cnt-trash" class="ml-0.5">0</span></button>
@@ -332,6 +334,10 @@
         <i class="fa-solid fa-paper-plane mr-1.5"></i>양쪽 모두에게 문자 보내기
       </button>
       <p class="text-[11px] text-[#555] text-center">문자 또는 링크 복사 후 카카오톡으로 보내주세요</p>
+      <!-- ➡️ 여러 쌍을 이어서 매칭할 때: 선택을 비우고 신청자 목록으로 바로 돌아간다 -->
+      <button onclick="nextMatch()" class="w-full bg-[#16140f] border border-[#E8B050]/50 text-[#E8B050] text-sm font-extrabold px-4 py-3 rounded-xl transition hover:bg-[#E8B050]/10">
+        ➡️ 다음 매칭 하러 가기
+      </button>
     </div>
 
     <!-- 🔎 링크 점검 (보내기 전에 확인) -->
@@ -1234,6 +1240,8 @@ async function loadMatches(){
     if(!pg.ok) return;
     const recs = pg.records;
     cachedMatches = recs;
+    // 소개 횟수가 이제 확정됐으니 '미소개' 인원 수와 목록을 맞춘다
+    try { const cn = document.getElementById("cnt-new"); if(cn) cn.textContent = applicants.filter(isNeverIntroduced).length; if(currentFilter === "미소개") renderList(); } catch(e){}
     if(!recs.length){ box.innerHTML = ""; const s0=document.getElementById("stat-waiting"); if(s0) s0.textContent="0"; return; }
     const order = {"소개중":0,"성사":1,"결별":2,"불발":3};
     recs.sort((a,b)=> (order[(a.fields||{})["상태"]] ?? 9) - (order[(b.fields||{})["상태"]] ?? 9));
@@ -1295,16 +1303,41 @@ async function loadMatches(){
 // '왜' 안 됐는지도 같이 받는다. 결과만 쌓이고 이유가 없으면 다음에 뭘 고칠지 알 수가 없다.
 // 이게 쌓이면 "연락 끊김이 제일 많네 → 소개 직후 안내를 바꾸자" 같은 판단이 가능해진다.
 const 결별사유 = ["연락이 끊김", "만났는데 안 맞음", "한쪽만 적극적", "일정이 안 맞음", "이미 다른 분과 잘 됨"];
+// 사유를 버튼으로 고르는 창. 고른 사유(문자열) / 모름("") / 취소(null) 를 돌려준다.
+// (예전에는 번호를 타이핑하는 입력창이었다 — 폰에서 번호를 치는 것보다 누르는 게 빠르다)
+function askBreakupReason(){
+  return new Promise(function(resolve){
+    const bg = document.createElement("div");
+    bg.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center";
+    const btn = (label, val, extra) => `<button data-v="${val}" style="width:100%;text-align:left;background:#16140f;border:1px solid #2a261e;color:#f5f0ea;font-size:14px;font-weight:700;padding:13px 14px;border-radius:12px;cursor:pointer;margin-top:7px;${extra||""}">${label}</button>`;
+    bg.innerHTML = `<div style="width:100%;max-width:440px;background:#0e0c0a;border:1px solid #2a261e;border-radius:18px 18px 0 0;padding:18px 16px 22px">
+        <div style="font-size:15px;font-weight:800">왜 안 됐는지 아시나요?</div>
+        <div style="font-size:12px;color:#9a9080;margin-top:4px">쌓이면 아침 브리핑에서 가장 많은 이유를 알려드려요.</div>
+        ${결별사유.map(r => btn(r, r)).join("")}
+        <input id="br-custom" placeholder="직접 적기 (선택)" style="width:100%;box-sizing:border-box;background:#16140f;border:1px solid #2a261e;border-radius:12px;color:#fff;font-size:14px;padding:12px 14px;margin-top:7px;outline:none">
+        <div style="display:flex;gap:7px;margin-top:10px">
+          <button data-v="__cancel" style="flex:1;background:none;border:1px solid #2a261e;color:#9a9080;font-size:13px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">취소</button>
+          <button data-v="__custom" style="flex:2;background:#E8B050;border:none;color:#000;font-size:13px;font-weight:800;padding:12px;border-radius:12px;cursor:pointer">모름 / 적은 대로 기록</button>
+        </div>
+      </div>`;
+    const done = (v) => { bg.remove(); resolve(v); };
+    bg.addEventListener("click", function(e){
+      if(e.target === bg) return done(null);
+      const b = e.target.closest("button[data-v]"); if(!b) return;
+      const v = b.getAttribute("data-v");
+      if(v === "__cancel") return done(null);
+      if(v === "__custom") return done((document.getElementById("br-custom").value || "").trim());
+      done(v);
+    });
+    document.body.appendChild(bg);
+  });
+}
+
 async function markBrokenUp(matchId, man, woman){
   if(!confirm((man||"")+"님과 "+(woman||"")+"님이 만나봤는데 잘 안 됐나요?\n\n'결별'로 기록해요. 나중에 두 분이 다시 겹치지 않게 참고돼요.")) return;
-  // 이유는 '선택'이다. 비워둬도 기록은 된다 (귀찮아서 아예 기록을 안 하면 더 손해)
-  const ans = prompt(
-    "왜 안 됐는지 알려주세요 (몰라도 괜찮아요 — 비우고 확인)\n\n"
-    + 결별사유.map((s,i)=>(i+1)+". "+s).join("\n")
-    + "\n\n번호를 쓰거나 직접 적어주세요", "");
-  if(ans === null) return;   // 취소를 누르면 기록도 안 한다
-  const t = String(ans).trim();
-  const why = /^[1-5]$/.test(t) ? 결별사유[Number(t)-1] : t;
+  // 이유는 '선택'이다. 몰라도 기록은 된다 (귀찮아서 아예 기록을 안 하면 더 손해)
+  const why = await askBreakupReason();
+  if(why === null) return;   // 취소를 누르면 기록도 안 한다
   const 결과 = (man||"")+"·"+(woman||"")+" 만난 후 결별" + (why ? " — " + why : "");
   try {
     const r = await fetch("/api/airtable?table=매칭", {
@@ -1440,6 +1473,7 @@ function renderResponses(responses){
 }
 
 function updateStats(){
+  const cn = document.getElementById("cnt-new"); if(cn) cn.textContent = applicants.filter(isNeverIntroduced).length;
   const total = applicants.filter(r => r.fields["매칭상태"] !== "휴지통").length;
   const waiting = applicants.filter(r => (r.fields["매칭상태"] || "대기") === "대기").length;
   const approved = applicants.filter(r => r.fields["매칭상태"] === "승인").length;
@@ -1542,6 +1576,47 @@ function coffeeMatchesFor(rec){
   });
 }
 
+// 🔢 이 사람에게 소개가 몇 번 나갔는지 ('매칭' 표에 이름이 올라간 횟수)
+function introCount(id){
+  if(!cachedMatches || !cachedMatches.length) return 0;
+  let n = 0;
+  for(const r of cachedMatches){ const f = r.fields || {}; if(f["남자ID"] === id || f["여자ID"] === id) n++; }
+  return n;
+}
+// 🆕 승인은 됐는데 아직 한 번도 소개가 안 나간 사람
+function isNeverIntroduced(r){
+  return (r.fields["매칭상태"] || "대기") === "승인" && introCount(r.id) === 0;
+}
+
+// ✨ 한 사람(p)을 기준으로 상대가 얼마나 어울리는지 점수를 매기는 함수를 만든다.
+//    '찰떡 추천 TOP 3' 와 '어울리는 순 정렬' 이 같은 기준을 쓴다.
+function fitScorer(p){
+  const pf = p.fields || {};
+  const myBirth = parseInt(pf["출생연도"]) || 1995;
+  const myLoc = (pf["사는곳"] || "").toLowerCase();
+  const coffeeBuddies = coffeeType(pf["테스트결과"]) ? coffeeMatchesFor(p) : [];
+  return function(c){
+    const cf = c.fields || {};
+    let score = 70;
+    const diff = Math.abs(myBirth - (parseInt(cf["출생연도"]) || 1995));
+    if(diff <= 2) score += 15;
+    else if(diff <= 4) score += 10;
+    else if(diff <= 6) score += 5;
+    const cLoc = (cf["사는곳"] || "").toLowerCase();
+    if(myLoc && cLoc && (myLoc.includes(cLoc) || cLoc.includes(myLoc) || (myLoc.includes("서울") && cLoc.includes("서울")) || (myLoc.includes("경기") && cLoc.includes("경기")))){
+      score += 10;
+    }
+    if(coffeeBuddies.includes(c.id)){ score += 10; }
+    if(cf["매칭유형"] === "슈퍼매칭"){ score += 5; }
+    return Math.min(score, 98);
+  };
+}
+
+// 📱 폰에서 한쪽 성별만 보기 ("both" | "남성" | "여성")
+let boardSide = "both";
+let boardSideManual = false;   // 센터장이 직접 고른 경우엔 자동 전환보다 그 선택을 따른다 (다음에 사람을 고르면 풀림)
+function setBoardSide(v){ boardSide = v; boardSideManual = true; renderList(); }
+
 function renderList(){
   const list = document.getElementById("applicant-list");
   list.classList.toggle("vm-compact", viewMode === "compact");
@@ -1554,6 +1629,8 @@ function renderList(){
     filtered = applicants.filter(r => r.fields["성별"] === currentFilter);
   } else if(currentFilter === "결혼매칭"){
     filtered = applicants.filter(r => r.fields["유입경로"] === "결혼매칭");
+  } else if(currentFilter === "미소개"){
+    filtered = applicants.filter(isNeverIntroduced);
   }
 
   // 🔍 이름·연락처 검색 (하이픈 무관, 부분 일치, 직업/지역도 검색 지원)
@@ -1707,13 +1784,50 @@ function renderList(){
   const males = shown.filter(r => r.fields["성별"] === "남성");
   const females = shown.filter(r => r.fields["성별"] === "여성");
   const etc = shown.filter(r => r.fields["성별"] !== "남성" && r.fields["성별"] !== "여성");
+  // ✨ 한 명만 골라둔 상태면, 반대쪽 목록을 그 사람과 어울리는 순으로 올린다.
+  //    (추천 TOP 3 는 세 명만 보여줘서, 네 번째부터는 여전히 스크롤하며 눈으로 대조해야 했다)
+  const pick = shareMode ? null : ((selected[0] && !selected[1]) ? selected[0] : ((selected[1] && !selected[0]) ? selected[1] : null));
+  const pickGender = pick ? (pick.fields["성별"] || "") : "";
+  const fitInfo = {};   // id → { score, why } (어울리는 순으로 정렬된 쪽에만 붙는다)
+  const sortByFit = (arr) => {
+    const scoreOf = fitScorer(pick);
+    arr.forEach(r => {
+      const st = r.fields["매칭상태"] || "대기";
+      if(hasPastMatchHistory(pick.id, r.id)) fitInfo[r.id] = { score: -2, why: "🚫 이미 소개했던 사이" };
+      else if(st === "소개중") fitInfo[r.id] = { score: -1, why: "⏳ 다른 분과 소개 중" };
+      else if(st !== "승인") fitInfo[r.id] = { score: 0, why: "· " + st };
+      else fitInfo[r.id] = { score: scoreOf(r), why: "" };
+    });
+    return arr.slice().sort((a,b) => fitInfo[b.id].score - fitInfo[a.id].score);
+  };
+  let malesV = males, femalesV = females, sortedSide = "";
+  if(pick && pickGender === "남성"){ femalesV = sortByFit(females); sortedSide = "여성"; }
+  else if(pick && pickGender === "여성"){ malesV = sortByFit(males); sortedSide = "남성"; }
+  const fitLabel = (r) => {
+    const fi = fitInfo[r.id]; if(!fi) return "";
+    return fi.why
+      ? `<div style="font-size:10.5px;color:#8a8070;padding:0 4px 3px">${fi.why}</div>`
+      : `<div style="font-size:10.5px;font-weight:800;color:#E8B050;padding:0 4px 3px">✨ 어울림 ${fi.score}점</div>`;
+  };
+  // 📱 좁은 화면에선 남/여가 위아래로 쌓여 스크롤이 두 배가 된다 → 한쪽만 볼 수 있게.
+  //    한 명을 고르면 자동으로 반대쪽을 보여준다 (남성을 누르면 여성 목록이 바로 보이게).
+  const narrow = window.innerWidth < 700;
+  const side = !narrow ? "both" : (boardSideManual ? boardSide : (sortedSide || boardSide));
+  const sideBtn = (v, label) =>
+    `<button onclick="setBoardSide('${v}')" style="flex:1;font-size:12px;font-weight:800;padding:8px;border-radius:10px;cursor:pointer;border:1px solid ${side===v?"#E8B050":"#1e1c17"};background:${side===v?"#E8B050":"#16140f"};color:${side===v?"#000":"#9a9080"}">${label}</button>`;
+  const sideBar = narrow
+    ? `<div style="display:flex;gap:6px;margin-bottom:8px">${sideBtn("both","둘 다")}${sideBtn("남성","👦 남성 "+males.length)}${sideBtn("여성","👧 여성 "+females.length)}</div>`
+      + (sortedSide ? `<div style="font-size:11px;color:#E8B050;margin:-2px 2px 8px">✨ ${pick.fields["이름"]||""}님과 어울리는 순으로 ${sortedSide} 목록을 보여드려요</div>` : "")
+    : "";
   const column = (emoji, title, arr, color) =>
     `<div style="flex:1 1 320px">
        <div style="position:sticky;top:0;z-index:2;font-weight:900;font-size:13px;color:${color};background:#0e0c0a;padding:8px 11px;border-radius:10px;margin-bottom:8px;border:1px solid #1e1c17">${emoji} ${title} <span style="color:#8a8070;font-weight:600;font-size:12px">${arr.length}명</span></div>
-       ${arr.length ? arr.map(cardHtml).join("") : '<div style="color:#555;font-size:12px;text-align:center;padding:24px 0">없음</div>'}
+       ${arr.length ? arr.map(r => fitLabel(r) + cardHtml(r)).join("") : '<div style="color:#555;font-size:12px;text-align:center;padding:24px 0">없음</div>'}
      </div>`;
-  list.innerHTML =
-    `<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start">${column("👦","남성",males,"#60a5fa")}${column("👧","여성",females,"#f472b6")}</div>`
+  const colM = (side === "여성") ? "" : column("👦", "남성" + (sortedSide === "남성" ? " · 어울리는 순" : ""), malesV, "#60a5fa");
+  const colF = (side === "남성") ? "" : column("👧", "여성" + (sortedSide === "여성" ? " · 어울리는 순" : ""), femalesV, "#f472b6");
+  list.innerHTML = sideBar +
+    `<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start">${colM}${colF}</div>`
     + (etc.length ? `<div style="margin-top:12px">${etc.map(cardHtml).join("")}</div>` : "");
   updateShareBar();
 }
@@ -1876,6 +1990,7 @@ function toggleSelect(id){
   else if(!selected[0]){ selected[0] = record; }
   else if(!selected[1]){ selected[1] = record; }
   else { selected[0] = record; selected[1] = null; }
+  boardSideManual = false;   // 사람을 새로 골랐으니 반대쪽 목록 자동 전환을 다시 켠다
 
   // UI 업데이트
   document.getElementById("pick-1").innerHTML = pickHTML(selected[0]);
@@ -1890,8 +2005,16 @@ function toggleSelect(id){
   updateSmartRecommendations();
 }
 
+// ➡️ 방금 매칭을 마치고 다음 쌍으로 — 선택을 비우고 신청자 목록(미소개 우선)으로 돌아간다
+function nextMatch(){
+  clearSelection();
+  if(typeof showMatchTab === "function") showMatchTab("pool");
+  toast("다음 매칭을 골라주세요 💛");
+}
+
 function clearSelection(){
   selected = [null, null];
+  boardSideManual = false;
   const p1 = document.getElementById("pick-1"); if(p1) p1.innerHTML = '<span class="text-[#555]">목록에서 선택</span>';
   const p2 = document.getElementById("pick-2"); if(p2) p2.innerHTML = '<span class="text-[#555]">목록에서 선택</span>';
   const mb = document.getElementById("match-btn"); if(mb) mb.disabled = true;
@@ -1924,30 +2047,8 @@ function updateSmartRecommendations(){
   });
   if(!candidates.length){ box.innerHTML = ""; box.classList.add("hidden"); return; }
 
-  const myBirth = parseInt(pf["출생연도"]) || 1995;
-  const myLoc = (pf["사는곳"] || "").toLowerCase();
-  const myCoffee = coffeeType(pf["테스트결과"]);
-  const coffeeBuddies = myCoffee ? coffeeMatchesFor(p) : [];
-
-  const scored = candidates.map(c => {
-    const cf = c.fields || {};
-    let score = 70;
-    const cBirth = parseInt(cf["출생연도"]) || 1995;
-    const diff = Math.abs(myBirth - cBirth);
-    if(diff <= 2) score += 15;
-    else if(diff <= 4) score += 10;
-    else if(diff <= 6) score += 5;
-
-    const cLoc = (cf["사는곳"] || "").toLowerCase();
-    if(myLoc && cLoc && (myLoc.includes(cLoc) || cLoc.includes(myLoc) || (myLoc.includes("서울") && cLoc.includes("서울")) || (myLoc.includes("경기") && cLoc.includes("경기")))){
-      score += 10;
-    }
-    if(coffeeBuddies.includes(c.id)){ score += 10; }
-    if(cf["매칭유형"] === "슈퍼매칭"){ score += 5; }
-
-    score = Math.min(score, 98);
-    return { record: c, score };
-  });
+  const scoreOf = fitScorer(p);   // 목록의 '어울리는 순' 정렬과 같은 기준
+  const scored = candidates.map(c => ({ record: c, score: scoreOf(c) }));
 
   scored.sort((a,b) => b.score - a.score);
   const top3 = scored.slice(0, 3);
@@ -1987,6 +2088,30 @@ function toggleMatchTool(force){
 }
 
 // 매칭 테이블에 커플 한 줄 기록 (관계형)
+// ⏰ 48시간은 '링크를 만든 순간'이 아니라 '손님에게 보낸 순간'부터 센다.
+//    예전에는 만든 순간부터 흘러서, 밤에 매칭을 만들어두고 아침에 문자를 보내면
+//    손님은 그만큼 시간을 잃었다 (늦게 보낼수록 억울하게 만료된다).
+//    문자를 보내거나 링크를 복사할 때 링크 안의 시각(t)을 '지금'으로 바꾸고,
+//    서버가 기한을 판정할 때 보는 '매칭' 표의 링크도 같이 고친다.
+let lastMatchRec = null;   // { id, manId, womanId } — 방금 만든 매칭 기록
+function restartLinkClock(idx){
+  const input = document.getElementById("url-for-" + (idx + 1));
+  const person = selected[idx];
+  if(!input || !input.value) return input ? input.value : "";
+  const fresh = input.value.replace(/([?&]t=)\d+/, "$1" + Date.now());
+  input.value = fresh;
+  // 방금 만든 매칭의 당사자일 때만 저장된 링크를 고친다 (다른 매칭을 건드리지 않게)
+  if(person && lastMatchRec && (person.id === lastMatchRec.manId || person.id === lastMatchRec.womanId)){
+    const field = person.id === lastMatchRec.manId ? "남자링크" : "여자링크";
+    const upd = {}; upd[field] = fresh;
+    fetch("/api/airtable?table=매칭", {
+      method: "PATCH", headers: apiHeaders(),
+      body: JSON.stringify({ records: [{ id: lastMatchRec.id, fields: upd }] })
+    }).then(r => { if(!r.ok) console.error("링크 시각 저장 실패", r.status); }).catch(e => console.error(e));
+  }
+  return fresh;
+}
+
 // ⚠️ 이 기록이 저장돼야 손님이 링크를 열 수 있다.
 //    서버가 '매칭' 표에 두 사람의 기록이 있을 때만 프로필을 보여주기 때문이다.
 //    그래서 저장에 실패하면 조용히 넘어가지 않고 바로 알린다.
@@ -2011,7 +2136,14 @@ async function saveMatchRecord(p0, p1){
       const d = await res.json().catch(()=>({}));
       throw new Error((d.error && (d.error.message || d.error)) || ("오류 " + res.status));
     }
+    // 방금 만든 매칭 기록을 기억해 둔다 — 링크를 보낼 때 48시간 시계를 다시 맞추는 데 쓴다
+    try {
+      const d = await res.json();
+      const rid = d && d.records && d.records[0] && d.records[0].id;
+      lastMatchRec = rid ? { id: rid, manId: man.id, womanId: woman.id } : null;
+    } catch(_){ lastMatchRec = null; }
   } catch(e){
+    lastMatchRec = null;
     console.error(e);
     alert("⚠️ 매칭 기록을 저장하지 못했어요.\n\n이 상태로 링크를 보내면 손님 화면에 '유효하지 않은 링크'가 떠요.\n링크를 보내지 말고, 잠시 뒤 [매칭하기]를 다시 눌러주세요.\n\n[원인] " + e.message);
   }
@@ -2049,7 +2181,8 @@ async function generateMatch(){
   const morig = mbtn ? mbtn.innerHTML : "";
   if(mbtn){ mbtn.disabled = true; mbtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>매칭 만드는 중...'; }
 
-  const _t = Date.now(); // 48시간 만료 기준 시각
+  lastMatchRec = null;   // 이전 매칭의 기록을 잘못 고치지 않도록 비워둔다 (새 기록은 저장이 끝나면 채워진다)
+  const _t = Date.now(); // 링크를 만든 시각. 실제 48시간은 문자·카톡으로 보내는 순간부터 다시 센다 (restartLinkClock)
   // A에게 보낼 링크 (B의 프로필, myId=A의 ID)
   const urlForA = `${SITE_URL}/response?id=${selected[1].id}&myId=${selected[0].id}&t=${_t}`;
   // B에게 보낼 링크 (A의 프로필, myId=B의 ID)
@@ -2317,12 +2450,11 @@ async function sendMatchSms(idx, skipConfirm){
   if(!record) return false;
   const name = record.fields["이름"] || "";
   const phone = record.fields["연락처"];
-  const urlInput = document.getElementById("url-for-" + (idx + 1));
-  const url = urlInput.value;
   const btn = document.getElementById("sms-btn-" + (idx + 1));
 
   if(!phone){ alert(`${name}님은 연락처가 없어 문자를 못 보내요. 링크를 복사해 카톡으로 보내주세요.`); return false; }
   if(!skipConfirm && !confirm(`${name}님에게 매칭 프로필 링크를 문자로 보내시겠습니까?`)) return false;
+  const url = restartLinkClock(idx);   // ⏰ 48시간을 지금(보내는 순간)부터 세도록 맞춘다
 
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>전송 중...';
   btn.disabled = true;
@@ -2383,6 +2515,9 @@ async function sendMatchSmsAll(){
 }
 
 function copyUrl(inputId){
+  // 매칭 링크를 복사하는 건 곧 손님에게 보낸다는 뜻이므로, 48시간 시계를 지금으로 맞춘다
+  if(inputId === "url-for-1") restartLinkClock(0);
+  else if(inputId === "url-for-2") restartLinkClock(1);
   const input = document.getElementById(inputId);
   input.select();
   navigator.clipboard.writeText(input.value);
@@ -2390,6 +2525,7 @@ function copyUrl(inputId){
 }
 // 매칭 결과 화면에서 카톡용 메시지(인사말+링크+안내) 복사. idx 0=url-for-1, 1=url-for-2
 function copyKakao(idx){
+  if(document.getElementById(idx===0 ? "url-for-1" : "url-for-2").value) restartLinkClock(idx);   // ⏰ 카톡으로 보낼 때도 지금부터 48시간
   const url = document.getElementById(idx===0 ? "url-for-1" : "url-for-2").value;
   const name = document.getElementById(idx===0 ? "result-name-1" : "result-name-2").textContent;
   if(!url){ toast("먼저 매칭을 만들어주세요"); return; }
