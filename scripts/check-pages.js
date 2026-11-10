@@ -44,7 +44,7 @@ const files = htmlFiles(ROOT).sort();
 const ADMIN_PAGES = new Set([
   "admin.html", "rotation-admin.html", "1on1-admin.html", "1on1.html",
   "vote-admin.html", "lineup.html", "attendance.html", "participants.html",
-  "keywords.html",
+  "keywords.html", "vip.html",
 ]);
 
 // onclick 안에서 함수처럼 보이지만 자바스크립트 기본 기능이라 정의가 필요 없는 것들

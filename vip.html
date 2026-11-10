@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진짜 유저 찾기 | 썸류센터</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+  :root{color-scheme:dark;--bg:#0e0c0a;--card:#16140f;--line:#1e1c17;--ink:#f5f0ea;--muted:#9a9080;--faint:#6b6358;--amber:#E8B050}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;padding:18px;letter-spacing:-.01em}
+  .wrap{max-width:720px;margin:0 auto}
+  .hide{display:none!important}
+  h1{font-size:20px;font-weight:800}
+  h2{font-size:16px;font-weight:800;display:flex;align-items:center;gap:7px}
+  .sub{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.7}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+  input,button{font-family:inherit;font-size:14px}
+  .txt{width:100%;background:#0e0c0a;border:1px solid var(--line);border-radius:11px;color:var(--ink);padding:11px 13px;outline:none}
+  .txt:focus{border-color:var(--amber)}
+  .btn{background:var(--amber);color:#000;border:none;font-weight:800;padding:11px 18px;border-radius:11px;cursor:pointer;white-space:nowrap}
+  .btn-ghost{background:#16140f;border:1px solid var(--line);color:var(--muted);font-weight:700;padding:9px 14px;border-radius:11px;cursor:pointer;font-size:12.5px}
+  .row{display:flex;gap:8px}
+  .person{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .person:last-child{border-bottom:none}
+  .rank{width:26px;text-align:center;font-weight:800;color:var(--faint);font-size:13px;flex:0 0 auto}
+  .who{flex:1;min-width:0}
+  .nm{font-weight:800;font-size:15px;word-break:keep-all}
+  .dt{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.55;word-break:keep-all}
+  .cnt{font-size:11px;font-weight:800;padding:5px 11px;border-radius:20px;background:rgba(232,176,80,.13);color:var(--amber);white-space:nowrap;flex:0 0 auto}
+  .copy{background:none;border:1px solid var(--line);color:var(--faint);border-radius:9px;padding:6px 9px;cursor:pointer;font-size:11px;flex:0 0 auto}
+  .copy:hover{border-color:var(--amber);color:var(--amber)}
+  .msg{font-size:13px;color:var(--muted);padding:20px 0;text-align:center;line-height:1.8}
+  .err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#ffb4b4;border-radius:11px;padding:12px 14px;font-size:12.5px;line-height:1.7;white-space:pre-wrap}
+  .note{background:rgba(232,176,80,.07);border:1px solid rgba(232,176,80,.22);border-radius:11px;padding:12px 14px;font-size:12.5px;color:var(--muted);line-height:1.75;margin-top:11px}
+  a.back{color:var(--muted);font-size:12.5px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 로그인 -->
+  <div id="login" class="card">
+    <h1>🔒 진짜 유저 찾기</h1>
+    <p class="sub">관리자 비밀번호를 입력해주세요.</p>
+    <div class="row" style="margin-top:14px">
+      <input id="pw" class="txt" type="password" placeholder="비밀번호" autocomplete="current-password">
+      <button id="loginBtn" class="btn">열기</button>
+    </div>
+    <p id="login-msg" class="sub" style="color:#ffb4b4"></p>
+  </div>
+
+  <!-- 본문 -->
+  <div id="console" class="hide">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+      <div>
+        <h1>🏆 진짜 유저 찾기</h1>
+        <p class="sub">
+          <b style="color:var(--ink)">로테이션은 또 오신 분</b>, <b style="color:var(--ink)">1:1은 친구를 데려오신 분</b>이<br>
+          썸류센터를 진짜 좋아하는 분이에요. 이분들께 직접 물어보세요.
+        </p>
+      </div>
+      <a class="back" href="/admin">← 어드민</a>
+    </div>
+
+    <div class="card">
+      <button id="refreshBtn" class="btn-ghost">↻ 다시 찾기</button>
+      <span id="meta" class="sub" style="margin-left:10px"></span>
+    </div>
+
+    <div id="out"><p class="msg">불러오는 중…</p></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var KEY = "admin_key";
+  // 로그인 정보는 localStorage에 저장 (다른 관리자 페이지와 동일 — 한 번 로그인하면 전부 열림)
+  function key(){ return localStorage.getItem(KEY) || ""; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  // 응답 본문까지 읽어서 실패 이유를 화면에 보여준다
+  // (조용히 실패하면 "아무도 없어요"만 떠서 진짜 0명인지 오류인지 알 수 없다)
+  function api(url){
+    return fetch(url, { headers: {"Content-Type":"application/json","x-admin-key":key()} }).then(function(r){
+      return r.text().then(function(t){
+        var d=null; try{ d=JSON.parse(t); }catch(e){}
+        if(!r.ok){
+          var why=(d&&d.error&&(d.error.message||d.error))||String(t||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim().slice(0,200)||"응답 본문 없음";
+          var vh=r.headers.get("x-vercel-error"); if(vh) why+=" · x-vercel-error="+vh;
+          throw new Error(r.status+" · "+why);
+        }
+        if(d===null) throw new Error(r.status+" · 서버가 보낸 응답을 읽을 수 없어요");
+        return d;
+      });
+    });
+  }
+
+  function showConsole(){
+    document.getElementById("login").classList.add("hide");
+    document.getElementById("console").classList.remove("hide");
+  }
+  if(key()){ showConsole(); load(); }
+
+  document.getElementById("loginBtn").addEventListener("click", doLogin);
+  document.getElementById("pw").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
+  function doLogin(){
+    var pw = document.getElementById("pw").value; if(!pw) return;
+    fetch("/api/admin-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d.ok){ localStorage.setItem(KEY, pw); showConsole(); load(); }
+        else { document.getElementById("login-msg").textContent = "비밀번호가 틀렸어요."; }
+      }).catch(function(){ document.getElementById("login-msg").textContent = "오류가 났어요. 잠시 후 다시 해주세요."; });
+  }
+  document.getElementById("refreshBtn").addEventListener("click", load);
+
+  function load(){
+    var out = document.getElementById("out"), btn = document.getElementById("refreshBtn");
+    btn.disabled = true; out.innerHTML = '<p class="msg">신청 기록을 훑어보는 중…</p>';
+    api("/api/airtable?people=1").then(function(d){
+      btn.disabled = false;
+      if(!d.ok){ out.innerHTML = '<div class="card"><div class="err">못 불러왔어요.\n\n' + esc(d.error||"") + '</div></div>'; return; }
+      render(d);
+    }).catch(function(e){
+      btn.disabled = false;
+      out.innerHTML = '<div class="card"><div class="err">불러오기 실패\n\n' + esc(e.message) + '</div></div>';
+    });
+  }
+
+  function people(list, rankIcon, line, phoneOf){
+    return list.map(function(p, i){
+      var ph = phoneOf ? phoneOf(p) : "";
+      return '<div class="person">'
+        + '<div class="rank">' + (i < 3 ? rankIcon[i] : (i+1)) + '</div>'
+        + '<div class="who"><div class="nm">' + esc(p.이름 || "이름없음") + '</div>'
+        + '<div class="dt">' + esc(line(p)) + '</div></div>'
+        + '<div class="cnt">' + p.횟수 + '회</div>'
+        + (ph ? '<button class="copy" data-ph="' + esc(ph) + '">연락처</button>' : '')
+        + '</div>';
+    }).join("");
+  }
+
+  function render(d){
+    var out = document.getElementById("out");
+    var medal = ["🥇","🥈","🥉"];
+    var html = "";
+
+    // 🔁 로테이션 단골
+    html += '<div class="card"><h2>🔁 로테이션에 또 오신 분</h2>'
+      + '<p class="sub">두 번 이상 참여하셨어요. 재미있었다는 뜻이에요.</p>';
+    if(d.로테이션단골 && d.로테이션단골.length){
+      html += '<div style="margin-top:10px">'
+        + people(d.로테이션단골, medal, function(p){ return p.회차.join(" · "); }, function(p){ return p.연락처; })
+        + '</div>';
+    } else {
+      html += '<p class="msg">아직 두 번 이상 오신 분이 없어요.<br><span style="color:var(--faint)">로테이션 신청 ' + (d.전체 ? d.전체.로테이션신청 : 0) + '건 중</span></p>';
+    }
+    html += '</div>';
+
+    // 🏆 1:1 추천인
+    html += '<div class="card"><h2>🏆 1:1에 친구를 데려오신 분</h2>'
+      + '<p class="sub">신청서에 "이분이 소개해줬다"고 적힌 이름이에요.</p>';
+    if(d.추천인 && d.추천인.length){
+      html += '<div style="margin-top:10px">'
+        + people(d.추천인, medal, function(p){ return "데려온 분: " + p.데려온사람.join(", "); }, null)
+        + '</div>';
+    } else {
+      html += '<p class="msg">아직 기록된 추천인이 없어요.</p>';
+    }
+
+    // 왜 비어 있는지 솔직하게 알려준다 — 빈 화면만 보면 '고장난 건가?' 싶다
+    if(d.지인소개수 > 0 && d.추천인이름없음 > 0){
+      html += '<div class="note">💡 지인소개로 오신 분이 <b style="color:var(--amber)">' + d.지인소개수 + '명</b> 있는데, '
+        + '그중 <b style="color:var(--amber)">' + d.추천인이름없음 + '명</b>은 누가 소개했는지 기록이 없어요.<br>'
+        + '예전 신청서에는 그 칸이 없었거든요. <b style="color:var(--ink)">이제는 신청서에서 물어보니까 앞으로는 쌓입니다.</b></div>';
+    } else if(!d.지인소개수){
+      html += '<div class="note">💡 아직 "지인소개"로 신청한 분이 없어요. 신청서에서 지인소개를 고르면 "누가 소개해주셨어요?"를 물어봅니다.</div>';
+    }
+    html += '</div>';
+
+    // 다음에 뭘 해야 하는지
+    var 총 = (d.로테이션단골 ? d.로테이션단골.length : 0) + (d.추천인 ? d.추천인.length : 0);
+    if(총){
+      html += '<div class="card"><h2>📞 이제 뭘 하면 되나요?</h2>'
+        + '<p class="sub">위 <b style="color:var(--amber)">' + 총 + '명</b>께 직접 연락해서 물어보세요. 설문 말고 그냥 대화로요.<br><br>'
+        + '· "썸류센터 어떤 점이 좋으셨어요?"<br>'
+        + '· "혹시 불편했던 점은요?"<br>'
+        + '· "친구한테 소개한다면 뭐라고 설명하실 것 같아요?"<br><br>'
+        + '세 번째 질문의 답이 <b style="color:var(--ink)">홈 화면에 써야 할 문구</b>예요.</p></div>';
+    }
+
+    html += '<p class="sub" style="text-align:center;margin-top:14px;color:var(--faint)">'
+      + '로테이션 신청 ' + (d.전체 ? d.전체.로테이션신청 : 0) + '건 · 1:1 신청 ' + (d.전체 ? d.전체.일대일신청 : 0) + '건을 훑었어요</p>';
+
+    out.innerHTML = html;
+    document.getElementById("meta").textContent = "에어테이블 호출 " + (d.이번조회에쓴_에어테이블호출 || 0) + "건 사용";
+
+    Array.prototype.forEach.call(out.querySelectorAll(".copy"), function(b){
+      b.addEventListener("click", function(){
+        var ph = b.getAttribute("data-ph");
+        var done = function(){ b.textContent = "복사됨"; setTimeout(function(){ b.textContent = "연락처"; }, 1500); };
+        if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ph).then(done, done);
+        else { var t=document.createElement("textarea"); t.value=ph; document.body.appendChild(t); t.select(); try{document.execCommand("copy");}catch(e){} document.body.removeChild(t); done(); }
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

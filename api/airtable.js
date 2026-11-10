@@ -191,6 +191,79 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // 🏆 진짜 유저 찾기 — 관리자가 버튼을 눌렀을 때만 돈다.
+  //    로테이션은 '또 온 분'(재미있었다는 뜻), 1:1은 '데려온 분'(믿는다는 뜻)이 진짜 유저다.
+  //    ※ 소개팅은 잘되면 떠나는 서비스라, 재방문이 적은 게 정상일 수 있다.
+  //       그래서 1:1은 재신청이 아니라 '추천'을 본다.
+  if (req.query.people === "1") {
+    if (!process.env.ADMIN_PASSWORD || req.headers["x-admin-key"] !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: "인증이 필요합니다" });
+    }
+    const H = { Authorization: `Bearer ${TOKEN}` };
+    let calls = 0;
+    async function readAll(t) {
+      let recs = [], off;
+      do {
+        const u = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(t)}?pageSize=100${off ? "&offset=" + off : ""}`;
+        const r = await fetch(u, { headers: H });
+        calls++;
+        if (!r.ok) throw new Error(`'${t}' 읽기 실패 (${r.status})`);
+        const d = await r.json();
+        recs = recs.concat(d.records || []);
+        off = d.offset;
+      } while (off);
+      return recs;
+    }
+    const phone = (s) => String(s || "").replace(/[^0-9]/g, "");
+    const name = (s) => String(s || "").trim();
+    try {
+      const [rot, one] = await Promise.all([readAll("로테이션 신청"), readAll("1:1 매칭 신청")]);
+
+      // 🔁 로테이션 단골 — 같은 연락처로 2회 이상 신청한 분
+      //    (이름은 같은 사람이 여럿일 수 있어서 연락처를 기준으로 센다)
+      const byPhone = new Map();
+      for (const r of rot) {
+        const f = r.fields || {};
+        const p = phone(f["연락처"]);
+        if (!p) continue;
+        if (!byPhone.has(p)) byPhone.set(p, { 이름: name(f["이름"]), 연락처: f["연락처"] || "", 회차: [], 성별: f["성별"] || "" });
+        const e = byPhone.get(p);
+        const round = name(f["회차"]) || "회차 미상";
+        if (e.회차.indexOf(round) < 0) e.회차.push(round);   // 같은 회차 중복 신청은 1회로 본다
+        if (!e.이름) e.이름 = name(f["이름"]);
+      }
+      const 로테이션단골 = [...byPhone.values()]
+        .filter((e) => e.회차.length >= 2)
+        .map((e) => ({ 이름: e.이름, 연락처: e.연락처, 성별: e.성별, 횟수: e.회차.length, 회차: e.회차 }))
+        .sort((a, b) => b.횟수 - a.횟수);
+
+      // 🏆 1:1 추천인 — 신청서에 "누가 소개해주셨어요?"로 적힌 이름을 모은다
+      const byRef = new Map();
+      let 지인소개수 = 0, 추천인이름없음 = 0;
+      for (const r of one) {
+        const f = r.fields || {};
+        if (name(f["유입경로"]) !== "지인소개") continue;
+        지인소개수++;
+        const ref = name(f["추천인이름"]);
+        if (!ref) { 추천인이름없음++; continue; }
+        if (!byRef.has(ref)) byRef.set(ref, []);
+        byRef.get(ref).push(name(f["이름"]) || "이름없음");
+      }
+      const 추천인 = [...byRef.entries()]
+        .map(([이름, 데려온사람]) => ({ 이름, 횟수: 데려온사람.length, 데려온사람 }))
+        .sort((a, b) => b.횟수 - a.횟수);
+
+      return res.status(200).json({
+        ok: true, 로테이션단골, 추천인,
+        지인소개수, 추천인이름없음,
+        전체: { 로테이션신청: rot.length, 일대일신청: one.length },
+        이번조회에쓴_에어테이블호출: calls,
+      });
+    } catch (e) {
+      return res.status(200).json({ ok: false, error: e.message, 이번조회에쓴_에어테이블호출: calls });
+    }
+  }
+
   // 📊 관리자 상태판 — 지금 잘 돌아가는지 한눈에.
   // 에어테이블 호출을 아끼려고 관리자가 버튼을 눌렀을 때만 돈다 (자동 새로고침 없음).
   if (req.query.status === "1") {
