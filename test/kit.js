@@ -42,9 +42,9 @@
      spec = { cup, foam, face, eyes, mouth, top, pose, acc:[...], tie }
        eyes : dot | angry | half | heart | shades | happy | wide | sleepy | wink
        mouth: open | flat | smirk | smile | o | tongue
-       top  : flame | ice | straw | honey | bubbles | bolt | moon | sparkles | sprout | star | none
+       top  : flame | ice | straw | honey | bubbles | bolt | moon | sparkles | sprout | star | latte | none
        pose : down | up | hip | heart | cross | wave | peace | think | point
-       acc  : tie | glasses | badge
+       acc  : tie | glasses | horn(뿔테) | badge
      ============================================================ */
   function mascot(c, cx, cy, s, spec) {
     var lw = Math.max(2, s * .034), FACE = spec.face || OUT, CUP = spec.cup;
@@ -157,6 +157,12 @@
       case "star":
         c.fillStyle = "#FFD93B"; star4(c, 0, T0 - s * .22, s * .11); c.fill(); c.lineWidth = lw * .9; c.strokeStyle = OUT; c.stroke();
         break;
+      case "latte": // 거품 위 하트 라떼아트 + 김
+        c.save(); c.translate(0, T0 + s * .005); c.scale(1, .5); c.fillStyle = "#E79A7B"; heart(c, 0, 0, s * .2); c.fill(); c.restore();
+        c.lineWidth = lw * .9; c.strokeStyle = "rgba(255,255,255,.9)";
+        [-.1, .08].forEach(function (dx) { c.beginPath(); c.moveTo(s * dx, T0 - s * .14); c.bezierCurveTo(s * (dx + .05), T0 - s * .2, s * (dx - .05), T0 - s * .26, s * dx, T0 - s * .32); c.stroke(); });
+        c.fillStyle = "#FF5C7A"; heart(c, s * .3, T0 - s * .2, s * .09); c.fill();
+        break;
     }
 
     // 소품
@@ -165,6 +171,10 @@
       c.lineWidth = lw * 1.05; c.strokeStyle = OUT;
       [-ex, ex].forEach(function (x) { c.beginPath(); c.arc(x, ey, s * .075, 0, Math.PI * 2); c.fillStyle = "rgba(255,255,255,.28)"; c.fill(); c.stroke(); });
       c.beginPath(); c.moveTo(-ex + s * .075, ey); c.lineTo(ex - s * .075, ey); c.stroke();
+    }
+    if (acc.indexOf("horn") >= 0) { // 뿔테 안경
+      [-ex, ex].forEach(function (x) { rr(c, x - s * .088, ey - s * .068, s * .176, s * .136, s * .045); c.fillStyle = "rgba(255,255,255,.16)"; c.fill(); c.lineWidth = lw * 1.45; c.strokeStyle = "#2b1d14"; c.stroke(); });
+      c.beginPath(); c.moveTo(-ex + s * .088, ey - s * .01); c.lineTo(ex - s * .088, ey - s * .01); c.lineWidth = lw * 1.45; c.strokeStyle = "#2b1d14"; c.stroke();
     }
     if (acc.indexOf("tie") >= 0) {
       var ty = s * .215;
@@ -283,7 +293,7 @@
 
   /* ============================================================
      테스트 진행
-     cfg = { store, path, og, fileName, questions, types, calc(answers)→{key,data},
+     cfg = { id(집계용 이름: coffee/work), store, path, og, fileName, questions, types, calc(answers)→{key,data},
              build({key,data,name})→canvas, detail(key,data,type), shareText(name,type),
              chem(friendKey,myKey)→{head,sub}, alt(name,type) }
      types[key] = { name, emoji, spec, nick, say, match:{key,reason}, ... }
@@ -322,11 +332,23 @@
       setTimeout(function () { st.step++; if (st.step < Q.length) renderQ(); else finish(); }, 260);
     }
     function prev() { if (st.step > 0) { st.step--; renderQ(); } }
-    function persist() { try { localStorage.setItem(cfg.store, JSON.stringify({ k: st.key, d: st.data, n: st.name, t: Date.now() })); } catch (e) { } }
+    // l(유형 이름)도 같이 기억한다 — 나중에 신청서(/matching)가 읽어서 '테스트결과' 칸에 넣는다
+    function persist() { try { localStorage.setItem(cfg.store, JSON.stringify({ k: st.key, l: TYPES[st.key].name, d: st.data, n: st.name, t: Date.now() })); } catch (e) { } }
+    // 발급 수 +1 (같은 기기에서는 하루에 한 번만). 저장소가 연결돼 있지 않으면 서버가 아무 일도 안 한다.
+    function countOnce() {
+      if (!cfg.id) return;
+      try {
+        var flag = "ssum_cnt_" + cfg.id, day = today();
+        if (localStorage.getItem(flag) === day) return;
+        localStorage.setItem(flag, day);
+        fetch("/api/airtable?testcount=1", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ test: cfg.id, type: st.key }), keepalive: true }).catch(function () { });
+      } catch (e) { }
+    }
     function finish() {
       $("progress").style.width = "100%";
       var r = cfg.calc(st.answers); st.key = r.key; st.data = r.data;
       persist();
+      countOnce();
       drawOn($("load-m"), TYPES[st.key].spec);
       show("loading");
       setTimeout(showResult, 1300);

@@ -1542,7 +1542,10 @@ function exportCSV(){
   toast(applicants.length + "명 CSV로 내보냈어요 ⬇");
 }
 
-// ☕ 커피 궁합 (연애 테스트 결과 기반 매칭 추천)
+// ☕🪪 유형 테스트 궁합 (신청서의 '테스트결과' 칸 기반 매칭 참고)
+//    손님이 /test/ideal(연애 취향 영수증)·/test/work(연애 사원증)를 하고 신청하면
+//    '테스트결과'에 "꿀라떼형" / "칼퇴 장인" / "꿀라떼형 / 칼퇴 장인" 처럼 들어온다.
+//    ⚠️ 유형 이름·궁합은 test/ideal.html · test/work.html 의 TYPES 와 맞춰야 한다.
 // 더 구체적인 키워드를 먼저 매칭 (바닐라라떼/꿀라떼가 '라떼'보다 우선)
 const COFFEE_KEYWORDS = ["바닐라라떼","꿀라떼","플랫화이트","카페모카","콜드브루","아메리카노","디카페인","에스프레소","드리퍼","오늘의커피","아아","라떼"];
 const COFFEE_MATCH = {
@@ -1552,27 +1555,66 @@ const COFFEE_MATCH = {
   "디카페인":["에스프레소","드리퍼"], "드리퍼":["디카페인"], "오늘의커피":["꿀라떼"],
   "플랫화이트":["*"]  // 올라운더: 누구나 잘 맞음
 };
+// 🪪 연애 사원증 (직급 → 찰떡 동료)
+const WORK_MATCH = {
+  "열정 인턴":["안정 관리자"], "영업 에이스":["분위기 메이커"], "애정 복지 담당":["칼퇴 장인"], "분위기 메이커":["영업 에이스"],
+  "밀당 기획자":["열정 인턴"], "칼퇴 장인":["애정 복지 담당"], "안정 관리자":["열정 인턴"], "재택 근무자":["분위기 메이커"]
+};
+const WORK_KEYWORDS = Object.keys(WORK_MATCH);
+// 센터장이 유형 이름만 보고도 어떤 사람인지 알 수 있게 — 한 줄 설명
+const TEST_HINT = {
+  "드리퍼":"좋으면 좋다고 바로 표현하는 직진파", "콜드브루":"처음엔 쿨하지만 마음 열리면 깊은 타입", "꿀라떼":"애정 표현이 끊이지 않는 다정함 만렙",
+  "아아":"쿨한 척, 밀당을 즐기는 전략가", "바닐라라떼":"다툼을 싫어하는 순하고 배려 깊은 타입", "에스프레소":"텐션 높고 즉흥적인 열정파",
+  "디카페인":"잔잔하고 안정적인 관계를 좋아하는 힐링형", "오늘의커피":"그날그날 모습이 달라지는 변화무쌍한 타입",
+  "열정 인턴":"직진영업팀 인턴 · 선톡·선약속을 먼저 하는 열정파 (연애에 시간을 많이 씀)", "영업 에이스":"직진영업팀 대리 · 표현은 빠르지만 내 생활도 지키는 타입",
+  "애정 복지 담당":"애정복지팀 주임 · 기념일·간식까지 챙기는 다정함 만렙 (퍼주는 편)", "분위기 메이커":"애정복지팀 사원 · 리액션 좋고 각자 시간도 존중",
+  "밀당 기획자":"밀당기획팀 과장 · 동선·답장까지 계획하는 신중파", "칼퇴 장인":"밀당기획팀 차장 · 선을 지키는 워라밸형 (표현은 적은 편)",
+  "안정 관리자":"안정관리팀 부장 · 꾸준하고 한결같은 장기 연애형", "재택 근무자":"안정관리팀 재택 · 집데이트를 좋아하는 편안함 추구형"
+};
+// 손님이 적은 글자를 화면에 그대로 넣을 때 쓰는 안전 처리
+function escHtml(v){ return String(v == null ? "" : v).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 function coffeeType(s){
   if(!s) return null;
   for(const k of COFFEE_KEYWORDS){ if(s.indexOf(k) >= 0) return k; }
   return null;
 }
+function workType(s){
+  if(!s) return null;
+  const flat = String(s).replace(/\s+/g, "");
+  for(const k of WORK_KEYWORDS){ if(flat.indexOf(k.replace(/\s+/g, "")) >= 0) return k; }
+  return null;
+}
+// "☕ 꿀라떼 · 🪪 칼퇴 장인" 처럼 보여줄 짧은 표시
+function testLabel(s){
+  const c = coffeeType(s), w = workType(s);
+  return [c ? "☕ " + c : "", w ? "🪪 " + w : ""].filter(Boolean).join(" · ");
+}
+// 한 줄 설명들 (신청자 상세에 표시)
+function testHintHtml(s){
+  return [coffeeType(s), workType(s)].filter(Boolean)
+    .map(k => `<div style="font-size:12px;color:#c9bfa8;margin-top:3px;font-weight:500">· <b style="color:#E8B050">${k}</b> — ${TEST_HINT[k] || ""}</div>`).join("");
+}
+// 두 사람의 테스트 유형이 '찰떡'인지 (커피끼리 또는 사원증끼리, 어느 한쪽 입장에서라도)
+function testPairFits(a, b){
+  const ca = coffeeType(a), cb = coffeeType(b);
+  if(ca && cb){
+    const wa = COFFEE_MATCH[ca] || [], wb = COFFEE_MATCH[cb] || [];
+    if(wa.includes("*") || wb.includes("*") || wa.includes(cb) || wb.includes(ca)) return true;
+  }
+  const ja = workType(a), jb = workType(b);
+  if(ja && jb && ((WORK_MATCH[ja] || []).includes(jb) || (WORK_MATCH[jb] || []).includes(ja))) return true;
+  return false;
+}
 function coffeeMatchesFor(rec){
   const f = rec.fields || {};
-  const myType = coffeeType(f["테스트결과"]);
-  if(!myType) return [];
-  const wants = COFFEE_MATCH[myType] || [];
+  if(!coffeeType(f["테스트결과"]) && !workType(f["테스트결과"])) return [];
   const myGender = f["성별"];
   return applicants.filter(o => {
     if(o.id === rec.id) return false;
     const of = o.fields || {};
     if(myGender && of["성별"] && of["성별"] === myGender) return false; // 이성만
     if(hasPastMatchHistory(rec.id, o.id)) return false; // 과거 이력자 제외
-    const ot = coffeeType(of["테스트결과"]);
-    if(!ot) return false;
-    if(wants.includes("*") || wants.includes(ot) || ot === "플랫화이트") return true;
-    const owants = COFFEE_MATCH[ot] || [];              // 상대 입장에서도 궁합이면 인정 (양방향)
-    return owants.includes("*") || owants.includes(myType);
+    return testPairFits(f["테스트결과"], of["테스트결과"]);
   });
 }
 
@@ -1594,7 +1636,8 @@ function fitScorer(p){
   const pf = p.fields || {};
   const myBirth = parseInt(pf["출생연도"]) || 1995;
   const myLoc = (pf["사는곳"] || "").toLowerCase();
-  const coffeeBuddies = coffeeType(pf["테스트결과"]) ? coffeeMatchesFor(p) : [];
+  // 테스트 유형이 찰떡인 상대들의 id (예전엔 id 가 아니라 기록 자체와 비교해서 이 가산점이 한 번도 붙지 않았다)
+  const coffeeBuddyIds = coffeeMatchesFor(p).map(o => o.id);
   return function(c){
     const cf = c.fields || {};
     let score = 70;
@@ -1606,7 +1649,7 @@ function fitScorer(p){
     if(myLoc && cLoc && (myLoc.includes(cLoc) || cLoc.includes(myLoc) || (myLoc.includes("서울") && cLoc.includes("서울")) || (myLoc.includes("경기") && cLoc.includes("경기")))){
       score += 10;
     }
-    if(coffeeBuddies.includes(c.id)){ score += 10; }
+    if(coffeeBuddyIds.includes(c.id)){ score += 10; }
     if(cf["매칭유형"] === "슈퍼매칭"){ score += 5; }
     return Math.min(score, 98);
   };
@@ -1660,7 +1703,7 @@ function renderList(){
     const status = f["매칭상태"] || "대기";
     const photoUrl = f["프로필사진"] && f["프로필사진"][0] ? f["프로필사진"][0].url : null;
     const photos = f["프로필사진"] || [];
-    const myCoffee = coffeeType(f["테스트결과"]);
+    const myCoffee = testLabel(f["테스트결과"]);   // "☕ 꿀라떼 · 🪪 칼퇴 장인" (없으면 빈 문자열)
     const coffeeBuddies = myCoffee ? coffeeMatchesFor(r) : [];
 
     const birth = parseInt(f["출생연도"]) || 0;
@@ -1684,7 +1727,7 @@ function renderList(){
     if(f["사는곳"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">📍 ${f["사는곳"]}</span>`);
     if(f["직업"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">💼 ${f["직업"]}</span>`);
     if(f["키"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">📏 ${f["키"]}cm</span>`);
-    if(myCoffee) chips.push(`<span style="font-size:11px;color:#E8B050;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.2);padding:2px 7px;border-radius:6px">☕ ${myCoffee}</span>`);
+    if(myCoffee) chips.push(`<span style="font-size:11px;color:#E8B050;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.2);padding:2px 7px;border-radius:6px">${myCoffee}</span>`);
     const chipsHtml = chips.join(" ");
 
     return `<div class="appcard ${isSelected ? 'sel' : ''} ${shareMode && shareSel[r.id] ? 'share-on' : ''}">
@@ -1727,12 +1770,12 @@ function renderList(){
             <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">종교</span><br><b>${f["종교"] || "-"}</b></div>
             <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">취미</span><br><b>${f["취미"] || "-"}</b></div>
             <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
-            ${f["테스트결과"] ? `<div style="grid-column:1/-1;background:#0e0c0a;border:1px solid rgba(232,176,80,.3);border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">☕ 연애 테스트 결과</span><br><b style="color:#E8B050">${f["테스트결과"]}</b></div>` : ""}
+            ${f["테스트결과"] ? `<div style="grid-column:1/-1;background:#0e0c0a;border:1px solid rgba(232,176,80,.3);border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">☕🪪 유형 테스트 결과 (영수증 · 사원증)</span><br><b style="color:#E8B050">${escHtml(f["테스트결과"])}</b>${testHintHtml(f["테스트결과"])}</div>` : ""}
           </div>
           ${matchHistoryFor(r.id)}
           ${myCoffee ? `<div style="background:#0e0c0a;border:1px solid rgba(232,176,80,.35);border-radius:11px;padding:10px 12px">
-            <div style="color:#E8B050;font-size:11px;font-weight:800;margin-bottom:2px">☕ 커피 궁합 잘 맞는 이성 ${coffeeBuddies.length ? '('+coffeeBuddies.length+'명)' : ''}</div>
-            ${coffeeBuddies.length ? coffeeBuddies.map(o=>{const of=o.fields||{};return `<div style="font-size:12.5px;padding:4px 0;border-top:1px solid #1e1c17;cursor:pointer" onclick="event.stopPropagation();toggleSelect('${o.id}')"><b style="color:#fff">${of["이름"]||"?"}</b> <span style="color:#9a9080">${of["출생연도"]||"?"}년생 · ${of["성별"]||""} · ${coffeeType(of["테스트결과"])}</span></div>`;}).join("") : '<div style="font-size:12px;color:#9a9080;padding-top:4px">아직 궁합 맞는 이성 신청자가 없어요</div>'}
+            <div style="color:#E8B050;font-size:11px;font-weight:800;margin-bottom:2px">☕🪪 테스트 궁합이 잘 맞는 이성 ${coffeeBuddies.length ? '('+coffeeBuddies.length+'명)' : ''}</div>
+            ${coffeeBuddies.length ? coffeeBuddies.map(o=>{const of=o.fields||{};return `<div style="font-size:12.5px;padding:4px 0;border-top:1px solid #1e1c17;cursor:pointer" onclick="event.stopPropagation();toggleSelect('${o.id}')"><b style="color:#fff">${of["이름"]||"?"}</b> <span style="color:#9a9080">${of["출생연도"]||"?"}년생 · ${of["성별"]||""} · ${testLabel(of["테스트결과"])}</span></div>`;}).join("") : '<div style="font-size:12px;color:#9a9080;padding-top:4px">아직 궁합 맞는 이성 신청자가 없어요</div>'}
           </div>` : ""}
           ${(f["재직증명서"] && f["재직증명서"][0] && f["재직증명서"][0].url)
             ? `<a href="${f["재직증명서"][0].url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:8px;background:#0e0c0a;border:1px solid #22c55e;border-radius:11px;padding:10px 12px;font-size:13px;color:#22c55e;font-weight:700;text-decoration:none"><i class="fa-solid fa-file-shield"></i> 재직증명서·사업자등록증 보기</a>`

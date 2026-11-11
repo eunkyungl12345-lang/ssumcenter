@@ -401,7 +401,7 @@ function buildReceipt(st){
 }
 
 const T=K.run({
-  store:"ssum_coffee_v2", path:"/test/ideal", og:"/test/og-coffee.png", fileName:"ssum-receipt.png",
+  id:"coffee", store:"ssum_coffee_v2", path:"/test/ideal", og:"/test/og-coffee.png", fileName:"ssum-receipt.png",
   questions:Q, types:TYPES,
   calc(answers){ const s=tally(answers); return { key:pick(s), data:s }; },
   build:buildReceipt,

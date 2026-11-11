@@ -948,22 +948,35 @@ function applyTestSource(){
 }
 applyTestSource();
 
-// URL 파라미터에서 테스트 결과 읽기 (테스트 페이지에서 넘어온 경우 자동 채움)
-(function loadTestResult(){
-  const p = new URLSearchParams(location.search);
-  const result = (p.get("result") || "").replace(/[<>]/g, "").slice(0, 20);
-  if(result){
+// ☕🪪 유형 테스트 결과를 신청서에 같이 담는다 → 에어테이블 '테스트결과' 칸에 저장되고,
+//    센터장이 신청서를 볼 때 "이 손님은 칼퇴 장인 / 꿀라떼형"을 바로 본다.
+//    ① 결과지의 [1:1로 만나보기] 버튼으로 넘어온 경우: 주소의 result 값
+//    ② 버튼을 안 누르고 나중에 신청하러 온 경우: 이 기기에 남아 있는 테스트 결과 (최근 60일)
+//    두 테스트를 다 했으면 "꿀라떼형 / 칼퇴 장인"처럼 둘 다 담는다.
+function loadTestResult(){
+  try{
+    const out = [];
+    const add = function(v){ v = String(v || "").replace(/[<>\/]/g, "").trim().slice(0, 20); if(v && out.indexOf(v) < 0) out.push(v); };
+    add(new URLSearchParams(location.search).get("result"));
+    ["ssum_coffee_v2", "ssum_work_v1"].forEach(function(key){
+      try{
+        const d = JSON.parse(localStorage.getItem(key) || "null");
+        if(d && d.l && d.t && Date.now() - d.t < 60 * 86400000) add(d.l);
+      }catch(e){}
+    });
+    if(!out.length) return;
     // 유형 이름을 그대로 쓴다. (예전엔 뒤에 '형'을 또 붙여서 "꿀라떼형형"이 됐고,
     //  "상위 N%"는 지어낸 숫자라 뺐다)
-    const text = result;
+    const text = out.join(" / ");
     document.getElementById("test-result-badge").classList.remove("hidden");
     document.getElementById("test-result-text").textContent = text;
     document.getElementById("test-result-input").value = text;
     document.getElementById("test-result-display").textContent = text;
     document.getElementById("test-result-filled").classList.remove("hidden");
     document.getElementById("test-result-empty").classList.add("hidden");
-  }
-})();
+  }catch(e){}
+}
+loadTestResult();
 
 function clearTestResult(){
   document.getElementById("test-result-input").value = "";
@@ -1146,6 +1159,8 @@ function restoreDraft(d){
     goStep(d.step||1);
     // 임시저장에 유입경로가 비어 있었으면 테스트에서 넘어온 표시를 다시 채운다
     if(typeof applyTestSource==="function") applyTestSource();
+    // 임시저장을 불러오면 테스트 결과 칸이 옛 값(빈칸)으로 덮인다 → 다시 채운다
+    if(typeof loadTestResult==="function") loadTestResult();
   }catch(e){}
 }
 (function(){
