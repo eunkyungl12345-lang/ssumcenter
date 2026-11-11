@@ -37,8 +37,10 @@ async function send(path, body) {
 async function bump(test, type) {
   if (!isConfigured()) return { ok: false, reason: "not_configured" };
   if (!TESTS[test] || !Object.prototype.hasOwnProperty.call(TESTS[test].types, type)) return { ok: false, reason: "bad_type" };
-  const d = await send("", ["HINCRBY", KEY(test), type, 1]);
-  return { ok: true, count: Number(d && d.result) || 0 };
+  // 여러 명령을 한 번에 보내는 주소(/pipeline)를 쓴다 — 조회와 같은 방식이라 한 가지만 맞으면 된다
+  const d = await send("/pipeline", [["HINCRBY", KEY(test), type, 1]]);
+  if (d && d[0] && d[0].error) throw new Error(d[0].error);
+  return { ok: true, count: Number(d && d[0] && d[0].result) || 0 };
 }
 
 /** 지금까지의 발급 수. { coffee:{label,total,rows:[{key,name,count}]}, work:{...} } — 많은 순 */

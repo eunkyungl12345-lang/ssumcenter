@@ -106,7 +106,10 @@ nav a{font-size:13.5px;color:var(--mut);font-weight:600} nav b{color:var(--acc)}
 .cta{margin-top:24px;text-align:center;background:linear-gradient(180deg,#FFEFC4,#FFF9EC);border:2px solid #FFD98A;border-radius:26px;padding:24px 18px}
 .cta h3{font-size:21px;line-height:1.4}
 .cta p{font-size:13.5px;color:#5d4a3c;margin:8px 0 16px}
-.cta .fine{font-size:12px;color:var(--mut);margin:14px 0 0}
+.cta .fine{font-size:12px;color:var(--mut);margin:10px 0 0}
+/* 💡 친구 할인 안내 — 화면에만 보인다 (공유 이미지에는 없음) */
+.tip{font-size:13px;font-weight:700;line-height:1.5;color:#8a5a00;background:#FFF0CC;border-radius:14px;padding:10px 12px;margin:14px 0 0;text-align:center}
+.cta .tip{font-size:13px;color:#8a5a00;margin:16px 0 0}
 #toast{position:fixed;left:20px;right:20px;bottom:22px;max-width:440px;margin:0 auto;background:#3b2a20;color:#FFF7EA;border-radius:16px;padding:13px 16px;font-size:14px;text-align:center;transform:translateY(120px);opacity:0;transition:all .3s ease;z-index:60}
 #toast.on{transform:none;opacity:1}
 @media (prefers-reduced-motion:reduce){.parade canvas,.printing canvas,.hero canvas,.say{animation:none}.receipt.go img{animation:none}}

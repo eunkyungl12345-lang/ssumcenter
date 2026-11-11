@@ -109,6 +109,7 @@
       </div>
       <div class="chem-t cute" id="chem-t"></div>
       <div class="chem-s" id="chem-s"></div>
+      <p class="tip" style="margin-top:12px">💡 둘 다 매칭 성공 시 첫 만남 결제 2,000원씩 할인</p>
     </div>
 
     <div class="box">
@@ -134,7 +135,9 @@
     <div class="cta">
       <h3 class="cute">내 연애 스타일과 <span class="y">찰떡인 사람</span>,<br>실제로 만나볼까요?</h3>
       <p>퇴근하고 앱 넘겨볼 힘도 없잖아요.<br>센터장 3명이 신청서를 직접 읽고 한 분씩 이어드려요.</p>
-      <button class="btn btn-y" onclick="T.apply()">내 유형에 딱 맞는 사람 1:1로 만나보기 (신청비 0원)</button>
+      <button class="btn btn-y" onclick="T.apply()">내 유형에 맞는 사람 1:1로 만나보기 (신청비 0원) ➔</button>
+      <!-- 할인 안내는 화면에만 둔다. 공유 이미지(영수증·사원증)에는 넣지 않는다 -->
+      <p class="tip">💡 친구와 둘 다 매칭 성사 시, 첫 만남 결제할 때 커피값 2,000원씩 각각 할인!</p>
       <p class="fine">신청은 무료 · 매칭이 성사됐을 때만 결제해요</p>
     </div>
     <a class="other" href="/test/ideal">하나 더! <b>연애 커피 유형 테스트 ☕ →</b></a>
@@ -360,6 +363,28 @@ function buildCard(s){
   c.font="500 24px "+BODY;
   let ry=y+120; K.wrapLines(c,T.match.reason,R-L-170).forEach(ln=>{ text(ln,L,ry,"500 24px "+BODY,SUB); ry+=32; });
   y=Math.max(y+134,ry-8)+18; dash(y); y+=40;
+
+  // 연애 결재란 — 기안은 나, 결재 칸은 아직 비어 있다 (스토리에 올렸을 때 웃음 포인트)
+  //    공유 이미지에는 가격·할인 얘기를 넣지 않는다. 광고처럼 보이면 안 올린다.
+  const BW=150, BH=148, bx=R-BW*2, by=y, HH=42, RED="#E5484D";
+  text("연애 결재란",L,y+30,"600 26px "+BODY,SUB);
+  c.font="600 25px "+BODY; let ky=y+76;
+  K.wrapLines(c,"내 연애 기안서에 최종 결재 도장 찍어주실 분 찾습니다 🙋",bx-L-22).forEach(ln=>{ text(ln,L,ky,"600 25px "+BODY,INK); ky+=36; });
+  c.fillStyle=T.soft; c.fillRect(bx,by,BW*2,HH);
+  c.lineWidth=3; c.strokeStyle=INK; c.strokeRect(bx,by,BW*2,BH);
+  c.beginPath(); c.moveTo(bx+BW,by); c.lineTo(bx+BW,by+BH); c.moveTo(bx,by+HH); c.lineTo(bx+BW*2,by+HH); c.stroke();
+  text("기안",bx+BW/2,by+29,"700 22px "+BODY,INK,"center");
+  text("결재",bx+BW*1.5,by+29,"700 22px "+BODY,INK,"center");
+  // 기안 칸: 내 이름 (길면 글자를 줄인다)
+  const who=s.name||"본인"; let fz=34; c.font=K.cuteFont(fz);
+  while(fz>18 && c.measureText(who).width>BW-18){ fz-=2; c.font=K.cuteFont(fz); }
+  text(who,bx+BW/2,by+HH+(BH-HH)/2+fz*.36,K.cuteFont(fz),INK,"center");
+  // 결재 칸: 빨간 '미결재' 도장
+  c.save(); c.translate(bx+BW*1.5,by+HH+(BH-HH)/2); c.rotate(-.15); c.globalAlpha=.9;
+  K.rr(c,-64,-27,128,54,10); c.lineWidth=5; c.strokeStyle=RED; c.stroke();
+  c.font="800 25px "+BODY; c.fillStyle=RED; c.textAlign="center"; c.textBaseline="middle"; c.fillText("⚠️ 미결재",0,2);
+  c.restore();
+  y=Math.max(by+BH,ky-20)+40;
 
   K.barcode(c,CX,y,460,54,s.key,INK); y+=92;
   text("너의 연애 직급은?  ssumcenter.vercel.app/test/work",CX,y,"600 23px "+BODY,SUB,"center"); y+=44;

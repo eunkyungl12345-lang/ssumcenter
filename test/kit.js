@@ -445,7 +445,9 @@
     }
     function apply() {
       // from=test → 신청서의 '어떻게 알고 오셨어요?'에 '유형 테스트'가 자동으로 들어간다
-      location.href = "/matching?from=test&result=" + encodeURIComponent(TYPES[st.key].name);
+      // friend → 링크를 보내준 친구 이름. "친구와 둘 다 매칭 성사 시 할인"을 센터장이 확인할 수 있게 신청서에 남긴다
+      location.href = "/matching?from=test&result=" + encodeURIComponent(TYPES[st.key].name)
+        + (FRIEND && FRIEND.name ? "&friend=" + encodeURIComponent(FRIEND.name) : "");
     }
 
     /* 처음 화면 준비 */
