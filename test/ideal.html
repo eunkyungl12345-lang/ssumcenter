@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#FFF7EA">
 <title>나의 연애 커피 유형은? · 연애 취향 영수증 | 썸류센터</title>
 <meta name="description" content="직진드리퍼? 콜드브루형? 아아고수? 10문항 1분 테스트로 내 연애 취향 영수증을 뽑아보세요. 친구와 케미도 볼 수 있어요.">
 <link rel="canonical" href="https://ssumcenter.vercel.app/test/ideal">
@@ -23,114 +24,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
-<style>
-  :root{--bg:#0e0c0a;--card:#16140f;--line:#2a251c;--y:#FFBE2E;--txt:#F5F0E6;--mut:#9a9080;--dim:#6f665a}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',system-ui,sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all}
-  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-  a{color:inherit;text-decoration:none}
-  .cute{font-family:'Jua',-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;font-weight:800}
-  .jua .cute{font-weight:400} /* 귀여운 글꼴을 불러왔을 때만 원래 두께로 (못 불러오면 기본 글꼴을 굵게) */
-  .y{color:var(--y)}
-  .hidden{display:none !important}
-  .wrap{max-width:480px;margin:0 auto;padding:22px 20px 96px}
-  .bar{position:fixed;top:0;left:0;right:0;height:5px;background:var(--card);z-index:50}
-  .bar i{display:block;height:100%;width:0;background:var(--y);transition:width .4s ease}
-  nav{border-bottom:1px solid #1e1c17;padding:13px 20px}
-  nav a{font-size:13.5px;color:var(--mut)} nav b{color:var(--y)}
-
-  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-  .fade{animation:fadeUp .4s ease both}
-  @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-9px) rotate(3deg)}}
-
-  /* 버튼 */
-  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;padding:14px 18px;border-radius:16px;font-size:16px;font-weight:800;line-height:1.35;text-align:center;transition:transform .15s ease,background .2s ease,border-color .2s ease}
-  .btn:active{transform:scale(.985)}
-  .btn-y{background:var(--y);color:#171208}
-  .btn-ghost{background:var(--card);border:1px solid var(--line);color:var(--txt)}
-  .btn-ghost:hover{border-color:rgba(255,190,46,.45)}
-  .link{font-size:13px;color:var(--mut);padding:10px;text-decoration:underline;text-underline-offset:3px}
-
-  /* 친구 링크로 들어왔을 때 */
-  .friend{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(255,190,46,.14),rgba(255,190,46,.04));border:1px solid rgba(255,190,46,.3);border-radius:18px;padding:12px 16px;margin-bottom:22px;text-align:left}
-  .friend canvas{width:64px;height:64px;flex:none}
-  .friend b{display:block;font-size:15.5px;line-height:1.4}
-  .friend span{font-size:12.5px;color:var(--mut)}
-
-  /* 첫 화면 */
-  .intro{text-align:center;padding-top:8px}
-  .parade{display:flex;justify-content:center;gap:2px;margin:6px 0 10px}
-  .parade canvas{width:76px;height:76px;animation:bob 3.2s ease-in-out infinite}
-  .parade canvas:nth-child(2){animation-delay:.4s}.parade canvas:nth-child(3){animation-delay:.8s}.parade canvas:nth-child(4){animation-delay:1.2s}
-  .intro h1{font-size:34px;line-height:1.25;letter-spacing:-.01em}
-  .intro p.sub{font-size:14.5px;color:var(--mut);margin-top:12px}
-  .steps{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:18px 0 24px}
-  .steps span{font-size:12.5px;color:#cdbf9f;background:var(--card);border:1px solid var(--line);border-radius:100px;padding:6px 12px}
-  .tiny{font-size:12px;color:var(--dim);margin-top:12px}
-
-  /* 질문 */
-  .qtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-  .qtop b{font-size:12.5px;letter-spacing:.12em;color:var(--y)}
-  .qtop button{font-size:12.5px;color:var(--mut);padding:8px 4px}
-  .qtop button[disabled]{opacity:.3}
-  #qcat{font-size:12px;color:var(--mut);letter-spacing:.06em}
-  #qtext{font-size:22px;line-height:1.4;margin:6px 0 22px;min-height:62px}
-  .opt{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;font-size:15px;font-weight:600;color:var(--txt);margin-bottom:10px;transition:border-color .15s ease,background .15s ease}
-  .opt:hover{border-color:rgba(255,190,46,.5)}
-  .opt.on{border-color:var(--y);background:rgba(255,190,46,.1);color:var(--y)}
-
-  /* 영수증 뽑는 중 */
-  .printing{text-align:center;padding-top:64px}
-  .printing canvas{width:120px;height:120px;animation:bob 1.2s ease-in-out infinite}
-  .printing h2{font-size:24px;margin-top:10px}
-  .printing p{font-size:13.5px;color:var(--mut);margin-top:6px}
-
-  /* 결과 */
-  .rhead{text-align:center;margin-bottom:14px}
-  .rhead small{font-size:11.5px;letter-spacing:.18em;color:var(--y);font-weight:700}
-  .rhead h2{font-size:26px;line-height:1.3;margin-top:4px}
-  .receipt{max-width:330px;margin:0 auto;border-radius:22px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.5);background:#f3e6d3;aspect-ratio:9/16}
-  .receipt img{display:block;width:100%;height:auto;-webkit-touch-callout:default;user-select:auto}
-  @keyframes print{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
-  .receipt.go img{animation:print 1.1s cubic-bezier(.3,.7,.3,1) both}
-  .hint{text-align:center;font-size:12.5px;color:var(--mut);margin:10px 0 14px}
-  .namebox{display:flex;gap:8px;max-width:330px;margin:0 auto 14px}
-  .namebox input{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:14px;color:var(--txt);font-size:16px;padding:12px 14px;font-family:inherit;outline:none}
-  .namebox input:focus{border-color:var(--y)}
-  .namebox button{flex:none;background:#2a251c;border-radius:14px;padding:0 16px;font-size:14px;font-weight:700;color:var(--y)}
-  .share{display:grid;gap:9px;max-width:330px;margin:0 auto}
-  .share .row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-  .btn-kakao{background:#FEE500;color:#191600}
-  .box{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:14px}
-  .box h3{font-size:13px;color:var(--y);margin-bottom:8px}
-  .box p{font-size:14px;color:#cfc6b6}
-  .box li{list-style:none;font-size:14px;color:#cfc6b6;padding:3px 0}
-  .box li::before{content:"✓ ";color:var(--y);font-weight:800}
-  .chem{display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:8px}
-  .chem canvas{width:70px;height:70px}
-  .chem i{font-style:normal;font-size:22px}
-  .chem-t{text-align:center;font-size:17px;line-height:1.45}
-  .chem-s{text-align:center;font-size:13px;color:var(--mut);margin-top:4px}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .two .box{margin-top:10px}
-  .mt{display:flex;align-items:center;gap:8px}
-  .mt canvas{width:54px;height:54px;flex:none}
-  .mt b{font-size:15px;display:block}
-  .mt span{font-size:12px;color:var(--mut);line-height:1.45;display:block}
-  .cta{margin-top:22px;text-align:center;background:linear-gradient(180deg,rgba(255,190,46,.16),rgba(255,190,46,.02));border:1px solid rgba(255,190,46,.32);border-radius:24px;padding:24px 18px}
-  .cta h3{font-size:21px;line-height:1.4}
-  .cta p{font-size:13.5px;color:#cfc6b6;margin:8px 0 16px}
-  .cta .fine{font-size:12px;color:var(--mut);margin:10px 0 0}
-  #toast{position:fixed;left:20px;right:20px;bottom:22px;max-width:440px;margin:0 auto;background:#1e1c17;border:1px solid rgba(255,190,46,.35);border-radius:14px;padding:13px 16px;font-size:14px;text-align:center;transform:translateY(120px);opacity:0;transition:all .3s ease;z-index:60}
-  #toast.on{transform:none;opacity:1}
-  @media (prefers-reduced-motion:reduce){.parade canvas,.printing canvas{animation:none}.receipt.go img{animation:none}}
-</style>
+<link rel="stylesheet" href="/test/kit.css">
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
 <div class="bar"><i id="progress"></i></div>
-
 <nav><a href="/">‹ <b>썸류센터</b> 홈</a></nav>
 
 <div class="wrap">
@@ -139,29 +38,30 @@
   <section id="intro" class="intro fade">
     <!-- 친구가 보낸 링크로 들어온 경우에만 보인다 -->
     <div id="friend" class="friend hidden">
-      <canvas id="friend-m" width="160" height="160" aria-hidden="true"></canvas>
+      <canvas id="friend-m" width="180" height="180" aria-hidden="true"></canvas>
       <div><b id="friend-t"></b><span>나도 해보면 둘의 케미가 나와요</span></div>
     </div>
 
     <div class="parade" aria-hidden="true">
-      <canvas width="190" height="190" data-m="dripper"></canvas>
-      <canvas width="190" height="190" data-m="honeylatte"></canvas>
-      <canvas width="190" height="190" data-m="americano"></canvas>
-      <canvas width="190" height="190" data-m="decaf"></canvas>
+      <canvas width="210" height="210" data-m="dripper"></canvas>
+      <canvas width="210" height="210" data-m="honeylatte"></canvas>
+      <canvas width="210" height="210" data-m="americano"></canvas>
+      <canvas width="210" height="210" data-m="decaf"></canvas>
     </div>
     <h1 class="cute">나의 <span class="y">연애 커피 유형</span>은?</h1>
-    <p class="sub">직진드리퍼? 콜드브루형? 아아고수?<br>답하고 나면 <b style="color:var(--txt)">연애 취향 영수증</b>을 뽑아드려요 🧾</p>
+    <p class="sub">직진드리퍼? 콜드브루형? 아아고수?<br>답하고 나면 <b>연애 취향 영수증</b>을 뽑아드려요 🧾</p>
     <div class="steps"><span>10문항</span><span>1분</span><span>정보 입력 없음</span></div>
-    <button class="btn btn-y" onclick="startTest()">☕ 내 영수증 뽑으러 가기</button>
-    <button id="again-link" class="link hidden" onclick="showSaved()">지난번 내 영수증 다시 보기</button>
+    <button class="btn btn-y" onclick="T.start()">☕ 내 영수증 뽑으러 가기</button>
+    <button id="again-link" class="link hidden" onclick="T.showSaved()">지난번 내 영수증 다시 보기</button>
     <p class="tiny">8가지 유형 · 이름이나 연락처를 묻지 않아요</p>
+    <a class="other" href="/test/work">직장인이라면? <b>연애 사원증 발급받기 🪪 →</b></a>
   </section>
 
   <!-- 질문 -->
   <section id="quiz" class="hidden">
     <div class="qtop">
       <b id="qcount">Q1 / 10</b>
-      <button id="qback" onclick="prevQ()">← 이전</button>
+      <button id="qback" onclick="T.prev()">← 이전</button>
     </div>
     <div id="qcat"></div>
     <h2 id="qtext" class="cute"></h2>
@@ -170,7 +70,7 @@
 
   <!-- 영수증 뽑는 중 -->
   <section id="loading" class="printing hidden">
-    <canvas id="load-m" width="240" height="240" aria-hidden="true"></canvas>
+    <canvas id="load-m" width="280" height="280" aria-hidden="true"></canvas>
     <h2 class="cute">영수증 뽑는 중…</h2>
     <p>주문하신 연애 취향을 정리하고 있어요 🧾</p>
   </section>
@@ -181,27 +81,31 @@
       <small>YOUR COFFEE TYPE</small>
       <h2 class="cute"><span id="r-who">당신</span>의 연애 커피는 <span class="y" id="r-type"></span></h2>
     </div>
+    <div class="hero">
+      <canvas id="hero-m" width="240" height="240" aria-hidden="true"></canvas>
+      <div class="say"><small id="say-name"></small><span id="say-text"></span></div>
+    </div>
 
-    <div class="receipt" id="receipt"><img id="receipt-img" alt=""></div>
+    <div class="receipt" id="card"><img id="card-img" alt=""></div>
     <p class="hint">📌 영수증을 <b>꾹 누르면</b> 사진으로 저장돼요</p>
 
     <div class="namebox">
       <input id="i-name" type="text" maxlength="10" placeholder="영수증에 이름 넣기 (선택)" autocomplete="off">
-      <button onclick="applyName()">넣기</button>
+      <button onclick="T.applyName()">넣기</button>
     </div>
 
     <div class="share">
-      <button class="btn btn-y" onclick="saveImage()">📸 이미지로 저장 · 스토리에 올리기</button>
+      <button class="btn btn-y" onclick="T.save()">📸 이미지로 저장 · 스토리에 올리기</button>
       <div class="row">
-        <button class="btn btn-kakao" onclick="shareKakao()">💬 카톡 공유</button>
-        <button class="btn btn-ghost" onclick="copyLink()">🔗 링크 복사</button>
+        <button class="btn btn-kakao" onclick="T.kakao()">💬 카톡 공유</button>
+        <button class="btn btn-ghost" onclick="T.copy()">🔗 링크 복사</button>
       </div>
     </div>
 
     <!-- 친구 링크로 들어와서 끝낸 경우: 둘의 케미 -->
     <div id="chem" class="box hidden">
       <div class="chem" aria-hidden="true">
-        <canvas id="chem-a" width="160" height="160"></canvas><i>💛</i><canvas id="chem-b" width="160" height="160"></canvas>
+        <canvas id="chem-a" width="200" height="200"></canvas><i>💛</i><canvas id="chem-b" width="200" height="200"></canvas>
       </div>
       <div class="chem-t cute" id="chem-t"></div>
       <div class="chem-s" id="chem-s"></div>
@@ -218,7 +122,7 @@
       </div>
       <div class="box">
         <h3>찰떡 궁합</h3>
-        <div class="mt"><canvas id="r-match-m" width="130" height="130" aria-hidden="true"></canvas><div><b id="r-match-n"></b></div></div>
+        <div class="mt"><canvas id="r-match-m" width="150" height="150" aria-hidden="true"></canvas><div><b id="r-match-n"></b></div></div>
         <span id="r-match-r" style="font-size:12.5px;color:var(--mut);display:block;margin-top:6px"></span>
       </div>
     </div>
@@ -226,23 +130,24 @@
     <div class="cta">
       <h3 class="cute">내 유형과 <span class="y">찰떡인 사람</span>,<br>실제로 만나볼까요?</h3>
       <p>앱처럼 넘겨보지 않아요.<br>센터장 3명이 신청서를 직접 읽고 한 분씩 이어드려요.</p>
-      <button class="btn btn-y" onclick="goMatching()">내 유형에 딱 맞는 사람 1:1로 만나보기 (신청비 0원)</button>
+      <button class="btn btn-y" onclick="T.apply()">내 유형에 딱 맞는 사람 1:1로 만나보기 (신청비 0원)</button>
       <p class="fine">신청은 무료 · 매칭이 성사됐을 때만 결제해요</p>
     </div>
-    <div style="text-align:center;margin-top:8px"><button class="link" onclick="restart()">다시 테스트하기</button></div>
+    <a class="other" href="/test/work">하나 더! <b>연애 사원증 발급받기 🪪 →</b></a>
+    <div style="text-align:center;margin-top:8px"><button class="link" onclick="T.restart()">다시 테스트하기</button></div>
   </section>
 </div>
 
 <div id="toast" role="status"></div>
 
+<script src="/test/kit.js"></script>
 <script>
 /* ============================================================
    연애 커피 유형 테스트 → '연애 취향 영수증'
-   - 이름·연락처를 받지 않는다. 결과는 바로 보여준다.
-   - 화면에 나오는 숫자는 전부 '내가 고른 답'에서 계산한 것이다.
-     ("오늘 N명 참여", "매칭 가능한 상대 N명" 같은 지어낸 숫자는 넣지 않는다)
-   - 영수증은 그림(이미지) 한 장으로 만든다 → 어느 앱 안에서 열어도 꾹 눌러 저장할 수 있다.
+   화면 틀·캐릭터·공유는 /test/kit.js 가 맡고, 여기에는 질문·유형·영수증 그림만 있다.
+   - 화면에 나오는 숫자는 전부 '내가 고른 답'에서 계산한 것이다 (지어낸 숫자 금지).
    ============================================================ */
+const K=window.SsumKit;
 
 const Q=[
  {cat:"첫인상", q:"소개팅 상대가 카페 문 열고 들어왔다. 나의 첫 행동은?",
@@ -297,59 +202,67 @@ const Q=[
      {t:"편안한 휴식 같은 것",s:{chill:2}}]},
 ];
 
-/* work: 영수증에 들어가는 '직장인 버전' 한 줄 */
+/* spec: 캐릭터 생김새 / nick·say: 캐릭터 이름과 한마디 / work: '직장인 버전' 한 줄 */
 const TYPES={
- dripper:{name:"직진드리퍼",emoji:"🔥",
-   cup:"#F4764E",foam:"#FFE9D2",ink:"#D9502B",bg:["#FFE6D8","#FFC4A3"],soft:"#FFE8DC",
+ dripper:{name:"직진드리퍼",emoji:"🔥",nick:"드립이",say:"좋으면 좋다고 해!",
+   spec:{cup:"#F4764E",foam:"#FFE9D2",eyes:"angry",mouth:"open",top:"flame",pose:"hip"},
+   ink:"#D9502B",bg:["#FFE6D8","#FFC4A3"],soft:"#FFE8DC",
    tagline:"마음 들면 바로 내려버리는 직진파",
    desc:"밀당? 그게 뭔데. 좋으면 좋다고 바로 표현하는 화끈한 직진파예요. 망설이는 사이 식어버리는 게 더 싫은, 솔직하고 적극적인 타입.",
    traits:["고백도 연락도 내가 먼저","읽씹 절대 안 함","감정 숨기는 거 못함"],
    work:"회의는 미뤄도 고백은 안 미루는 편",
    match:{key:"decaf",reason:"내 직진을 편안하게 받아주는 사람"}},
- coldbrew:{name:"콜드브루형",emoji:"🧊",
-   cup:"#8CC6EA",foam:"#EAF7FF",ink:"#2F7FB5",bg:["#E1F3FF","#B7DBF4"],soft:"#E3F3FD",
+ coldbrew:{name:"콜드브루형",emoji:"🧊",nick:"브루",say:"…천천히 와도 돼.",
+   spec:{cup:"#8CC6EA",foam:"#EAF7FF",eyes:"half",mouth:"flat",top:"straw",pose:"think"},
+   ink:"#2F7FB5",bg:["#E1F3FF","#B7DBF4"],soft:"#E3F3FD",
    tagline:"천천히 우러나는 반전 깊이",
    desc:"처음엔 차갑고 거리감 있어 보여도, 알수록 깊은 맛이 우러나는 반전 매력파. 시간은 걸려도 한번 빠지면 진국인 츤데레 스타일.",
    traits:["초반엔 쿨한 척","마음 열리면 한없이 깊음","겉바속촉 그 자체"],
    work:"칼퇴는 빠른데 마음 여는 건 야근",
    match:{key:"honeylatte",reason:"내 차가움을 다정하게 녹여주는 사람"}},
- honeylatte:{name:"꿀라떼형",emoji:"🍯",
-   cup:"#FFC94D",foam:"#FFF6DA",ink:"#D98A00",bg:["#FFF4CF","#FFDB85"],soft:"#FFF3D1",
+ honeylatte:{name:"꿀라떼형",emoji:"🍯",nick:"꿀떼",say:"보고 싶었어!",
+   spec:{cup:"#FFC94D",foam:"#FFF6DA",eyes:"heart",mouth:"open",top:"honey",pose:"heart"},
+   ink:"#D98A00",bg:["#FFF4CF","#FFDB85"],soft:"#FFF3D1",
    tagline:"단내 풀풀, 애정표현 만렙",
    desc:"보고 싶으면 보고 싶다고, 좋으면 좋다고. 애정 표현이 끊이지 않는 다정함 만렙 타입. 함께 있으면 매일이 달달한 사람.",
    traits:["애정표현 아끼지 않음","연락·케어 꾸준","상대를 늘 챙김"],
    work:"업무 메신저는 단답, 애인 카톡은 장문",
    match:{key:"coldbrew",reason:"내 다정함에 서서히 녹는 사람"}},
- americano:{name:"아아고수",emoji:"😎",
-   cup:"#7A503D",foam:"#3F271D",ink:"#7A503D",bg:["#F3E6D9","#DCC1A7"],soft:"#F1E4D8",face:"#FFE9D2",
+ americano:{name:"아아고수",emoji:"😎",nick:"아아",say:"밀당은 기본이지.",
+   spec:{cup:"#7A503D",foam:"#3F271D",face:"#FFE9D2",eyes:"shades",mouth:"smirk",top:"ice",pose:"cross"},
+   ink:"#7A503D",bg:["#F3E6D9","#DCC1A7"],soft:"#F1E4D8",
    tagline:"쿨한 척, 다 계산된 밀당러",
    desc:"겉으론 시크하고 쿨하지만 사실 모든 게 계산된 밀당의 고수. 적당한 긴장감으로 상대를 애타게 만드는 매력적인 전략가예요.",
    traits:["밀당 마스터","쿨한 척 1등","속마음은 잘 안 보여줌"],
    work:"보고서도 연애도 타이밍이 생명",
    match:{key:"vanilla",reason:"내 밀당에도 흔들림 없이 순수한 사람"}},
- vanilla:{name:"바닐라라떼형",emoji:"🫧",
-   cup:"#FFF1D6",foam:"#FFFFFF",ink:"#C28E36",bg:["#FFF7E8","#F5DFBB"],soft:"#FBF0DC",
+ vanilla:{name:"바닐라라떼형",emoji:"🫧",nick:"바닐라",say:"싸우지 말자~",
+   spec:{cup:"#FFF1D6",foam:"#FFFFFF",eyes:"happy",mouth:"smile",top:"bubbles",pose:"wave"},
+   ink:"#C28E36",bg:["#FFF7E8","#F5DFBB"],soft:"#FBF0DC",
    tagline:"부드럽고 무해한 순둥이",
    desc:"착하고 순하고 부드러운, 누구에게나 호감인 순둥이 타입. 자극적이지 않아도 곁에 있으면 마음이 편안해지는 사람이에요.",
    traits:["다툼을 싫어함","상대 배려 1순위","무해美 그 자체"],
    work:"회식 분위기 지킴이, 연애도 평화주의",
    match:{key:"americano",reason:"내가 안심하고 기댈 수 있는 단단한 사람"}},
- espresso:{name:"에스프레소샷",emoji:"⚡",
-   cup:"#C26A3C",foam:"#F7D9B5",ink:"#B5531F",bg:["#FFEBCB","#FFCB86"],soft:"#FFEBD0",
+ espresso:{name:"에스프레소샷",emoji:"⚡",nick:"샷이",say:"지금 당장 가자!",
+   spec:{cup:"#C26A3C",foam:"#F7D9B5",eyes:"wide",mouth:"open",top:"bolt",pose:"up"},
+   ink:"#B5531F",bg:["#FFEBCB","#FFCB86"],soft:"#FFEBD0",
    tagline:"짧고 강렬, 텐션 폭발",
    desc:"함께 있으면 텐션이 폭발하는 에너지 그 자체. 짧고 굵게, 강렬하게 타오르는 열정파예요. 지루할 틈을 안 주는 사람.",
    traits:["텐션 항상 풀가동","즉흥·열정적","같이 있으면 안 심심함"],
    work:"월요일에도 텐션은 금요일",
    match:{key:"decaf",reason:"내 텐션을 차분히 받쳐주는 사람"}},
- decaf:{name:"디카페인형",emoji:"🌙",
-   cup:"#BBA9EC",foam:"#F1EBFF",ink:"#7A5FD0",bg:["#EFE8FF","#CDBFF4"],soft:"#EEE8FF",
+ decaf:{name:"디카페인형",emoji:"🌙",nick:"디카",say:"같이 쉬자…",
+   spec:{cup:"#BBA9EC",foam:"#F1EBFF",eyes:"sleepy",mouth:"o",top:"moon",pose:"down"},
+   ink:"#7A5FD0",bg:["#EFE8FF","#CDBFF4"],soft:"#EEE8FF",
    tagline:"자극 없이 편안한 힐링러",
    desc:"호들갑 없이 잔잔하고 편안한 힐링형. 과한 텐션보다는 안정적이고 차분한 관계를 선호하는, 곁에 있으면 마음이 놓이는 사람.",
    traits:["감정 기복 적음","편안한 분위기 메이커","안정 지향"],
    work:"퇴근 후엔 조용히 같이 쉬는 게 최고",
    match:{key:"espresso",reason:"잔잔한 내 일상에 설렘을 주는 사람"}},
- todaycoffee:{name:"오늘의커피형",emoji:"🎭",
-   cup:"#7FD8C1",foam:"#EFFFF9",ink:"#1F9A7D",bg:["#E0F9F0","#B2E9D8"],soft:"#E1F7EF",
+ todaycoffee:{name:"오늘의커피형",emoji:"🎭",nick:"오늘이",say:"오늘은 어떤 나게?",
+   spec:{cup:"#7FD8C1",foam:"#EFFFF9",eyes:"wink",mouth:"tongue",top:"sparkles",pose:"peace"},
+   ink:"#1F9A7D",bg:["#E0F9F0","#B2E9D8"],soft:"#E1F7EF",
    tagline:"그날그날 다른 변화무쌍 매력",
    desc:"어떤 날은 다정, 어떤 날은 쿨, 어떤 날은 텐션 폭발. 종잡을 수 없는 변화무쌍한 매력으로 절대 질리지 않게 만드는 반전의 아이콘.",
    traits:["예측 불가 매력","상황 따라 다른 모습","늘 새로움"],
@@ -358,49 +271,6 @@ const TYPES={
 };
 
 const AXES=[["bold","직진력"],["sweet","다정함"],["cool","쿨함"],["chill","편안함"]];
-
-const $=id=>document.getElementById(id);
-const STORE="ssum_coffee_v2";
-const KAKAO_KEY="702b5ffe9fbe4643438cdedc5e4e1a52"; // 로그인 화면과 같은 공개용 키
-let step=0, answers=[], scores=null, result=null, myName="", lastBlob=null;
-
-/* 친구가 보낸 링크: /test/ideal?r=유형&n=이름 */
-const FRIEND=(function(){
-  try{
-    const p=new URLSearchParams(location.search);
-    const r=p.get("r"); if(!r||!TYPES[r]) return null;
-    return { key:r, name:cleanName(p.get("n")) };
-  }catch(e){ return null; }
-})();
-function cleanName(v){ return String(v||"").replace(/[<>&"'`\\\/]/g,"").replace(/\s+/g," ").trim().slice(0,10).trim(); }
-
-/* ---------- 화면 전환 ---------- */
-function show(id){ ["intro","quiz","loading","result"].forEach(p=>$(p).classList.add("hidden")); $(id).classList.remove("hidden"); window.scrollTo(0,0); }
-function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("on"),3200); }
-
-function startTest(){ step=0; answers=[]; show("quiz"); renderQ(); }
-function renderQ(){
-  const item=Q[step];
-  $("qcount").textContent="Q"+(step+1)+" / "+Q.length;
-  $("progress").style.width=(step/Q.length*100)+"%";
-  $("qback").disabled = step===0;
-  $("qcat").textContent=item.cat;
-  const qt=$("qtext"); qt.textContent=item.q; qt.classList.remove("fade"); void qt.offsetWidth; qt.classList.add("fade");
-  const box=$("qopts"); box.innerHTML="";
-  item.a.forEach((o,i)=>{
-    const b=document.createElement("button");
-    b.className="opt fade"+(answers[step]===i?" on":""); b.style.animationDelay=(i*45)+"ms";
-    b.textContent=o.t; b.onclick=()=>answer(i,b);
-    box.appendChild(b);
-  });
-}
-function answer(i,btn){
-  answers[step]=i;
-  $("qopts").querySelectorAll("button").forEach(b=>{ b.disabled=true; b.classList.remove("on"); });
-  btn.classList.add("on");
-  setTimeout(()=>{ step++; if(step<Q.length) renderQ(); else finish(); },260);
-}
-function prevQ(){ if(step>0){ step--; renderQ(); } }
 
 function tally(ans){
   const s={bold:0,cool:0,sweet:0,chill:0};
@@ -417,296 +287,56 @@ function shares(s){
   for(let i=0;sum<100&&i<raw.length;i++){ out[raw[i][0]]++; sum++; }
   return out;
 }
-function calc(s){
+/* 유형 판정
+   - 네 성향이 고르게 나오면 '오늘의커피형'
+   - 직진이 가장 높으면: 다정함까지 높으면 텐션 폭발 '에스프레소샷', 아니면 담백한 '직진드리퍼'
+   - 예전 기준은 직진드리퍼가 거의 안 나오고 에스프레소샷이 10명 중 4명꼴로 나왔다.
+     지금은 8개 유형이 모두 7~17% 사이로 나온다 (무작위 답 6만 번으로 확인). */
+function pick(s){
   const entries=Object.entries(s).sort((a,b)=>b[1]-a[1]);
   const dominant=entries[0][0];
   const spread=entries[0][1]-entries[3][1];
-  if(spread<=2) return "todaycoffee";
-  if(dominant==="bold") return s.bold>=6?"espresso":"dripper";
+  if(spread<=3) return "todaycoffee";
+  if(dominant==="bold") return s.sweet>s.chill+1?"espresso":"dripper";
   if(dominant==="sweet") return "honeylatte";
   if(dominant==="cool") return s.chill>=s.sweet?"americano":"coldbrew";
-  if(dominant==="chill") return s.bold>=4?"espresso":(s.sweet>=4?"vanilla":"decaf");
-  return "todaycoffee";
-}
-
-function finish(){
-  $("progress").style.width="100%";
-  scores=tally(answers); result=calc(scores);
-  try{ localStorage.setItem(STORE, JSON.stringify({k:result,s:scores,n:myName,t:Date.now()})); }catch(e){}
-  drawMascotOn($("load-m"), result);
-  show("loading");
-  setTimeout(showResult, 1300);
-}
-function showSaved(){
-  try{
-    const d=JSON.parse(localStorage.getItem(STORE)||"null");
-    if(!d||!TYPES[d.k]||!d.s) return;
-    result=d.k; scores=d.s; myName=cleanName(d.n);
-    $("progress").style.width="100%";
-    showResult();
-  }catch(e){}
-}
-function restart(){ step=0; answers=[]; scores=null; result=null; $("progress").style.width="0%"; show("intro"); }
-
-function showResult(){
-  const t=TYPES[result], m=TYPES[t.match.key];
-  $("r-type").textContent=t.name;
-  $("r-tagline").textContent=t.emoji+" "+t.tagline;
-  $("r-desc").textContent=t.desc;
-  const ul=$("r-traits"); ul.innerHTML=""; t.traits.forEach(x=>{ const li=document.createElement("li"); li.textContent=x; ul.appendChild(li); });
-  drawMascotOn($("r-match-m"), t.match.key);
-  $("r-match-n").textContent=m.name;
-  $("r-match-r").textContent=t.match.reason;
-  $("i-name").value=myName;
-
-  // 친구 링크로 들어와서 끝낸 경우 — 둘의 케미
-  if(FRIEND){
-    const f=TYPES[FRIEND.key], who=FRIEND.name?FRIEND.name+"님":"친구";
-    drawMascotOn($("chem-a"), FRIEND.key); drawMascotOn($("chem-b"), result);
-    let head, sub;
-    if(t.match.key===FRIEND.key || f.match.key===result){ head="💘 찰떡 케미!"; sub="서로의 빈 곳을 채워주는 조합이에요"; }
-    else if(FRIEND.key===result){ head="👯 닮은꼴 케미!"; sub="말 안 해도 통하는 같은 메뉴예요"; }
-    else { head="🎨 섞으면 새 메뉴!"; sub="서로 달라서 같이 있으면 더 재밌는 조합이에요"; }
-    $("chem-t").textContent=head;
-    $("chem-s").textContent=who+"("+f.name+") × 나("+t.name+") · "+sub;
-    $("chem").classList.remove("hidden");
-  }
-  show("result");
-  renderReceipt(true);
-  loadKakao(); // 카톡 공유 버튼을 누를 때 바로 뜨도록 미리 준비
-}
-
-function applyName(){
-  myName=cleanName($("i-name").value);
-  $("i-name").value=myName;
-  try{ const d=JSON.parse(localStorage.getItem(STORE)||"null"); if(d){ d.n=myName; localStorage.setItem(STORE, JSON.stringify(d)); } }catch(e){}
-  renderReceipt(false);
-  toast(myName?"영수증에 이름을 넣었어요 ✏️":"이름을 뺐어요");
-}
-$("i-name").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); applyName(); e.target.blur(); } });
-
-/* ---------- 공유 ---------- */
-function shareUrl(){
-  const u=new URL("/test/ideal", location.origin);
-  u.searchParams.set("r", result);
-  if(myName) u.searchParams.set("n", myName);
-  return u.toString();
-}
-function shareText(){
-  const t=TYPES[result];
-  return (myName?myName+"의":"내")+" 연애 커피 유형은 "+t.emoji+" "+t.name+"! 너는 어떤 커피야?";
-}
-async function saveImage(){
-  if(!lastBlob){ toast("영수증을 준비 중이에요. 잠시 후 다시 눌러주세요"); return; }
-  const file=new File([lastBlob],"ssum-receipt.png",{type:"image/png"});
-  // 폰: 공유 창이 뜨고 거기서 '이미지 저장'이나 인스타그램 스토리를 고를 수 있다
-  try{
-    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file]}); return; }
-  }catch(e){ if(e && e.name==="AbortError") return; }
-  try{
-    const a=document.createElement("a"); a.href=URL.createObjectURL(lastBlob); a.download="ssum-receipt.png";
-    document.body.appendChild(a); a.click(); a.remove();
-    toast("저장했어요! 안 됐다면 영수증을 꾹 눌러 저장해주세요");
-  }catch(e){ toast("영수증을 꾹 눌러서 저장해주세요 📌"); }
-}
-async function copyLink(){
-  const url=shareUrl();
-  try{ await navigator.clipboard.writeText(url); toast("링크를 복사했어요! 친구한테 붙여넣어 보내보세요 ☕"); }
-  catch(e){
-    // 일부 앱 안 브라우저는 복사를 막는다 → 직접 고를 수 있게 보여준다
-    window.prompt("아래 주소를 복사해서 보내주세요", url);
-  }
-}
-let kakaoReady=null;
-function loadKakao(){
-  if(kakaoReady) return kakaoReady;
-  kakaoReady=new Promise(res=>{
-    const done=()=>{ try{ if(!window.Kakao) return res(false); if(!Kakao.isInitialized()) Kakao.init(KAKAO_KEY); res(!!(Kakao.Share&&Kakao.Share.sendDefault)); }catch(e){ res(false); } };
-    if(window.Kakao) return done();
-    const s=document.createElement("script"); s.src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js";
-    s.onload=done; s.onerror=()=>res(false); document.head.appendChild(s);
-    setTimeout(()=>res(false),6000);
-  });
-  return kakaoReady;
-}
-async function shareKakao(){
-  const url=shareUrl(), text=shareText();
-  const ok=await loadKakao();
-  if(ok){
-    try{
-      Kakao.Share.sendDefault({
-        objectType:"feed",
-        content:{ title:text, description:"10문항 · 1분. 해보면 둘의 케미도 나와요 ☕", imageUrl:location.origin+"/test/og-coffee.png", link:{mobileWebUrl:url, webUrl:url} },
-        buttons:[{ title:"나도 해보기", link:{mobileWebUrl:url, webUrl:url} }]
-      });
-      return;
-    }catch(e){ /* 아래 방법으로 넘어간다 */ }
-  }
-  try{ if(navigator.share){ await navigator.share({ text:text, url:url }); return; } }
-  catch(e){ if(e && e.name==="AbortError") return; }
-  copyLink();
-}
-function goMatching(){
-  // from=test → 신청서의 '어떻게 알고 오셨어요?'에 '유형 테스트'가 자동으로 들어간다
-  location.href="/matching?from=test&result="+encodeURIComponent(TYPES[result].name);
-}
-
-/* ============================================================
-   캐릭터 — 유형마다 표정이 다른 커피잔
-   (그림 파일 없이 직접 그린다: 어디서든 깨지지 않고, 영수증 이미지에도 그대로 들어간다)
-   ============================================================ */
-const OUT="#4a2e1f";
-function rr(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.quadraticCurveTo(x+w,y,x+w,y+r); c.lineTo(x+w,y+h-r); c.quadraticCurveTo(x+w,y+h,x+w-r,y+h); c.lineTo(x+r,y+h); c.quadraticCurveTo(x,y+h,x,y+h-r); c.lineTo(x,y+r); c.quadraticCurveTo(x,y,x+r,y); c.closePath(); }
-function heart(c,x,y,s){ c.beginPath(); c.moveTo(x,y+s*.3); c.bezierCurveTo(x-s*.6,y-s*.25,x-s*.28,y-s*.62,x,y-s*.22); c.bezierCurveTo(x+s*.28,y-s*.62,x+s*.6,y-s*.25,x,y+s*.3); c.closePath(); }
-function star4(c,x,y,s){ c.beginPath(); c.moveTo(x,y-s); c.quadraticCurveTo(x+s*.18,y-s*.18,x+s,y); c.quadraticCurveTo(x+s*.18,y+s*.18,x,y+s); c.quadraticCurveTo(x-s*.18,y+s*.18,x-s,y); c.quadraticCurveTo(x-s*.18,y-s*.18,x,y-s); c.closePath(); }
-
-function mascot(c,cx,cy,s,key){
-  const T=TYPES[key], lw=Math.max(2,s*.034), FACE=T.face||OUT;
-  c.save(); c.translate(cx,cy); c.lineJoin="round"; c.lineCap="round";
-  const fs=(col)=>{ c.fillStyle=col; c.fill(); c.lineWidth=lw; c.strokeStyle=OUT; c.stroke(); };
-
-  // 바닥 그림자
-  c.fillStyle="rgba(74,46,31,.13)"; c.beginPath(); c.ellipse(0,s*.42,s*.33,s*.045,0,0,Math.PI*2); c.fill();
-  // 손잡이
-  c.beginPath(); c.arc(s*.33,s*.1,s*.125,-Math.PI*.5,Math.PI*.5); c.lineWidth=lw*3.1; c.strokeStyle=OUT; c.stroke();
-  c.beginPath(); c.arc(s*.33,s*.1,s*.125,-Math.PI*.5,Math.PI*.5); c.lineWidth=lw*1.3; c.strokeStyle=T.cup; c.stroke();
-
-  // 위에 올라가는 장식 (잔 뒤에 그려야 자연스러운 것들)
-  if(key==="coldbrew"){ // 빨대
-    c.beginPath(); c.moveTo(s*.1,-s*.16); c.lineTo(s*.22,-s*.5); c.lineWidth=lw*2.6; c.strokeStyle=OUT; c.stroke();
-    c.beginPath(); c.moveTo(s*.1,-s*.16); c.lineTo(s*.22,-s*.5); c.lineWidth=lw*1.2; c.strokeStyle="#FF8FA3"; c.stroke();
-  }
-
-  // 몸통
-  rr(c,-s*.33,-s*.17,s*.66,s*.57,s*.17); fs(T.cup);
-  // 윗면(거품)
-  c.beginPath(); c.ellipse(0,-s*.17,s*.335,s*.085,0,0,Math.PI*2); fs(T.foam);
-
-  // 볼터치
-  c.fillStyle="rgba(255,105,125,.42)";
-  c.beginPath(); c.ellipse(-s*.215,s*.19,s*.052,s*.032,0,0,Math.PI*2); c.fill();
-  c.beginPath(); c.ellipse(s*.215,s*.19,s*.052,s*.032,0,0,Math.PI*2); c.fill();
-
-  // 눈
-  const ex=s*.125, ey=s*.09, er=s*.036;
-  const dot=(x,r)=>{ c.fillStyle=FACE; c.beginPath(); c.arc(x,ey,r,0,Math.PI*2); c.fill(); c.fillStyle="#fff"; c.beginPath(); c.arc(x-r*.3,ey-r*.35,r*.32,0,Math.PI*2); c.fill(); };
-  const arcEye=(x,up)=>{ c.beginPath(); if(up) c.arc(x,ey+s*.02,s*.045,Math.PI*1.12,Math.PI*1.88); else c.arc(x,ey-s*.02,s*.045,Math.PI*.12,Math.PI*.88); c.lineWidth=lw*1.15; c.strokeStyle=FACE; c.stroke(); };
-  const line=(x1,y1,x2,y2,w)=>{ c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.lineWidth=w||lw*1.15; c.strokeStyle=FACE; c.stroke(); };
-  const smile=(w)=>{ c.beginPath(); c.arc(0,s*.15,w||s*.05,Math.PI*.12,Math.PI*.88); c.lineWidth=lw*1.15; c.strokeStyle=FACE; c.stroke(); };
-  const openMouth=(w)=>{ c.beginPath(); c.arc(0,s*.165,w,0,Math.PI); c.closePath(); c.fillStyle="#B8403A"; c.fill(); c.lineWidth=lw; c.strokeStyle=FACE; c.stroke(); };
-
-  if(key==="dripper"){
-    dot(-ex,er); dot(ex,er);
-    line(-ex-s*.06,ey-s*.085,-ex+s*.045,ey-s*.055); line(ex+s*.06,ey-s*.085,ex-s*.045,ey-s*.055);
-    openMouth(s*.055);
-  }else if(key==="coldbrew"){
-    // 반쯤 감은 시크한 눈
-    [-ex,ex].forEach(x=>{ c.beginPath(); c.arc(x,ey-s*.005,er*1.15,0,Math.PI); c.closePath(); c.fillStyle=FACE; c.fill(); line(x-er*1.5,ey-s*.005,x+er*1.5,ey-s*.005); });
-    line(-s*.035,s*.185,s*.035,s*.185);
-  }else if(key==="honeylatte"){
-    c.fillStyle="#FF5C7A"; heart(c,-ex,ey+s*.02,s*.115); c.fill(); heart(c,ex,ey+s*.02,s*.115); c.fill();
-    openMouth(s*.06);
-  }else if(key==="americano"){
-    // 선글라스
-    c.fillStyle="#1d1512"; rr(c,-ex-s*.085,ey-s*.05,s*.17,s*.105,s*.04); c.fill(); rr(c,ex-s*.085,ey-s*.05,s*.17,s*.105,s*.04); c.fill();
-    c.beginPath(); c.moveTo(-ex+s*.08,ey-s*.02); c.lineTo(ex-s*.08,ey-s*.02); c.lineWidth=lw*1.2; c.strokeStyle="#1d1512"; c.stroke();
-    c.strokeStyle="rgba(255,255,255,.75)"; c.lineWidth=lw*.8;
-    [-ex,ex].forEach(x=>{ c.beginPath(); c.moveTo(x-s*.045,ey+s*.02); c.lineTo(x-s*.01,ey-s*.025); c.stroke(); });
-    // 한쪽만 올린 입꼬리
-    c.beginPath(); c.moveTo(-s*.05,s*.19); c.quadraticCurveTo(s*.01,s*.215,s*.065,s*.165); c.lineWidth=lw*1.15; c.strokeStyle=FACE; c.stroke();
-  }else if(key==="vanilla"){
-    arcEye(-ex,true); arcEye(ex,true); smile(s*.045);
-  }else if(key==="espresso"){
-    dot(-ex,er*1.45); dot(ex,er*1.45); openMouth(s*.07);
-  }else if(key==="decaf"){
-    arcEye(-ex,false); arcEye(ex,false);
-    c.beginPath(); c.arc(0,s*.175,s*.022,0,Math.PI*2); c.lineWidth=lw; c.strokeStyle=FACE; c.stroke();
-  }else{ // todaycoffee — 윙크
-    arcEye(-ex,true); dot(ex,er*1.1);
-    smile(s*.055);
-    c.fillStyle="#FF7A8A"; c.beginPath(); c.ellipse(s*.012,s*.205,s*.026,s*.03,0,0,Math.PI); c.fill();
-  }
-
-  // 위에 올라가는 장식
-  if(key==="dripper"){ // 불꽃
-    c.beginPath(); c.moveTo(0,-s*.52); c.bezierCurveTo(s*.16,-s*.38,s*.13,-s*.22,0,-s*.22); c.bezierCurveTo(-s*.13,-s*.22,-s*.15,-s*.36,-s*.04,-s*.42); c.bezierCurveTo(-s*.03,-s*.46,-s*.02,-s*.49,0,-s*.52); c.closePath(); fs("#FF7A2E");
-    c.beginPath(); c.moveTo(0,-s*.38); c.bezierCurveTo(s*.07,-s*.32,s*.06,-s*.25,0,-s*.25); c.bezierCurveTo(-s*.06,-s*.25,-s*.06,-s*.31,0,-s*.38); c.closePath(); c.fillStyle="#FFD93B"; c.fill();
-  }else if(key==="coldbrew"||key==="americano"){ // 얼음
-    const cube=(x,y,a,z)=>{ c.save(); c.translate(x,y); c.rotate(a); rr(c,-z/2,-z/2,z,z,z*.22); fs("#EEF8FF"); c.restore(); };
-    cube(-s*.12,-s*.21,-.25,s*.13); cube(s*.02,-s*.235,.3,s*.115);
-    if(key==="americano"){ c.fillStyle="#FFD93B"; star4(c,-s*.33,-s*.36,s*.06); c.fill(); }
-  }else if(key==="honeylatte"){ // 흘러내리는 꿀 + 하트
-    c.beginPath(); c.moveTo(-s*.31,-s*.15); c.quadraticCurveTo(-s*.3,-s*.02,-s*.24,-s*.02); c.quadraticCurveTo(-s*.18,-s*.02,-s*.18,-s*.1);
-    c.quadraticCurveTo(-s*.1,-s*.04,-s*.07,.06*s); c.quadraticCurveTo(-s*.03,.1*s,0,.04*s); c.quadraticCurveTo(s*.01,-s*.06,s*.08,-s*.09);
-    c.quadraticCurveTo(s*.2,-s*.1,s*.31,-s*.15); c.quadraticCurveTo(0,-s*.06,-s*.31,-s*.15); c.closePath(); c.fillStyle="#F59E0B"; c.fill();
-    c.fillStyle="#FF5C7A"; heart(c,s*.3,-s*.4,s*.1); c.fill(); heart(c,s*.42,-s*.27,s*.055); c.fill();
-  }else if(key==="vanilla"){ // 방울
-    [[-s*.3,-s*.36,s*.06],[-s*.17,-s*.47,s*.04],[s*.27,-s*.4,s*.05]].forEach(([x,y,r])=>{ c.beginPath(); c.arc(x,y,r,0,Math.PI*2); c.fillStyle="rgba(255,255,255,.85)"; c.fill(); c.lineWidth=lw*.7; c.strokeStyle="#C9A66B"; c.stroke(); });
-  }else if(key==="espresso"){ // 번개
-    c.beginPath(); c.moveTo(s*.04,-s*.56); c.lineTo(-s*.1,-s*.36); c.lineTo(-s*.01,-s*.36); c.lineTo(-s*.06,-s*.22); c.lineTo(s*.11,-s*.42); c.lineTo(s*.02,-s*.42); c.closePath(); fs("#FFD93B");
-  }else if(key==="decaf"){ // 초승달 + 별
-    const x=s*.2,y=-s*.4,r=s*.11,d=s*.075,r2=s*.1;
-    const th=Math.acos((d*d+r*r-r2*r2)/(2*d*r)), ph=Math.acos((d*d+r2*r2-r*r)/(2*d*r2));
-    c.beginPath(); c.arc(x,y,r,th,Math.PI*2-th); c.arc(x+d,y,r2,Math.PI+ph,Math.PI-ph,true); c.closePath(); fs("#FFD93B");
-    c.fillStyle="#FFD93B"; star4(c,-s*.26,-s*.38,s*.05); c.fill(); star4(c,-s*.1,-s*.48,s*.032); c.fill();
-  }else if(key==="todaycoffee"){ // 색색 반짝이
-    c.fillStyle="#FF8FA3"; star4(c,-s*.28,-s*.38,s*.07); c.fill();
-    c.fillStyle="#FFD93B"; star4(c,s*.02,-s*.48,s*.055); c.fill();
-    c.fillStyle="#8CC6EA"; star4(c,s*.3,-s*.36,s*.065); c.fill();
-  }
-  c.restore();
-}
-function drawMascotOn(cv,key){
-  if(!cv||!TYPES[key]) return;
-  const c=cv.getContext("2d"), w=cv.width;
-  c.clearRect(0,0,w,cv.height);
-  mascot(c,w/2,cv.height*.56,w*.9,key);
+  return s.sweet>=s.cool?"vanilla":"decaf";
 }
 
 /* ============================================================
    영수증 그리기 (1080 × 1920 — 인스타그램 스토리 크기)
    ============================================================ */
-const BODY="-apple-system,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif";
-/* 귀여운 글꼴(Jua)을 실제로 불러왔을 때만 쓴다. 못 불러왔으면 기본 글꼴을 굵게 써서 얇아 보이지 않게 한다. */
-function cuteFont(px){
-  let ok=false;
-  try{ document.fonts.forEach(f=>{ if(/Jua/i.test(f.family) && f.status==="loaded") ok=true; }); }catch(e){}
-  return ok ? px+"px 'Jua',"+BODY : "800 "+px+"px "+BODY;
-}
-function today(){ const d=new Date(Date.now()+9*3600*1000); const p=n=>String(n).padStart(2,"0"); return d.getUTCFullYear()+"."+p(d.getUTCMonth()+1)+"."+p(d.getUTCDate()); }
-function wrapLines(c,text,maxW){
-  const words=String(text).split(" "); const lines=[]; let cur="";
-  words.forEach(w=>{ const t=cur?cur+" "+w:w; if(c.measureText(t).width>maxW && cur){ lines.push(cur); cur=w; } else cur=t; });
-  if(cur) lines.push(cur); return lines;
-}
-
-function buildReceipt(){
-  const T=TYPES[result], M=TYPES[T.match.key];
+function buildReceipt(st){
+  const T=TYPES[st.key], M=TYPES[T.match.key], scores=st.data, BODY=K.BODY;
   const W=1080,H=1920, PW=880, PAD=66, INK="#3b2a20", SUB="#a08a76", DASH="#dccbb7";
   const L=PAD, R=PW-PAD, CX=PW/2;
 
   // ① 내용만 먼저 따로 그린다 (높이를 알아야 종이 크기를 정할 수 있다)
-  const cc=document.createElement("canvas"); cc.width=PW; cc.height=2600;
+  const cc=document.createElement("canvas"); cc.width=PW; cc.height=2700;
   const c=cc.getContext("2d"); c.textBaseline="alphabetic";
-  const text=(s,x,y,font,col,align)=>{ c.font=font; c.fillStyle=col; c.textAlign=align||"left"; c.fillText(s,x,y); };
+  const text=(s,x,y,font,col,align)=>{ c.font=font; c.fillStyle=col; c.textAlign=align||"left"; c.textBaseline="alphabetic"; c.fillText(s,x,y); };
   const dash=(y)=>{ c.save(); c.setLineDash([12,11]); c.beginPath(); c.moveTo(L,y); c.lineTo(R,y); c.lineWidth=3; c.strokeStyle=DASH; c.stroke(); c.restore(); };
 
-  let y=40;
-  mascot(c,CX,y+120,230,result); y+=258;
+  let y=30;
+  // 캐릭터 + 말풍선
+  K.mascot(c,CX-70,y+150,250,T.spec);
+  K.speech(c,CX+72,y+52,T.say,27,INK);
+  text(T.nick,CX+92,y+142,"700 24px "+BODY,T.ink);
+  y+=318;
   text("S S U M   C E N T E R",CX,y,"700 22px "+BODY,SUB,"center"); y+=74;
-  text("연애 취향 영수증",CX,y,cuteFont(70),INK,"center"); y+=40;
+  text("연애 취향 영수증",CX,y,K.cuteFont(70),INK,"center"); y+=40;
   dash(y); y+=52;
 
   text("주문자",L,y,"600 28px "+BODY,SUB);
-  text(myName?myName+" 님":"익명의 손님",R,y,"700 30px "+BODY,INK,"right"); y+=46;
+  text(st.name?st.name+" 님":"익명의 손님",R,y,"700 30px "+BODY,INK,"right"); y+=46;
   text("발행일",L,y,"600 28px "+BODY,SUB);
-  text(today(),R,y,"700 30px "+BODY,INK,"right"); y+=30;
+  text(K.today(),R,y,"700 30px "+BODY,INK,"right"); y+=30;
   dash(y); y+=58;
 
   text("오늘의 연애 메뉴",CX,y,"600 26px "+BODY,SUB,"center"); y+=92;
-  text(T.name,CX,y,cuteFont(92),T.ink,"center"); y+=52;
+  text(T.name,CX,y,K.cuteFont(92),T.ink,"center"); y+=52;
   c.font="600 31px "+BODY;
-  wrapLines(c,"“"+T.tagline+"”",R-L).forEach(ln=>{ text(ln,CX,y,"600 31px "+BODY,INK,"center"); y+=42; });
+  K.wrapLines(c,"“"+T.tagline+"”",R-L).forEach(ln=>{ text(ln,CX,y,"600 31px "+BODY,INK,"center"); y+=42; });
   y-=8; dash(y); y+=56;
 
   // 연애 성분 함량 — 내가 고른 답에서 계산한 값 (네 가지를 합치면 100%)
@@ -715,11 +345,7 @@ function buildReceipt(){
   AXES.forEach(([k,label])=>{
     const on=Math.round((scores[k]||0)/top*5);
     text(label,L,y,"700 30px "+BODY,INK);
-    for(let i=0;i<5;i++){
-      const hx=L+178+i*74;
-      heart(c,hx+26,y-10,44);
-      c.fillStyle=i<on?T.ink:"#eadfd0"; c.fill();
-    }
+    for(let i=0;i<5;i++){ K.heart(c,L+204+i*74,y-10,44); c.fillStyle=i<on?T.ink:"#eadfd0"; c.fill(); }
     text(mix[k]+"%",R,y,"700 29px "+BODY,SUB,"right");
     y+=56;
   });
@@ -731,47 +357,36 @@ function buildReceipt(){
 
   // 직장인 버전 한 줄
   c.font="700 30px "+BODY;
-  const wl=wrapLines(c,T.work,R-L-56), bh=74+wl.length*42;
-  rr(c,L,y,R-L,bh,22); c.fillStyle=T.soft; c.fill();
+  const wl=K.wrapLines(c,T.work,R-L-56), bh=74+wl.length*42;
+  K.rr(c,L,y,R-L,bh,22); c.fillStyle=T.soft; c.fill();
   c.font="700 21px "+BODY; const tagW=c.measureText("직장인 버전").width+30;
-  rr(c,L+26,y+18,tagW,34,17); c.fillStyle=T.ink; c.fill();
+  K.rr(c,L+26,y+18,tagW,34,17); c.fillStyle=T.ink; c.fill();
   text("직장인 버전",L+26+tagW/2,y+42,"700 21px "+BODY,"#fff","center");
   let wy=y+92; wl.forEach(ln=>{ text(ln,L+28,wy,"700 30px "+BODY,INK); wy+=42; });
   y+=bh+34; dash(y); y+=30;
 
   // 찰떡 궁합
-  mascot(c,R-62,y+58,118,T.match.key);
+  K.mascot(c,R-74,y+62,128,M.spec);
   text("찰떡 궁합",L,y+34,"600 26px "+BODY,SUB);
-  text(M.name,L,y+84,cuteFont(46),INK);
+  text(M.name,L,y+84,K.cuteFont(46),INK);
   c.font="500 24px "+BODY;
-  const rl=wrapLines(c,T.match.reason,R-L-150); let ry=y+120; rl.forEach(ln=>{ text(ln,L,ry,"500 24px "+BODY,SUB); ry+=32; });
-  y=Math.max(y+124,ry-8)+18; dash(y); y+=62;
+  let ry=y+120; K.wrapLines(c,T.match.reason,R-L-170).forEach(ln=>{ text(ln,L,ry,"500 24px "+BODY,SUB); ry+=32; });
+  y=Math.max(y+134,ry-8)+18; dash(y); y+=62;
 
   text("합계",L,y,"700 32px "+BODY,INK);
-  text("설렘 1잔 ♥",R,y,cuteFont(50),T.ink,"right"); y+=40;
+  text("설렘 1잔 ♥",R,y,K.cuteFont(50),T.ink,"right"); y+=46;
 
-  // 바코드 (유형마다 모양이 다르다)
-  let seed=0; for(const ch of result) seed=(seed*31+ch.charCodeAt(0))>>>0;
-  const rnd=()=>{ seed=(seed*1664525+1013904223)>>>0; return seed/4294967296; };
-  let bx=CX-240; c.fillStyle=INK;
-  while(bx<CX+240){ const w=3+Math.floor(rnd()*3)*3; c.fillRect(bx,y,w,58); bx+=w+4+Math.floor(rnd()*3)*3; }
-  y+=96;
+  // 바코드 + 도장
+  K.barcode(c,CX+40,y,440,58,st.key,INK);
+  K.stamp(c,L+60,y+32,56,"취향확인","완료",T.ink,-.24);
+  y+=122;
   text("너는 어떤 커피야?  ssumcenter.vercel.app/test/ideal",CX,y,"600 23px "+BODY,SUB,"center"); y+=40;
   const CH=y;
 
   // ② 배경 + 종이 + 내용을 한 장으로
   const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
   const g=cv.getContext("2d");
-  const grad=g.createLinearGradient(0,0,W,H); grad.addColorStop(0,T.bg[0]); grad.addColorStop(1,T.bg[1]);
-  g.fillStyle=grad; g.fillRect(0,0,W,H);
-  // 배경에 흩뿌린 하트·별
-  let s2=7; const r2=()=>{ s2=(s2*1103515245+12345)>>>0; return s2/4294967296; };
-  for(let i=0;i<34;i++){
-    const x=r2()*W, yy=r2()*H, z=14+r2()*26;
-    g.fillStyle="rgba(255,255,255,"+(0.35+r2()*0.35)+")";
-    if(i%2) heart(g,x,yy,z*1.5); else star4(g,x,yy,z);
-    g.fill();
-  }
+  K.backdrop(g,W,H,T.bg);
   const maxH=H-150, sc=Math.min(1,maxH/CH), pw=PW*sc, ph=CH*sc, px=(W-pw)/2, py=(H-ph)/2;
   // 종이 (위아래 톱니)
   const tooth=30*sc, n=Math.round(pw/tooth), tw=pw/n;
@@ -785,32 +400,30 @@ function buildReceipt(){
   return cv;
 }
 
-async function renderReceipt(animate){
-  // 귀여운 글꼴이 준비될 때까지 잠깐만 기다린다 (못 불러오면 기본 글꼴로 그린다)
-  try{ if(document.fonts && document.fonts.load){ await Promise.race([document.fonts.load("70px Jua","연애 취향 영수증"), new Promise(r=>setTimeout(r,1500))]); } }catch(e){}
-  if(!result) return;
-  const T=TYPES[result];
-  const cv=buildReceipt();
-  const img=$("receipt-img");
-  img.alt=(myName?myName+"님":"나")+"의 연애 취향 영수증 — "+T.name+". "+T.tagline+". 찰떡 궁합은 "+TYPES[T.match.key].name+".";
-  img.src=cv.toDataURL("image/png");
-  $("r-who").textContent=myName?myName+"님":"당신";
-  const box=$("receipt"); box.classList.remove("go"); if(animate){ void box.offsetWidth; box.classList.add("go"); }
-  lastBlob=null;
-  cv.toBlob(b=>{ lastBlob=b; },"image/png");
-}
-
-/* ---------- 처음 화면 준비 ---------- */
-try{ if(document.fonts && document.fonts.load){ document.fonts.load("20px Jua","가").then(function(){ document.fonts.forEach(function(f){ if(/Jua/i.test(f.family) && f.status==="loaded") document.documentElement.classList.add("jua"); }); }).catch(function(){}); } }catch(e){}
-document.querySelectorAll("canvas[data-m]").forEach(cv=>drawMascotOn(cv,cv.dataset.m));
-drawMascotOn($("load-m"),"honeylatte");
-if(FRIEND){
-  const f=TYPES[FRIEND.key];
-  drawMascotOn($("friend-m"),FRIEND.key);
-  $("friend-t").textContent=(FRIEND.name?FRIEND.name+"님은 ":"친구는 ")+f.emoji+" "+f.name+"!";
-  $("friend").classList.remove("hidden");
-}
-try{ const d=JSON.parse(localStorage.getItem(STORE)||"null"); if(d&&TYPES[d.k]&&d.s) $("again-link").classList.remove("hidden"); }catch(e){}
+const T=K.run({
+  store:"ssum_coffee_v2", path:"/test/ideal", og:"/test/og-coffee.png", fileName:"ssum-receipt.png",
+  questions:Q, types:TYPES,
+  calc(answers){ const s=tally(answers); return { key:pick(s), data:s }; },
+  build:buildReceipt,
+  detail(key,data,t){
+    const m=TYPES[t.match.key];
+    document.getElementById("r-tagline").textContent=t.emoji+" "+t.tagline;
+    document.getElementById("r-desc").textContent=t.desc;
+    const ul=document.getElementById("r-traits"); ul.innerHTML="";
+    t.traits.forEach(x=>{ const li=document.createElement("li"); li.textContent=x; ul.appendChild(li); });
+    K.drawOn(document.getElementById("r-match-m"), m.spec);
+    document.getElementById("r-match-n").textContent=m.name;
+    document.getElementById("r-match-r").textContent=t.match.reason;
+  },
+  shareText(name,t){ return (name?name+"의":"내")+" 연애 커피 유형은 "+t.emoji+" "+t.name+"! 너는 어떤 커피야?"; },
+  alt(name,t){ return (name?name+"님":"나")+"의 연애 취향 영수증 — "+t.name+". "+t.tagline+". 찰떡 궁합은 "+TYPES[t.match.key].name+"."; },
+  chem(friendKey,myKey){
+    const f=TYPES[friendKey], t=TYPES[myKey];
+    if(t.match.key===friendKey || f.match.key===myKey) return { head:"💘 찰떡 케미!", sub:"서로의 빈 곳을 채워주는 조합이에요" };
+    if(friendKey===myKey) return { head:"👯 닮은꼴 케미!", sub:"말 안 해도 통하는 같은 메뉴예요" };
+    return { head:"🎨 섞으면 새 메뉴!", sub:"서로 달라서 같이 있으면 더 재밌는 조합이에요" };
+  },
+});
 </script>
 </body>
 </html>
