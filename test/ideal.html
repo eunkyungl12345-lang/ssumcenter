@@ -39,8 +39,10 @@
     <!-- 친구가 보낸 링크로 들어온 경우에만 보인다 -->
     <div id="friend" class="friend hidden">
       <canvas id="friend-m" width="180" height="180" aria-hidden="true"></canvas>
-      <div><b id="friend-t"></b><span>나도 해보면 둘의 케미가 나와요</span></div>
+      <div><b id="friend-t"></b><span>해보면 둘의 케미가 나와요</span></div>
     </div>
+    <!-- 이미 해본 사람이 친구 링크로 들어온 경우: 다시 풀지 않고 바로 케미 보기 -->
+    <button id="friend-go" class="btn btn-ghost hidden" style="margin:-8px 0 18px" onclick="T.showSaved()">✨ 내 결과로 케미 바로 보기</button>
 
     <div class="parade" aria-hidden="true">
       <canvas width="210" height="210" data-m="dripper"></canvas>
@@ -71,6 +73,7 @@
   <!-- 영수증 뽑는 중 -->
   <section id="loading" class="printing hidden">
     <canvas id="load-m" width="280" height="280" aria-hidden="true"></canvas>
+    <div><div class="say up"><small id="say-name"></small><span id="say-text"></span></div></div>
     <h2 class="cute">영수증 뽑는 중…</h2>
     <p>주문하신 연애 취향을 정리하고 있어요 🧾</p>
   </section>
@@ -81,11 +84,6 @@
       <small>YOUR COFFEE TYPE</small>
       <h2 class="cute"><span id="r-who">당신</span>의 연애 커피는 <span class="y" id="r-type"></span></h2>
     </div>
-    <div class="hero">
-      <canvas id="hero-m" width="240" height="240" aria-hidden="true"></canvas>
-      <div class="say"><small id="say-name"></small><span id="say-text"></span></div>
-    </div>
-
     <div class="receipt" id="card"><img id="card-img" alt=""></div>
     <p class="hint">📌 영수증을 <b>꾹 누르면</b> 사진으로 저장돼요</p>
 
@@ -97,7 +95,7 @@
     <div class="share">
       <button class="btn btn-y" onclick="T.save()">📸 이미지로 저장 · 스토리에 올리기</button>
       <div class="row">
-        <button class="btn btn-kakao" onclick="T.kakao()">💬 카톡 공유</button>
+        <button class="btn btn-kakao" onclick="T.kakao()">💬 친구랑 케미</button>
         <button class="btn btn-ghost" onclick="T.copy()">🔗 링크 복사</button>
       </div>
     </div>
@@ -109,6 +107,7 @@
       </div>
       <div class="chem-t cute" id="chem-t"></div>
       <div class="chem-s" id="chem-s"></div>
+      <button id="chem-send" class="btn btn-kakao chem-send" onclick="T.kakao()">💌 친구에게 내 결과 보내기</button>
       <p class="tip" style="margin-top:12px">💡 둘 다 매칭 성공 시 첫 만남 결제 2,000원씩 할인</p>
     </div>
 
@@ -123,9 +122,13 @@
       </div>
       <div class="box">
         <h3>찰떡 궁합</h3>
-        <div class="mt"><canvas id="r-match-m" width="150" height="150" aria-hidden="true"></canvas><div><b id="r-match-n"></b></div></div>
-        <span id="r-match-r" style="font-size:12.5px;color:var(--mut);display:block;margin-top:6px"></span>
+        <div class="mt"><canvas id="r-match-m" width="150" height="150" aria-hidden="true"></canvas><div><b id="r-match-n"></b><span id="r-match-r"></span></div></div>
       </div>
+    </div>
+
+    <div class="box">
+      <h3>8가지 유형 중 나는?</h3>
+      <div class="all8" id="all8"></div>
     </div>
 
     <div class="cta">
@@ -140,6 +143,12 @@
     <div style="text-align:center;margin-top:8px"><button class="link" onclick="T.restart()">다시 테스트하기</button></div>
   </section>
 </div>
+
+<!-- 공유 버튼이 화면 밖으로 나갔을 때만 아래에 붙어 나온다 (결과 화면에서만) -->
+<div class="dock" id="dock"><div>
+  <button class="btn btn-y" onclick="T.save()">📸 저장 · 스토리</button>
+  <button class="btn btn-kakao" onclick="T.kakao()">💬 친구랑 케미 보기</button>
+</div></div>
 
 <div id="toast" role="status"></div>
 
@@ -330,18 +339,17 @@ function buildReceipt(st){
 
   let y=30;
   // 캐릭터 + 말풍선
-  K.mascot(c,CX-70,y+150,250,T.spec);
-  K.speech(c,CX+72,y+52,T.say,27,INK);
-  text(T.nick,CX+92,y+142,"700 24px "+BODY,T.ink);
-  y+=318;
-  text("S S U M   C E N T E R",CX,y,"700 22px "+BODY,SUB,"center"); y+=74;
+  K.mascot(c,CX-70,y+138,232,T.spec);
+  K.speech(c,CX+66,y+46,T.say,27,INK);
+  text(T.nick,CX+86,y+136,"700 24px "+BODY,T.ink);
+  y+=292;
+  text("썸류센터  ·  S S U M  C E N T E R",CX,y,"700 22px "+BODY,SUB,"center"); y+=70;
   text("연애 취향 영수증",CX,y,K.cuteFont(70),INK,"center"); y+=40;
   dash(y); y+=52;
 
   text("주문자",L,y,"600 28px "+BODY,SUB);
-  text(st.name?st.name+" 님":"익명의 손님",R,y,"700 30px "+BODY,INK,"right"); y+=46;
-  text("발행일",L,y,"600 28px "+BODY,SUB);
-  text(K.today(),R,y,"700 30px "+BODY,INK,"right"); y+=30;
+  text(st.name?st.name+" 님":"익명의 손님",L+96,y,"700 30px "+BODY,INK);
+  text(K.today(),R,y,"600 26px "+BODY,SUB,"right"); y+=30;
   dash(y); y+=58;
 
   text("오늘의 연애 메뉴",CX,y,"600 26px "+BODY,SUB,"center"); y+=92;
@@ -358,14 +366,11 @@ function buildReceipt(st){
     text(label,L,y,"700 30px "+BODY,INK);
     for(let i=0;i<5;i++){ K.heart(c,L+204+i*74,y-10,44); c.fillStyle=i<on?T.ink:"#eadfd0"; c.fill(); }
     text(mix[k]+"%",R,y,"700 29px "+BODY,SUB,"right");
-    y+=56;
+    y+=52;
   });
   y-=14; dash(y); y+=52;
 
-  text("연애할 때 나는",L,y,"600 26px "+BODY,SUB); y+=50;
-  T.traits.forEach(tr=>{ text("+",L,y,"800 30px "+BODY,T.ink); text(tr,L+34,y,"600 31px "+BODY,INK); y+=47; });
-  y+=4;
-
+  // ('연애할 때 나는' 세 줄은 웹 화면에만 보여준다. 이미지에 다 넣으면 글자가 작아져서 스토리에서 안 읽힌다)
   // 직장인 버전 한 줄
   c.font="700 30px "+BODY;
   const wl=K.wrapLines(c,T.work,R-L-56), bh=74+wl.length*42;
@@ -407,7 +412,9 @@ function buildReceipt(st){
   const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
   const g=cv.getContext("2d");
   K.backdrop(g,W,H,T.bg);
-  const maxH=H-150, sc=Math.min(1,maxH/CH), pw=PW*sc, ph=CH*sc, px=(W-pw)/2, py=(H-ph)/2;
+  // 인스타 스토리는 위·아래 250px 정도가 프로필·답장 칸에 가려진다 → 종이는 그 안쪽(세로 1,420px)에만 둔다
+  // 맨 아래 바코드·주소 줄은 가려져도 괜찮아서 아래쪽은 150px 까지 내려 쓴다 (그만큼 글자가 커진다)
+  const SAFE=250, maxH=H-SAFE-150, sc=Math.min(1,maxH/CH), pw=PW*sc, ph=CH*sc, px=(W-pw)/2, py=SAFE+(maxH-ph)/2;
   // 종이 (위아래 톱니)
   const tooth=30*sc, n=Math.round(pw/tooth), tw=pw/n;
   g.save(); g.shadowColor="rgba(90,55,30,.22)"; g.shadowBlur=40; g.shadowOffsetY=16;
@@ -435,7 +442,7 @@ const T=K.run({
     document.getElementById("r-match-n").textContent=m.name;
     document.getElementById("r-match-r").textContent=t.match.reason;
   },
-  shareText(name,t){ return (name?name+"의":"내")+" 연애 커피 유형은 "+t.emoji+" "+t.name+"! 너는 어떤 커피야?"; },
+  shareText(name,t){ return (name?name+"는":"나는")+" "+t.emoji+" "+t.name+"래. 너도 해봐, 우리 케미 나온대!"; },
   alt(name,t){ return (name?name+"님":"나")+"의 연애 취향 영수증 — "+t.name+". "+t.tagline+". 찰떡 궁합은 "+TYPES[t.match.key].name+"."; },
   chem(friendKey,myKey){
     const f=TYPES[friendKey], t=TYPES[myKey];

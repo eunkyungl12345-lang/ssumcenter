@@ -39,8 +39,10 @@
     <!-- 동료가 보낸 링크로 들어온 경우에만 보인다 -->
     <div id="friend" class="friend hidden">
       <canvas id="friend-m" width="180" height="180" aria-hidden="true"></canvas>
-      <div><b id="friend-t"></b><span>나도 발급받으면 둘의 케미가 나와요</span></div>
+      <div><b id="friend-t"></b><span>해보면 둘의 케미가 나와요</span></div>
     </div>
+    <!-- 이미 해본 사람이 친구 링크로 들어온 경우: 다시 풀지 않고 바로 케미 보기 -->
+    <button id="friend-go" class="btn btn-ghost hidden" style="margin:-8px 0 18px" onclick="T.showSaved()">✨ 내 결과로 케미 바로 보기</button>
 
     <div class="parade" aria-hidden="true">
       <canvas width="210" height="210" data-m="intern"></canvas>
@@ -71,6 +73,7 @@
   <!-- 발급 중 -->
   <section id="loading" class="printing hidden">
     <canvas id="load-m" width="280" height="280" aria-hidden="true"></canvas>
+    <div><div class="say up"><small id="say-name"></small><span id="say-text"></span></div></div>
     <h2 class="cute">사원증 발급 중…</h2>
     <p>인사팀에서 도장을 찍고 있어요 🪪</p>
   </section>
@@ -81,11 +84,6 @@
       <small>LOVE EMPLOYEE ID</small>
       <h2 class="cute"><span id="r-who">당신</span>의 연애 직급은 <span class="y" id="r-type"></span></h2>
     </div>
-    <div class="hero">
-      <canvas id="hero-m" width="240" height="240" aria-hidden="true"></canvas>
-      <div class="say"><small id="say-name"></small><span id="say-text"></span></div>
-    </div>
-
     <div class="receipt" id="card"><img id="card-img" alt=""></div>
     <p class="hint">📌 사원증을 <b>꾹 누르면</b> 사진으로 저장돼요</p>
 
@@ -97,7 +95,7 @@
     <div class="share">
       <button class="btn btn-y" onclick="T.save()">📸 이미지로 저장 · 스토리에 올리기</button>
       <div class="row">
-        <button class="btn btn-kakao" onclick="T.kakao()">💬 카톡 공유</button>
+        <button class="btn btn-kakao" onclick="T.kakao()">💬 친구랑 케미</button>
         <button class="btn btn-ghost" onclick="T.copy()">🔗 링크 복사</button>
       </div>
     </div>
@@ -109,6 +107,7 @@
       </div>
       <div class="chem-t cute" id="chem-t"></div>
       <div class="chem-s" id="chem-s"></div>
+      <button id="chem-send" class="btn btn-kakao chem-send" onclick="T.kakao()">💌 친구에게 내 결과 보내기</button>
       <p class="tip" style="margin-top:12px">💡 둘 다 매칭 성공 시 첫 만남 결제 2,000원씩 할인</p>
     </div>
 
@@ -123,13 +122,17 @@
       </div>
       <div class="box">
         <h3>찰떡 동료</h3>
-        <div class="mt"><canvas id="r-match-m" width="150" height="150" aria-hidden="true"></canvas><div><b id="r-match-n"></b></div></div>
-        <span id="r-match-r" style="font-size:12.5px;color:var(--mut);display:block;margin-top:6px"></span>
+        <div class="mt"><canvas id="r-match-m" width="150" height="150" aria-hidden="true"></canvas><div><b id="r-match-n"></b><span id="r-match-r"></span></div></div>
       </div>
     </div>
     <div class="box">
       <h3>⚠️ 인사팀 주의사항</h3>
       <p id="r-warn"></p>
+    </div>
+
+    <div class="box">
+      <h3>8가지 유형 중 나는?</h3>
+      <div class="all8" id="all8"></div>
     </div>
 
     <div class="cta">
@@ -144,6 +147,12 @@
     <div style="text-align:center;margin-top:8px"><button class="link" onclick="T.restart()">다시 테스트하기</button></div>
   </section>
 </div>
+
+<!-- 공유 버튼이 화면 밖으로 나갔을 때만 아래에 붙어 나온다 (결과 화면에서만) -->
+<div class="dock" id="dock"><div>
+  <button class="btn btn-y" onclick="T.save()">📸 저장 · 스토리</button>
+  <button class="btn btn-kakao" onclick="T.kakao()">💬 친구랑 케미 보기</button>
+</div></div>
 
 <div id="toast" role="status"></div>
 
@@ -386,7 +395,7 @@ function buildCard(s){
   c.restore();
   y=Math.max(by+BH,ky-20)+40;
 
-  K.barcode(c,CX,y,460,54,s.key,INK); y+=92;
+  y+=14;
   text("너의 연애 직급은?  ssumcenter.vercel.app/test/work",CX,y,"600 23px "+BODY,SUB,"center"); y+=44;
   const CH=y;
 
@@ -394,7 +403,9 @@ function buildCard(s){
   const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
   const g=cv.getContext("2d");
   K.backdrop(g,W,H,T.bg);
-  const topRoom=250, maxH=H-topRoom-90, sc=Math.min(1,maxH/CH), cw=CW*sc, ch=CH*sc, cx0=(W-cw)/2, cy0=topRoom+(maxH-ch)/2;
+  // 인스타 스토리는 위·아래 250px 정도가 프로필·답장 칸에 가려진다.
+  // 위쪽은 목걸이 줄(장식)이라 가려져도 되고, 카드는 그 아래 ~ 아래쪽 170px 위까지 쓴다 (맨 아래는 주소 한 줄뿐이라 가려져도 괜찮다).
+  const topRoom=270, maxH=H-topRoom-170, sc=Math.min(1,maxH/CH), cw=CW*sc, ch=CH*sc, cx0=(W-cw)/2, cy0=topRoom+(maxH-ch)/2;
   // 목걸이 줄
   g.lineCap="round";
   [[-170,1],[170,-1]].forEach(([dx])=>{
@@ -420,8 +431,8 @@ const T=K.run({
   build:buildCard,
   detail(key,data,t){
     const m=TYPES[t.match.key];
-    document.getElementById("r-tagline").textContent=t.emoji+" "+t.dept+" · "+t.rank+" — "+t.one;
-    document.getElementById("r-desc").textContent=t.desc;
+    document.getElementById("r-tagline").textContent=t.emoji+" "+t.dept+" · "+t.rank;
+    document.getElementById("r-desc").textContent="“"+t.one+"” "+t.desc;
     const ul=document.getElementById("r-traits"); ul.innerHTML="";
     t.traits.forEach(x=>{ const li=document.createElement("li"); li.textContent=x; ul.appendChild(li); });
     K.drawOn(document.getElementById("r-match-m"), m.spec);
@@ -429,7 +440,7 @@ const T=K.run({
     document.getElementById("r-match-r").textContent=t.match.reason;
     document.getElementById("r-warn").textContent=t.warn;
   },
-  shareText(name,t){ return (name?name+"의":"내")+" 연애 직급은 "+t.emoji+" "+t.name+"! 너도 연애 사원증 발급받아봐"; },
+  shareText(name,t){ return (name?name+"는":"나는")+" 연애사업부 "+t.emoji+" "+t.name+"래. 너도 발급받아봐, 우리 케미 나온대!"; },
   alt(name,t){ return (name?name+"님":"나")+"의 연애 사원증 — "+t.dept+" "+t.rank+", "+t.name+". "+t.one+". 찰떡 동료는 "+TYPES[t.match.key].name+"."; },
   chem(friendKey,myKey){
     const f=TYPES[friendKey], t=TYPES[myKey];
