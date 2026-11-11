@@ -158,7 +158,9 @@
         <b id="test-result-text" class="text-white"></b>
       </div>
     </div>
-  </div>
+      <!-- 🤝 테스트 링크를 보내준 친구가 있는 경우 (주소의 friend 값) -->
+    <div id="test-friend-badge" class="hidden" style="margin-top:8px;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:12px;padding:10px 12px;font-size:12.5px;line-height:1.55;color:#E8B050;text-align:center"></div>
+</div>
 </header>
 
 <!-- 신청 폼 -->
@@ -916,13 +918,17 @@ function aiFillForm(){
   // 손님이 직접 타이핑하면 오타가 나서 추천인을 못 찾는다. 링크로 받으면 정확하다.
   const ref = (new URLSearchParams(location.search).get("ref") || "").trim().slice(0, 20);
   if(!ref) return;
+  // ?ref=reconnect 는 사람 이름이 아니라 "그날 그 사람" 쪽지 흐름 표시다 (아래 fromReconnect).
+  //  그걸 추천인 이름으로 채우면 배너에 'reconnect님이 초대해주셨어요'가 뜨고,
+  //  받지도 않은 할인을 약속하게 된다.
+  if(ref === "reconnect") return;
   sel.value = "지인소개";
   sync();
   const input = box.querySelector('input[name="referralName"]');
   if(input) input.value = ref;
   const b = document.createElement("div");
   b.style.cssText = "margin-top:12px;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:12px;padding:12px 14px;font-size:13px;color:#E8B050;line-height:1.6";
-  b.textContent = "💌 " + ref + "님이 소개해주셨네요! 반가워요.";
+  b.textContent = "💌 " + ref + "님이 초대해주셨어요! 매칭 성사 시 첫 만남 2,000원 할인이 적용돼요.";
   box.parentNode.insertBefore(b, box);
 })();
 
@@ -977,6 +983,23 @@ function loadTestResult(){
   }catch(e){}
 }
 loadTestResult();
+
+// 🤝 테스트 링크를 보내준 친구 이름 (/matching?from=test&friend=이름)
+//    "친구와 둘 다 매칭 성사 시 첫 만남 결제 2,000원씩 할인"을 센터장이 확인하려면
+//    누구와 같이 했는지가 신청 기록에 남아 있어야 한다. → '추천인이름' 칸에 저장한다.
+function testFriendName(){
+  try{
+    const p = new URLSearchParams(location.search);
+    if(p.get("from") !== "test") return "";
+    return String(p.get("friend") || "").replace(/[<>&"'`\\\/]/g, "").replace(/\s+/g, " ").trim().slice(0, 10).trim();
+  }catch(e){ return ""; }
+}
+(function showTestFriend(){
+  const name = testFriendName(); if(!name) return;
+  const b = document.getElementById("test-friend-badge"); if(!b) return;
+  b.textContent = "🤝 " + name + "님과 같이 테스트했네요! 둘 다 매칭이 성사되면 첫 만남 결제 때 2,000원씩 할인해드려요.";
+  b.classList.remove("hidden");
+})();
 
 function clearTestResult(){
   document.getElementById("test-result-input").value = "";
@@ -1333,6 +1356,13 @@ async function handleSubmit(e){
     // 한 번씩 헛돌고 재시도하게 된다 (아래 재시도 로직이 받아주긴 하지만 느려진다).
     if(payload.inflow === "지인소개" && String(payload.referralName || "").trim()){
       fields["추천인이름"] = String(payload.referralName).trim();
+      // 💌 지인 초대 링크(?ref=이름)로 온 신청 — 매칭 성사 시 첫 만남 결제에서 2,000원 할인.
+      //    자동 적용은 아니고, 센터장이 이 칸을 보고 결제 단계에서 깎아준다.
+      fields["할인쿠폰"] = "지인추천 2,000원 할인";
+    }
+    // 🤝 테스트 친구 — 유입경로가 '유형테스트'일 때만 (지인소개 추천인과 섞이지 않게)
+    else if(payload.inflow === "유형테스트" && testFriendName()){
+      fields["추천인이름"] = testFriendName();
     }
 
     // Airtable에 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)

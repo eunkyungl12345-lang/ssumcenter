@@ -309,7 +309,7 @@
     })();
 
     function show(id) { ["intro", "quiz", "loading", "result"].forEach(function (p) { $(p).classList.add("hidden"); }); $(id).classList.remove("hidden"); window.scrollTo(0, 0); }
-    function start() { st.step = 0; st.answers = []; show("quiz"); renderQ(); }
+    function start() { st.step = 0; st.answers = []; show("quiz"); renderQ(); countEvent("start"); }
     function renderQ() {
       var item = Q[st.step];
       $("qcount").textContent = "Q" + (st.step + 1) + " / " + Q.length;
@@ -350,6 +350,9 @@
       persist();
       countOnce();
       drawOn($("load-m"), TYPES[st.key].spec);
+      // 결과를 기다리는 1초 동안 캐릭터가 먼저 한마디 한다
+      if ($("say-name")) $("say-name").textContent = TYPES[st.key].nick;
+      if ($("say-text")) $("say-text").textContent = TYPES[st.key].say;
       show("loading");
       setTimeout(showResult, 1300);
     }
@@ -362,15 +365,13 @@
         showResult();
       } catch (e) { }
     }
-    function restart() { st.step = 0; st.answers = []; st.key = null; st.data = null; $("progress").style.width = "0%"; $("progress").parentNode.style.display = ""; show("intro"); }
+    function restart() { st.step = 0; st.answers = []; st.key = null; st.data = null; $("progress").style.width = "0%"; $("progress").parentNode.style.display = ""; watchDock(false); show("intro"); }
 
     function showResult() {
       var t = TYPES[st.key];
       $("r-type").textContent = t.name;
-      drawOn($("hero-m"), t.spec);
-      if ($("say-name")) $("say-name").textContent = t.nick;
-      if ($("say-text")) $("say-text").textContent = t.say;
       cfg.detail(st.key, st.data, t);
+      renderAll8();
       $("i-name").value = st.name;
       if (FRIEND) { // 친구 링크로 들어와서 끝낸 경우 — 둘의 케미
         var f = TYPES[FRIEND.key], who = FRIEND.name ? FRIEND.name + "님" : "친구";
@@ -378,10 +379,13 @@
         var ch = cfg.chem(FRIEND.key, st.key);
         $("chem-t").textContent = ch.head;
         $("chem-s").textContent = who + "(" + f.name + ") × 나(" + t.name + ") · " + ch.sub;
+        // 링크를 보내준 친구는 내 결과를 아직 모른다 → 다시 보내게 해서 한 바퀴를 닫는다
+        if ($("chem-send")) $("chem-send").textContent = "💌 " + who + "에게 내 결과 보내기";
         $("chem").classList.remove("hidden");
       }
       show("result");
       $("progress").parentNode.style.display = "none"; // 결과 화면에서는 진행 막대가 필요 없다
+      watchDock(true);
       renderCard(true);
       loadKakao(); // 카톡 공유 버튼을 누를 때 바로 뜨도록 미리 준비
     }
@@ -399,6 +403,42 @@
       st.blob = null;
       cv.toBlob(function (b) { st.blob = b; }, "image/png");
     }
+    /* 8가지 유형 구경하기 — 내 유형에 표시 */
+    function renderAll8() {
+      var box = $("all8"); if (!box) return;
+      box.innerHTML = "";
+      Object.keys(TYPES).forEach(function (k) {
+        var d = document.createElement("div"); if (k === st.key) d.className = "me";
+        var cv = document.createElement("canvas"); cv.width = 150; cv.height = 150; cv.setAttribute("aria-hidden", "true");
+        var b = document.createElement("b"); b.textContent = TYPES[k].name + (k === st.key ? " (나)" : "");
+        d.appendChild(cv); d.appendChild(b); box.appendChild(d);
+        drawOn(cv, TYPES[k].spec);
+      });
+      var me = box.querySelector(".me"); if (me) box.scrollLeft = Math.max(0, me.offsetLeft - 100);
+    }
+    /* 아래에 붙어 다니는 공유 버튼: 본문의 공유 버튼이 화면에 안 보일 때만 나온다 */
+    var dockIo = null;
+    function watchDock(on) {
+      var dock = $("dock"), share = document.querySelector(".share .btn"); // 본문의 [이미지 저장] 버튼
+      if (!dock || !share) return;
+      if (dockIo) { dockIo.disconnect(); dockIo = null; }
+      dock.classList.remove("on"); document.body.classList.toggle("docked", !!on);
+      if (!on || !("IntersectionObserver" in window)) return;
+      // 본문 버튼이 절반 넘게 보이면 숨기고, 아니면 아래에 붙여 보여준다
+      dockIo = new IntersectionObserver(function (es) { var e = es[es.length - 1]; dock.classList.toggle("on", e.intersectionRatio < 0.5 && !$("result").classList.contains("hidden")); }, { threshold: [0, 0.5, 1] });
+      dockIo.observe(share);
+    }
+    /* 어디서 사람들이 멈추는지 보는 숫자 (시작·저장·카톡·링크복사·신청). 저장소가 없으면 아무 일도 안 한다. 같은 기기는 하루 한 번. */
+    function countEvent(name) {
+      if (!cfg.id) return;
+      try {
+        var flag = "ssum_evt_" + cfg.id + "_" + name, day = today();
+        if (localStorage.getItem(flag) === day) return;
+        localStorage.setItem(flag, day);
+        fetch("/api/airtable?testcount=1", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ test: cfg.id, type: "evt:" + name }), keepalive: true }).catch(function () { });
+      } catch (e) { }
+    }
+
     function applyName() {
       st.name = cleanName($("i-name").value);
       $("i-name").value = st.name;
@@ -414,6 +454,7 @@
       return u.toString();
     }
     async function save() {
+      countEvent("save");
       if (!st.blob) { toast("이미지를 준비 중이에요. 잠시 후 다시 눌러주세요"); return; }
       var file = new File([st.blob], cfg.fileName, { type: "image/png" });
       // 폰: 공유 창이 뜨고 거기서 '이미지 저장'이나 인스타그램 스토리를 고를 수 있다
@@ -425,8 +466,9 @@
         toast("저장했어요! 안 됐다면 이미지를 꾹 눌러 저장해주세요");
       } catch (e) { toast("이미지를 꾹 눌러서 저장해주세요 📌"); }
     }
-    function copy() { return copyUrl(shareUrl()); }
+    function copy() { countEvent("copy"); return copyUrl(shareUrl()); }
     async function kakao() {
+      countEvent("kakao");
       var url = shareUrl(), text = cfg.shareText(st.name, TYPES[st.key]);
       var ok = await loadKakao();
       if (ok) {
@@ -444,8 +486,11 @@
       copyUrl(url);
     }
     function apply() {
+      countEvent("apply");
       // from=test → 신청서의 '어떻게 알고 오셨어요?'에 '유형 테스트'가 자동으로 들어간다
-      location.href = "/matching?from=test&result=" + encodeURIComponent(TYPES[st.key].name);
+      // friend → 링크를 보내준 친구 이름. "친구와 둘 다 매칭 성사 시 할인"을 센터장이 확인할 수 있게 신청서에 남긴다
+      location.href = "/matching?from=test&result=" + encodeURIComponent(TYPES[st.key].name)
+        + (FRIEND && FRIEND.name ? "&friend=" + encodeURIComponent(FRIEND.name) : "");
     }
 
     /* 처음 화면 준비 */
@@ -456,7 +501,14 @@
       $("friend-t").textContent = (FRIEND.name ? FRIEND.name + "님은 " : "친구는 ") + f.emoji + " " + f.name + "!";
       $("friend").classList.remove("hidden");
     }
-    try { var d = JSON.parse(localStorage.getItem(cfg.store) || "null"); if (d && TYPES[d.k] && d.d) $("again-link").classList.remove("hidden"); } catch (e) { }
+    try {
+      var d = JSON.parse(localStorage.getItem(cfg.store) || "null");
+      if (d && TYPES[d.k] && d.d) {
+        $("again-link").classList.remove("hidden");
+        // 이미 해본 사람이 친구 링크로 들어온 경우 → 다시 풀지 않고 바로 둘의 케미를 볼 수 있게
+        if (FRIEND && $("friend-go")) $("friend-go").classList.remove("hidden");
+      }
+    } catch (e) { }
     try { if (document.fonts && document.fonts.load) { document.fonts.load("20px Jua", "가").then(function () { if (juaReady()) document.documentElement.classList.add("jua"); }).catch(function () { }); } } catch (e) { }
     $("i-name").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); applyName(); e.target.blur(); } });
 

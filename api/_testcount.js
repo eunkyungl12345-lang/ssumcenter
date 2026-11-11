@@ -16,7 +16,10 @@ const TESTS = {
   coffee: { label: "영수증", types: { dripper: "직진드리퍼", coldbrew: "콜드브루형", honeylatte: "꿀라떼형", americano: "아아고수", vanilla: "바닐라라떼형", espresso: "에스프레소샷", decaf: "디카페인형", todaycoffee: "오늘의커피형" } },
   work: { label: "사원증", types: { intern: "열정 인턴", ace: "영업 에이스", welfare: "애정 복지 담당", mood: "분위기 메이커", planner: "밀당 기획자", ontime: "칼퇴 장인", manager: "안정 관리자", remote: "재택 근무자" } },
 };
+// 어디서 멈추는지 보는 숫자 (type 을 "evt:이름" 으로 보낸다)
+const EVENTS = { start: "시작", save: "이미지 저장", kakao: "카톡 공유", copy: "링크 복사", apply: "신청 버튼" };
 const KEY = (test) => "ssum:test:" + test;
+const EKEY = (test) => "ssum:test:" + test + ":evt";
 
 function store() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
@@ -36,24 +39,32 @@ async function send(path, body) {
 /** 한 번 발급 = +1. 목록에 없는 유형은 받지 않는다 (아무 글자나 쌓이지 않게). */
 async function bump(test, type) {
   if (!isConfigured()) return { ok: false, reason: "not_configured" };
-  if (!TESTS[test] || !Object.prototype.hasOwnProperty.call(TESTS[test].types, type)) return { ok: false, reason: "bad_type" };
-  const d = await send("", ["HINCRBY", KEY(test), type, 1]);
-  return { ok: true, count: Number(d && d.result) || 0 };
+  if (!TESTS[test]) return { ok: false, reason: "bad_type" };
+  const evt = String(type).indexOf("evt:") === 0 ? String(type).slice(4) : null;
+  if (evt !== null ? !Object.prototype.hasOwnProperty.call(EVENTS, evt) : !Object.prototype.hasOwnProperty.call(TESTS[test].types, type)) return { ok: false, reason: "bad_type" };
+  // 여러 명령을 한 번에 보내는 주소(/pipeline)를 쓴다 — 조회와 같은 방식이라 한 가지만 맞으면 된다
+  const d = await send("/pipeline", [["HINCRBY", evt !== null ? EKEY(test) : KEY(test), evt !== null ? evt : type, 1]]);
+  if (d && d[0] && d[0].error) throw new Error(d[0].error);
+  return { ok: true, count: Number(d && d[0] && d[0].result) || 0 };
 }
 
 /** 지금까지의 발급 수. { coffee:{label,total,rows:[{key,name,count}]}, work:{...} } — 많은 순 */
 async function read() {
   if (!isConfigured()) return { configured: false };
   const names = Object.keys(TESTS);
-  const d = await send("/pipeline", names.map((t) => ["HGETALL", KEY(t)]));
-  const out = { configured: true };
-  names.forEach((t, i) => {
-    const flat = (d && d[i] && d[i].result) || [];
-    const got = {};
+  const d = await send("/pipeline", names.map((t) => ["HGETALL", KEY(t)]).concat(names.map((t) => ["HGETALL", EKEY(t)])));
+  const hash = (x) => {
+    const flat = (x && x.result) || [], got = {};
     if (Array.isArray(flat)) { for (let j = 0; j + 1 < flat.length; j += 2) got[flat[j]] = Number(flat[j + 1]) || 0; }
     else if (flat && typeof flat === "object") { Object.keys(flat).forEach((k) => { got[k] = Number(flat[k]) || 0; }); }
+    return got;
+  };
+  const out = { configured: true };
+  names.forEach((t, i) => {
+    const got = hash(d && d[i]), ev = hash(d && d[names.length + i]);
     const rows = Object.keys(TESTS[t].types).map((k) => ({ key: k, name: TESTS[t].types[k], count: got[k] || 0 })).sort((a, b) => b.count - a.count);
-    out[t] = { label: TESTS[t].label, total: rows.reduce((a, r) => a + r.count, 0), rows };
+    const events = {}; Object.keys(EVENTS).forEach((k) => { events[EVENTS[k]] = ev[k] || 0; });
+    out[t] = { label: TESTS[t].label, total: rows.reduce((a, r) => a + r.count, 0), rows, events, shares: (ev.save || 0) + (ev.kakao || 0) + (ev.copy || 0) };
   });
   return out;
 }
@@ -64,7 +75,7 @@ async function countLine() {
   const c = await read();
   const parts = Object.keys(TESTS).map((t) => {
     const x = c[t]; if (!x || !x.total) return "";
-    return `${x.label} ${x.total.toLocaleString()}건 (1위 ${x.rows[0].name} ${x.rows[0].count})`;
+    return `${x.label} ${x.total.toLocaleString()}건 (1위 ${x.rows[0].name} ${x.rows[0].count} · 공유 ${x.shares} · 신청 버튼 ${x.events["신청 버튼"]})`;
   }).filter(Boolean);
   return parts.length ? `\n🧾 테스트 발급 누적 — ${parts.join(" · ")}` : "";
 }
@@ -83,4 +94,4 @@ function applicantLine(records) {
   return `\n🧪 테스트 하고 신청 — ${n}명 (${top.map(([k, c]) => `${k} ${c}`).join(" · ")})`;
 }
 
-module.exports = { TESTS, isConfigured, bump, read, countLine, applicantLine };
+module.exports = { TESTS, EVENTS, isConfigured, bump, read, countLine, applicantLine };
