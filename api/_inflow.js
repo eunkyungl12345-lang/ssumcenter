@@ -19,6 +19,7 @@ function inflowLabel(raw) {
   if (/지인|친구|추천/.test(low)) return "지인소개";
   if (/인터넷|검색|네이버|구글/.test(low)) return "검색";
   if (/그날그사람/.test(low)) return "그날그사람";
+  if (/테스트|test/.test(low)) return "유형테스트";
   return v;
 }
 
