@@ -4,6 +4,7 @@ const { searchVolume, checkNaverConfig } = require("./_naver.js");
 const { checkPair, isRecId } = require("./_match.js");
 const { inflowLine } = require("./_inflow.js");
 const testCount = require("./_testcount.js");
+const { purgeDocs } = require("./_docpurge.js");
 
 // 📈 네이버 검색량 — 에어테이블 '검색키워드' 표를 읽어 네이버에서 월간 검색량을 받아온다.
 //    하루에 한 번만 저장한다 (에어테이블 월 1,000건 한도를 아끼기 위해).
@@ -460,9 +461,10 @@ module.exports = async function handler(req, res) {
       // 회원 명부 일괄 적립 — 신청 때마다 하지 않고 하루 한 번 몰아서 한다.
       // (신청 1건당 에어테이블 호출을 3회 → 1회로 줄이기 위해)
       let memberLine = "";
+      let rot = [], fin = [];
       try {
-        const rot = await all("로테이션 신청");
-        const fin = await all("재테크 커피팅");
+        rot = await all("로테이션 신청");
+        fin = await all("재테크 커피팅");
         const st = await syncMembers({
           TOKEN, BASE_ID,
           sources: [
@@ -476,6 +478,16 @@ module.exports = async function handler(req, res) {
         console.error("[airtable] 회원명부 일괄 적립 실패:", e.message);
         memberLine = `\n⚠️ 회원명부 적립 실패: ${e.message}`;
       }
+
+      // 🪪 재직 서류 자동 파기 — 처리방침에 적은 "신청 14일 뒤 삭제"를 실제로 지킨다 (api/_docpurge.js)
+      let docLine = "";
+      try {
+        docLine = await purgeDocs({ TOKEN, BASE_ID, sources: [
+          { table: "1:1 매칭 신청", records: one },
+          { table: "로테이션 신청", records: rot },
+          { table: "재테크 커피팅", records: fin },
+        ] });
+      } catch (e) { console.error("[airtable] 서류 파기 실패:", e.message); }
 
       // 📮 문자가 지금 나갈 수 있는 상태인지 — 브리핑에 같이 넣는다.
       // 숫자만 알려주면 문자가 망가진 걸 모른 채 며칠이 간다.
@@ -549,7 +561,7 @@ module.exports = async function handler(req, res) {
         }
       }
 
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)${inLine}${testApplyLine}${testCountLine}\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${matchLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)${inLine}${testApplyLine}${testCountLine}\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${matchLine}${memberLine}${docLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }

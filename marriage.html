@@ -172,6 +172,7 @@
       </div>
       <textarea id="ap-ideal" placeholder="어떤 분을 만나고 싶으세요? (이상형·조건) *" style="min-height:70px;resize:vertical"></textarea>
       <textarea id="ap-intro" placeholder="간단한 자기소개 *" style="min-height:70px;resize:vertical"></textarea>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--muted);margin:6px 0 10px;line-height:1.5;cursor:pointer"><input type="checkbox" id="ap-agree" style="margin-top:3px"> <span><a href="/privacy" target="_blank" style="color:inherit;text-decoration:underline">개인정보 수집·이용</a> 및 <a href="/terms" target="_blank" style="color:inherit;text-decoration:underline">이용약관</a>에 동의합니다. (필수)</span></label>
       <button class="cta" id="ap-save" style="border:none;width:100%;cursor:pointer;font-family:inherit;margin-top:4px">신청 보내기</button>
       <div id="ap-msg" style="font-size:13px;text-align:center;color:var(--muted)"></div>
     </div>
@@ -252,6 +253,7 @@
       if(!live){ msg.style.color="#E8828A"; msg.textContent="결혼 후 거주 지역을 선택해주세요."; return; }
       if(!photoFiles.length){ msg.style.color="#E8828A"; msg.textContent="프로필 사진을 최소 1장 올려주세요."; return; }
       if(!docFile){ msg.style.color="#E8828A"; msg.textContent="재직증명서 또는 사업자등록증을 첨부해주세요."; return; }
+      if(!document.getElementById("ap-agree").checked){ msg.style.color="#E8828A"; msg.textContent="개인정보 수집·이용에 동의해주세요."; return; }
       var ages=[]; document.querySelectorAll("#ap-agebox input:checked").forEach(function(c){ ages.push(c.value); });
       var intro=val("ap-intro");
       // 결혼관 정보는 자기소개 맨 앞에 묶어서 함께 저장 (1:1 테이블에 별도 필드 없어도 남게)
