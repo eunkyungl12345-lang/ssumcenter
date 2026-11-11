@@ -407,6 +407,16 @@ module.exports = async function handler(req, res) {
         } while (off);
         return recs;
       }
+      // 조건에 맞는 것만 읽기. 조건이 표와 안 맞아 실패하면(칸 이름이 다르면) 더 좁은 조건 → 전체 읽기 순으로 물러난다.
+      async function some(t, formula, fallback) {
+        for (const f of [formula, fallback]) {
+          if (!f) continue;
+          const p = new URLSearchParams({ pageSize: "100", filterByFormula: f });
+          const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(t)}?${p.toString()}`, { headers: H });
+          if (r.ok) return ((await r.json()).records) || [];
+        }
+        return all(t);
+      }
       const one = await all("1:1 매칭 신청");
       const isMarriage = f => String(f["유입경로"] || "").indexOf("결혼") >= 0;
       const oneWait = one.filter(r => (r.fields["매칭상태"] || "대기") === "대기" && !isMarriage(r.fields)).length;
@@ -461,16 +471,21 @@ module.exports = async function handler(req, res) {
       // 회원 명부 일괄 적립 — 신청 때마다 하지 않고 하루 한 번 몰아서 한다.
       // (신청 1건당 에어테이블 호출을 3회 → 1회로 줄이기 위해)
       let memberLine = "";
+      // 로테이션·재테크는 표 전체를 읽지 않고 '최근 2일 새 신청 + 지울 재직 서류'만 1번에 읽는다.
+      // (로테이션이 쉬는 중이라 대부분 0건 — 예전엔 매일 수백 건을 몇 장씩 넘겨 읽었다)
+      const recentOrOldDoc = `OR(IS_AFTER(CREATED_TIME(),DATEADD(NOW(),-2,"days")),AND(LEN({재직증명서}&"")>0,IS_BEFORE(CREATED_TIME(),DATEADD(NOW(),-14,"days"))))`;
+      const recentOnly = `IS_AFTER(CREATED_TIME(),DATEADD(NOW(),-2,"days"))`;
+      const isRecent = (r) => Date.now() - new Date(r.createdTime).getTime() < 2 * 86400000;
       let rot = [], fin = [];
       try {
-        rot = await all("로테이션 신청");
-        fin = await all("재테크 커피팅");
+        rot = await some("로테이션 신청", recentOrOldDoc, recentOnly);
+        fin = await some("재테크 커피팅", recentOrOldDoc, recentOnly);
         const st = await syncMembers({
           TOKEN, BASE_ID,
           sources: [
-            { table: "1:1 매칭 신청", records: one },
-            { table: "로테이션 신청", records: rot },
-            { table: "재테크 커피팅", records: fin },
+            { table: "1:1 매칭 신청", records: one.filter(isRecent) },
+            { table: "로테이션 신청", records: rot.filter(isRecent) },
+            { table: "재테크 커피팅", records: fin.filter(isRecent) },
           ],
         });
         if (st.새회원 || st.갱신) memberLine = `\n📇 회원명부 — 신규 ${st.새회원} · 갱신 ${st.갱신}`;
@@ -728,6 +743,22 @@ module.exports = async function handler(req, res) {
     if (!fields["성별"]) {
       return res.status(400).json({ error: "성별은 필수입니다" });
     }
+  }
+
+  // 📍 공개 장소 목록(/date-spots)은 손님이 열 때마다 에어테이블을 부르면 호출 한도를 금방 쓴다.
+  //    → 결과를 사이트 서버에 하루 동안 보관해두고 그걸 보여준다 (하루 1~2번만 실제 조회).
+  //    표가 아직 없거나 실패해도 빈 목록을 보관해서, 실패가 반복 호출로 이어지지 않게 한다
+  //    (빈 목록이면 페이지는 원래 적혀 있는 장소를 그대로 보여준다).
+  if (!isAdmin && req.method === "GET" && table === "데이트 장소") {
+    let recs = [];
+    try {
+      const p = new URLSearchParams({ filterByFormula: "{공개}" });
+      const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}?${p.toString()}`,
+        { headers: { Authorization: `Bearer ${TOKEN}` } });
+      if (r.ok) recs = ((await r.json()).records || []).map((x) => ({ id: x.id, fields: x.fields }));
+    } catch (e) { console.error("[airtable] 장소 목록:", e.message); }
+    res.setHeader("Cache-Control", "public, max-age=600, s-maxage=86400, stale-while-revalidate=604800");
+    return res.status(200).json({ records: recs });
   }
 
   let url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}`;

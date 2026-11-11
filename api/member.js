@@ -104,11 +104,20 @@ async function syncMembers({ TOKEN, BASE_ID, sources }) {
   const base = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(MEMBER_TABLE)}`;
   const stat = { 읽음: 0, 새회원: 0, 갱신: 0, 건너뜀: 0, 호출: 0 };
 
-  // 1) 회원 명부 전체를 한 번만 읽는다
+  // 1) 회원 명부를 읽는다.
+  //    새 신청이 몇 건뿐이면 그 사람들 전화번호만 골라서 1번에 읽는다
+  //    (명부 전체를 매일 읽으면 명부가 커질수록 에어테이블 호출이 계속 늘어난다).
   const byPhone = new Map();
+  const want = [...new Set(sources.flatMap(({ records }) => (records || [])
+    .map((r) => normPhone((r.fields || {})["연락처"] || (r.fields || {})["전화번호"])).filter(Boolean)))];
+  const phoneFilter = want.length && want.length <= 30
+    ? "OR(" + want.map((ph) => `REGEX_REPLACE({전화번호}&"","[^0-9]","")="${ph}"`).join(",") + ")"
+    : "";
+  if (!want.length) return stat;   // 적립할 사람이 없으면 아무것도 안 읽는다
   let off;
   do {
     const p = new URLSearchParams({ pageSize: "100" });
+    if (phoneFilter) p.set("filterByFormula", phoneFilter);
     if (off) p.set("offset", off);
     const r = await fetch(`${base}?${p.toString()}`, { headers: H });
     stat.호출++;
