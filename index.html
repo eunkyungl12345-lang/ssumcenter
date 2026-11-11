@@ -288,8 +288,16 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 <!-- 센터장 3명 소개 (공통점 위주 — 개인이 특정되지 않게) -->
 <section class="sec" id="centers">
   <style>
-  .ctr-avs{display:flex;justify-content:center;margin-top:28px}
-  .ctr-av{position:relative;margin:0 -6px;border-radius:50%;border:3px solid var(--bg);display:flex}
+  /* 센터장 캐릭터 3명 + 말풍선 */
+  .ctr-crew{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:520px;margin:28px auto 0;align-items:start}
+  .ctr-one{display:flex;flex-direction:column;align-items:center;word-break:keep-all}
+  .ctr-face{width:92px;height:92px;border-radius:50%;display:block;overflow:hidden;box-shadow:0 0 0 3px rgba(212,149,42,.18)}
+  .ctr-face canvas{width:100%;height:100%;display:block}
+  .ctr-one b{font-size:13.5px;color:var(--cream);margin-top:10px}
+  .ctr-one i{font-style:normal;font-size:11px;font-weight:700;color:var(--amber);margin-top:1px}
+  .ctr-say{position:relative;margin-top:12px;background:rgba(255,255,255,.05);border:1px solid rgba(212,149,42,.22);border-radius:14px;padding:9px 10px;font-size:12px;line-height:1.5;color:var(--cream);width:100%}
+  .ctr-say::before{content:"";position:absolute;left:50%;top:-6px;width:10px;height:10px;margin-left:-5px;background:#17130f;border-left:1px solid rgba(212,149,42,.22);border-top:1px solid rgba(212,149,42,.22);transform:rotate(45deg)}
+  @media(max-width:380px){.ctr-face{width:78px;height:78px}.ctr-say{font-size:11.5px;padding:8px 7px}}
   .ctr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px auto 0;max-width:720px;text-align:left}
   /* 은은한 골드 테두리 + 살짝 떠오르는 느낌. (.glass 기본값보다 테두리는 또렷하게, 움직임은 작고 빠르게) */
   .ctr-card{display:flex;gap:14px;align-items:flex-start;padding:18px;word-break:keep-all;border:1px solid rgba(212,149,42,.12);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
@@ -302,8 +310,26 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
   <div class="wrap" style="text-align:center">
     <span class="pill pill-amber" data-r><i class="fa-solid fa-user-check"></i>WHO PICKS</span>
     <h2 class="gm" style="font-size:clamp(24px,5vw,36px);font-weight:700;margin-top:16px" data-r>신청서는 <span class="ac">센터장 3명</span>이<br>직접 읽어요</h2>
-    <div class="ctr-avs" data-r><span class="ctr-av" style="z-index:3"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="#F3C9C4"/><path d="M28 62 Q26 30 60 28 Q94 30 92 62 L94 106 Q60 116 26 106 Z" fill="#6B4430"/><ellipse cx="60" cy="68" rx="27" ry="29" fill="#F6D9BF"/><circle cx="50" cy="70" r="3.4" fill="#2A1810"/><circle cx="70" cy="70" r="3.4" fill="#2A1810"/><ellipse cx="44" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><ellipse cx="76" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><path d="M54 82 Q60 87 66 82" stroke="#2A1810" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M32 60 Q34 34 60 34 Q86 34 88 60 Q78 46 62 46 Q60 54 46 52 Q38 54 32 60 Z" fill="#7C5038"/><path d="M80 44 l3.5 -3.5 a2.8 2.8 0 0 1 4 4 l-7.5 7.5 l-7.5 -7.5 a2.8 2.8 0 0 1 4 -4 z" fill="#E8584F"/></svg></span><span class="ctr-av" style="z-index:2"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="#E8C27C"/><path d="M30 64 Q28 34 60 32 Q92 34 90 64 L90 90 Q84 94 80 88 L40 88 Q36 94 30 90 Z" fill="#2B211C"/><ellipse cx="60" cy="68" rx="27" ry="29" fill="#F6D9BF"/><circle cx="50" cy="70" r="3.4" fill="#2A1810"/><circle cx="70" cy="70" r="3.4" fill="#2A1810"/><ellipse cx="44" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><ellipse cx="76" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><path d="M54 82 Q60 87 66 82" stroke="#2A1810" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M33 62 Q34 38 60 38 Q86 38 87 62 L82 54 L76 58 L70 52 L62 57 L54 51 L46 57 L40 52 Z" fill="#3A2C25"/><ellipse cx="62" cy="36" rx="30" ry="10" fill="#D4952A" transform="rotate(-8 62 36)"/><circle cx="62" cy="25" r="4" fill="#D4952A"/><circle cx="50" cy="70" r="7.5" fill="none" stroke="#2A1810" stroke-width="2.2"/><circle cx="70" cy="70" r="7.5" fill="none" stroke="#2A1810" stroke-width="2.2"/><path d="M57.5 70 h5" stroke="#2A1810" stroke-width="2.2"/></svg></span><span class="ctr-av" style="z-index:1"><svg viewBox="0 0 120 120" width="64" height="64" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="#C9D8C0"/><path d="M78 34 Q104 36 102 70 Q100 90 90 96 Q94 74 84 56 Z" fill="#8A5634"/><ellipse cx="60" cy="68" rx="27" ry="29" fill="#F6D9BF"/><circle cx="50" cy="70" r="3.4" fill="#2A1810"/><circle cx="70" cy="70" r="3.4" fill="#2A1810"/><ellipse cx="44" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><ellipse cx="76" cy="79" rx="5" ry="3" fill="#F2A7A0" opacity=".75"/><path d="M54 82 Q60 87 66 82" stroke="#2A1810" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M32 66 Q30 36 60 36 Q90 36 88 66 Q84 52 70 48 Q56 56 40 54 Q34 58 32 66 Z" fill="#9A6240"/><path d="M80 34 l-9 -6 l0 12 z M80 34 l9 -6 l0 12 z" fill="#F2A7A0"/><circle cx="80" cy="34" r="2.6" fill="#E8584F"/></svg></span></div>
-    <p style="font-size:12px;color:var(--dim);margin-top:8px" data-r>동탄 · 성수 · 강남 센터장</p>
+    <!-- 센터장 3명 = '컵 친구들' (유형 테스트와 같은 캐릭터 세계관. 그림은 /test/kit.js 가 그린다)
+         말풍선 문구를 바꾸려면 아래 .ctr-say 안의 글자만 고치면 된다.
+         ⚠️ 없는 기능을 약속하는 말은 넣지 않는다 (예: '지인 차단' — 아직 기능이 없다). -->
+    <div class="ctr-crew" data-r>
+      <div class="ctr-one">
+        <span class="ctr-face" style="background:#FFE3EA"><canvas width="220" height="220" data-crew="dongtan" role="img" aria-label="동탄 센터장 캐릭터 — 핑크 라떼 머그잔"></canvas></span>
+        <b>동탄 센터장</b><i>공감 요정</i>
+        <p class="ctr-say">둘 다 진심이면 무조건 이어드려요</p>
+      </div>
+      <div class="ctr-one">
+        <span class="ctr-face" style="background:#DCEFFD"><canvas width="220" height="220" data-crew="seongsu" role="img" aria-label="성수 센터장 캐릭터 — 뿔테 안경을 쓴 블루 머그잔"></canvas></span>
+        <b>성수 센터장</b><i>핫플 픽 담당</i>
+        <p class="ctr-say">첫 만남 장소는 제가 골라드려요</p>
+      </div>
+      <div class="ctr-one">
+        <span class="ctr-face" style="background:#F6E6D4"><canvas width="220" height="220" data-crew="gangnam" role="img" aria-label="강남 센터장 캐릭터 — 넥타이를 맨 에스프레소 머그잔"></canvas></span>
+        <b>강남 센터장</b><i>안심 지킴이</i>
+        <p class="ctr-say">신원 확인은 제가 꼼꼼히!</p>
+      </div>
+    </div>
     <p style="font-size:15px;color:var(--cream);margin-top:18px;line-height:1.75;word-break:keep-all" data-r>주선이 취미였던 세 사람이<br class="ctr-br"> 1:1 맞춤 소개팅까지 열게 됐고,<br>지금까지 <b class="ac">4,000건 넘게</b> 이어드렸어요.</p>
     <h3 style="font-size:14px;color:var(--amber);font-weight:700;margin-top:36px;letter-spacing:.02em" data-r>우리 셋의 공통점</h3>
     <div class="ctr-grid" data-r>
@@ -641,6 +667,23 @@ document.querySelectorAll('[data-r]').forEach(el=>io.observe(el));
     }
   }catch(e){}
 })();
+</script>
+<!-- 센터장 캐릭터(컵 친구들) 그리기 — 유형 테스트와 같은 그리기 도구를 쓴다 -->
+<script defer src="/test/kit.js"></script>
+<script>
+window.addEventListener("DOMContentLoaded", function(){
+  if(!window.SsumKit) return;
+  var CREW = {
+    dongtan: { cup:"#FFAFC2", foam:"#FFF6EE", eyes:"happy", mouth:"smile", top:"latte", pose:"heart" },
+    seongsu: { cup:"#7FBBEA", foam:"#EAF7FF", eyes:"dot", mouth:"smile", top:"sparkles", pose:"peace", acc:["horn"] },
+    gangnam: { cup:"#B9773F", foam:"#5A3420", eyes:"dot", mouth:"smirk", top:"none", pose:"point", acc:["tie","badge"], tie:"#27408B" }
+  };
+  document.querySelectorAll("canvas[data-crew]").forEach(function(cv){
+    var spec = CREW[cv.getAttribute("data-crew")]; if(!spec) return;
+    var c = cv.getContext("2d");
+    SsumKit.mascot(c, cv.width * .5, cv.height * .56, cv.width * .74, spec);
+  });
+});
 </script>
 </body>
 </html>

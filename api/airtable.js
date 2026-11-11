@@ -3,6 +3,7 @@ const { sendSms, isValidPhone, checkSmsConfig } = require("./_sms.js");
 const { searchVolume, checkNaverConfig } = require("./_naver.js");
 const { checkPair, isRecId } = require("./_match.js");
 const { inflowLine } = require("./_inflow.js");
+const testCount = require("./_testcount.js");
 
 // 📈 네이버 검색량 — 에어테이블 '검색키워드' 표를 읽어 네이버에서 월간 검색량을 받아온다.
 //    하루에 한 번만 저장한다 (에어테이블 월 1,000건 한도를 아끼기 위해).
@@ -165,6 +166,26 @@ module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-key");
   if (req.method === "OPTIONS") return res.status(200).end();
+
+  // 🧾 유형 테스트 발급 수 (/api/airtable?testcount=1)
+  //    에어테이블을 쓰지 않는다 (월 1,000건 한도를 지키려고) → 그래서 에어테이블 설정 확인보다 앞에 둔다.
+  //    ⚠️ Vercel 함수가 12개(한도)로 꽉 차서 새 파일을 못 만든다. 그래서 여기에 얹었다.
+  //    - POST {test,type}: 테스트를 끝낸 손님 화면이 부른다. 저장소가 없으면 아무 일도 안 한다.
+  //    - GET: 관리자만. 지금까지의 발급 수.
+  if (req.query.testcount === "1") {
+    try {
+      if (req.method === "POST") {
+        const b = req.body || {};
+        return res.status(200).json(await testCount.bump(String(b.test || ""), String(b.type || "")));
+      }
+      if (!process.env.ADMIN_PASSWORD || req.headers["x-admin-key"] !== process.env.ADMIN_PASSWORD) {
+        return res.status(401).json({ error: "인증이 필요합니다" });
+      }
+      return res.status(200).json(await testCount.read());
+    } catch (e) {
+      return res.status(200).json({ ok: false, reason: "error", error: e.message });
+    }
+  }
 
   const TOKEN = process.env.AIRTABLE_TOKEN;
   const BASE_ID = process.env.AIRTABLE_BASE_ID;
@@ -413,6 +434,12 @@ module.exports = async function handler(req, res) {
       //    위에서 이미 읽어둔 목록을 세기만 해서 에어테이블 호출은 늘지 않는다.
       //    결혼매칭은 유입경로 칸에 '결혼매칭'이 들어가 있어 따로 센다 (아래 💍 줄).
       const inLine = inflowLine(thisMonth.filter(r => !isMarriage(r.fields)));
+      // 🧪 이번 달 신청자 중 유형 테스트를 하고 온 분 (신청서의 '테스트결과' 칸 — 호출 추가 없음)
+      const testApplyLine = testCount.applicantLine(thisMonth);
+      // 🧾 테스트 발급 누적 — 숫자 전용 저장소가 연결돼 있을 때만 (에어테이블 호출 아님)
+      let testCountLine = "";
+      try { testCountLine = await testCount.countLine(); }
+      catch (e) { console.error("[airtable] 테스트 발급 수 조회 실패:", e.message); }
       // 💌 신청 7일째인데 아직 대기·승인(소개 전)인 분 → 기다림 안내 문자
       const dayKST = t => Math.floor((new Date(t).getTime() + 9 * 3600 * 1000) / 86400000);
       const todayK = dayKST(Date.now()), startK = dayKST(대기안내_시작일 + "T00:00:00+09:00");
@@ -522,7 +549,7 @@ module.exports = async function handler(req, res) {
         }
       }
 
-      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)${inLine}\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${matchLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
+      const msg = `☀️ 썸류 아침 브리핑\n\n🆕 이번달 신규신청 — 👧 여 ${newF}명 · 👦 남 ${newM}명 (총 ${thisMonth.length}명)${inLine}${testApplyLine}${testCountLine}\n💘 1:1 매칭 — 대기 ${oneWait} · 소개중 ${oneIntro}\n💍 결혼매칭 신청 — ${marriage}건${yLine}${waitLine}${matchLine}${memberLine}${smsLine}${keywordLine}\n\n오늘도 화이팅이에요! 💪`;
       await notifySlack(msg);
       return res.status(200).json({ ok: true });
     } catch (e) { return res.status(200).json({ ok: false, error: e.message }); }
