@@ -750,9 +750,10 @@ module.exports = async function handler(req, res) {
       const miss = String(why).match(/Unknown field name:\s*"([^"]+)"/);
       if (miss && (req.method === "POST" || req.method === "PATCH")) {
         notifySlack(
-          `⚠️ 에어테이블 '${table}' 표에 **${miss[1]}** 칸이 없어요.\n` +
+          `⚠️ 에어테이블 '${table}' 표에 *${miss[1]}* 칸이 없어요.\n` +
           `손님이 적어준 '${miss[1]}' 값이 저장되지 않고 버려집니다. (신청 자체는 정상 접수돼요)\n` +
-          `에어테이블에서 '${table}' 표에 '${miss[1]}' 칸을 추가해주세요.`
+          `👉 관리자 홈(/admin) 맨 아래 🔧 '필요한 칸 한 번에 만들기'를 누르면 만들어져요.\n` +
+          `   (버튼 목록에 없는 칸이면 에어테이블에서 '${table}' 표에 '${miss[1]}' 칸을 직접 추가해주세요)`
         ).catch(() => {});
       }
       return res.status(response.status).json(data);

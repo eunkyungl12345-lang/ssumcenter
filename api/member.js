@@ -212,7 +212,8 @@ module.exports = async function handler(req, res) {
     try {
       const r = await fetch(`https://api.airtable.com/v0/meta/bases/${BASE_ID}/tables`, { headers: { "Authorization": `Bearer ${TOKEN}` } });
       const d = await r.json();
-      return res.status(r.status).json({ tables: (d.tables || []).map(t => ({ id: t.id, name: t.name })) });
+      // 칸 이름도 같이 준다 — '준비' 버튼이 "이미 있는지 / 비슷한 이름이 있는지"를 미리 볼 수 있게
+      return res.status(r.status).json({ tables: (d.tables || []).map(t => ({ id: t.id, name: t.name, fields: (t.fields || []).map(f => f.name) })) });
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
