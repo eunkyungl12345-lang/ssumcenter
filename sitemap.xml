@@ -29,6 +29,14 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://ssumcenter.vercel.app/test/ideal</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ssumcenter.vercel.app/test/work</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ssumcenter.vercel.app/invite</loc>
     <priority>0.4</priority>
   </url>

@@ -116,9 +116,10 @@
     <!-- 신청 유도 -->
     <div class="mt-7 text-center bg-gradient-to-b from-[#FFBE2E]/10 to-transparent border border-[#FFBE2E]/20 rounded-2xl p-6">
       <h3 class="text-lg font-black">이 유형과 잘 맞는 상대,<br><span class="y">지금 만나러 가볼까요?</span></h3>
-      <p class="text-xs text-[#9a9080] mt-2">결과 기반으로 강남 로테이션 소개팅 / 1:1 온라인 매칭을 추천해드려요.</p>
-      <button onclick="goApply()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl mt-5 pulse"><i class="fa-solid fa-mug-hot mr-2"></i>오프라인 커피팅 신청</button>
-      <button onclick="goMatching()" class="w-full bg-[#0e0c0a] border border-[#FFBE2E]/40 text-white font-extrabold py-4 rounded-2xl mt-2 hover:bg-[#FFBE2E]/10 transition"><i class="fa-solid fa-video y mr-2"></i>1:1 온라인 매칭 신청</button>
+      <p class="text-xs text-[#9a9080] mt-2">센터장 3명이 신청서를 직접 읽고 한 분씩 이어드려요.</p>
+      <!-- 로테이션(오프라인 커피팅)은 쉬는 중이라 신청 버튼을 뺐다. 다시 열면 여기에 추가. -->
+      <button onclick="goMatching()" class="bg-y text-black font-extrabold w-full py-4 px-3 rounded-2xl mt-5 pulse">내 유형에 딱 맞는 사람 1:1로 만나보기 (신청비 0원)</button>
+      <p class="text-[11px] text-[#9a9080] mt-3">신청은 무료 · 매칭이 성사됐을 때만 결제해요</p>
       <button onclick="restart()" class="text-xs text-[#9a9080] hover:text-white mt-4">다시 테스트하기</button>
     </div>
   </section>
@@ -206,16 +207,10 @@ function calc(){
 }
 function restart(){step=0;scores={warmth:0,depth:0,energy:0,play:0};result=null;$("progress").style.width="0%";show("intro");}
 
-function goApply(){
-  window.open('https://form.naver.com/response/Lr0lM_rMW-PwIFPSG0lQnw','_blank');
-}
 function goMatching(){
-  const t=TYPES[result];
-  if(localStorage.getItem('ssumUser')){
-    window.location.href='../matching.html?result='+encodeURIComponent(t.name)+'&pct='+t.pct;
-  }else{
-    window.location.href='../login.html?redirect=matching.html';
-  }
+  // from=test → 신청서의 '어떻게 알고 오셨어요?'에 '유형 테스트'가 자동으로 들어간다.
+  // (로그인이 필요하면 신청서가 알아서 로그인 화면을 거쳐 이 주소로 다시 돌아온다)
+  window.location.href='/matching?from=test&result='+encodeURIComponent(TYPES[result].name);
 }
 function copyShare(){
   const url=location.origin+location.pathname;

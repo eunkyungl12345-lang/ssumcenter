@@ -502,6 +502,7 @@
             <option value="지인소개">지인소개</option>
             <option value="인터넷">인터넷(검색 등)</option>
             <option value="그날그사람">그날 그 사람 (쪽지 연결)</option>
+            <option value="유형테스트">연애 커피 유형 테스트</option>
           </select>
         </div>
 
@@ -933,13 +934,28 @@ function aiFillForm(){
   if(sel) sel.value = "그날그사람";
 })();
 
+// ☕ 유형 테스트 결과지의 [1:1로 만나보기] 버튼으로 넘어온 경우(/matching?from=test)
+//    → '어떻게 알고 오셨어요?'에 '유형 테스트'를 미리 골라둔다.
+//    이게 있어야 "테스트가 신청을 몇 명 데려왔는지"가 아침 브리핑 📣 줄에 잡힌다.
+//    손님이 이미 다른 경로를 골랐거나(임시저장), 초대 링크(ref)로 온 경우는 건드리지 않는다.
+function applyTestSource(){
+  try{
+    const p = new URLSearchParams(location.search);
+    if(p.get("from") !== "test" || p.get("ref")) return;
+    const sel = document.querySelector('select[name="inflow"]');
+    if(sel && !sel.value){ sel.value = "유형테스트"; sel.dispatchEvent(new Event("change", {bubbles:true})); }
+  }catch(e){}
+}
+applyTestSource();
+
 // URL 파라미터에서 테스트 결과 읽기 (테스트 페이지에서 넘어온 경우 자동 채움)
 (function loadTestResult(){
   const p = new URLSearchParams(location.search);
-  const result = p.get("result");
-  const pct = p.get("pct");
+  const result = (p.get("result") || "").replace(/[<>]/g, "").slice(0, 20);
   if(result){
-    const text = pct ? `${result}형 (상위 ${pct}%)` : `${result}형`;
+    // 유형 이름을 그대로 쓴다. (예전엔 뒤에 '형'을 또 붙여서 "꿀라떼형형"이 됐고,
+    //  "상위 N%"는 지어낸 숫자라 뺐다)
+    const text = result;
     document.getElementById("test-result-badge").classList.remove("hidden");
     document.getElementById("test-result-text").textContent = text;
     document.getElementById("test-result-input").value = text;
@@ -1128,6 +1144,8 @@ function restoreDraft(d){
     var kw=document.getElementById("keywords-input"); if(kw) kw.value=[...selectedKeywords].join(",");
     var kc=document.getElementById("keyword-count"); if(kc){ kc.textContent=selectedKeywords.size+"개 선택됨"; kc.style.color=selectedKeywords.size>=1?"#E8B050":"#6b6358"; }
     goStep(d.step||1);
+    // 임시저장에 유입경로가 비어 있었으면 테스트에서 넘어온 표시를 다시 채운다
+    if(typeof applyTestSource==="function") applyTestSource();
   }catch(e){}
 }
 (function(){

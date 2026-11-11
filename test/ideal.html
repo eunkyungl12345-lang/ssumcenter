@@ -3,211 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>썸류센터 | 나의 연애 커피 유형은?</title>
-<link rel="stylesheet" href="/tailwind.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<style>
-  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0e0c0a;color:#F5F5F3;overflow-x:hidden}
-  .y{color:#FFBE2E}.bg-y{background:#FFBE2E}.bd-y{border-color:#FFBE2E}
-  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#16140f}::-webkit-scrollbar-thumb{background:#FFBE2E;border-radius:3px}
-  @keyframes pulseY{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,212,0,.4)}50%{transform:scale(1.03);box-shadow:0 0 18px 6px rgba(255,212,0,.18)}}
-  .pulse{animation:pulseY 2s infinite ease-in-out}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-  .fade{animation:fadeUp .4s ease both}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  .fade-in{animation:fadeIn .6s ease both}
-  @keyframes pop{0%{opacity:0;transform:scale(.5) translateY(10px)}60%{transform:scale(1.08)}100%{opacity:1;transform:scale(1) translateY(0)}}
-  .pop{animation:pop .5s cubic-bezier(.34,1.56,.64,1) both}
-  @keyframes countUp{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
-  .count-anim{animation:countUp .9s cubic-bezier(.34,1.56,.64,1) both}
-  .glow{background:radial-gradient(circle at 50% 0%,rgba(255,212,0,.12),transparent 60%)}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .spinner{animation:spin 1s linear infinite}
-  @keyframes fbFill{from{width:0}}
-  .fb-bar{animation:fbFill 1s ease both}
-  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-  .float{animation:float 3s ease-in-out infinite}
-  @keyframes steam{0%{opacity:.4;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-24px) scale(1.4)}}
-  .steam{animation:steam 2s ease-in-out infinite}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-  .blink{animation:blink 1.4s infinite}
-</style>
+<meta name="theme-color" content="#FFF7EA">
+<title>나의 연애 커피 유형은? · 연애 취향 영수증 | 썸류센터</title>
+<meta name="description" content="직진드리퍼? 콜드브루형? 아아고수? 10문항 1분 테스트로 내 연애 취향 영수증을 뽑아보세요. 친구와 케미도 볼 수 있어요.">
+<link rel="canonical" href="https://ssumcenter.vercel.app/test/ideal">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="썸류센터">
+<meta property="og:title" content="나의 연애 커피 유형은? ☕ 연애 취향 영수증 뽑기">
+<meta property="og:description" content="10문항 · 1분. 너는 직진드리퍼? 콜드브루형? 친구랑 케미도 확인해봐!">
+<meta property="og:url" content="https://ssumcenter.vercel.app/test/ideal">
+<meta property="og:image" content="https://ssumcenter.vercel.app/test/og-coffee.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="나의 연애 커피 유형은? ☕ 연애 취향 영수증 뽑기">
+<meta name="twitter:description" content="10문항 · 1분. 너는 직진드리퍼? 콜드브루형? 친구랑 케미도 확인해봐!">
+<meta name="twitter:image" content="https://ssumcenter.vercel.app/test/og-coffee.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!-- 귀여운 제목용 글꼴 하나만 불러온다 (못 불러오면 기기 기본 글꼴로 그대로 나온다) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/test/kit.css">
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
-<body class="min-h-screen selection:bg-[#FFBE2E] selection:text-black">
+<body>
 
-<div class="fixed top-0 inset-x-0 h-1.5 bg-[#16140f] z-50">
-  <div id="progress" class="h-full bg-y transition-all duration-500" style="width:0%"></div>
-</div>
+<div class="bar"><i id="progress"></i></div>
+<nav><a href="/">‹ <b>썸류센터</b> 홈</a></nav>
 
-<nav class="px-4 py-3 border-b border-[#1e1c17]">
-  <div class="max-w-xl mx-auto flex justify-between items-center">
-    <a href="../index.html" class="flex items-center gap-2 text-sm text-[#9a9080] hover:text-white transition">
-      <i class="fa-solid fa-chevron-left text-xs"></i>
-      <span class="y font-bold">썸류센터</span> 메인
-    </a>
-    <a href="../index.html#apply" class="text-xs text-[#9a9080] hover:text-white">테스트 건너뛰고 신청</a>
-  </div>
-</nav>
+<div class="wrap">
 
-<div class="max-w-xl mx-auto px-5 pt-8 pb-24">
-
-  <!-- 인트로 -->
-  <section id="intro" class="fade text-center glow rounded-3xl pt-4">
-    <div class="inline-flex items-center gap-2 bg-[#16140f] border border-[#1e1c17] px-4 py-2 rounded-full text-xs mb-6">
-      <span class="w-2 h-2 rounded-full bg-emerald-500 blink"></span>
-      <span class="text-[#9a9080]">오늘 <b id="live-today" class="text-white">0</b>명 참여 중</span>
+  <!-- 첫 화면 -->
+  <section id="intro" class="intro fade">
+    <!-- 친구가 보낸 링크로 들어온 경우에만 보인다 -->
+    <div id="friend" class="friend hidden">
+      <canvas id="friend-m" width="180" height="180" aria-hidden="true"></canvas>
+      <div><b id="friend-t"></b><span>나도 해보면 둘의 케미가 나와요</span></div>
     </div>
-    <div class="relative inline-block mb-2">
-      <span class="absolute -top-1 left-3 text-xl steam">~</span>
-      <span class="absolute -top-2 left-7 text-xl steam" style="animation-delay:.5s">~</span>
-      <span class="absolute -top-1 left-11 text-xl steam" style="animation-delay:1s">~</span>
-      <div class="text-7xl float">☕</div>
+
+    <div class="parade" aria-hidden="true">
+      <canvas width="210" height="210" data-m="dripper"></canvas>
+      <canvas width="210" height="210" data-m="honeylatte"></canvas>
+      <canvas width="210" height="210" data-m="americano"></canvas>
+      <canvas width="210" height="210" data-m="decaf"></canvas>
     </div>
-    <h1 class="text-3xl md:text-4xl font-black leading-tight tracking-tight mt-3">
-      나의 <span class="y">연애 커피 유형</span>은?
-    </h1>
-    <p class="text-sm text-[#9a9080] mt-4 leading-relaxed">
-      직진드리퍼? 콜드브루형? 아아고수?<br>
-      8가지 썸류 커피 유형 중 <b class="text-white">내 연애 취향</b>을 찾아드려요 ☕
-    </p>
-    <div class="flex flex-wrap gap-1.5 justify-center mt-5 px-2">
-      <span class="text-[10px] bg-[#16140f] border border-[#1e1c17] text-[#9a9080] px-2.5 py-1 rounded-full">🔥 직진드리퍼</span>
-      <span class="text-[10px] bg-[#16140f] border border-[#1e1c17] text-[#9a9080] px-2.5 py-1 rounded-full">🧊 콜드브루형</span>
-      <span class="text-[10px] bg-[#16140f] border border-[#1e1c17] text-[#9a9080] px-2.5 py-1 rounded-full">🍯 꿀라떼형</span>
-      <span class="text-[10px] bg-[#16140f] border border-[#1e1c17] text-[#9a9080] px-2.5 py-1 rounded-full">😎 아아고수</span>
-      <span class="text-[10px] bg-[#16140f] border border-[#1e1c17] text-[#9a9080] px-2.5 py-1 rounded-full">+4</span>
-    </div>
-    <button onclick="startTest()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl pulse text-base mt-7">
-      <i class="fa-solid fa-mug-hot mr-2"></i>내 커피 유형 찾기
-    </button>
-    <p class="text-[11px] text-[#8a7f70] mt-4">10문항 · 1분 소요 · 무료</p>
+    <h1 class="cute">나의 <span class="y">연애 커피 유형</span>은?</h1>
+    <p class="sub">직진드리퍼? 콜드브루형? 아아고수?<br>답하고 나면 <b>연애 취향 영수증</b>을 뽑아드려요 🧾</p>
+    <div class="steps"><span>10문항</span><span>1분</span><span>정보 입력 없음</span></div>
+    <button class="btn btn-y" onclick="T.start()">☕ 내 영수증 뽑으러 가기</button>
+    <button id="again-link" class="link hidden" onclick="T.showSaved()">지난번 내 영수증 다시 보기</button>
+    <p class="tiny">8가지 유형 · 이름이나 연락처를 묻지 않아요</p>
+    <a class="other" href="/test/work">직장인이라면? <b>연애 사원증 발급받기 🪪 →</b></a>
   </section>
 
   <!-- 질문 -->
   <section id="quiz" class="hidden">
-    <div class="flex items-center justify-between mb-5">
-      <span id="qcount" class="text-xs y font-bold tracking-widest">Q1 / 10</span>
-      <button onclick="restart()" class="text-[11px] text-[#9a9080] hover:text-white"><i class="fa-solid fa-rotate-left mr-1"></i>처음으로</button>
+    <div class="qtop">
+      <b id="qcount">Q1 / 10</b>
+      <button id="qback" onclick="T.prev()">← 이전</button>
     </div>
-    <span class="text-[11px] text-[#9a9080] tracking-wider uppercase" id="qcat"></span>
-    <h2 id="qtext" class="text-xl md:text-2xl font-black leading-snug mt-2 mb-6 min-h-[3rem]"></h2>
-    <div id="qopts" class="space-y-3"></div>
-    <div id="feedback" class="hidden mt-5 bg-[#16140f] border border-[#FFBE2E]/20 rounded-xl p-3 text-center fade">
-      <p class="text-xs"><i class="fa-solid fa-users y mr-1"></i> <span id="fb-text"></span></p>
-      <div class="h-1.5 bg-[#0e0c0a] rounded-full overflow-hidden mt-2"><div id="fb-bar" class="h-full bg-y rounded-full fb-bar"></div></div>
-    </div>
+    <div id="qcat"></div>
+    <h2 id="qtext" class="cute"></h2>
+    <div id="qopts"></div>
   </section>
 
-  <!-- 로딩 -->
-  <section id="loading" class="hidden text-center pt-20">
-    <div class="relative inline-block mb-8">
-      <div class="w-20 h-20 border-4 border-[#1e1c17] border-t-[#FFBE2E] rounded-full spinner mx-auto"></div>
-      <div class="absolute inset-0 flex items-center justify-center text-3xl">☕</div>
-    </div>
-    <h2 id="loading-text" class="text-lg font-black">AI가 당신의 답변을 분석 중...</h2>
-    <p id="loading-sub" class="text-sm text-[#9a9080] mt-2">8가지 커피 유형과 매칭하고 있어요</p>
-    <div class="max-w-xs mx-auto mt-6 h-1.5 bg-[#16140f] rounded-full overflow-hidden">
-      <div id="loading-bar" class="h-full bg-y rounded-full transition-all duration-300" style="width:0%"></div>
-    </div>
-  </section>
-
-  <!-- 정보 입력 -->
-  <section id="info" class="hidden fade">
-    <div class="text-center mb-6">
-      <div class="text-5xl mb-3 pop">🎁</div>
-      <h2 class="text-2xl md:text-3xl font-black leading-tight">결과가 나왔어요!</h2>
-      <p class="text-sm text-[#9a9080] mt-2 leading-relaxed">
-        <b class="text-white">누구의 결과인지</b> 알려주시면<br>나만의 결과지를 완성해드릴게요 ✨
-      </p>
-    </div>
-    <div class="space-y-4">
-      <div>
-        <label class="text-xs font-bold text-[#9a9080] mb-2 block"><i class="fa-solid fa-user y mr-1"></i> 이름 또는 닉네임</label>
-        <input id="i-name" type="text" placeholder="결과지에 들어갈 이름" class="w-full bg-[#16140f] border border-[#1e1c17] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
-      </div>
-      <div>
-        <label class="text-xs font-bold text-[#9a9080] mb-2 block"><i class="fa-solid fa-venus-mars y mr-1"></i> 당신은?</label>
-        <div class="grid grid-cols-2 gap-3">
-          <button onclick="setGender('남성')" id="g-m" class="border border-[#1e1c17] bg-[#16140f] rounded-xl py-3.5 text-sm font-bold transition">👨 남성</button>
-          <button onclick="setGender('여성')" id="g-f" class="border border-[#1e1c17] bg-[#16140f] rounded-xl py-3.5 text-sm font-bold transition">👩 여성</button>
-        </div>
-      </div>
-      <div>
-        <label class="text-xs font-bold text-[#9a9080] mb-2 block"><i class="fa-solid fa-cake-candles y mr-1"></i> 또래 매칭률도 함께 보여드릴게요</label>
-        <input id="i-year" type="number" inputmode="numeric" placeholder="출생연도 (예: 1996)" class="w-full bg-[#16140f] border border-[#1e1c17] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
-      </div>
-      <div class="bg-gradient-to-br from-[#FFBE2E]/5 to-transparent border border-[#FFBE2E]/20 rounded-xl p-4">
-        <label class="text-xs font-bold text-white mb-1 block"><i class="fa-brands fa-rocketchat y mr-1"></i> 결과지를 카톡으로도 받을래요?</label>
-        <p class="text-[11px] text-[#9a9080] mb-3">내 유형과 잘 맞는 실제 매칭 상대도 같이 보내드려요 (선택)</p>
-        <input id="i-phone" type="tel" inputmode="numeric" placeholder="휴대폰 번호 (예: 01012345678)" class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl py-3.5 px-4 text-base focus:outline-none focus:border-y transition">
-      </div>
-      <div class="bg-[#16140f] border border-[#1e1c17] rounded-xl p-3">
-        <label class="flex items-start gap-2.5 cursor-pointer">
-          <input id="i-agree" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#FFBE2E]">
-          <span class="text-[11px] text-[#9a9080] leading-relaxed">결과 안내 및 매칭을 위한 <b class="text-white">개인정보 수집·이용에 동의</b>합니다.
-          <button onclick="togglePolicy(event)" class="y underline ml-1">자세히</button></span>
-        </label>
-        <p id="policy" class="hidden text-[10px] text-[#8a7f70] mt-2 pt-2 border-t border-[#1e1c17] leading-relaxed">수집항목: 이름, 성별, 출생연도, 연락처(선택) / 목적: 결과 안내 및 매칭 서비스 / 보유: 목적 달성 후 파기. 동의 철회 시 즉시 삭제.</p>
-      </div>
-      <button onclick="submitInfo()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl text-base pulse"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>내 결과 확인하기</button>
-      <button onclick="skipInfo()" class="w-full py-2 text-xs text-[#8a7f70] hover:text-[#9a9080]">정보 없이 결과만 보기 →</button>
-    </div>
+  <!-- 영수증 뽑는 중 -->
+  <section id="loading" class="printing hidden">
+    <canvas id="load-m" width="280" height="280" aria-hidden="true"></canvas>
+    <h2 class="cute">영수증 뽑는 중…</h2>
+    <p>주문하신 연애 취향을 정리하고 있어요 🧾</p>
   </section>
 
   <!-- 결과 -->
-  <section id="result" class="hidden fade-in">
-    <div class="text-center">
-      <span class="text-[11px] y font-bold tracking-widest uppercase">YOUR COFFEE TYPE</span>
-      <p id="r-greeting" class="text-sm text-[#9a9080] mt-3"></p>
-      <div id="r-emoji" class="text-8xl my-4 pop"></div>
-      <div id="r-eng" class="text-xs text-[#9a9080] tracking-[0.2em] uppercase"></div>
-      <h2 class="text-3xl md:text-4xl font-black tracking-tight mt-1"><span id="r-type" class="y"></span></h2>
-      <p id="r-tagline" class="text-sm font-bold text-white mt-2"></p>
-      <p id="r-desc" class="text-sm text-[#9a9080] mt-4 leading-relaxed px-2"></p>
+  <section id="result" class="hidden">
+    <div class="rhead">
+      <small>YOUR COFFEE TYPE</small>
+      <h2 class="cute"><span id="r-who">당신</span>의 연애 커피는 <span class="y" id="r-type"></span></h2>
+    </div>
+    <div class="hero">
+      <canvas id="hero-m" width="240" height="240" aria-hidden="true"></canvas>
+      <div class="say"><small id="say-name"></small><span id="say-text"></span></div>
     </div>
 
-    <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 mt-6 text-center">
-      <p class="text-xs text-[#9a9080]">이 유형은 전체 참가자 중</p>
-      <div class="text-4xl font-black y count-anim my-1"><span id="r-rare"></span>%</div>
-      <p class="text-xs text-[#9a9080]">의 희소한 유형이에요</p>
+    <div class="receipt" id="card"><img id="card-img" alt=""></div>
+    <p class="hint">📌 영수증을 <b>꾹 누르면</b> 사진으로 저장돼요</p>
+
+    <div class="namebox">
+      <input id="i-name" type="text" maxlength="10" placeholder="영수증에 이름 넣기 (선택)" autocomplete="off">
+      <button onclick="T.applyName()">넣기</button>
     </div>
 
-    <div class="grid grid-cols-2 gap-3 mt-4">
-      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-4">
-        <h3 class="text-xs font-bold y mb-2"><i class="fa-solid fa-heart mr-1"></i>연애할 때 나는</h3>
-        <ul id="r-traits" class="space-y-1.5 text-[12px] text-[#9a9080]"></ul>
-      </div>
-      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-4">
-        <h3 class="text-xs font-bold text-pink-400 mb-2"><i class="fa-solid fa-mug-saucer mr-1"></i>찰떡 궁합</h3>
-        <div id="r-match" class="text-sm"></div>
+    <div class="share">
+      <button class="btn btn-y" onclick="T.save()">📸 이미지로 저장 · 스토리에 올리기</button>
+      <div class="row">
+        <button class="btn btn-kakao" onclick="T.kakao()">💬 카톡 공유</button>
+        <button class="btn btn-ghost" onclick="T.copy()">🔗 링크 복사</button>
       </div>
     </div>
 
-    <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 mt-4 text-center">
-      <p class="text-xs text-[#9a9080]"><span id="r-age-range" class="text-white"></span> · 지금 매칭 가능한 상대</p>
-      <div class="text-3xl font-black y count-anim my-1"><span id="r-count"></span>명</div>
+    <!-- 친구 링크로 들어와서 끝낸 경우: 둘의 케미 -->
+    <div id="chem" class="box hidden">
+      <div class="chem" aria-hidden="true">
+        <canvas id="chem-a" width="200" height="200"></canvas><i>💛</i><canvas id="chem-b" width="200" height="200"></canvas>
+      </div>
+      <div class="chem-t cute" id="chem-t"></div>
+      <div class="chem-s" id="chem-s"></div>
     </div>
 
-    <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-4 mt-4 flex items-center justify-between">
-      <div class="text-xs"><i class="fa-solid fa-share-nodes y mr-1"></i>내 유형 친구한테 자랑하기</div>
-      <button onclick="copyShare()" class="bg-[#1e1c17] hover:bg-[#FFBE2E]/10 hover:y text-xs font-bold px-3 py-2 rounded-lg transition">링크 복사</button>
+    <div class="box">
+      <h3 id="r-tagline"></h3>
+      <p id="r-desc"></p>
+    </div>
+    <div class="two">
+      <div class="box">
+        <h3>연애할 때 나는</h3>
+        <ul id="r-traits"></ul>
+      </div>
+      <div class="box">
+        <h3>찰떡 궁합</h3>
+        <div class="mt"><canvas id="r-match-m" width="150" height="150" aria-hidden="true"></canvas><div><b id="r-match-n"></b></div></div>
+        <span id="r-match-r" style="font-size:12.5px;color:var(--mut);display:block;margin-top:6px"></span>
+      </div>
     </div>
 
-    <div class="mt-6 text-center bg-gradient-to-b from-[#FFBE2E]/15 to-transparent border border-[#FFBE2E]/30 rounded-2xl p-6">
-      <h3 class="text-lg font-black">내 유형과 <span class="y">찰떡인 상대</span>,<br>지금 만나러 갈까요?</h3>
-      <p class="text-xs text-[#9a9080] mt-2">강남 로테이션 소개팅 / 1:1 온라인 매칭으로 연결해드려요.</p>
-      <button onclick="goApply()" class="bg-y text-black font-extrabold w-full py-4 rounded-2xl mt-5 pulse"><i class="fa-solid fa-mug-hot mr-2"></i>오프라인 커피팅 신청</button>
-      <button onclick="goMatching()" class="w-full bg-[#0e0c0a] border border-[#FFBE2E]/40 text-white font-extrabold py-4 rounded-2xl mt-2 hover:bg-[#FFBE2E]/10 transition"><i class="fa-solid fa-video y mr-2"></i>1:1 온라인 매칭 신청</button>
-      <button onclick="restart()" class="text-xs text-[#9a9080] hover:text-white mt-4">다시 테스트하기</button>
+    <div class="cta">
+      <h3 class="cute">내 유형과 <span class="y">찰떡인 사람</span>,<br>실제로 만나볼까요?</h3>
+      <p>앱처럼 넘겨보지 않아요.<br>센터장 3명이 신청서를 직접 읽고 한 분씩 이어드려요.</p>
+      <button class="btn btn-y" onclick="T.apply()">내 유형에 딱 맞는 사람 1:1로 만나보기 (신청비 0원)</button>
+      <p class="fine">신청은 무료 · 매칭이 성사됐을 때만 결제해요</p>
     </div>
+    <a class="other" href="/test/work">하나 더! <b>연애 사원증 발급받기 🪪 →</b></a>
+    <div style="text-align:center;margin-top:8px"><button class="link" onclick="T.restart()">다시 테스트하기</button></div>
   </section>
 </div>
 
-<div id="toast" class="fixed bottom-6 inset-x-5 max-w-md mx-auto bg-[#1e1c17] border border-[#FFBE2E]/30 rounded-xl p-4 text-sm text-center translate-y-32 opacity-0 transition-all duration-300 z-50"></div>
+<div id="toast" role="status"></div>
 
+<script src="/test/kit.js"></script>
 <script>
-const ENDPOINT_URL = "";
+/* ============================================================
+   연애 커피 유형 테스트 → '연애 취향 영수증'
+   화면 틀·캐릭터·공유는 /test/kit.js 가 맡고, 여기에는 질문·유형·영수증 그림만 있다.
+   - 화면에 나오는 숫자는 전부 '내가 고른 답'에서 계산한 것이다 (지어낸 숫자 금지).
+   ============================================================ */
+const K=window.SsumKit;
 
 const Q=[
  {cat:"첫인상", q:"소개팅 상대가 카페 문 열고 들어왔다. 나의 첫 행동은?",
@@ -262,191 +202,228 @@ const Q=[
      {t:"편안한 휴식 같은 것",s:{chill:2}}]},
 ];
 
+/* spec: 캐릭터 생김새 / nick·say: 캐릭터 이름과 한마디 / work: '직장인 버전' 한 줄 */
 const TYPES={
- dripper:{name:"직진드리퍼",eng:"STRAIGHT DRIPPER",emoji:"🔥",rare:11,
-   tagline:"마음 들면 바로 내려버리는 직진파 ☕",
+ dripper:{name:"직진드리퍼",emoji:"🔥",nick:"드립이",say:"좋으면 좋다고 해!",
+   spec:{cup:"#F4764E",foam:"#FFE9D2",eyes:"angry",mouth:"open",top:"flame",pose:"hip"},
+   ink:"#D9502B",bg:["#FFE6D8","#FFC4A3"],soft:"#FFE8DC",
+   tagline:"마음 들면 바로 내려버리는 직진파",
    desc:"밀당? 그게 뭔데. 좋으면 좋다고 바로 표현하는 화끈한 직진파예요. 망설이는 사이 식어버리는 게 더 싫은, 솔직하고 적극적인 타입.",
    traits:["고백도 연락도 내가 먼저","읽씹 절대 안 함","감정 숨기는 거 못함"],
-   match:{emoji:"🌙",name:"디카페인형",reason:"내 직진을 편안하게 받아주는 사람"}},
- coldbrew:{name:"콜드브루형",eng:"COLD BREW",emoji:"🧊",rare:9,
-   tagline:"천천히 우러나는 반전 깊이 🧊",
+   work:"회의는 미뤄도 고백은 안 미루는 편",
+   match:{key:"decaf",reason:"내 직진을 편안하게 받아주는 사람"}},
+ coldbrew:{name:"콜드브루형",emoji:"🧊",nick:"브루",say:"…천천히 와도 돼.",
+   spec:{cup:"#8CC6EA",foam:"#EAF7FF",eyes:"half",mouth:"flat",top:"straw",pose:"think"},
+   ink:"#2F7FB5",bg:["#E1F3FF","#B7DBF4"],soft:"#E3F3FD",
+   tagline:"천천히 우러나는 반전 깊이",
    desc:"처음엔 차갑고 거리감 있어 보여도, 알수록 깊은 맛이 우러나는 반전 매력파. 시간은 걸려도 한번 빠지면 진국인 츤데레 스타일.",
    traits:["초반엔 쿨한 척","마음 열리면 한없이 깊음","겉바속촉 그 자체"],
-   match:{emoji:"🍯",name:"꿀라떼형",reason:"내 차가움을 다정하게 녹여주는 사람"}},
- honeylatte:{name:"꿀라떼형",eng:"HONEY LATTE",emoji:"🍯",rare:14,
-   tagline:"단내 풀풀, 애정표현 만렙 🍯",
+   work:"칼퇴는 빠른데 마음 여는 건 야근",
+   match:{key:"honeylatte",reason:"내 차가움을 다정하게 녹여주는 사람"}},
+ honeylatte:{name:"꿀라떼형",emoji:"🍯",nick:"꿀떼",say:"보고 싶었어!",
+   spec:{cup:"#FFC94D",foam:"#FFF6DA",eyes:"heart",mouth:"open",top:"honey",pose:"heart"},
+   ink:"#D98A00",bg:["#FFF4CF","#FFDB85"],soft:"#FFF3D1",
+   tagline:"단내 풀풀, 애정표현 만렙",
    desc:"보고 싶으면 보고 싶다고, 좋으면 좋다고. 애정 표현이 끊이지 않는 다정함 만렙 타입. 함께 있으면 매일이 달달한 사람.",
    traits:["애정표현 아끼지 않음","연락·케어 꾸준","상대를 늘 챙김"],
-   match:{emoji:"🧊",name:"콜드브루형",reason:"내 다정함에 서서히 녹는 사람"}},
- americano:{name:"아아고수",eng:"ICE AMERICANO MASTER",emoji:"😎",rare:8,
-   tagline:"쿨한 척, 다 계산된 밀당러 😎",
+   work:"업무 메신저는 단답, 애인 카톡은 장문",
+   match:{key:"coldbrew",reason:"내 다정함에 서서히 녹는 사람"}},
+ americano:{name:"아아고수",emoji:"😎",nick:"아아",say:"밀당은 기본이지.",
+   spec:{cup:"#7A503D",foam:"#3F271D",face:"#FFE9D2",eyes:"shades",mouth:"smirk",top:"ice",pose:"cross"},
+   ink:"#7A503D",bg:["#F3E6D9","#DCC1A7"],soft:"#F1E4D8",
+   tagline:"쿨한 척, 다 계산된 밀당러",
    desc:"겉으론 시크하고 쿨하지만 사실 모든 게 계산된 밀당의 고수. 적당한 긴장감으로 상대를 애타게 만드는 매력적인 전략가예요.",
    traits:["밀당 마스터","쿨한 척 1등","속마음은 잘 안 보여줌"],
-   match:{emoji:"🫧",name:"바닐라라떼형",reason:"내 밀당에도 흔들림 없이 순수한 사람"}},
- vanilla:{name:"바닐라라떼형",eng:"VANILLA LATTE",emoji:"🫧",rare:15,
-   tagline:"부드럽고 무해한 순둥이 🫧",
+   work:"보고서도 연애도 타이밍이 생명",
+   match:{key:"vanilla",reason:"내 밀당에도 흔들림 없이 순수한 사람"}},
+ vanilla:{name:"바닐라라떼형",emoji:"🫧",nick:"바닐라",say:"싸우지 말자~",
+   spec:{cup:"#FFF1D6",foam:"#FFFFFF",eyes:"happy",mouth:"smile",top:"bubbles",pose:"wave"},
+   ink:"#C28E36",bg:["#FFF7E8","#F5DFBB"],soft:"#FBF0DC",
+   tagline:"부드럽고 무해한 순둥이",
    desc:"착하고 순하고 부드러운, 누구에게나 호감인 순둥이 타입. 자극적이지 않아도 곁에 있으면 마음이 편안해지는 사람이에요.",
    traits:["다툼을 싫어함","상대 배려 1순위","무해美 그 자체"],
-   match:{emoji:"😎",name:"아아고수",reason:"내가 안심하고 기댈 수 있는 단단한 사람"}},
- espresso:{name:"에스프레소샷",eng:"ESPRESSO SHOT",emoji:"⚡",rare:7,
-   tagline:"짧고 강렬, 텐션 폭발 ⚡",
+   work:"회식 분위기 지킴이, 연애도 평화주의",
+   match:{key:"americano",reason:"내가 안심하고 기댈 수 있는 단단한 사람"}},
+ espresso:{name:"에스프레소샷",emoji:"⚡",nick:"샷이",say:"지금 당장 가자!",
+   spec:{cup:"#C26A3C",foam:"#F7D9B5",eyes:"wide",mouth:"open",top:"bolt",pose:"up"},
+   ink:"#B5531F",bg:["#FFEBCB","#FFCB86"],soft:"#FFEBD0",
+   tagline:"짧고 강렬, 텐션 폭발",
    desc:"함께 있으면 텐션이 폭발하는 에너지 그 자체. 짧고 굵게, 강렬하게 타오르는 열정파예요. 지루할 틈을 안 주는 사람.",
    traits:["텐션 항상 풀가동","즉흥·열정적","같이 있으면 안 심심함"],
-   match:{emoji:"🌙",name:"디카페인형",reason:"내 텐션을 차분히 받쳐주는 사람"}},
- decaf:{name:"디카페인형",eng:"DECAF",emoji:"🌙",rare:13,
-   tagline:"자극 없이 편안한 힐링러 🌙",
+   work:"월요일에도 텐션은 금요일",
+   match:{key:"decaf",reason:"내 텐션을 차분히 받쳐주는 사람"}},
+ decaf:{name:"디카페인형",emoji:"🌙",nick:"디카",say:"같이 쉬자…",
+   spec:{cup:"#BBA9EC",foam:"#F1EBFF",eyes:"sleepy",mouth:"o",top:"moon",pose:"down"},
+   ink:"#7A5FD0",bg:["#EFE8FF","#CDBFF4"],soft:"#EEE8FF",
+   tagline:"자극 없이 편안한 힐링러",
    desc:"호들갑 없이 잔잔하고 편안한 힐링형. 과한 텐션보다는 안정적이고 차분한 관계를 선호하는, 곁에 있으면 마음이 놓이는 사람.",
    traits:["감정 기복 적음","편안한 분위기 메이커","안정 지향"],
-   match:{emoji:"⚡",name:"에스프레소샷",reason:"잔잔한 내 일상에 설렘을 주는 사람"}},
- todaycoffee:{name:"오늘의커피형",eng:"TODAY'S SPECIAL",emoji:"🎭",rare:10,
-   tagline:"그날그날 다른 변화무쌍 매력 🎭",
+   work:"퇴근 후엔 조용히 같이 쉬는 게 최고",
+   match:{key:"espresso",reason:"잔잔한 내 일상에 설렘을 주는 사람"}},
+ todaycoffee:{name:"오늘의커피형",emoji:"🎭",nick:"오늘이",say:"오늘은 어떤 나게?",
+   spec:{cup:"#7FD8C1",foam:"#EFFFF9",eyes:"wink",mouth:"tongue",top:"sparkles",pose:"peace"},
+   ink:"#1F9A7D",bg:["#E0F9F0","#B2E9D8"],soft:"#E1F7EF",
+   tagline:"그날그날 다른 변화무쌍 매력",
    desc:"어떤 날은 다정, 어떤 날은 쿨, 어떤 날은 텐션 폭발. 종잡을 수 없는 변화무쌍한 매력으로 절대 질리지 않게 만드는 반전의 아이콘.",
    traits:["예측 불가 매력","상황 따라 다른 모습","늘 새로움"],
-   match:{emoji:"🍯",name:"꿀라떼형",reason:"변덕스러운 나를 한결같이 좋아해주는 사람"}},
+   work:"출근룩처럼 매일 다른 연애 모드",
+   match:{key:"honeylatte",reason:"변덕스러운 나를 한결같이 좋아해주는 사람"}},
 };
 
-let step=0, scores={bold:0,cool:0,sweet:0,chill:0};
-let userInfo={name:"",gender:"",year:"",phone:"",agree:false};
-let result=null;
-const $=id=>document.getElementById(id);
+const AXES=[["bold","직진력"],["sweet","다정함"],["cool","쿨함"],["chill","편안함"]];
 
-function initLiveCounter(){
-  const h=new Date().getHours();
-  const base=420+h*47+Math.floor(Math.random()*60);
-  let cur=Math.max(80,base-180);
-  $("live-today").textContent=cur.toLocaleString();
-  const timer=setInterval(()=>{
-    if(cur<base){cur+=Math.floor(Math.random()*3)+1;$("live-today").textContent=cur.toLocaleString();}
-    else clearInterval(timer);
-  },800);
+function tally(ans){
+  const s={bold:0,cool:0,sweet:0,chill:0};
+  ans.forEach((i,qi)=>{ const add=Q[qi].a[i].s; for(const k in add) s[k]+=add[k]; });
+  return s;
 }
-initLiveCounter();
-
-function show(id){["intro","quiz","loading","info","result"].forEach(p=>$(p).classList.add("hidden"));$(id).classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});}
-function startTest(){step=0;scores={bold:0,cool:0,sweet:0,chill:0};show("quiz");renderQ();}
-function renderQ(){
-  $("feedback").classList.add("hidden");
-  const item=Q[step];
-  $("qcount").textContent=`Q${step+1} / ${Q.length}`;
-  $("progress").style.width=`${(step/Q.length)*100}%`;
-  $("qcat").textContent=item.cat;
-  $("qtext").textContent=item.q;
-  $("qtext").classList.remove("fade");void $("qtext").offsetWidth;$("qtext").classList.add("fade");
-  $("qopts").innerHTML=item.a.map((o,i)=>`<button onclick="answer(${i})" class="fade w-full bg-[#16140f] hover:bg-[#1f1f1d] border border-[#1e1c17] hover:border-y text-left p-4 rounded-xl text-sm font-medium transition" style="animation-delay:${i*50}ms">${o.t}</button>`).join("");
+/* 네 성향이 각각 몇 %인지 (합이 정확히 100이 되게 맞춘다) */
+function shares(s){
+  const tot=AXES.reduce((a,[k])=>a+(s[k]||0),0)||1;
+  const raw=AXES.map(([k])=>[k,(s[k]||0)/tot*100]);
+  const out={}; let sum=0;
+  raw.forEach(([k,v])=>{ out[k]=Math.floor(v); sum+=out[k]; });
+  raw.sort((a,b)=>(b[1]-Math.floor(b[1]))-(a[1]-Math.floor(a[1])));
+  for(let i=0;sum<100&&i<raw.length;i++){ out[raw[i][0]]++; sum++; }
+  return out;
 }
-function answer(i){
-  const s=Q[step].a[i].s;
-  for(const k in s)scores[k]+=s[k];
-  const pct=Math.floor(Math.random()*45)+35;
-  const msgs=[`방금 선택, ${pct}%의 사람들과 같아요!`,`이 답변을 고른 사람 ${pct}%!`,`상위 ${100-pct}%의 선택이에요 👀`,`${pct}%가 같은 선택을 했어요`];
-  $("fb-text").textContent=msgs[Math.floor(Math.random()*msgs.length)];
-  $("fb-bar").style.width=pct+"%";
-  $("feedback").classList.remove("hidden");
-  $("fb-bar").classList.remove("fb-bar");void $("fb-bar").offsetWidth;$("fb-bar").classList.add("fb-bar");
-  $("qopts").querySelectorAll("button").forEach(b=>b.disabled=true);
-  setTimeout(()=>{
-    step++;
-    if(step<Q.length)renderQ();
-    else runLoading();
-  },750);
+/* 유형 판정
+   - 네 성향이 고르게 나오면 '오늘의커피형'
+   - 직진이 가장 높으면: 다정함까지 높으면 텐션 폭발 '에스프레소샷', 아니면 담백한 '직진드리퍼'
+   - 예전 기준은 직진드리퍼가 거의 안 나오고 에스프레소샷이 10명 중 4명꼴로 나왔다.
+     지금은 8개 유형이 모두 7~17% 사이로 나온다 (무작위 답 6만 번으로 확인). */
+function pick(s){
+  const entries=Object.entries(s).sort((a,b)=>b[1]-a[1]);
+  const dominant=entries[0][0];
+  const spread=entries[0][1]-entries[3][1];
+  if(spread<=3) return "todaycoffee";
+  if(dominant==="bold") return s.sweet>s.chill+1?"espresso":"dripper";
+  if(dominant==="sweet") return "honeylatte";
+  if(dominant==="cool") return s.chill>=s.sweet?"americano":"coldbrew";
+  return s.sweet>=s.cool?"vanilla":"decaf";
 }
 
-function runLoading(){
-  $("progress").style.width="100%";
-  show("loading");
-  const steps=[
-    {t:"AI가 당신의 답변을 분석 중...",s:"8가지 커피 유형과 매칭하고 있어요",p:25},
-    {t:"당신의 연애 취향 추출 중...",s:"직진? 밀당? 다정함? 계산하는 중",p:55},
-    {t:"찰떡 궁합 유형 찾는 중...",s:"가장 잘 맞는 상대를 분석해요",p:80},
-    {t:"결과지 완성 중...",s:"거의 다 됐어요!",p:100},
-  ];
-  let idx=0;
-  function tick(){
-    if(idx<steps.length){
-      $("loading-text").textContent=steps[idx].t;
-      $("loading-sub").textContent=steps[idx].s;
-      $("loading-bar").style.width=steps[idx].p+"%";
-      idx++;
-      setTimeout(tick,700);
-    }else{
-      setTimeout(()=>show("info"),400);
-    }
-  }
-  tick();
+/* ============================================================
+   영수증 그리기 (1080 × 1920 — 인스타그램 스토리 크기)
+   ============================================================ */
+function buildReceipt(st){
+  const T=TYPES[st.key], M=TYPES[T.match.key], scores=st.data, BODY=K.BODY;
+  const W=1080,H=1920, PW=880, PAD=66, INK="#3b2a20", SUB="#a08a76", DASH="#dccbb7";
+  const L=PAD, R=PW-PAD, CX=PW/2;
+
+  // ① 내용만 먼저 따로 그린다 (높이를 알아야 종이 크기를 정할 수 있다)
+  const cc=document.createElement("canvas"); cc.width=PW; cc.height=2700;
+  const c=cc.getContext("2d"); c.textBaseline="alphabetic";
+  const text=(s,x,y,font,col,align)=>{ c.font=font; c.fillStyle=col; c.textAlign=align||"left"; c.textBaseline="alphabetic"; c.fillText(s,x,y); };
+  const dash=(y)=>{ c.save(); c.setLineDash([12,11]); c.beginPath(); c.moveTo(L,y); c.lineTo(R,y); c.lineWidth=3; c.strokeStyle=DASH; c.stroke(); c.restore(); };
+
+  let y=30;
+  // 캐릭터 + 말풍선
+  K.mascot(c,CX-70,y+150,250,T.spec);
+  K.speech(c,CX+72,y+52,T.say,27,INK);
+  text(T.nick,CX+92,y+142,"700 24px "+BODY,T.ink);
+  y+=318;
+  text("S S U M   C E N T E R",CX,y,"700 22px "+BODY,SUB,"center"); y+=74;
+  text("연애 취향 영수증",CX,y,K.cuteFont(70),INK,"center"); y+=40;
+  dash(y); y+=52;
+
+  text("주문자",L,y,"600 28px "+BODY,SUB);
+  text(st.name?st.name+" 님":"익명의 손님",R,y,"700 30px "+BODY,INK,"right"); y+=46;
+  text("발행일",L,y,"600 28px "+BODY,SUB);
+  text(K.today(),R,y,"700 30px "+BODY,INK,"right"); y+=30;
+  dash(y); y+=58;
+
+  text("오늘의 연애 메뉴",CX,y,"600 26px "+BODY,SUB,"center"); y+=92;
+  text(T.name,CX,y,K.cuteFont(92),T.ink,"center"); y+=52;
+  c.font="600 31px "+BODY;
+  K.wrapLines(c,"“"+T.tagline+"”",R-L).forEach(ln=>{ text(ln,CX,y,"600 31px "+BODY,INK,"center"); y+=42; });
+  y-=8; dash(y); y+=56;
+
+  // 연애 성분 함량 — 내가 고른 답에서 계산한 값 (네 가지를 합치면 100%)
+  text("연애 성분 함량",L,y-8,"600 26px "+BODY,SUB); y+=46;
+  const mix=shares(scores), top=Math.max(1,...AXES.map(([k])=>scores[k]||0));
+  AXES.forEach(([k,label])=>{
+    const on=Math.round((scores[k]||0)/top*5);
+    text(label,L,y,"700 30px "+BODY,INK);
+    for(let i=0;i<5;i++){ K.heart(c,L+204+i*74,y-10,44); c.fillStyle=i<on?T.ink:"#eadfd0"; c.fill(); }
+    text(mix[k]+"%",R,y,"700 29px "+BODY,SUB,"right");
+    y+=56;
+  });
+  y-=14; dash(y); y+=52;
+
+  text("연애할 때 나는",L,y,"600 26px "+BODY,SUB); y+=50;
+  T.traits.forEach(tr=>{ text("+",L,y,"800 30px "+BODY,T.ink); text(tr,L+34,y,"600 31px "+BODY,INK); y+=47; });
+  y+=4;
+
+  // 직장인 버전 한 줄
+  c.font="700 30px "+BODY;
+  const wl=K.wrapLines(c,T.work,R-L-56), bh=74+wl.length*42;
+  K.rr(c,L,y,R-L,bh,22); c.fillStyle=T.soft; c.fill();
+  c.font="700 21px "+BODY; const tagW=c.measureText("직장인 버전").width+30;
+  K.rr(c,L+26,y+18,tagW,34,17); c.fillStyle=T.ink; c.fill();
+  text("직장인 버전",L+26+tagW/2,y+42,"700 21px "+BODY,"#fff","center");
+  let wy=y+92; wl.forEach(ln=>{ text(ln,L+28,wy,"700 30px "+BODY,INK); wy+=42; });
+  y+=bh+34; dash(y); y+=30;
+
+  // 찰떡 궁합
+  K.mascot(c,R-74,y+62,128,M.spec);
+  text("찰떡 궁합",L,y+34,"600 26px "+BODY,SUB);
+  text(M.name,L,y+84,K.cuteFont(46),INK);
+  c.font="500 24px "+BODY;
+  let ry=y+120; K.wrapLines(c,T.match.reason,R-L-170).forEach(ln=>{ text(ln,L,ry,"500 24px "+BODY,SUB); ry+=32; });
+  y=Math.max(y+134,ry-8)+18; dash(y); y+=62;
+
+  text("합계",L,y,"700 32px "+BODY,INK);
+  text("설렘 1잔 ♥",R,y,K.cuteFont(50),T.ink,"right"); y+=46;
+
+  // 바코드 + 도장
+  K.barcode(c,CX+40,y,440,58,st.key,INK);
+  K.stamp(c,L+60,y+32,56,"취향확인","완료",T.ink,-.24);
+  y+=122;
+  text("너는 어떤 커피야?  ssumcenter.vercel.app/test/ideal",CX,y,"600 23px "+BODY,SUB,"center"); y+=40;
+  const CH=y;
+
+  // ② 배경 + 종이 + 내용을 한 장으로
+  const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const g=cv.getContext("2d");
+  K.backdrop(g,W,H,T.bg);
+  const maxH=H-150, sc=Math.min(1,maxH/CH), pw=PW*sc, ph=CH*sc, px=(W-pw)/2, py=(H-ph)/2;
+  // 종이 (위아래 톱니)
+  const tooth=30*sc, n=Math.round(pw/tooth), tw=pw/n;
+  g.save(); g.shadowColor="rgba(90,55,30,.22)"; g.shadowBlur=40; g.shadowOffsetY=16;
+  g.beginPath(); g.moveTo(px,py);
+  for(let i=0;i<n;i++){ g.lineTo(px+tw*(i+.5),py-tooth*.5); g.lineTo(px+tw*(i+1),py); }
+  g.lineTo(px+pw,py+ph);
+  for(let i=n;i>0;i--){ g.lineTo(px+tw*(i-.5),py+ph+tooth*.5); g.lineTo(px+tw*(i-1),py+ph); }
+  g.closePath(); g.fillStyle="#FFFBF3"; g.fill(); g.restore();
+  g.drawImage(cc,0,0,PW,CH,px,py,pw,ph);
+  return cv;
 }
 
-function setGender(g){userInfo.gender=g;
-  $("g-m").className="border rounded-xl py-3.5 text-sm font-bold transition "+(g==="남성"?"bd-y bg-[#FFBE2E]/10 y":"border-[#1e1c17] bg-[#16140f] text-white");
-  $("g-f").className="border rounded-xl py-3.5 text-sm font-bold transition "+(g==="여성"?"bd-y bg-[#FFBE2E]/10 y":"border-[#1e1c17] bg-[#16140f] text-white");}
-function togglePolicy(e){e.preventDefault();$("policy").classList.toggle("hidden");}
-function toast(msg){const t=$("toast");t.textContent=msg;t.classList.remove("translate-y-32","opacity-0");setTimeout(()=>t.classList.add("translate-y-32","opacity-0"),3000);}
-
-async function submitInfo(){
-  const name=$("i-name").value.trim();
-  const year=$("i-year").value.trim();
-  const phone=$("i-phone").value.trim().replace(/[^0-9]/g,"");
-  const agree=$("i-agree").checked;
-  if(!name)return toast("이름을 입력해주세요.");
-  if(!userInfo.gender)return toast("성별을 선택해주세요.");
-  if(!year||year.length!==4)return toast("출생연도 4자리를 입력해주세요.");
-  if(!agree)return toast("개인정보 수집·이용에 동의해주세요.");
-  userInfo.name=name;userInfo.year=year;userInfo.phone=phone;userInfo.agree=agree;
-  await sendData();
-  showResult();
-}
-function skipInfo(){showResult();}
-async function sendData(){
-  if(!ENDPOINT_URL)return;
-  try{await fetch(ENDPOINT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-    type:"커피유형테스트",...userInfo,phone:userInfo.phone?"'"+userInfo.phone:"",resultType:result?TYPES[result].name:"",scores,submittedAt:new Date().toISOString()
-  })});}catch(e){console.error(e);}
-}
-
-function calc(){
-  const entries=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-  const top1=entries[0];
-  const dominant=top1[0];
-  const spread=top1[1]-entries[3][1];
-  if(spread<=2)return "todaycoffee";
-  if(dominant==="bold") return scores.sweet>=scores.cool?(scores.bold>=6?"espresso":"dripper"):(scores.bold>=6?"espresso":"dripper");
-  if(dominant==="sweet")return "honeylatte";
-  if(dominant==="cool") return scores.chill>=scores.sweet?"americano":"coldbrew";
-  if(dominant==="chill")return scores.bold>=4?"espresso":(scores.sweet>=4?"vanilla":"decaf");
-  return "todaycoffee";
-}
-
-function showResult(){
-  $("progress").style.width="100%";
-  result=calc();const t=TYPES[result];
-  $("r-greeting").textContent=userInfo.name?`${userInfo.name}님의 연애 커피 유형은`:`당신의 연애 커피 유형은`;
-  $("r-emoji").textContent=t.emoji;
-  $("r-eng").textContent=t.eng;
-  $("r-type").textContent=t.name;
-  $("r-tagline").textContent=t.tagline;
-  $("r-desc").textContent=t.desc;
-  $("r-rare").textContent=t.rare;
-  $("r-traits").innerHTML=t.traits.map(tr=>`<li class="flex items-start gap-1.5"><i class="fa-solid fa-check y mt-0.5 text-[10px]"></i><span>${tr}</span></li>`).join("");
-  $("r-match").innerHTML=`<div class="text-2xl">${t.match.emoji}</div><div class="font-bold text-white mt-1">${t.match.name}</div><div class="text-[11px] text-[#9a9080] mt-1 leading-snug">${t.match.reason}</div>`;
-  const c=Math.floor(Math.random()*22)+16;
-  $("r-count").textContent=c;
-  if(userInfo.year){const age=2026-parseInt(userInfo.year);$("r-age-range").textContent=`${Math.max(20,age-3)}~${age+3}세`;}
-  else $("r-age-range").textContent="2030 싱글";
-  show("result");
-}
-function goApply(){
-  window.open('https://form.naver.com/response/Lr0lM_rMW-PwIFPSG0lQnw','_blank');
-}
-function goMatching(){
-  if(localStorage.getItem('ssumUser')){
-    window.location.href='../matching.html?result='+encodeURIComponent(TYPES[result].name)+'&pct='+TYPES[result].rare;
-  }else{
-    window.location.href='../login.html?redirect=matching.html';
-  }
-}
-function copyShare(){
-  navigator.clipboard.writeText(location.origin+location.pathname).then(()=>toast("링크 복사 완료! 친구한테 공유해보세요 ☕"));
-}
-function restart(){step=0;scores={bold:0,cool:0,sweet:0,chill:0};userInfo={name:"",gender:"",year:"",phone:"",agree:false};result=null;$("progress").style.width="0%";show("intro");}
+const T=K.run({
+  store:"ssum_coffee_v2", path:"/test/ideal", og:"/test/og-coffee.png", fileName:"ssum-receipt.png",
+  questions:Q, types:TYPES,
+  calc(answers){ const s=tally(answers); return { key:pick(s), data:s }; },
+  build:buildReceipt,
+  detail(key,data,t){
+    const m=TYPES[t.match.key];
+    document.getElementById("r-tagline").textContent=t.emoji+" "+t.tagline;
+    document.getElementById("r-desc").textContent=t.desc;
+    const ul=document.getElementById("r-traits"); ul.innerHTML="";
+    t.traits.forEach(x=>{ const li=document.createElement("li"); li.textContent=x; ul.appendChild(li); });
+    K.drawOn(document.getElementById("r-match-m"), m.spec);
+    document.getElementById("r-match-n").textContent=m.name;
+    document.getElementById("r-match-r").textContent=t.match.reason;
+  },
+  shareText(name,t){ return (name?name+"의":"내")+" 연애 커피 유형은 "+t.emoji+" "+t.name+"! 너는 어떤 커피야?"; },
+  alt(name,t){ return (name?name+"님":"나")+"의 연애 취향 영수증 — "+t.name+". "+t.tagline+". 찰떡 궁합은 "+TYPES[t.match.key].name+"."; },
+  chem(friendKey,myKey){
+    const f=TYPES[friendKey], t=TYPES[myKey];
+    if(t.match.key===friendKey || f.match.key===myKey) return { head:"💘 찰떡 케미!", sub:"서로의 빈 곳을 채워주는 조합이에요" };
+    if(friendKey===myKey) return { head:"👯 닮은꼴 케미!", sub:"말 안 해도 통하는 같은 메뉴예요" };
+    return { head:"🎨 섞으면 새 메뉴!", sub:"서로 달라서 같이 있으면 더 재밌는 조합이에요" };
+  },
+});
 </script>
 </body>
 </html>

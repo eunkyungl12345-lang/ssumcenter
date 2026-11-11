@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#FFF7EA">
+<title>나의 연애 직급은? · 연애 사원증 발급 | 썸류센터</title>
+<meta name="description" content="열정 인턴? 칼퇴 장인? 밀당 기획자? 직장인을 위한 10문항 1분 테스트로 내 연애 사원증을 발급받아 보세요. 동료와 케미도 볼 수 있어요.">
+<link rel="canonical" href="https://ssumcenter.vercel.app/test/work">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="썸류센터">
+<meta property="og:title" content="나의 연애 직급은? 🪪 연애 사원증 발급받기">
+<meta property="og:description" content="10문항 · 1분. 너는 열정 인턴? 칼퇴 장인? 동료랑 케미도 확인해봐!">
+<meta property="og:url" content="https://ssumcenter.vercel.app/test/work">
+<meta property="og:image" content="https://ssumcenter.vercel.app/test/og-work.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="나의 연애 직급은? 🪪 연애 사원증 발급받기">
+<meta name="twitter:description" content="10문항 · 1분. 너는 열정 인턴? 칼퇴 장인? 동료랑 케미도 확인해봐!">
+<meta name="twitter:image" content="https://ssumcenter.vercel.app/test/og-work.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!-- 귀여운 제목용 글꼴 하나만 불러온다 (못 불러오면 기기 기본 글꼴로 그대로 나온다) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/test/kit.css">
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<div class="bar"><i id="progress"></i></div>
+<nav><a href="/">‹ <b>썸류센터</b> 홈</a></nav>
+
+<div class="wrap">
+
+  <!-- 첫 화면 -->
+  <section id="intro" class="intro fade">
+    <!-- 동료가 보낸 링크로 들어온 경우에만 보인다 -->
+    <div id="friend" class="friend hidden">
+      <canvas id="friend-m" width="180" height="180" aria-hidden="true"></canvas>
+      <div><b id="friend-t"></b><span>나도 발급받으면 둘의 케미가 나와요</span></div>
+    </div>
+
+    <div class="parade" aria-hidden="true">
+      <canvas width="210" height="210" data-m="intern"></canvas>
+      <canvas width="210" height="210" data-m="welfare"></canvas>
+      <canvas width="210" height="210" data-m="ontime"></canvas>
+      <canvas width="210" height="210" data-m="remote"></canvas>
+    </div>
+    <h1 class="cute">나의 <span class="y">연애 직급</span>은?</h1>
+    <p class="sub">열정 인턴? 칼퇴 장인? 밀당 기획자?<br>답하고 나면 <b>연애 사원증</b>을 발급해드려요 🪪</p>
+    <div class="steps"><span>10문항</span><span>1분</span><span>정보 입력 없음</span></div>
+    <button class="btn btn-y" onclick="T.start()">🪪 내 사원증 발급받기</button>
+    <button id="again-link" class="link hidden" onclick="T.showSaved()">지난번 내 사원증 다시 보기</button>
+    <p class="tiny">8가지 직급 · 이름이나 연락처를 묻지 않아요</p>
+    <a class="other" href="/test/ideal">이것도 해봐요! <b>연애 커피 유형 테스트 ☕ →</b></a>
+  </section>
+
+  <!-- 질문 -->
+  <section id="quiz" class="hidden">
+    <div class="qtop">
+      <b id="qcount">Q1 / 10</b>
+      <button id="qback" onclick="T.prev()">← 이전</button>
+    </div>
+    <div id="qcat"></div>
+    <h2 id="qtext" class="cute"></h2>
+    <div id="qopts"></div>
+  </section>
+
+  <!-- 발급 중 -->
+  <section id="loading" class="printing hidden">
+    <canvas id="load-m" width="280" height="280" aria-hidden="true"></canvas>
+    <h2 class="cute">사원증 발급 중…</h2>
+    <p>인사팀에서 도장을 찍고 있어요 🪪</p>
+  </section>
+
+  <!-- 결과 -->
+  <section id="result" class="hidden">
+    <div class="rhead">
+      <small>LOVE EMPLOYEE ID</small>
+      <h2 class="cute"><span id="r-who">당신</span>의 연애 직급은 <span class="y" id="r-type"></span></h2>
+    </div>
+    <div class="hero">
+      <canvas id="hero-m" width="240" height="240" aria-hidden="true"></canvas>
+      <div class="say"><small id="say-name"></small><span id="say-text"></span></div>
+    </div>
+
+    <div class="receipt" id="card"><img id="card-img" alt=""></div>
+    <p class="hint">📌 사원증을 <b>꾹 누르면</b> 사진으로 저장돼요</p>
+
+    <div class="namebox">
+      <input id="i-name" type="text" maxlength="10" placeholder="사원증에 이름 넣기 (선택)" autocomplete="off">
+      <button onclick="T.applyName()">넣기</button>
+    </div>
+
+    <div class="share">
+      <button class="btn btn-y" onclick="T.save()">📸 이미지로 저장 · 스토리에 올리기</button>
+      <div class="row">
+        <button class="btn btn-kakao" onclick="T.kakao()">💬 카톡 공유</button>
+        <button class="btn btn-ghost" onclick="T.copy()">🔗 링크 복사</button>
+      </div>
+    </div>
+
+    <!-- 동료 링크로 들어와서 끝낸 경우: 둘의 케미 -->
+    <div id="chem" class="box hidden">
+      <div class="chem" aria-hidden="true">
+        <canvas id="chem-a" width="200" height="200"></canvas><i>🤝</i><canvas id="chem-b" width="200" height="200"></canvas>
+      </div>
+      <div class="chem-t cute" id="chem-t"></div>
+      <div class="chem-s" id="chem-s"></div>
+    </div>
+
+    <div class="box">
+      <h3 id="r-tagline"></h3>
+      <p id="r-desc"></p>
+    </div>
+    <div class="two">
+      <div class="box">
+        <h3>연애 근무 태도</h3>
+        <ul id="r-traits"></ul>
+      </div>
+      <div class="box">
+        <h3>찰떡 동료</h3>
+        <div class="mt"><canvas id="r-match-m" width="150" height="150" aria-hidden="true"></canvas><div><b id="r-match-n"></b></div></div>
+        <span id="r-match-r" style="font-size:12.5px;color:var(--mut);display:block;margin-top:6px"></span>
+      </div>
+    </div>
+    <div class="box">
+      <h3>⚠️ 인사팀 주의사항</h3>
+      <p id="r-warn"></p>
+    </div>
+
+    <div class="cta">
+      <h3 class="cute">내 연애 스타일과 <span class="y">찰떡인 사람</span>,<br>실제로 만나볼까요?</h3>
+      <p>퇴근하고 앱 넘겨볼 힘도 없잖아요.<br>센터장 3명이 신청서를 직접 읽고 한 분씩 이어드려요.</p>
+      <button class="btn btn-y" onclick="T.apply()">내 유형에 딱 맞는 사람 1:1로 만나보기 (신청비 0원)</button>
+      <p class="fine">신청은 무료 · 매칭이 성사됐을 때만 결제해요</p>
+    </div>
+    <a class="other" href="/test/ideal">하나 더! <b>연애 커피 유형 테스트 ☕ →</b></a>
+    <div style="text-align:center;margin-top:8px"><button class="link" onclick="T.restart()">다시 테스트하기</button></div>
+  </section>
+</div>
+
+<div id="toast" role="status"></div>
+
+<script src="/test/kit.js"></script>
+<script>
+/* ============================================================
+   연애 직급 테스트 → '연애 사원증'  (직장인 타깃)
+   화면 틀·캐릭터·공유는 /test/kit.js 가 맡고, 여기에는 질문·유형·사원증 그림만 있다.
+
+   판정 방식
+   - 문항마다 고른 답에 '연애 스타일'(직진/다정/쿨/편안) 하나와
+     '근무 형태'(올인 +1 / 워라밸 -1)가 붙어 있다.
+   - 가장 많이 고른 스타일 × 근무 형태 = 8가지 직급.
+   - 사원증의 '연애 야근 지수'는 올인 쪽 답을 고른 비율이다 (지어낸 숫자 아님).
+   ============================================================ */
+const K=window.SsumKit;
+
+const Q=[
+ {cat:"퇴근 직전", q:"퇴근 10분 전, 썸 상대의 \"오늘 저녁 어때요?\"",
+  a:[{t:"당장 콜! 남은 일은 내일의 내가 한다",s:"bold",c:1},
+     {t:"좋아요! 30분만 기다려줄래요? 마무리하고 갈게요",s:"sweet",c:-1},
+     {t:"오늘은 선약이 있어서… 금요일 어때요?",s:"cool",c:-1},
+     {t:"좋아요, 편한 데서 천천히 오래 봐요",s:"chill",c:1}]},
+ {cat:"회의 중", q:"회의 중에 썸 상대의 카톡이 왔다",
+  a:[{t:"회의 끝나자마자 전화부터 건다",s:"bold",c:-1},
+     {t:"몰래 \"회의 중 ㅠㅠ 끝나고 연락할게요\"라도 보낸다",s:"sweet",c:1},
+     {t:"뭐라고 답할지 회의 내내 문장을 다듬는다",s:"cool",c:1},
+     {t:"퇴근하고 편하게 몰아서 답장한다",s:"chill",c:-1}]},
+ {cat:"소개팅 장소", q:"소개팅 장소를 정해야 한다",
+  a:[{t:"내가 정한다. 예약까지 3분 컷",s:"bold",c:1},
+     {t:"상대 회사 근처, 좋아한다던 메뉴로",s:"sweet",c:1},
+     {t:"딱 중간 지점. 각자 이동 30분 이내",s:"cool",c:-1},
+     {t:"아무 데나 좋아요, 편한 곳으로",s:"chill",c:-1}]},
+ {cat:"야근", q:"데이트 날, 갑자기 야근이 잡혔다",
+  a:[{t:"팀장님께 양해 구하고 일단 간다",s:"bold",c:1},
+     {t:"미안하다고 바로 말하고, 다음에 맛있는 걸 산다",s:"sweet",c:-1},
+     {t:"일은 일. 다음 날짜를 바로 다시 잡는다",s:"cool",c:-1},
+     {t:"어쩔 수 없지. 서로 편할 때 보면 된다",s:"chill",c:-1}]},
+ {cat:"연차", q:"연차가 딱 하루 남았다",
+  a:[{t:"가고 싶던 곳에 간다. 애인도 되면 같이",s:"bold",c:-1},
+     {t:"애인 생일을 위해 아껴둔다",s:"sweet",c:1},
+     {t:"나 혼자 쉬는 날. 저녁에만 잠깐 본다",s:"cool",c:-1},
+     {t:"애인이랑 집에서 하루 종일 뒹군다",s:"chill",c:1}]},
+ {cat:"공개 연애", q:"연애를 시작했다. 주변에는?",
+  a:[{t:"바로 알린다. 프사부터 바꾼다",s:"bold",c:1},
+     {t:"친한 사람 몇 명한테만 살짝 자랑",s:"sweet",c:-1},
+     {t:"언제 어떻게 말할지 계획부터 세운다",s:"cool",c:1},
+     {t:"굳이? 자연스럽게 알게 되겠지",s:"chill",c:-1}]},
+ {cat:"싸운 다음 날", q:"어젯밤 다투고 출근했다",
+  a:[{t:"출근길에 전화해서 바로 풀고 일에 집중",s:"bold",c:-1},
+     {t:"점심시간에 달려가 얼굴 보고 사과한다",s:"sweet",c:1},
+     {t:"뭐가 문제였는지 정리해서 저녁에 차분히 얘기",s:"cool",c:1},
+     {t:"하루 지나면 풀리더라. 평소처럼 연락한다",s:"chill",c:-1}]},
+ {cat:"주말", q:"이번 주말, 애인과는?",
+  a:[{t:"새로운 곳 정복! 토·일 풀코스",s:"bold",c:1},
+     {t:"토요일은 같이, 일요일은 각자 충전",s:"sweet",c:-1},
+     {t:"각자 할 일 하고 저녁만 같이",s:"cool",c:-1},
+     {t:"이틀 내내 붙어서 아무것도 안 하기",s:"chill",c:1}]},
+ {cat:"기념일", q:"곧 기념일이다",
+  a:[{t:"당일에 \"오늘 뭐 할까?\" 하고 바로 실행",s:"bold",c:-1},
+     {t:"한 달 전부터 선물과 편지를 준비한다",s:"sweet",c:1},
+     {t:"동선·예약·플랜 B까지 완성해둔다",s:"cool",c:1},
+     {t:"맛있는 거 먹으면 그게 기념일",s:"chill",c:-1}]},
+ {cat:"연애란", q:"나에게 연애를 회사로 치면?",
+  a:[{t:"전력 질주하는 신규 프로젝트",s:"bold",c:1},
+     {t:"매일 챙기는 사내 복지",s:"sweet",c:1},
+     {t:"서로 선을 지키는 파트너십",s:"cool",c:-1},
+     {t:"정년까지 가는 평생직장",s:"chill",c:1}]},
+];
+
+const TYPES={
+ intern:{name:"열정 인턴",emoji:"🌱",dept:"직진영업팀",rank:"인턴",nick:"새싹이",say:"제가 먼저 연락할게요!",
+   spec:{cup:"#FF8A5C",foam:"#FFEBDD",eyes:"wide",mouth:"open",top:"sprout",pose:"up",acc:["badge"],tie:"#FFBE2E"},
+   ink:"#E0562B",bg:["#FFE9DD","#FFC9AE"],soft:"#FFEADF",
+   one:"시키지 않아도 먼저 연락하는 신입",
+   desc:"좋아하는 마음이 생기면 야근도 마다하지 않는 열정파예요. 선톡·선약속·선고백까지 먼저 하는 게 당연한 타입. 연애에 쏟는 에너지가 누구보다 커요.",
+   traits:["선톡은 기본 업무","약속은 내가 먼저 잡음","좋아하면 티가 다 남"],
+   skill:"선톡 · 선약속 · 선고백", warn:"의욕 과다로 상대가 숨찰 수 있음",
+   match:{key:"manager",reason:"넘치는 의욕을 든든하게 받아주는 사람"}},
+ ace:{name:"영업 에이스",emoji:"📣",dept:"직진영업팀",rank:"대리",nick:"에이스",say:"약속은 3초 컷!",
+   spec:{cup:"#FFB23E",foam:"#FFF1D6",eyes:"angry",mouth:"smile",top:"star",pose:"point",acc:["tie"],tie:"#E5484D"},
+   ink:"#D97A00",bg:["#FFF0D2","#FFD493"],soft:"#FFF1D6",
+   one:"될 때까지 두드리되, 선은 지키는 프로",
+   desc:"좋으면 좋다고 바로 말하지만 내 생활도 놓치지 않는 균형 잡힌 직진러. 아니다 싶으면 깔끔하게 접고, 맞다 싶으면 빠르게 다음 단계로 갑니다.",
+   traits:["호감 표현이 빠르고 분명함","거절에도 멘탈이 단단함","내 일상도 잘 챙김"],
+   skill:"약속 잡기 3초 컷", warn:"결론을 너무 빨리 내려고 함",
+   match:{key:"mood",reason:"빠른 직진에 기분 좋게 호응해주는 사람"}},
+ welfare:{name:"애정 복지 담당",emoji:"🍰",dept:"애정복지팀",rank:"주임",nick:"복지왕",say:"간식 챙겨왔어!",
+   spec:{cup:"#FF9EB5",foam:"#FFEFF3",eyes:"heart",mouth:"open",top:"sparkles",pose:"heart"},
+   ink:"#E0527A",bg:["#FFE8EE","#FFC4D3"],soft:"#FFE9EF",
+   one:"애인 복지에 진심인 걸어 다니는 탕비실",
+   desc:"기념일, 좋아하는 간식, 지나가며 한 말까지 다 기억해요. 상대를 챙기는 데 시간과 마음을 아끼지 않는 다정함 만렙 타입.",
+   traits:["기념일을 절대 안 잊음","사소한 말도 기억함","챙겨주는 게 곧 행복"],
+   skill:"기념일 암기 · 간식 조달", warn:"퍼주다가 내 연차가 0일",
+   match:{key:"ontime",reason:"퍼주기만 하는 나를 쉬게 해주는 사람"}},
+ mood:{name:"분위기 메이커",emoji:"☀️",dept:"애정복지팀",rank:"사원",nick:"햇살이",say:"오 진짜? 대박!",
+   spec:{cup:"#FFD95A",foam:"#FFF9DD",eyes:"happy",mouth:"open",top:"bubbles",pose:"wave"},
+   ink:"#C99700",bg:["#FFF6CF","#FFE38A"],soft:"#FFF5D2",
+   one:"같이 있으면 회식도 즐거워지는 사람",
+   desc:"리액션과 맞장구로 상대를 편하게 해주는 타입. 다정하지만 각자의 시간도 존중해서, 만날 때는 즐겁게, 쉴 때는 푹 쉬게 해줘요.",
+   traits:["리액션이 풍부함","상대 얘기를 잘 들어줌","각자 시간도 존중함"],
+   skill:"리액션 · 맞장구", warn:"싫은 소리를 못 해서 혼자 삭임",
+   match:{key:"ace",reason:"먼저 다가와서 고민을 덜어주는 사람"}},
+ planner:{name:"밀당 기획자",emoji:"🧠",dept:"밀당기획팀",rank:"과장",nick:"기획이",say:"플랜 B도 있어.",
+   spec:{cup:"#8CC6EA",foam:"#EAF7FF",eyes:"dot",mouth:"flat",top:"none",pose:"think",acc:["glasses"]},
+   ink:"#2F7FB5",bg:["#E1F3FF","#B7DBF4"],soft:"#E3F3FD",
+   one:"연애에도 로드맵이 있어야 하는 전략가",
+   desc:"답장 타이밍부터 데이트 동선까지 머릿속에 그려두는 타입. 겉으로는 침착하지만 사실 누구보다 많이 고민하고 준비해요.",
+   traits:["데이트 동선이 완벽함","말 한마디도 신중하게","플랜 B가 항상 있음"],
+   skill:"답장 타이밍 설계", warn:"기획만 하다 출시일을 놓침",
+   match:{key:"intern",reason:"내 계획을 바로 실행으로 옮겨주는 사람"}},
+ ontime:{name:"칼퇴 장인",emoji:"😎",dept:"밀당기획팀",rank:"차장",nick:"칼퇴",say:"6시엔 퇴근이야.",
+   spec:{cup:"#7A503D",foam:"#3F271D",face:"#FFE9D2",eyes:"shades",mouth:"smirk",top:"ice",pose:"cross"},
+   ink:"#7A503D",bg:["#F3E6D9","#DCC1A7"],soft:"#F1E4D8",
+   one:"내 시간도 네 시간도 존중하는 워라밸 수호자",
+   desc:"연애는 연애, 내 생활은 내 생활. 선을 잘 지켜서 오래 봐도 편한 타입이에요. 표현은 적어도 약속은 꼭 지킵니다.",
+   traits:["선을 지키는 깔끔한 연애","약속 시간은 칼같이","혼자만의 시간이 필요함"],
+   skill:"선 긋기 · 정시 퇴근", warn:"너무 쿨해서 관심 없는 줄 앎",
+   match:{key:"welfare",reason:"말 안 해도 먼저 챙겨주는 사람"}},
+ manager:{name:"안정 관리자",emoji:"🌿",dept:"안정관리팀",rank:"부장",nick:"든든이",say:"내가 책임질게.",
+   spec:{cup:"#8FCB9B",foam:"#EEFAF0",eyes:"happy",mouth:"smile",top:"none",pose:"hip",acc:["tie"],tie:"#3E6FD9"},
+   ink:"#3E9A5B",bg:["#E4F6E7","#BFE5C6"],soft:"#E5F5E8",
+   one:"한번 맡으면 끝까지 책임지는 장기근속러",
+   desc:"화려한 이벤트보다 꾸준함으로 승부하는 타입. 싸워도 차분하게 풀고, 한번 마음을 주면 오래오래 지켜요.",
+   traits:["꾸준하고 한결같음","싸움도 차분하게 중재","오래 볼수록 진국"],
+   skill:"꾸준함 · 갈등 중재", warn:"변화 보고서는 일단 반려",
+   match:{key:"intern",reason:"잔잔한 일상에 활기를 주는 사람"}},
+ remote:{name:"재택 근무자",emoji:"🏠",dept:"안정관리팀",rank:"재택",nick:"집콕이",say:"집에서 보자…",
+   spec:{cup:"#BBA9EC",foam:"#F1EBFF",eyes:"sleepy",mouth:"o",top:"moon",pose:"down"},
+   ink:"#7A5FD0",bg:["#EFE8FF","#CDBFF4"],soft:"#EEE8FF",
+   one:"집이 최고. 같이 뒹굴 사람 구합니다",
+   desc:"북적이는 핫플보다 편한 집데이트가 좋은 타입. 꾸미지 않은 모습으로 같이 쉴 수 있는 사람과 가장 잘 맞아요.",
+   traits:["집데이트가 제일 좋음","꾸밈없이 편한 사이 선호","배달 맛집은 다 꿰고 있음"],
+   skill:"집데이트 기획 · 배달 맛집", warn:"밖에서 보자고 하면 로딩이 김",
+   match:{key:"mood",reason:"집에서도 같이 있으면 즐거운 사람"}},
+};
+
+/* 스타일 × 근무 형태 → 직급 */
+const GRID={ bold:["intern","ace"], sweet:["welfare","mood"], cool:["planner","ontime"], chill:["manager","remote"] };
+const ORDER=["bold","sweet","cool","chill"];
+
+function judge(ans){
+  const st={bold:0,sweet:0,cool:0,chill:0}; let all=0;
+  ans.forEach((i,qi)=>{ const o=Q[qi].a[i]; st[o.s]++; if(o.c>0) all++; });
+  const max=Math.max(...ORDER.map(k=>st[k]));
+  const tied=ORDER.filter(k=>st[k]===max);
+  // 동점이면 가장 나중에 고른 답의 스타일을 따른다
+  let dom=tied[0];
+  for(let qi=ans.length-1; qi>=0 && tied.length>1; qi--){ const s=Q[qi].a[ans[qi]].s; if(tied.indexOf(s)>=0){ dom=s; break; } }
+  const n=ans.length||1;
+  return { key: GRID[dom][all*2>=n?0:1], data:{ st:st, all:all, n:n } };
+}
+
+/* ============================================================
+   사원증 그리기 (1080 × 1920 — 인스타그램 스토리 크기)
+   ============================================================ */
+function buildCard(s){
+  const T=TYPES[s.key], M=TYPES[T.match.key], d=s.data, BODY=K.BODY;
+  const W=1080,H=1920, CW=840, PAD=62, INK="#3b2a20", SUB="#a08a76", DASH="#e3d5c3";
+  const L=PAD, R=CW-PAD, CX=CW/2;
+
+  // ① 카드 내용만 먼저 따로 그린다
+  const cc=document.createElement("canvas"); cc.width=CW; cc.height=2700;
+  const c=cc.getContext("2d");
+  const text=(t,x,y,font,col,align)=>{ c.font=font; c.fillStyle=col; c.textAlign=align||"left"; c.textBaseline="alphabetic"; c.fillText(t,x,y); };
+  const dash=(y)=>{ c.save(); c.setLineDash([12,11]); c.beginPath(); c.moveTo(L,y); c.lineTo(R,y); c.lineWidth=3; c.strokeStyle=DASH; c.stroke(); c.restore(); };
+
+  // 머리띠 (회사 이름)
+  c.fillStyle=T.ink; c.fillRect(0,0,CW,178);
+  K.rr(c,CX-66,26,132,24,12); c.fillStyle="rgba(0,0,0,.2)"; c.fill();   // 목걸이 끼우는 구멍
+  text("(주)썸류센터 연애사업부",CX,112,"800 38px "+BODY,"#fff","center");
+  text("L O V E   E M P L O Y E E   I D",CX,150,"700 19px "+BODY,"rgba(255,255,255,.82)","center");
+
+  let y=178+44;
+  // 증명사진
+  const PS=330, px0=CX-PS/2;
+  K.rr(c,px0,y,PS,PS,40); c.fillStyle=T.soft; c.fill(); c.lineWidth=6; c.strokeStyle=T.ink; c.stroke();
+  K.mascot(c,CX,y+PS*.55,PS*.82,T.spec);
+  K.stamp(c,px0+PS+18,y+PS-34,66,"발급완료",K.today().slice(2),T.ink,-.2);
+  y+=PS+56;
+
+  text(s.name?s.name+" 님":"익명의 사원",CX,y,"600 30px "+BODY,SUB,"center"); y+=90;
+  text(T.name,CX,y,K.cuteFont(90),T.ink,"center"); y+=34;
+  // 소속 · 직급
+  c.font="700 30px "+BODY; const dr=T.dept+" · "+T.rank, dw=c.measureText(dr).width+56;
+  K.rr(c,CX-dw/2,y,dw,56,28); c.fillStyle=T.soft; c.fill();
+  text(dr,CX,y+39,"700 30px "+BODY,INK,"center"); y+=56+56;
+  c.font="600 30px "+BODY;
+  K.wrapLines(c,"“"+T.one+"”",R-L).forEach(ln=>{ text(ln,CX,y,"600 30px "+BODY,INK,"center"); y+=42; });
+  y-=4; dash(y); y+=54;
+
+  // 특기 · 주의사항
+  const row=(label,val)=>{
+    text(label,L,y,"600 26px "+BODY,SUB);
+    c.font="700 29px "+BODY;
+    K.wrapLines(c,val,R-L-130).forEach(ln=>{ text(ln,L+130,y,"700 29px "+BODY,INK); y+=40; });
+    y+=10;
+  };
+  row("특기",T.skill);
+  row("주의",T.warn);
+  y+=6;
+
+  // 연애 야근 지수 — 올인 쪽 답을 고른 비율
+  const pct=Math.round(d.all/d.n*100), segs=10, on=Math.round(d.all/d.n*segs);
+  text("연애 야근 지수",L,y,"600 26px "+BODY,SUB);
+  text(pct+"%",R,y,"800 30px "+BODY,T.ink,"right"); y+=22;
+  const gap=8, sw=(R-L-gap*(segs-1))/segs;
+  for(let i=0;i<segs;i++){ K.rr(c,L+i*(sw+gap),y,sw,30,10); c.fillStyle=i<on?T.ink:"#eee3d4"; c.fill(); }
+  y+=62;
+  text("칼퇴",L,y,"600 22px "+BODY,SUB); text("야근",R,y,"600 22px "+BODY,SUB,"right");
+  y+=28; dash(y); y+=30;
+
+  // 찰떡 동료
+  K.mascot(c,R-74,y+62,128,M.spec);
+  text("찰떡 동료",L,y+34,"600 26px "+BODY,SUB);
+  text(M.name,L,y+84,K.cuteFont(46),INK);
+  c.font="500 24px "+BODY;
+  let ry=y+120; K.wrapLines(c,T.match.reason,R-L-170).forEach(ln=>{ text(ln,L,ry,"500 24px "+BODY,SUB); ry+=32; });
+  y=Math.max(y+134,ry-8)+18; dash(y); y+=40;
+
+  K.barcode(c,CX,y,460,54,s.key,INK); y+=92;
+  text("너의 연애 직급은?  ssumcenter.vercel.app/test/work",CX,y,"600 23px "+BODY,SUB,"center"); y+=44;
+  const CH=y;
+
+  // ② 배경 + 목걸이 줄 + 카드를 한 장으로
+  const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const g=cv.getContext("2d");
+  K.backdrop(g,W,H,T.bg);
+  const topRoom=250, maxH=H-topRoom-90, sc=Math.min(1,maxH/CH), cw=CW*sc, ch=CH*sc, cx0=(W-cw)/2, cy0=topRoom+(maxH-ch)/2;
+  // 목걸이 줄
+  g.lineCap="round";
+  [[-170,1],[170,-1]].forEach(([dx])=>{
+    g.beginPath(); g.moveTo(W/2+dx,-20); g.lineTo(W/2+dx*.08,cy0-46); g.lineWidth=40; g.strokeStyle=T.ink; g.stroke();
+    g.beginPath(); g.moveTo(W/2+dx,-20); g.lineTo(W/2+dx*.08,cy0-46); g.lineWidth=10; g.strokeStyle="rgba(255,255,255,.35)"; g.stroke();
+  });
+  // 집게
+  K.rr(g,W/2-44,cy0-78,88,96,18); g.fillStyle="#e9e3da"; g.fill(); g.lineWidth=5; g.strokeStyle="#b9aea0"; g.stroke();
+  g.beginPath(); g.arc(W/2,cy0-44,13,0,Math.PI*2); g.fillStyle="#b9aea0"; g.fill();
+  // 카드
+  g.save(); g.shadowColor="rgba(90,55,30,.25)"; g.shadowBlur=44; g.shadowOffsetY=18;
+  K.rr(g,cx0,cy0,cw,ch,52*sc); g.fillStyle="#FFFBF3"; g.fill(); g.restore();
+  g.save(); K.rr(g,cx0,cy0,cw,ch,52*sc); g.clip();
+  g.drawImage(cc,0,0,CW,CH,cx0,cy0,cw,ch);
+  g.restore();
+  return cv;
+}
+
+const T=K.run({
+  store:"ssum_work_v1", path:"/test/work", og:"/test/og-work.png", fileName:"ssum-id-card.png",
+  questions:Q, types:TYPES,
+  calc:judge,
+  build:buildCard,
+  detail(key,data,t){
+    const m=TYPES[t.match.key];
+    document.getElementById("r-tagline").textContent=t.emoji+" "+t.dept+" · "+t.rank+" — "+t.one;
+    document.getElementById("r-desc").textContent=t.desc;
+    const ul=document.getElementById("r-traits"); ul.innerHTML="";
+    t.traits.forEach(x=>{ const li=document.createElement("li"); li.textContent=x; ul.appendChild(li); });
+    K.drawOn(document.getElementById("r-match-m"), m.spec);
+    document.getElementById("r-match-n").textContent=m.name;
+    document.getElementById("r-match-r").textContent=t.match.reason;
+    document.getElementById("r-warn").textContent=t.warn;
+  },
+  shareText(name,t){ return (name?name+"의":"내")+" 연애 직급은 "+t.emoji+" "+t.name+"! 너도 연애 사원증 발급받아봐"; },
+  alt(name,t){ return (name?name+"님":"나")+"의 연애 사원증 — "+t.dept+" "+t.rank+", "+t.name+". "+t.one+". 찰떡 동료는 "+TYPES[t.match.key].name+"."; },
+  chem(friendKey,myKey){
+    const f=TYPES[friendKey], t=TYPES[myKey];
+    if(t.match.key===friendKey || f.match.key===myKey) return { head:"🤝 환상의 팀플!", sub:"서로의 부족한 점을 채워주는 조합이에요" };
+    if(friendKey===myKey) return { head:"👯 입사 동기 케미!", sub:"같은 직급이라 말이 잘 통해요" };
+    if(f.dept===t.dept) return { head:"🏢 같은 부서 케미!", sub:"일하는 방식이 비슷해서 편한 조합이에요" };
+    return { head:"✨ 협업 시너지!", sub:"스타일이 달라서 같이 하면 더 잘 굴러가요" };
+  },
+});
+</script>
+</body>
+</html>
