@@ -561,54 +561,13 @@
         </div>
       </div>
 
-      <!-- 매칭 유형 설명 -->
-      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-4" data-reveal>
-        <div class="flex items-center gap-2 mb-1">
-          <h2 class="font-bold text-sm">매칭 유형 안내</h2>
-        </div>
-
-        <div class="bg-[#E8B050]/8 border border-[#E8B050]/30 rounded-xl px-3.5 py-2.5 flex gap-2 items-start">
-          <span class="text-xs">🎉</span>
-          <p class="text-[11px] text-[#c9bfa8] leading-relaxed"><b class="text-[#E8B050]">지금은 베타 오픈 특별가</b>예요. 정식 오픈 시 가격이 인상될 수 있어요.</p>
-        </div>
-
-        <div class="space-y-3">
-          <!-- 일반 매칭 설명 -->
-          <div class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-5">
-            <div class="flex items-center gap-2 mb-3">
-              <i class="fa-solid fa-handshake y"></i>
-              <span class="font-bold">일반 매칭</span>
-              <span class="ml-auto text-sm y font-bold">19,900원</span>
-            </div>
-            <ul class="space-y-2 text-[13px] text-[#9a9080] leading-relaxed">
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>센터장이 이상형 조건에 맞는 상대를 찾아드려요</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>상대방이 수락하면 매칭 성사!</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>양쪽 모두 각자 19,900원 결제 후 연락처 교환</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>매칭 불발 시 비용 없음 (무료)</li>
-            </ul>
-          </div>
-
-          <!-- 슈퍼매칭 설명 -->
-          <div class="bg-[#0e0c0a] border border-[#E8B050]/30 rounded-xl p-5 relative">
-            <span class="absolute top-0 right-0 text-[9px] bg-y text-black font-bold px-2.5 py-1 rounded-bl-lg rounded-tr-xl">추천</span>
-            <div class="flex items-center gap-2 mb-3">
-              <i class="fa-solid fa-crown y"></i>
-              <span class="font-bold">슈퍼매칭</span>
-              <span class="ml-auto text-sm y font-bold">39,800원</span>
-            </div>
-            <ul class="space-y-2 text-[13px] text-[#9a9080] leading-relaxed">
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>상대방 비용까지 내가 부담해요</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>상대방에게 <b class="text-white">"슈퍼매칭이 왔어요!"</b> 표시 → 진심 전달</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>상대방은 무료로 연락처를 받아요</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>매칭 수락률이 눈에 띄게 올라갑니다!</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 flex gap-2 items-start">
-          <i class="fa-solid fa-circle-info y text-xs mt-0.5 shrink-0"></i>
-          <p class="text-[11px] text-[#6b6358] leading-relaxed">두 유형 모두 매칭이 성사되지 않으면 비용이 발생하지 않아요. 매칭 성사 후 결제 안내를 드립니다.</p>
-        </div>
+      <!-- 💰 결제 안내 — 한 줄로만.
+           예전에는 일반/슈퍼매칭 카드 두 개를 나란히 보여줬는데, 손님 눈에는 '고르는 화면인데 고를 버튼이 없다'로 보였고
+           제출 직전에 큰 가격표가 나와 망설이게 했다. 슈퍼매칭은 소개를 받고 수락할 때(response.html) 고르므로
+           설명도 거기서만 한다. 가격은 숨기지 않는다 (신청서 맨 위 뱃지 + 이 줄). -->
+      <div class="rounded-2xl p-5" style="background:#FFFFFF;border:1px solid rgba(0,0,0,.03);box-shadow:0 4px 24px rgba(0,0,0,.04)" data-reveal>
+        <p class="text-[14px] font-bold leading-relaxed" style="word-break:keep-all">💰 신청은 0원이에요. 매칭이 성사되면 그때 결제 안내를 드려요 <span style="white-space:nowrap">(일반 매칭 19,900원)</span></p>
+        <p class="text-[12px] text-[#9a9080] mt-1.5 leading-relaxed" style="word-break:keep-all">매칭이 안 되면 비용은 없어요. 지금은 베타 오픈 특별가라 정식 오픈 때 가격이 오를 수 있어요.</p>
       </div>
 
       <!-- 매칭 유형 "선택"은 성사(response.html) 단계로 이동. 신청서에는 안내만 유지 -->
