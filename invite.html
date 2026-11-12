@@ -9,24 +9,32 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:title" content="썸류센터 — 친구 소개하고 할인받기">
-<meta property="og:description" content="주선이 취미였던 센터장 3명이 직접 이어드려요.">
+<meta property="og:description" content="내 링크로 친구가 신청하면, 내 매칭비 2,000원 할인!">
 <style>
-  :root{color-scheme:light;--bg:#FAFAF8;--card:#FFFFFF;--line:#D9D5CD;--ink:#1E1E1E;--muted:#666666;--faint:#8C8C8C;--amber:#F25C5C}
+  :root{color-scheme:light;--bg:#FAFAF8;--card:#FFFFFF;--line:#EEEBE6;--ink:#1E1E1E;--muted:#666666;--faint:#8C8C8C;--amber:#F25C5C}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;min-height:100vh;padding:24px 18px 48px;letter-spacing:-.01em}
   .wrap{max-width:430px;margin:0 auto}
   .ky{font-size:12px;font-weight:750;color:var(--amber);letter-spacing:.04em;text-align:center}
   h1{font-size:25px;font-weight:800;margin:10px 0 8px;line-height:1.35;text-align:center;word-break:keep-all}
-  .sub{font-size:13.5px;color:var(--muted);line-height:1.75;text-align:center;word-break:keep-all}
-  .card{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;margin-top:18px}
+  .sub{font-size:14px;color:var(--muted);line-height:1.7;text-align:center;word-break:keep-all}
+  /* 흰 라운드 카드 + 옅은 그림자 (홈과 같은 톤) */
+  .card{background:#FFFFFF;border:1px solid rgba(0,0,0,.03);border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.04);padding:20px;margin-top:16px}
+  /* 🎟 초대 할인 쿠폰 */
+  .tk{display:flex;align-items:stretch;background:#FFFFFF;border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.05);margin-top:20px;overflow:hidden;text-align:left}
+  .tk-l{flex:0 0 96px;background:#FF6B6B;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 6px;border-right:2px dashed rgba(255,255,255,.7)}
+  .tk-l b{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+  .tk-l b small{font-size:12px;font-weight:700}
+  .tk-l span{font-size:11px;font-weight:700;opacity:.95;margin-top:3px}
+  .tk-r{flex:1;padding:14px 16px;font-size:13.5px;line-height:1.6;color:var(--ink);font-weight:700;word-break:keep-all;display:flex;align-items:center}
   label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px}
-  input{width:100%;background:#FAFAF8;border:1.5px solid var(--line);border-radius:13px;color:var(--ink);padding:13px 15px;font-size:16px;font-family:inherit;outline:none}
+  input{width:100%;background:#FAFAF8;border:1.5px solid #E6E2DC;border-radius:13px;color:var(--ink);padding:13px 15px;font-size:16px;font-family:inherit;outline:none}
   input:focus{border-color:var(--amber)}
-  .btn{width:100%;background:var(--amber);color:#1E1E1E;border:none;font-weight:800;padding:15px;border-radius:14px;cursor:pointer;font-size:15px;font-family:inherit;margin-top:11px}
+  .btn{width:100%;background:#FF6B6B;color:#fff;border:none;font-weight:800;padding:15px;border-radius:999px;cursor:pointer;font-size:15px;font-family:inherit;margin-top:11px}
   .btn:disabled{opacity:.45;cursor:default}
-  .btn2{width:100%;background:#FFFFFF;border:1.5px solid var(--line);color:var(--ink);font-weight:700;padding:13px;border-radius:13px;cursor:pointer;font-size:13.5px;font-family:inherit;margin-top:9px}
+  .btn2{width:100%;background:#FFFFFF;border:1.5px solid var(--line);color:var(--ink);font-weight:700;padding:13px;border-radius:999px;cursor:pointer;font-size:13.5px;font-family:inherit;margin-top:9px}
   .btn2:hover{border-color:var(--amber)}
-  .linkbox{background:#FAFAF8;border:1.5px dashed var(--line);border-radius:13px;padding:13px 15px;font-size:12.5px;color:var(--amber);word-break:break-all;line-height:1.6;margin-top:4px}
+  .linkbox{background:#FAFAF8;border:1.5px dashed #E0DCD5;border-radius:13px;padding:13px 15px;font-size:12.5px;color:#E5484D;word-break:break-all;line-height:1.6;margin-top:4px}
   .steps{display:flex;flex-direction:column;gap:11px;margin-top:14px}
   .step{display:flex;gap:12px;align-items:flex-start}
   .no{flex:0 0 auto;width:23px;height:23px;border-radius:50%;background:rgba(255,107,107,.14);color:var(--amber);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
@@ -39,12 +47,14 @@
 <body>
 <div class="wrap">
   <div class="ky">💌 친구 소개하기</div>
-  <h1>좋았다면,<br><span style="color:var(--amber)">친구에게도 이어주세요</span></h1>
-  <p class="sub">
-    내 이름이 담긴 링크를 보내주시면<br>
-    소개해주신 걸 저희가 알 수 있어요.<br>
-    <b style="color:var(--amber)">☕ 친구가 승인되면 커피 한 잔 보내드려요</b>
-  </p>
+  <!-- 🎟 초대 혜택 (2026-11 확정): 친구가 내 링크로 신청하면 → '소개한 사람 본인'이 매칭 성사되어 결제할 때 2,000원 할인.
+       친구(초대받은 사람)에게는 할인이 없다. "둘 다 할인", "동반 할인", "커피 기프티콘"이라고 쓰지 말 것. -->
+  <h1>🎟️ 친구 소개하고,<br><span style="color:var(--amber)">내 매칭비 2,000원 할인!</span></h1>
+  <p class="sub">내 링크로 친구가 신청하면, 내가 매칭 성사되어 결제할 때 2,000원 할인 쿠폰을 드려요.</p>
+  <div class="tk">
+    <div class="tk-l"><b>2,000<small>원</small></b><span>할인 쿠폰</span></div>
+    <div class="tk-r">내 매칭이 성사되어 첫 만남을 결제할 때 쓸 수 있어요</div>
+  </div>
 
   <!-- 이름 입력 -->
   <div class="card" id="step1">
@@ -69,9 +79,10 @@
   <div class="card">
     <label>어떻게 되나요?</label>
     <div class="steps">
-      <div class="step"><div class="no">1</div><p>위 링크를 친구에게 보내주세요.</p></div>
-      <div class="step"><div class="no">2</div><p>친구가 링크로 신청하면 <b>소개해주신 분에 이름이 자동으로 들어가요.</b> 친구가 따로 적을 필요 없어요.</p></div>
-      <div class="step"><div class="no">3</div><p>친구가 <b>승인되면</b> 소개해주신 분께 <b style="color:var(--amber)">커피 기프티콘</b>을 보내드려요 ☕</p></div>
+      <div class="step"><div class="no">1</div><p>위 링크를 <b>솔로인 친구</b>에게 보내주세요.</p></div>
+      <div class="step"><div class="no">2</div><p>친구가 링크로 <b>신청을 완료하면 추천인으로 등록돼요.</b></p></div>
+      <!-- 금액은 일반 매칭 가격(1on1-admin.html 의 MATCH_PRICE 19,900원) 기준이다. 가격이 바뀌면 여기도 같이 고칠 것. -->
+      <div class="step"><div class="no">3</div><p><b>내가 매칭이 성사</b>되어 첫 만남을 결제할 때, <b style="color:#E5484D">2,000원 즉시 할인</b>받아요! <span style="white-space:nowrap">(19,900원 ➔ 17,900원)</span></p></div>
     </div>
   </div>
 
@@ -116,10 +127,11 @@
   });
   document.getElementById("copyMsgBtn").addEventListener("click", function(){
     copy(
-      "나 여기서 소개받았는데 괜찮더라 😊\n"
-      + "썸류센터라고, 센터장이 직접 보고 한 명만 소개해주는 데야.\n"
-      + "앱처럼 혼자 넘겨볼 필요 없어서 편했어.\n"
-      + "아래 링크로 신청하면 돼 👇\n\n"
+      // 친구에게는 할인이 없으므로 할인 얘기를 넣지 않는다 (할인은 소개한 사람 몫이다)
+      "나 여기서 1:1 소개팅 신청했는데 괜찮더라 😊\n"
+      + "센터장 3명이 신청서를 직접 읽고 딱 한 명만 소개해주는 데야.\n"
+      + "신청비는 0원이고, 매칭이 성사됐을 때만 결제하면 돼서 부담 없어!\n"
+      + "너도 한번 해봐 👇\n\n"
       + myLink,
       "카톡에 보낼 문구까지 복사했어요 💬"
     );
