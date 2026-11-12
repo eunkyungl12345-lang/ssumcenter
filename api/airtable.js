@@ -262,6 +262,7 @@ module.exports = async function handler(req, res) {
         .sort((a, b) => b.횟수 - a.횟수);
 
       // 🏆 1:1 추천인 — 신청서에 "누가 소개해주셨어요?"로 적힌 이름을 모은다
+      const COFFEE_UNTIL = new Date("2026-11-13T00:00:00+09:00").getTime();   // 이 시각 전 신청분까지만 커피 약속
       const byRef = new Map();
       let 지인소개수 = 0, 추천인이름없음 = 0;
       for (const r of one) {
@@ -271,15 +272,16 @@ module.exports = async function handler(req, res) {
         const ref = name(f["추천인이름"]);
         if (!ref) { 추천인이름없음++; continue; }
         if (!byRef.has(ref)) byRef.set(ref, []);
-        // ☕ 커피 기프티콘은 '피추천인이 승인됐을 때' 드린다.
-        //    신청만으로 드리면 이름만 빌려서 커피를 타먹는 일이 생기고,
-        //    성사까지 기다리면 몇 주가 걸려서 추천인이 잊어버린다.
+        // ☕ 커피 기프티콘은 2026-11-12 까지의 약속이다. 그 뒤로는 초대 혜택이 '둘 다 성사 시 2,000원 동반 할인'으로 바뀌었다.
+        //    그래서 11/12(한국 시간)까지 초대 링크로 신청한 분에 대해서만 '커피 보내드릴 차례'를 띄운다.
+        //    (그분들은 "친구가 승인되면 커피 한 잔"이라는 안내를 보고 소개해주셨다)
         const 상태 = name(f["매칭상태"]);
         byRef.get(ref).push({
           id: r.id,
           이름: name(f["이름"]) || "이름없음",
           승인됨: 상태 !== "" && 상태 !== "대기" && 상태 !== "거절" && 상태 !== "휴지통" && 상태 !== "제외",
           보상지급: !!name(f["추천보상"]),
+          옛약속: new Date(r.createdTime).getTime() < COFFEE_UNTIL,
         });
       }
       // 추천인의 연락처 찾기 — 이미 읽어온 신청 기록에서 같은 이름을 찾는다.
@@ -298,8 +300,8 @@ module.exports = async function handler(req, res) {
       const 추천인 = [...byRef.entries()]
         .map(([이름, 목록]) => {
           const phones = [...(이름별연락처.get(이름) || new Map()).values()];
-          // 아직 커피를 못 드린 분 (승인된 피추천인 중 지급 안 한 건)
-          const 보낼것 = 목록.filter((x) => x.승인됨 && !x.보상지급);
+          // 아직 커피를 못 드린 분 (옛 약속 기간에 신청해 승인된 피추천인 중 지급 안 한 건)
+          const 보낼것 = 목록.filter((x) => x.옛약속 && x.승인됨 && !x.보상지급);
           return {
             이름, 횟수: 목록.length,
             데려온사람: 목록.map((x) => x.이름),

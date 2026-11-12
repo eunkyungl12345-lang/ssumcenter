@@ -109,7 +109,7 @@
     list.forEach(function(it){ var n=(it.rec.fields||{})["이름"]; if(!myNm && n) myNm=n; });
     html+='<div class="card"><div class="empty" style="text-align:left">'
       +'<b style="color:#E5484D">💌 좋았다면 친구에게도 이어주세요</b><br>'
-      +'내 이름이 담긴 링크로 신청하면, 소개해주신 걸 센터장이 알 수 있어요.'
+      +'내 초대 링크로 친구가 신청하면, 둘 다 매칭 성사 시 첫 만남 결제할 때 2,000원씩 할인해 드려요 🎟️'
       +'<div><a href="/invite'+(myNm?('?name='+encodeURIComponent(myNm)):'')+'">💌 내 초대 링크 받기</a></div></div></div>';
     c.innerHTML=html;
     bindClaim();
