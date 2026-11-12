@@ -187,26 +187,79 @@ button,input,select,textarea{font-family:inherit}
 /* 마지막 신청 */
 .final{text-align:center}
 .final .box{max-width:560px;margin:0 auto;padding:40px 24px 32px;background:linear-gradient(180deg,#FFF1EC,#FFFFFF 70%)}
+/* ============================================================
+   📱 모바일 퍼스트 중앙 뷰 (2026-11) — PC에서도 가운데 480px 한 줄로 보인다.
+   바깥은 베이지, 안쪽 화면은 소프트 크림. 화면 폭(@media)으로 여러 단을 만들던 규칙은 아래에서 전부 한 단으로 덮는다.
+   ============================================================ */
+:root{--bg:#FDFBF7;--beige:#F1E9DC;--beige-2:#E9DECD;--cream-line:#EFE7DA}
+html{background:var(--beige)}
+body{background:linear-gradient(180deg,#F5EEE3 0%,var(--beige) 60%,var(--beige-2) 100%);min-height:100vh}
+.app{position:relative;max-width:480px;margin:0 auto;background:var(--bg);min-height:100vh;box-shadow:0 0 0 1px rgba(120,90,50,.05),0 20px 60px rgba(120,90,50,.10);padding-bottom:calc(96px + env(safe-area-inset-bottom));overflow:hidden}
+.nav{background:rgba(253,251,247,.88);border-bottom:1px solid var(--cream-line);padding:0 18px}
+.nav-inner{height:58px}
+.desk{display:none!important}
+.burger{display:block}
+.nav-right{display:flex;align-items:center;gap:6px}
+.nav-right .auth-link{font-size:13.5px;color:var(--sub);padding:8px 6px}
+.sec{padding:56px 20px}
+.h2{font-size:24px}
+/* 히어로 */
+.hero{padding:44px 22px 36px;background:radial-gradient(ellipse 95% 55% at 50% 0%,#FFEDE4 0%,rgba(255,237,228,0) 72%)}
+.headcopy{display:inline-block;font-size:14px;font-weight:600;color:#8A6B4E;line-height:1.6;background:#F6EEE2;border:1px solid #EADFCF;border-radius:16px;padding:10px 16px}
+.headcopy b{color:var(--point-deep);font-weight:800}
+.hero h1{font-size:26px;line-height:1.42;margin-top:20px;letter-spacing:-.04em}
+.hero h1 span{display:block}
+.hero .lead{font-size:15px;margin-top:14px;line-height:1.65;max-width:360px;margin-left:auto;margin-right:auto}
+.cta-sub{margin-top:6px}
+@media(max-width:360px){.hero h1{font-size:23px}.headcopy{font-size:13px;padding:9px 13px}}
+/* 썸류센터 배송 조회 — '물류' 말장난을 실제 진행 순서로 보여준다 (거짓 단계 넣지 말 것) */
+.track{margin:26px 0 0;padding:18px 16px 16px;text-align:left}
+.track-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--ink)}
+.track-h small{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--faint)}
+.track ol{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);margin-top:14px;position:relative}
+.track ol::before{content:"";position:absolute;left:12.5%;right:12.5%;top:15px;height:2px;background:linear-gradient(90deg,var(--point-deep) 0 34%,#EADFCF 34% 100%)}
+.track li{position:relative;text-align:center;font-size:11.5px;font-weight:700;color:var(--sub);line-height:1.35;word-break:keep-all}
+.track li i{display:grid;place-items:center;width:32px;height:32px;margin:0 auto 7px;border-radius:50%;background:#fff;border:2px solid #EADFCF;font-style:normal;font-size:15px;position:relative;z-index:1}
+.track li.on i{border-color:var(--point-deep);background:#FFF1EC}
+.track li.on{color:var(--ink)}
+/* 화면 폭에 따라 여러 단으로 바뀌던 것들 → 항상 한 단 */
+.cta-main{max-width:none}
+.vals{grid-template-columns:1fr;gap:12px;margin-top:24px}
+.val{padding:22px 20px;display:grid;grid-template-columns:48px 1fr;column-gap:16px;align-items:start}
+.val h3{margin-top:2px;font-size:17px}
+.val p{grid-column:2;margin-top:4px}
+.rvs{grid-template-columns:1fr}
+.rv.big{padding:24px 22px}
+.final .box{padding:34px 22px 26px}
+.mbr{display:inline}
+/* 붕 뜬 카드 느낌: 크림 바탕 위 흰 카드 */
+.card{border-color:rgba(120,90,50,.06)}
+/* ── 하단 고정 신청 바 (반투명 유리) */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:90;display:flex;justify-content:center;pointer-events:none}
+.dock-in{pointer-events:auto;width:100%;max-width:480px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(253,251,247,.62);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);border-top:1px solid rgba(255,255,255,.7);box-shadow:0 -8px 30px rgba(120,90,50,.08)}
+.dock-btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;border-radius:999px;padding:12px 18px;color:#fff;font-weight:800;font-size:15.5px;letter-spacing:-.02em;background:rgba(229,72,77,.94);border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 26px rgba(229,72,77,.30);transition:transform .15s,background .15s}
+.dock-btn:hover{background:rgba(214,61,67,.96)}
+.dock-btn:active{transform:scale(.98)}
+.dock-btn .d1{font-size:13px;font-weight:700;opacity:.92;white-space:nowrap}
+.dock-btn .sep{opacity:.45;font-weight:400}
+.dock-btn .d2{white-space:nowrap}
+@media(max-width:374px){.dock-btn{flex-direction:column;gap:0;min-height:58px;padding:9px 14px}.dock-btn .sep{display:none}.dock-btn .d1{font-size:11.5px}}
+/* 문의봇 동그라미는 하단 바 위로, PC에서는 가운데 화면 안쪽으로 */
 </style>
 <!-- 방문 통계 (Vercel Web Analytics: 대시보드에서 켜야 집계됨) -->
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
+<div class="app">
 
 <!-- Nav -->
 <nav class="nav">
   <div class="nav-inner">
     <a href="#top"><img src="logo-dark.png" alt="썸류센터" style="height:30px;display:block"></a>
-    <div class="desk" style="display:flex;align-items:center;gap:26px">
-      <a href="#values" class="nav-link">썸류센터는</a>
-      <a href="#centers" class="nav-link">센터장</a>
-      <a href="#reviews" class="nav-link">후기</a>
-      <a href="#faq" class="nav-link">FAQ</a>
-      <a href="test/ideal.html" class="nav-link">유형 테스트</a>
-      <a href="login.html" class="nav-link auth-link">로그인</a>
-      <a class="nav-cta" href="/matching">신청하기</a>
-    </div>
+    <div class="nav-right">
+      <a href="login.html" class="auth-link">로그인</a>
     <button class="burger" aria-label="메뉴" onclick="document.getElementById('mob').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
+    </div>
     <div class="nav-mob" id="mob">
       <a href="#values" class="nav-link" onclick="this.parentElement.classList.remove('open')">썸류센터는</a>
       <a href="#centers" class="nav-link" onclick="this.parentElement.classList.remove('open')">센터장 소개</a>
@@ -214,23 +267,29 @@ button,input,select,textarea{font-family:inherit}
       <a href="#faq" class="nav-link" onclick="this.parentElement.classList.remove('open')">자주 묻는 질문</a>
       <a href="test/ideal.html" class="nav-link">유형 테스트</a>
       <a href="/date-spots" class="nav-link">소개팅 장소 추천</a>
-      <a href="login.html" class="nav-link auth-link">로그인</a>
-      <a class="cta-main" href="/matching" style="margin-top:0;min-height:52px;font-size:15.5px">💌 1:1 매칭 신청하기 (신청비 0원)</a>
+      <a class="cta-main" href="/matching" style="margin-top:4px;min-height:52px;font-size:15.5px">💌 1:1 매칭 신청하기 (신청비 0원)</a>
     </div>
   </div>
 </nav>
 <div id="top"></div>
 
-<!-- 1. 헤로 — 뱃지 1개 · 타이틀 2줄 · 버튼 1개. 여기에 요소를 더 얹지 말 것 -->
+<!-- 1. 헤로 — 헤드 카피(물류 말장난) · 타이틀 2줄 · 한 줄 설명 · 배송 조회 카드.
+     신청 버튼은 화면 아래 고정 바(.dock)가 맡는다. 히어로에 버튼·뱃지를 더 얹지 말 것. -->
 <section class="hero">
   <div class="hero-in">
-    <span class="pill">✨ 신청비 0원 · 매칭 성사 시에만 결제</span>
-    <h1><span>소개팅 앱은 지쳤고, <br class="mbr">결정사는 부담스러울 때</span><span class="ac">썸류센터에서 설렘을 배송받으세요</span></h1>
-    <p class="lead">신원 검증된 2030 직장인을 위한 1:1 맞춤 소개팅.<br>주선이 취미였던 센터장 3명이 직접 내 성향과 가치관에 딱 맞는 사람을 이어드려요.</p>
-    <a class="cta-main" href="/matching">💌 1:1 매칭 신청하기 (신청비 0원)</a>
+    <p class="headcopy">📦 물류는 택배를 잇지만,<br>썸류는 <b>인연</b>을 잇습니다.</p>
+    <h1><span><span class="ac" style="display:inline">신청비 0원</span>, 매칭될 때까지</span><span>센터장이 직접 찾아주는 <span style="display:inline;white-space:nowrap">1:1 소개팅</span></span></h1>
+    <p class="lead">주선이 취미였던 센터장 3명이 신청서를 직접 읽고, 성향과 가치관이 맞는 한 사람을 이어드려요.</p>
+    <div class="card track" aria-label="썸류센터 진행 순서">
+      <div class="track-h">🚚 썸류센터 배송 조회 <small>진행 순서</small></div>
+      <ol>
+        <li class="on"><i>📝</i>신청 접수</li>
+        <li class="on"><i>🔍</i>센터장 검토</li>
+        <li><i>💌</i>1:1 소개</li>
+        <li><i>☕</i>첫 만남</li>
+      </ol>
+    </div>
     <a class="cta-sub" href="/test/ideal">나의 연애 취향 영수증 테스트 해보기 ›</a>
-    <!-- "만족 시에만 결제"라고 쓰면 '만나보고 별로면 안 내도 된다'로 읽힌다. 실제 결제 시점(서로 수락 = 성사)에 맞춰 적는다. -->
-    <p class="trust"><span><b>✔</b>재직 서류 100% 검증</span><span><b>✔</b>서로 마음에 들 때만 결제하는 안심 후불제</span></p>
   </div>
 </section>
 
@@ -250,17 +309,18 @@ button,input,select,textarea{font-family:inherit}
       <div class="card val">
         <div class="ico">💰</div>
         <h3>신청비 0원 후불제</h3>
-        <p>신청할 땐 0원. 매칭이 성사됐을 때에만 결제해요.</p>
+        <p>마음에 드는 상대와 매칭이 성사될 때만 결제해요.</p>
       </div>
       <div class="card val">
-        <div class="ico">🛡️</div>
-        <h3>100% 신원·서류 안심 심사</h3>
-        <p>재직 증명을 마친 직장인만 소개해요. 내 프로필은 소개받는 한 분에게만 전달돼요.</p>
+        <div class="ico">🔒</div>
+        <h3>신원 서류 검증</h3>
+        <!-- '본인 인증'(휴대폰 실명 인증 등)은 하지 않는다. 하는 것만 적는다: 재직 서류 확인 -->
+        <p>재직 서류 확인을 통과한 분만 소개해 드려요.</p>
       </div>
       <div class="card val">
-        <div class="ico">☕</div>
-        <h3>센터장 1:1 맞춤 큐레이션</h3>
-        <p>기계 매크로가 아니에요. 센터장이 신청서를 직접 읽고 사람 대 사람으로 이어드려요.</p>
+        <div class="ico">🎯</div>
+        <h3>센터장 1:1 큐레이션</h3>
+        <p>기계적 매칭이 아닌, 성향과 가치관을 보고 직접 연결해요.</p>
       </div>
     </div>
   </div>
@@ -373,6 +433,14 @@ button,input,select,textarea{font-family:inherit}
     <p style="margin-top:4px">Copyright 2026 썸류센터. All rights reserved.</p>
   </div>
 </footer>
+</div><!-- /.app -->
+
+<!-- 📌 하단 고정 신청 바 — 스크롤과 상관없이 항상 보인다 -->
+<nav class="dock" aria-label="신청하기">
+  <div class="dock-in">
+    <a class="dock-btn" href="/matching"><span class="d1">신청비 0원 후불제</span><span class="sep">|</span><span class="d2">지금 1:1 매칭 신청하기 ›</span></a>
+  </div>
+</nav>
 
 <script>
 /* 재직 인증 직장 롤링 — 회사 이름이 아니라 업종으로만 적는다. 고치려면 이 목록만 바꾸면 된다. */
@@ -400,9 +468,9 @@ document.querySelectorAll('[data-r]').forEach(el=>io.observe(el));
 </script>
 <!-- 문의봇 위젯 -->
 <style>
-  #askbot-fab{position:fixed;right:18px;bottom:18px;z-index:80;width:56px;height:56px;border-radius:50%;border:none;background:#E5484D;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 8px 24px rgba(255,107,107,.24);transition:transform .15s}
+  #askbot-fab{position:fixed;right:max(16px,calc(50vw - 240px + 16px));bottom:calc(92px + env(safe-area-inset-bottom));z-index:80;width:56px;height:56px;border-radius:50%;border:none;background:#E5484D;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 8px 24px rgba(255,107,107,.24);transition:transform .15s}
   #askbot-fab:hover{transform:scale(1.06)}
-  #askbot-panel{position:fixed;right:18px;bottom:84px;z-index:80;width:340px;max-width:calc(100vw - 36px);max-height:70vh;background:#FFFFFF;border:1px solid #D9D5CD;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.088);display:none;flex-direction:column;overflow:hidden}
+  #askbot-panel{position:fixed;right:max(16px,calc(50vw - 240px + 16px));bottom:calc(158px + env(safe-area-inset-bottom));z-index:80;width:340px;max-width:calc(100vw - 36px);max-height:70vh;background:#FFFFFF;border:1px solid #D9D5CD;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.088);display:none;flex-direction:column;overflow:hidden}
   #askbot-panel.on{display:flex}
   .ab-head{display:flex;align-items:center;padding:14px 16px;background:#FFFFFF;border-bottom:1px solid #E6E2DC;font-size:14px;font-weight:800;color:#1E1E1E}
   .ab-head span{flex:1}
