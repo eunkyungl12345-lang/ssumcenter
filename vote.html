@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>썸류센터 커피팅 투표</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>
   :root{
-    color-scheme:dark;
-    --bg:#0c0a08; --surface:#161310; --surface-2:#1e1811; --ink:#EDE0CC; --ink-2:#C9B896;
-    --muted:#998870; --faint:#6a5c4c; --line:#2a2117; --line-strong:#3a2e1f;
-    --amber:#E8B050; --amber-2:#D4952A; --amber-soft:rgba(212,149,42,.12);
-    --ok:#6FBE97; --ok-soft:rgba(111,190,151,.13);
-    --ink-on-amber:#171208;
-    --g1:linear-gradient(135deg,#E8B050,#B06A2E); --g2:linear-gradient(135deg,#C9A15E,#8A6A38);
+    color-scheme:light;
+    --bg:#FAFAF8; --surface:#FFFFFF; --surface-2:#FFFFFF; --ink:#1E1E1E; --ink-2:#4A4A4A;
+    --muted:#666666; --faint:#8C8C8C; --line:#E6E2DC; --line-strong:#D9D5CD;
+    --amber:#F25C5C; --amber-2:#F25C5C; --amber-soft:rgba(242,92,92,.12);
+    --ok:#45926C; --ok-soft:rgba(111,190,151,.13);
+    --ink-on-amber:#1E1E1E;
+    --g1:linear-gradient(135deg,#F25C5C,#F25C5C); --g2:linear-gradient(135deg,#F25C5C,#F25C5C);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55;letter-spacing:-.01em;min-height:100vh}
@@ -32,24 +33,24 @@
   .lead .sub{font-size:13px;color:var(--muted)}
   /* 입장 */
   .qrbox{text-align:center;margin:20px 0 6px}
-  .qrimg{width:118px;height:118px;margin:0 auto;border-radius:16px;background:#fff;color:#000;display:grid;place-items:center;font-size:62px}
+  .qrimg{width:118px;height:118px;margin:0 auto;border-radius:16px;background:#fff;color:#1E1E1E;display:grid;place-items:center;font-size:62px}
   .qrcap{font-size:11.5px;color:var(--faint);margin-top:10px}
   .fld{display:block;margin-top:18px}
   .fld span{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:0 2px 7px}
   .fld input{width:100%;background:var(--surface);border:1.5px solid var(--line-strong);border-radius:13px;padding:15px;font-size:17px;color:var(--ink);font-family:inherit;text-align:center}
   .fld input:focus{outline:none;border-color:var(--amber)}
-  .btn{width:100%;border:none;border-radius:14px;padding:16px;font-size:15.5px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;box-shadow:0 8px 24px rgba(232,176,80,.2)}
+  .btn{width:100%;border:none;border-radius:14px;padding:16px;font-size:15.5px;font-weight:800;color:var(--ink-on-amber);background:var(--amber);cursor:pointer;font-family:inherit;box-shadow:0 8px 24px rgba(255,107,107,.12)}
   .btn:disabled{opacity:.4;box-shadow:none}
   .btn.ghost{background:transparent;color:var(--muted);border:1.5px solid var(--line-strong);box-shadow:none;font-weight:700;font-size:13px;padding:13px}
   .note{font-size:11.5px;color:var(--faint);text-align:center;margin-top:11px}
-  .err{font-size:12.5px;color:#E8828A;text-align:center;margin-top:10px;min-height:16px}
+  .err{font-size:12.5px;color:#B12530;text-align:center;margin-top:10px;min-height:16px}
   /* 투표 */
   .cntbar{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700;color:var(--muted);margin:14px 2px 9px}
   .cntbar b{color:var(--amber)}
   .vlist{display:grid;gap:11px}
   .vc{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:12px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:.12s}
   .vc.on{border-color:var(--amber);background:var(--amber-soft)}
-  .av{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;font-size:22px;color:#fff;flex-shrink:0;overflow:hidden;background:var(--g2)}
+  .av{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;font-size:22px;color:#1E1E1E;flex-shrink:0;overflow:hidden;background:var(--g2)}
   .av img{width:100%;height:100%;object-fit:cover}
   .vc .nm{font-size:15px;font-weight:750}
   .vc .bio{font-size:12.5px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
@@ -58,7 +59,7 @@
   .sticky{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 22%);padding-top:18px;margin-top:16px}
   /* 완료 */
   .center{text-align:center}
-  .pulse{width:92px;height:92px;margin:26px auto 8px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:radial-gradient(circle at 50% 40%,rgba(232,176,80,.28),rgba(232,176,80,.05))}
+  .pulse{width:92px;height:92px;margin:26px auto 8px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:radial-gradient(circle at 50% 40%,rgba(255,107,107,.28),rgba(255,107,107,.05))}
   .whenbar{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--amber);background:var(--amber-soft);border:1px solid var(--line-strong);padding:9px 16px;border-radius:100px;margin-top:10px}
   .infocard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:20px;font-size:13px;color:var(--ink-2);line-height:1.7}
   /* 결과 */
@@ -73,7 +74,7 @@
   .rc .num{font-size:13.5px;font-weight:800;color:var(--ok)}
   .rc .kk{font-size:11.5px;font-weight:750;color:var(--amber);background:var(--surface-2);border:1px solid var(--amber);padding:7px 11px;border-radius:100px;margin-left:auto}
   .safe{font-size:11.5px;color:var(--ok);font-weight:650;text-align:center;margin:-2px 0 9px}
-  .lock{background:linear-gradient(135deg,rgba(232,176,80,.14),rgba(201,154,90,.05));border:1.5px solid var(--amber);border-radius:16px;padding:16px;text-align:center}
+  .lock{background:linear-gradient(135deg,rgba(255,107,107,.14),rgba(255,107,107,.05));border:1.5px solid var(--amber);border-radius:16px;padding:16px;text-align:center}
   .lock .big{font-size:15.5px;font-weight:800}.lock .big b{color:var(--amber)}
   .lock .sub{font-size:12.5px;color:var(--ink-2);margin:5px 0 12px}
   .lock .row{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
@@ -104,24 +105,24 @@
 
   <!-- 입장 -->
   <div class="scr" id="s-entry">
-    <div class="apphead"><img src="/logo.png" alt="썸류센터" style="height:26px;flex-shrink:0"><span class="ttl" id="ev-title">썸류센터 커피팅 투표</span></div>
+    <div class="apphead"><img src="/logo-dark.png" alt="썸류센터" style="height:26px;flex-shrink:0"><span class="ttl" id="ev-title">썸류센터 커피팅 투표</span></div>
     <div class="lead"><div class="ky">📷 QR로 접속했어요</div><h2>본인 확인</h2><div class="sub">명찰에 적힌 <b>내 닉네임</b>을 입력해주세요</div></div>
     <div class="qrbox"><div class="qrimg">🏷️</div><div class="qrcap">명찰 닉네임으로 입장해요</div></div>
     <label class="fld"><span>내 닉네임 (명찰)</span>
       <input id="nick" placeholder="예: 라떼" maxlength="20" autocomplete="off">
     </label>
-    <label class="fld"><span>내 비밀번호 4자리 <b style="color:#E8B050">(처음이면 새로 정해서 입력!)</b></span>
+    <label class="fld"><span>내 비밀번호 4자리 <b style="color:#E5484D">(처음이면 새로 정해서 입력!)</b></span>
       <input id="pin" type="tel" inputmode="numeric" maxlength="4" placeholder="숫자 4자리" autocomplete="off">
     </label>
     <div class="err" id="entry-err"></div>
     <div style="margin-top:6px"><button class="btn" id="entryBtn" disabled>입장하기</button></div>
     <div class="note">명찰에 적힌 닉네임으로 입장돼요 · 회원가입 없음</div>
-    <div style="text-align:center;margin-top:16px"><a href="/vote-guide" target="_blank" rel="noopener" style="font-size:13.5px;color:#E8B050;text-decoration:none;font-weight:800">📖 처음이면? 투표 방법 보기 →</a></div>
+    <div style="text-align:center;margin-top:16px"><a href="/vote-guide" target="_blank" rel="noopener" style="font-size:13.5px;color:#E5484D;text-decoration:none;font-weight:800">📖 처음이면? 투표 방법 보기 →</a></div>
   </div>
 
   <!-- 투표 -->
   <div class="scr" id="s-vote">
-    <div class="apphead"><img src="/logo.png" alt="썸류센터" style="height:22px;flex-shrink:0"><span class="ttl" id="vote-title" style="font-size:14.5px">커피팅 투표</span><span class="me" id="vote-me"></span></div>
+    <div class="apphead"><img src="/logo-dark.png" alt="썸류센터" style="height:22px;flex-shrink:0"><span class="ttl" id="vote-title" style="font-size:14.5px">커피팅 투표</span><span class="me" id="vote-me"></span></div>
     <div class="lead"><h2>오늘 마음에 든 분은?</h2><div class="sub">최대 2명까지 · 센터장만 확인해요</div></div>
     <div class="cntbar"><span id="vote-count-label">참가자</span><span><b id="pickN">0</b>/2 선택</span></div>
     <div class="vlist" id="vlist"></div>

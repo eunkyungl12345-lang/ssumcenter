@@ -1,36 +1,34 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>썸배달 — 로테이션 소개팅 | 썸류센터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"></noscript>
+<noscript></noscript>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Noto Sans KR',sans-serif;background:#0e0c0a;color:#f5f0ea;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden;-webkit-font-smoothing:antialiased}
   a{text-decoration:none;color:inherit}
-  .y{color:#FFBE2E}
-  ::selection{background:#FFBE2E;color:#000}
-  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,190,46,.3)}50%{box-shadow:0 0 24px 8px rgba(255,190,46,.12)}}
+  .y{color:#E5484D}
+  ::selection{background:#FF6B6B;color:#fff}
+  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,107,.18)}50%{box-shadow:0 0 24px 8px rgba(255,107,107,.072)}}
   .cta-glow{animation:glow-pulse 2.5s infinite ease-in-out}
-  .quote{border-left:3px solid #FFBE2E;background:rgba(255,190,46,.04);padding:14px 20px;border-radius:0 12px 12px 0;margin:10px 0;font-weight:500}
+  .quote{border-left:3px solid #FF6B6B;background:rgba(255,107,107,.04);padding:14px 20px;border-radius:0 12px 12px 0;margin:10px 0;font-weight:500}
   .warn{border-left:3px solid #ff6b6b;background:rgba(255,100,100,.04);padding:14px 20px;border-radius:0 12px 12px 0;margin:10px 0;font-weight:700}
 
   /* Nav */
-  nav.site-nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:rgba(14,12,10,.8);border-bottom:1px solid rgba(255,255,255,.04);padding:14px 20px}
+  nav.site-nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:rgba(250,250,248,.8);border-bottom:1px solid rgba(0,0,0,.032);padding:14px 20px}
   .nav-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
   .nav-inner img{height:28px}
-  .nav-link{font-size:14px;font-weight:600;color:#9a9080;transition:color .2s}
-  .nav-link:hover{color:#fff}
+  .nav-link{font-size:14px;font-weight:600;color:#666666;transition:color .2s}
+  .nav-link:hover{color:#1E1E1E}
   .nav-link i{margin-right:4px}
 
   /* Main */
@@ -41,40 +39,40 @@
   .title-emoji{font-size:36px;margin-bottom:12px}
   .title-section h1{font-size:24px;font-weight:900;line-height:1.25}
   @media(min-width:768px){.title-section h1{font-size:32px}}
-  .title-desc{font-size:15px;color:#9a9080;margin-top:12px;line-height:1.6}
+  .title-desc{font-size:15px;color:#666666;margin-top:12px;line-height:1.6}
   .title-cta{margin-top:24px}
 
   /* CTA button */
-  .cta-btn{display:inline-block;background:#FFBE2E;color:#000;font-weight:800;padding:16px 40px;border-radius:16px;font-size:15px;transition:filter .2s}
+  .cta-btn{display:inline-block;background:#FF6B6B;color:#fff;font-weight:800;padding:16px 40px;border-radius:16px;font-size:15px;transition:filter .2s}
   .cta-btn:hover{filter:brightness(.9)}
   .cta-btn i{margin-right:6px}
 
   /* Sections */
   .sections{display:flex;flex-direction:column;gap:32px;font-size:15px;line-height:1.9}
   .sections h2{font-weight:900;font-size:18px;margin-bottom:8px}
-  .sections hr{border:none;border-top:1px solid #1e1c17}
+  .sections hr{border:none;border-top:1px solid #E6E2DC}
   .sections .sm{font-size:14px}
-  .sections .muted{color:#9a9080}
+  .sections .muted{color:#666666}
   .sections .bold{font-weight:700}
   .sections .text-17{font-size:17px}
   .sections .mt-1{margin-top:4px}
   .sections .mt-2{margin-top:8px}
   .sections .mt-3{margin-top:12px}
-  .sections .line-through{text-decoration:line-through;color:#6b6358}
+  .sections .line-through{text-decoration:line-through;color:#8C8C8C}
   .sections .price{font-weight:900;font-size:20px}
-  .sections .highlight{color:#f5f0ea;font-weight:700}
+  .sections .highlight{color:#1E1E1E;font-weight:700}
 
   /* Bottom CTA */
   .bottom-cta{text-align:center;margin-top:48px;margin-bottom:32px}
-  .bottom-cta .sub{font-size:12px;color:#6b6358;margin-top:16px}
-  .bottom-cta .back-link{display:inline-block;margin-top:16px;font-size:14px;color:#9a9080;transition:color .2s}
-  .bottom-cta .back-link:hover{color:#fff}
+  .bottom-cta .sub{font-size:12px;color:#8C8C8C;margin-top:16px}
+  .bottom-cta .back-link{display:inline-block;margin-top:16px;font-size:14px;color:#666666;transition:color .2s}
+  .bottom-cta .back-link:hover{color:#1E1E1E}
   .bottom-cta .back-link i{margin-right:4px}
 
   /* Footer */
-  footer.site-footer{border-top:1px solid rgba(255,255,255,.04);padding:32px 20px;text-align:center}
+  footer.site-footer{border-top:1px solid rgba(0,0,0,.032);padding:32px 20px;text-align:center}
   footer.site-footer img{height:20px;margin:0 auto 12px;display:block;opacity:.4}
-  footer.site-footer p{font-size:11px;color:#5a5248}
+  footer.site-footer p{font-size:11px;color:#8C8C8C}
 
   /* Hover underline for links */
   .hover-underline:hover{text-decoration:underline}
@@ -82,11 +80,11 @@
 </head>
 <body>
 <!-- ▼▼ 로테이션 잠시 쉼 안내 (재개하려면 이 블록 전체 삭제) ▼▼ -->
-<div style="position:fixed;inset:0;z-index:99999;background:#0e0c0a;color:#f5f0ea;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;font-family:'Noto Sans KR',-apple-system,sans-serif">
+<div style="position:fixed;inset:0;z-index:99999;background:#FAFAF8;color:#1E1E1E;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif">
   <div style="font-size:44px;margin-bottom:18px">🔔</div>
   <h2 style="font-size:21px;font-weight:800;margin-bottom:14px;line-height:1.4">로테이션 소개팅은<br>잠시 쉬어가요</h2>
-  <p style="color:#9a9080;line-height:1.75;margin-bottom:26px;font-size:15px">대신 <b style="color:#FFBE2E">1:1 맞춤 소개팅</b>은 상시 운영 중이에요 😊<br>잠시 후 1:1 소개 페이지로 안내해드릴게요.</p>
-  <a href="/oneone" style="background:#FFBE2E;color:#000;font-weight:800;padding:15px 30px;border-radius:14px;text-decoration:none;font-size:15px">1:1 소개팅 보러가기 →</a>
+  <p style="color:#666666;line-height:1.75;margin-bottom:26px;font-size:15px">대신 <b style="color:#E5484D">1:1 맞춤 소개팅</b>은 상시 운영 중이에요 😊<br>잠시 후 1:1 소개 페이지로 안내해드릴게요.</p>
+  <a href="/oneone" style="background:#FF6B6B;color:#fff;font-weight:800;padding:15px 30px;border-radius:14px;text-decoration:none;font-size:15px">1:1 소개팅 보러가기 →</a>
 </div>
 <script>setTimeout(function(){location.href='/oneone';},2800);</script>
 <!-- ▲▲ 로테이션 잠시 쉼 안내 끝 ▲▲ -->
@@ -94,7 +92,7 @@
 <!-- Nav -->
 <nav class="site-nav">
   <div class="nav-inner">
-    <a href="index.html"><img src="logo.png" alt="썸류센터"></a>
+    <a href="index.html"><img src="logo-dark.png" alt="썸류센터"></a>
     <a href="index.html" class="nav-link"><i class="fa-solid fa-arrow-left"></i>홈으로</a>
   </div>
 </nav>
@@ -108,7 +106,7 @@
     <p class="title-desc">안녕하세요 설렘담당 썸류센터 센터장입니다 📦❤️<br>당신의 인연이 시작될 바로 그 자리,<br>썸류센터로 초대할게요. ✨</p>
     <div class="title-cta">
       <a href="/rotation-apply" class="cta-btn cta-glow"><i class="fa-solid fa-box"></i>상시 접수 중 · 신청하기</a>
-      <!-- 숨김: <a href="/rotation-preview" style="display:inline-block;margin-top:14px;font-size:13px;color:#E8B050;text-decoration:none;font-weight:700">👀 이런 분들이 참여해요 →</a> -->
+      <!-- 숨김: <a href="/rotation-preview" style="display:inline-block;margin-top:14px;font-size:13px;color:#E5484D;text-decoration:none;font-weight:700">👀 이런 분들이 참여해요 →</a> -->
     </div>
   </div>
 
@@ -145,7 +143,7 @@
       </div>
       <p class="muted mt-2">🌟 매력 있는 분들은 1~2살 넘어가더라도 승인드립니다.</p>
       <p class="muted">🌟 모두의 취향에 맞을 수 있도록 다양한 스타일의 이성으로 초대드립니다</p>
-      <div class="quote mt-3" style="border-left-color:#9a9080;background:rgba(255,255,255,.02)">
+      <div class="quote mt-3" style="border-left-color:#CFCAC2;background:rgba(0,0,0,.016)">
         <p class="sm muted">선착순이 아닌 <b class="highlight">승인제</b>로 진행합니다!<br>승인된 분들께 <b class="highlight">문자💌</b>로 참여 안내가 나가니<br>폼 작성 후 문자 확인을 꼼꼼하게 해주세요!</p>
       </div>
       <div class="warn mt-3">
@@ -231,8 +229,8 @@
 
 <!-- Footer -->
 <footer class="site-footer">
-  <img src="logo.png" alt="썸류센터">
-  <p>문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#FFBE2E;text-decoration:none">카카오톡 채널 →</a></p>
+  <img src="logo-dark.png" alt="썸류센터">
+  <p>문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#E5484D;text-decoration:none">카카오톡 채널 →</a></p>
 </footer>
 
 </body>

@@ -1,32 +1,30 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>자주 묻는 질문 — FAQ | 썸류센터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"></noscript>
+<noscript></noscript>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Noto Sans KR',sans-serif;background:#0e0c0a;color:#f5f0ea;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden;-webkit-font-smoothing:antialiased}
   a{text-decoration:none;color:inherit}
-  .y{color:#FFBE2E}
-  ::selection{background:#FFBE2E;color:#000}
+  .y{color:#E5484D}
+  ::selection{background:#FF6B6B;color:#fff}
 
   /* Nav */
-  nav.site-nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:rgba(14,12,10,.8);border-bottom:1px solid rgba(255,255,255,.04);padding:14px 20px}
+  nav.site-nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:rgba(250,250,248,.8);border-bottom:1px solid rgba(0,0,0,.032);padding:14px 20px}
   .nav-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
   .nav-inner img{height:28px}
-  .nav-link{font-size:14px;font-weight:600;color:#9a9080;transition:color .2s}
-  .nav-link:hover{color:#fff}
+  .nav-link{font-size:14px;font-weight:600;color:#666666;transition:color .2s}
+  .nav-link:hover{color:#1E1E1E}
   .nav-link i{margin-right:4px}
 
   /* Main */
@@ -37,42 +35,42 @@
   .title-emoji{font-size:36px;margin-bottom:12px}
   .title-section h1{font-size:24px;font-weight:900;line-height:1.25}
   @media(min-width:768px){.title-section h1{font-size:32px}}
-  .title-desc{font-size:15px;color:#9a9080;margin-top:12px;line-height:1.6}
+  .title-desc{font-size:15px;color:#666666;margin-top:12px;line-height:1.6}
 
   /* Category */
   .faq-category{margin-bottom:40px}
-  .faq-category-title{font-size:14px;font-weight:700;color:#FFBE2E;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .faq-category-title{font-size:14px;font-weight:700;color:#E5484D;margin-bottom:16px;display:flex;align-items:center;gap:8px}
   .faq-category-title i{font-size:12px}
 
   /* Accordion */
-  .faq-item{border:1px solid rgba(255,255,255,.06);border-radius:14px;margin-bottom:10px;overflow:hidden;background:#16140f;transition:all .3s}
-  .faq-item.open{border-color:rgba(255,190,46,.15)}
+  .faq-item{border:1px solid rgba(0,0,0,.048);border-radius:14px;margin-bottom:10px;overflow:hidden;background:#FFFFFF;transition:all .3s}
+  .faq-item.open{border-color:rgba(255,107,107,.15)}
   .faq-q{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;cursor:pointer;font-size:15px;font-weight:600;line-height:1.5;gap:12px;-webkit-user-select:none;user-select:none}
-  .faq-q:hover{color:#FFBE2E}
-  .faq-q .q-label{color:#FFBE2E;font-weight:800;font-size:14px;flex-shrink:0}
-  .faq-q .arrow{font-size:12px;color:#6b6358;transition:transform .3s;flex-shrink:0}
-  .faq-item.open .arrow{transform:rotate(180deg);color:#FFBE2E}
+  .faq-q:hover{color:#E5484D}
+  .faq-q .q-label{color:#E5484D;font-weight:800;font-size:14px;flex-shrink:0}
+  .faq-q .arrow{font-size:12px;color:#8C8C8C;transition:transform .3s;flex-shrink:0}
+  .faq-item.open .arrow{transform:rotate(180deg);color:#E5484D}
   .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease}
   .faq-item.open .faq-a{max-height:500px;padding:0 20px 20px}
-  .faq-a-inner{font-size:14px;line-height:1.85;color:#b0a590;padding-top:16px;border-top:1px solid rgba(255,255,255,.04)}
+  .faq-a-inner{font-size:14px;line-height:1.85;color:#666666;padding-top:16px;border-top:1px solid rgba(0,0,0,.032)}
 
   /* CTA */
   .bottom-cta{text-align:center;margin-top:56px}
-  .cta-btn{display:inline-block;background:#FFBE2E;color:#000;font-weight:800;padding:16px 40px;border-radius:16px;font-size:15px;transition:filter .2s}
+  .cta-btn{display:inline-block;background:#FF6B6B;color:#fff;font-weight:800;padding:16px 40px;border-radius:16px;font-size:15px;transition:filter .2s}
   .cta-btn:hover{filter:brightness(.9)}
   .cta-btn i{margin-right:6px}
-  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,190,46,.3)}50%{box-shadow:0 0 24px 8px rgba(255,190,46,.12)}}
+  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,107,.18)}50%{box-shadow:0 0 24px 8px rgba(255,107,107,.072)}}
   .cta-glow{animation:glow-pulse 2.5s infinite ease-in-out}
-  .contact-box{margin-top:28px;background:#16140f;border:1px solid rgba(255,200,100,.06);border-radius:14px;padding:20px;font-size:14px;color:#9a9080;line-height:1.7}
-  .contact-box a{color:#FFBE2E;font-weight:600}
-  .back-link{display:inline-block;margin-top:16px;font-size:14px;color:#9a9080;transition:color .2s}
-  .back-link:hover{color:#fff}
+  .contact-box{margin-top:28px;background:#FFFFFF;border:1px solid rgba(255,142,126,.06);border-radius:14px;padding:20px;font-size:14px;color:#666666;line-height:1.7}
+  .contact-box a{color:#E5484D;font-weight:600}
+  .back-link{display:inline-block;margin-top:16px;font-size:14px;color:#666666;transition:color .2s}
+  .back-link:hover{color:#1E1E1E}
   .back-link i{margin-right:4px}
 
   /* Footer */
-  footer.site-footer{border-top:1px solid rgba(255,255,255,.04);padding:32px 20px;text-align:center}
+  footer.site-footer{border-top:1px solid rgba(0,0,0,.032);padding:32px 20px;text-align:center}
   footer.site-footer img{height:20px;margin:0 auto 12px;display:block;opacity:.4}
-  footer.site-footer p{font-size:11px;color:#5a5248}
+  footer.site-footer p{font-size:11px;color:#8C8C8C}
 
   /* Reveal */
   [data-r]{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
@@ -84,7 +82,7 @@
 <!-- Nav -->
 <nav class="site-nav">
   <div class="nav-inner">
-    <a href="index.html"><img src="logo.png" alt="썸류센터"></a>
+    <a href="index.html"><img src="logo-dark.png" alt="썸류센터"></a>
     <a href="index.html" class="nav-link"><i class="fa-solid fa-arrow-left"></i>홈으로</a>
   </div>
 </nav>
@@ -234,10 +232,10 @@
 
   <!-- CTA -->
   <div class="bottom-cta" data-r>
-    <p style="font-size:15px;color:#9a9080;margin-bottom:20px">더 궁금한 게 있으신가요?</p>
+    <p style="font-size:15px;color:#666666;margin-bottom:20px">더 궁금한 게 있으신가요?</p>
     <div class="contact-box">
       <p>카카오톡 채널에서 편하게 물어보세요!</p>
-      <p style="margin-top:8px"><i class="fa-solid fa-comment" style="color:#FFBE2E;margin-right:4px"></i> <a href="https://pf.kakao.com/_AxfxcVX" target="_blank">썸류센터 카카오채널</a></p>
+      <p style="margin-top:8px"><i class="fa-solid fa-comment" style="color:#E5484D;margin-right:4px"></i> <a href="https://pf.kakao.com/_AxfxcVX" target="_blank">썸류센터 카카오채널</a></p>
     </div>
     <br>
     <a href="index.html#apply" class="cta-btn cta-glow"><i class="fa-solid fa-heart"></i>신청하러 가기</a>
@@ -248,7 +246,7 @@
 </main>
 
 <footer class="site-footer">
-  <img src="logo.png" alt="썸류센터">
+  <img src="logo-dark.png" alt="썸류센터">
   <p>© 2025 썸류센터. All rights reserved.</p>
 </footer>
 

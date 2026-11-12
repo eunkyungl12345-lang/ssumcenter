@@ -1,32 +1,30 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>진행 과정 — 신청부터 매칭까지 | 썸류센터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"></noscript>
+<noscript></noscript>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Noto Sans KR',sans-serif;background:#0e0c0a;color:#f5f0ea;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden;-webkit-font-smoothing:antialiased}
   a{text-decoration:none;color:inherit}
-  .y{color:#FFBE2E}
-  ::selection{background:#FFBE2E;color:#000}
+  .y{color:#E5484D}
+  ::selection{background:#FF6B6B;color:#fff}
 
   /* Nav */
-  nav.site-nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:rgba(14,12,10,.8);border-bottom:1px solid rgba(255,255,255,.04);padding:14px 20px}
+  nav.site-nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:rgba(250,250,248,.8);border-bottom:1px solid rgba(0,0,0,.032);padding:14px 20px}
   .nav-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
   .nav-inner img{height:28px}
-  .nav-link{font-size:14px;font-weight:600;color:#9a9080;transition:color .2s}
-  .nav-link:hover{color:#fff}
+  .nav-link{font-size:14px;font-weight:600;color:#666666;transition:color .2s}
+  .nav-link:hover{color:#1E1E1E}
   .nav-link i{margin-right:4px}
 
   /* Main */
@@ -37,49 +35,49 @@
   .title-emoji{font-size:36px;margin-bottom:12px}
   .title-section h1{font-size:24px;font-weight:900;line-height:1.25}
   @media(min-width:768px){.title-section h1{font-size:32px}}
-  .title-desc{font-size:15px;color:#9a9080;margin-top:12px;line-height:1.6}
+  .title-desc{font-size:15px;color:#666666;margin-top:12px;line-height:1.6}
 
   /* Timeline */
   .timeline{position:relative;padding-left:40px}
-  .timeline::before{content:'';position:absolute;left:15px;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,#FFBE2E,rgba(255,190,46,.15))}
+  .timeline::before{content:'';position:absolute;left:15px;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,#FF6B6B,rgba(255,107,107,.15))}
   .tl-step{position:relative;margin-bottom:36px}
   .tl-step:last-child{margin-bottom:0}
-  .tl-dot{position:absolute;left:-40px;top:2px;width:32px;height:32px;border-radius:50%;background:#1a1710;border:2px solid #FFBE2E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#FFBE2E;z-index:1}
-  .tl-dot.done{background:#FFBE2E;color:#000}
+  .tl-dot{position:absolute;left:-40px;top:2px;width:32px;height:32px;border-radius:50%;background:#FFFFFF;border:2px solid #FF6B6B;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#E5484D;z-index:1}
+  .tl-dot.done{background:#FF6B6B;color:#fff}
   .tl-title{font-size:17px;font-weight:800;margin-bottom:6px;line-height:1.4}
-  .tl-desc{font-size:14px;color:#b0a590;line-height:1.85}
-  .tl-tip{margin-top:10px;padding:12px 16px;background:rgba(255,190,46,.04);border:1px solid rgba(255,190,46,.1);border-radius:12px;font-size:13px;color:#9a9080;line-height:1.7}
-  .tl-tip i{color:#FFBE2E;margin-right:6px}
+  .tl-desc{font-size:14px;color:#666666;line-height:1.85}
+  .tl-tip{margin-top:10px;padding:12px 16px;background:rgba(255,107,107,.04);border:1px solid rgba(255,107,107,.1);border-radius:12px;font-size:13px;color:#666666;line-height:1.7}
+  .tl-tip i{color:#E5484D;margin-right:6px}
 
   /* Program compare */
   .compare-section{margin-top:64px}
   .compare-section h2{font-size:20px;font-weight:900;text-align:center;margin-bottom:28px}
   .compare-grid{display:flex;flex-direction:column;gap:14px}
-  .compare-card{background:#16140f;border:1px solid rgba(255,200,100,.06);border-radius:16px;padding:22px;transition:all .35s}
-  .compare-card:hover{border-color:rgba(255,190,46,.15)}
+  .compare-card{background:#FFFFFF;border:1px solid rgba(255,142,126,.06);border-radius:16px;padding:22px;transition:all .35s}
+  .compare-card:hover{border-color:rgba(255,107,107,.15)}
   .compare-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
   .compare-emoji{font-size:28px}
   .compare-name{font-size:16px;font-weight:800}
   .compare-tag{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;margin-left:8px}
   .compare-list{list-style:none;display:flex;flex-direction:column;gap:8px}
-  .compare-list li{font-size:13px;color:#b0a590;display:flex;align-items:flex-start;gap:8px;line-height:1.6}
-  .compare-list li::before{content:'·';color:#FFBE2E;font-weight:800;flex-shrink:0}
+  .compare-list li{font-size:13px;color:#666666;display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+  .compare-list li::before{content:'·';color:#E5484D;font-weight:800;flex-shrink:0}
 
   /* CTA */
   .bottom-cta{text-align:center;margin-top:56px}
-  .cta-btn{display:inline-block;background:#FFBE2E;color:#000;font-weight:800;padding:16px 40px;border-radius:16px;font-size:15px;transition:filter .2s}
+  .cta-btn{display:inline-block;background:#FF6B6B;color:#fff;font-weight:800;padding:16px 40px;border-radius:16px;font-size:15px;transition:filter .2s}
   .cta-btn:hover{filter:brightness(.9)}
   .cta-btn i{margin-right:6px}
-  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,190,46,.3)}50%{box-shadow:0 0 24px 8px rgba(255,190,46,.12)}}
+  @keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,107,.18)}50%{box-shadow:0 0 24px 8px rgba(255,107,107,.072)}}
   .cta-glow{animation:glow-pulse 2.5s infinite ease-in-out}
-  .back-link{display:inline-block;margin-top:16px;font-size:14px;color:#9a9080;transition:color .2s}
-  .back-link:hover{color:#fff}
+  .back-link{display:inline-block;margin-top:16px;font-size:14px;color:#666666;transition:color .2s}
+  .back-link:hover{color:#1E1E1E}
   .back-link i{margin-right:4px}
 
   /* Footer */
-  footer.site-footer{border-top:1px solid rgba(255,255,255,.04);padding:32px 20px;text-align:center}
+  footer.site-footer{border-top:1px solid rgba(0,0,0,.032);padding:32px 20px;text-align:center}
   footer.site-footer img{height:20px;margin:0 auto 12px;display:block;opacity:.4}
-  footer.site-footer p{font-size:11px;color:#5a5248}
+  footer.site-footer p{font-size:11px;color:#8C8C8C}
 
   /* Reveal */
   [data-r]{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
@@ -91,7 +89,7 @@
 <!-- Nav -->
 <nav class="site-nav">
   <div class="nav-inner">
-    <a href="index.html"><img src="logo.png" alt="썸류센터"></a>
+    <a href="index.html"><img src="logo-dark.png" alt="썸류센터"></a>
     <a href="index.html" class="nav-link"><i class="fa-solid fa-arrow-left"></i>홈으로</a>
   </div>
 </nav>
@@ -169,7 +167,7 @@
         <div class="compare-header">
           <span class="compare-emoji">📦</span>
           <span class="compare-name">썸배달</span>
-          <span class="compare-tag" style="background:rgba(255,190,46,.1);color:#FFBE2E">로테이션</span>
+          <span class="compare-tag" style="background:rgba(255,107,107,.1);color:#E5484D">로테이션</span>
         </div>
         <ul class="compare-list">
           <li>여러 이성과 짧은 대화 (5~7분씩)</li>
@@ -184,7 +182,7 @@
         <div class="compare-header">
           <span class="compare-emoji">💰</span>
           <span class="compare-name">재테크 미팅</span>
-          <span class="compare-tag" style="background:rgba(76,175,80,.1);color:#66BB6A">관심사</span>
+          <span class="compare-tag" style="background:rgba(76,175,80,.1);color:#449248">관심사</span>
         </div>
         <ul class="compare-list">
           <li>재테크 관심사 기반으로 자연스러운 대화</li>
@@ -198,7 +196,7 @@
         <div class="compare-header">
           <span class="compare-emoji">🎁</span>
           <span class="compare-name">특급 배송</span>
-          <span class="compare-tag" style="background:rgba(156,39,176,.1);color:#CE93D8">1:1 매칭</span>
+          <span class="compare-tag" style="background:rgba(156,39,176,.1);color:#8D3B9B">1:1 매칭</span>
         </div>
         <ul class="compare-list">
           <li>센터장이 직접 이상형에 맞는 분을 매칭</li>
@@ -212,7 +210,7 @@
 
   <!-- CTA -->
   <div class="bottom-cta" data-r>
-    <p style="font-size:15px;color:#9a9080;margin-bottom:20px">준비 됐다면, 설렘을 시작해볼까요?</p>
+    <p style="font-size:15px;color:#666666;margin-bottom:20px">준비 됐다면, 설렘을 시작해볼까요?</p>
     <a href="index.html#apply" class="cta-btn cta-glow"><i class="fa-solid fa-heart"></i>신청하러 가기</a>
     <br>
     <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i>홈으로 돌아가기</a>
@@ -221,7 +219,7 @@
 </main>
 
 <footer class="site-footer">
-  <img src="logo.png" alt="썸류센터">
+  <img src="logo-dark.png" alt="썸류센터">
   <p>© 2025 썸류센터. All rights reserved.</p>
 </footer>
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,11 +10,11 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
-:root{--bg:#110f0b;--surface:#1a1612;--amber:#E8A020;--amber-light:#F5C960;--cream:#F5E6D0;--muted:#9e8e78;--dim:#6a5e50;--faint:#3a3228;--glass-border:rgba(255,200,120,.08)}
+:root{--bg:#FAFAF8;--surface:#FFFFFF;--amber:#F25C5C;--amber-light:#F25C5C;--cream:#1E1E1E;--muted:#666666;--dim:#8C8C8C;--faint:#ECE9E4;--glass-border:rgba(255,142,126,.08)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Pretendard,'Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 a{text-decoration:none;color:inherit}
-::selection{background:var(--amber);color:#000}
+::selection{background:var(--amber);color:#1E1E1E}
 .top-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--glass-border)}
 .top-bar a{font-size:13px;color:var(--muted);transition:color .2s}
 .top-bar a:hover{color:var(--cream)}
@@ -27,7 +27,7 @@ a{text-decoration:none;color:inherit}
 .btn-kakao{width:100%;padding:16px;border-radius:14px;font-size:15.5px;font-weight:800;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;font-family:inherit;transition:transform .12s,filter .2s;background:#FEE500;color:#191919}
 .btn-kakao:hover{filter:brightness(.97)} .btn-kakao:active{transform:scale(.99)}
 .note{font-size:12px;color:var(--dim);margin-top:16px;line-height:1.6}
-.ctx{background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.28);color:var(--amber-light);font-size:13px;font-weight:700;padding:12px 14px;border-radius:12px;margin-bottom:18px;line-height:1.55}
+.ctx{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.28);color:var(--amber-light);font-size:13px;font-weight:700;padding:12px 14px;border-radius:12px;margin-bottom:18px;line-height:1.55}
 .hidden{display:none}
 .foot{text-align:center;padding:20px;font-size:11px;color:var(--faint)}
 .foot a{color:var(--amber)}
@@ -38,14 +38,14 @@ a{text-decoration:none;color:inherit}
 <body>
 
 <div class="top-bar">
-  <a href="index.html"><img src="logo.png" alt="썸류센터" style="height:24px"></a>
+  <a href="index.html"><img src="logo-dark.png" alt="썸류센터" style="height:24px"></a>
   <a href="index.html">홈으로</a>
 </div>
 
 <main class="page">
   <div class="box">
     <div class="logo-area">
-      <img src="logo.png" alt="썸류센터">
+      <img src="logo-dark.png" alt="썸류센터">
       <h1>카카오로 3초 만에<br>시작하기 💛</h1>
       <p>로그인하고 설렘을 이어가세요.<br>따로 가입할 필요 없어요!</p>
     </div>
@@ -55,12 +55,12 @@ a{text-decoration:none;color:inherit}
     <!-- 📱 인스타·스레드·페이스북 앱 안에서 열린 경우 안내.
          릴스를 보고 들어온 손님은 대부분 이 '앱 안 브라우저'인데, 여기서는 카카오 로그인이
          막히거나 사진 올리기가 안 되는 일이 잦다. 막지는 않고, 안 될 때 빠져나갈 길을 알려준다. -->
-    <div id="inapp" style="display:none;margin:0 0 14px;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:14px;padding:13px 14px;text-align:left">
-      <div style="font-size:13px;font-weight:700;color:#E8B050;line-height:1.5">📱 <span id="inapp-name">앱</span> 안에서 열렸어요</div>
-      <div style="font-size:12px;color:#9a9080;line-height:1.65;margin-top:4px" id="inapp-how">로그인이 안 되면 기본 브라우저에서 열어주세요.</div>
+    <div id="inapp" style="display:none;margin:0 0 14px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:14px;padding:13px 14px;text-align:left">
+      <div style="font-size:13px;font-weight:700;color:#E5484D;line-height:1.5">📱 <span id="inapp-name">앱</span> 안에서 열렸어요</div>
+      <div style="font-size:12px;color:#666666;line-height:1.65;margin-top:4px" id="inapp-how">로그인이 안 되면 기본 브라우저에서 열어주세요.</div>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button id="inapp-open" style="display:none;flex:1;background:#E8B050;color:#000;border:none;font-weight:800;font-size:12.5px;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit">크롬으로 열기</button>
-        <button id="inapp-copy" style="flex:1;background:#16140f;border:1px solid #3a2e1f;color:#EDE0CC;font-weight:700;font-size:12.5px;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit">🔗 주소 복사</button>
+        <button id="inapp-open" style="display:none;flex:1;background:#FF6B6B;color:#fff;border:none;font-weight:800;font-size:12.5px;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit">크롬으로 열기</button>
+        <button id="inapp-copy" style="flex:1;background:#FFFFFF;border:1px solid #D9D5CD;color:#1E1E1E;font-weight:700;font-size:12.5px;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit">🔗 주소 복사</button>
       </div>
     </div>
 
@@ -70,7 +70,7 @@ a{text-decoration:none;color:inherit}
     </button>
 
     <p class="note">로그인 시 카카오 프로필(이름·사진)을 이용해<br>썸류센터 회원으로 자동 등록돼요.</p>
-    <p class="note" id="why-login" style="display:none;color:#E8B050;margin-top:8px">💌 1:1 신청은 로그인 후 바로 이어져요.<br>매칭 진행 상황을 내 페이지에서 확인할 수 있어서 로그인이 필요해요.</p>
+    <p class="note" id="why-login" style="display:none;color:#E5484D;margin-top:8px">💌 1:1 신청은 로그인 후 바로 이어져요.<br>매칭 진행 상황을 내 페이지에서 확인할 수 있어서 로그인이 필요해요.</p>
     <script>try{if(/matching/.test(location.search))document.getElementById("why-login").style.display="block";}catch(e){}</script>
   </div>
 </main>
@@ -110,8 +110,8 @@ function safeNext(rd){
   document.getElementById('inapp-name').textContent = name;
   var isAndroid = /Android/i.test(ua);
   document.getElementById('inapp-how').innerHTML = isAndroid
-    ? '카카오 로그인이 안 되면 <b style="color:#EDE0CC">크롬에서 열어주세요.</b>'
-    : '카카오 로그인이 안 되면 오른쪽 위 <b style="color:#EDE0CC">⋯ → "외부 브라우저로 열기"</b>를 눌러주세요.';
+    ? '카카오 로그인이 안 되면 <b style="color:#1E1E1E">크롬에서 열어주세요.</b>'
+    : '카카오 로그인이 안 되면 오른쪽 위 <b style="color:#1E1E1E">⋯ → "외부 브라우저로 열기"</b>를 눌러주세요.';
   // 로그인 뒤 가려던 곳(신청서 등)까지 그대로 담은 주소
   var here = location.href;
   if(isAndroid){

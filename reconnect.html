@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>그때 그 사람 — 로테이션 소개팅에서 만난 사람 찾기 | 썸류센터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>
-  :root{--bg:#0e0c0a;--surface:#161310;--surface-2:#1e1811;--ink:#F0E4D0;--muted:#9a8b73;--faint:#6a5c4c;--line:#2a2117;--line-2:#3a2e1f;--amber:#E8B050;--gold:#FFD37A;--ok:#6FBE97;--bad:#E07A7A;--ink-on:#171208;--female:#E88FB0;--male:#7EA6E0;}
+  :root{--bg:#FAFAF8;--surface:#FFFFFF;--surface-2:#FFFFFF;--ink:#1E1E1E;--muted:#666666;--faint:#8C8C8C;--line:#E6E2DC;--line-2:#D9D5CD;--amber:#F25C5C;--gold:#F25C5C;--ok:#45926C;--bad:#AA2C2C;--ink-on:#1E1E1E;--female:#AE285A;--male:#2D60A9;}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.6;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.6;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
   a{color:inherit;text-decoration:none}
   .wrap{max-width:520px;margin:0 auto;padding:18px 15px 70px}
   .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
   .top .h{font-size:19px;font-weight:900}
   .top a{font-size:12px;color:var(--muted);font-weight:700;margin-left:10px}
-  .hero{background:linear-gradient(135deg,rgba(232,176,80,.14),rgba(232,143,176,.06));border:1px solid var(--line-2);border-radius:18px;padding:18px;margin-bottom:16px}
+  .hero{background:linear-gradient(135deg,rgba(255,107,107,.14),rgba(232,143,176,.06));border:1px solid var(--line-2);border-radius:18px;padding:18px;margin-bottom:16px}
   .hero h2{font-size:20px;font-weight:900;line-height:1.35}
   .hero p{font-size:13px;color:var(--muted);margin-top:8px}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:14px}
@@ -28,10 +29,10 @@
   .tab.on{background:var(--amber);color:var(--ink-on);border-color:var(--amber)}
   .chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
   .chip{padding:7px 13px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line-2);font-size:12.5px;font-weight:800;color:var(--muted);cursor:pointer}
-  .chip.on{color:var(--gold);border-color:var(--amber);background:rgba(232,176,80,.12)}
+  .chip.on{color:var(--gold);border-color:var(--amber);background:rgba(255,107,107,.12)}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .pp{background:var(--surface-2);border:1px solid var(--line-2);border-radius:14px;padding:14px 12px;text-align:center}
-  .pp .av{width:48px;height:48px;border-radius:50%;margin:0 auto 8px;display:grid;place-items:center;font-size:22px;background:rgba(232,176,80,.1)}
+  .pp .av{width:48px;height:48px;border-radius:50%;margin:0 auto 8px;display:grid;place-items:center;font-size:22px;background:rgba(255,107,107,.1)}
   .pp .nm{font-weight:900;font-size:14.5px}
   .pp .sub{font-size:11.5px;color:var(--muted);margin-top:2px}
   .pp button{margin-top:10px;width:100%;border:none;border-radius:10px;padding:9px;font-size:12.5px;font-weight:900;background:var(--amber);color:var(--ink-on);cursor:pointer;font-family:inherit}
@@ -43,7 +44,7 @@
   .note .who{font-weight:900;font-size:14px}
   .note .txt{font-size:13.5px;white-space:pre-wrap;margin:6px 0 10px}
   .st{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px}
-  .st.wait{color:var(--gold);background:rgba(232,176,80,.12)} .st.ok{color:var(--ok);background:rgba(111,190,151,.14)} .st.no{color:var(--muted);background:var(--line)}
+  .st.wait{color:var(--gold);background:rgba(255,107,107,.12)} .st.ok{color:var(--ok);background:rgba(111,190,151,.14)} .st.no{color:var(--muted);background:var(--line)}
   .row{display:flex;gap:8px}
   .btn{flex:1;border:none;border-radius:11px;padding:11px;font-size:13px;font-weight:900;cursor:pointer;font-family:inherit}
   .btn.p{background:var(--amber);color:var(--ink-on)} .btn.g{background:var(--surface);border:1px solid var(--line-2);color:var(--muted)}
@@ -57,7 +58,7 @@
   .msg{font-size:12.5px;text-align:center;margin-top:9px;min-height:16px;color:var(--muted)}
   .spin{width:26px;height:26px;border:3px solid var(--line-2);border-top-color:var(--amber);border-radius:50%;margin:44px auto;animation:sp .8s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:50}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:50}
   .modal.on{display:flex}
   .sheet{background:var(--surface);border-radius:22px 22px 0 0;padding:20px 18px 28px;width:100%;max-width:520px;border-top:1px solid var(--line-2)}
   .sheet h3{font-size:16px;font-weight:900;margin-bottom:4px}
@@ -75,13 +76,13 @@
   .post .ft .me{background:var(--amber);color:var(--ink-on);flex:1}
   .post .ft .me:disabled{background:var(--line-2);color:var(--muted)}
   .post .ft .rp{background:transparent;color:var(--faint);font-size:11.5px;font-weight:700;padding:10px 6px}
-  .pill{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:999px;background:rgba(232,176,80,.12);color:var(--gold);white-space:nowrap}
+  .pill{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:999px;background:rgba(255,107,107,.12);color:var(--gold);white-space:nowrap}
   .fld{margin-bottom:12px}
   .fld label{display:block;font-size:12.5px;font-weight:800;color:var(--gold);margin-bottom:5px}
   .fld small{color:var(--faint);font-weight:600}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .newbtn{width:100%;border:1.5px dashed var(--line-2);background:transparent;color:var(--amber);border-radius:14px;padding:13px;font-weight:900;font-size:13.5px;cursor:pointer;font-family:inherit;margin-bottom:14px}
-  .ticket{background:rgba(232,176,80,.08);border:1px solid var(--line-2);border-radius:12px;padding:11px 13px;font-size:12.5px;color:var(--muted);margin-bottom:12px}
+  .ticket{background:rgba(255,107,107,.08);border:1px solid var(--line-2);border-radius:12px;padding:11px 13px;font-size:12.5px;color:var(--muted);margin-bottom:12px}
   .ticket b{color:var(--gold)}
 </style>
 </head>
