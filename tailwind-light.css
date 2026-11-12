@@ -1243,10 +1243,10 @@
     letter-spacing: var(--tracking-widest);
   }
   .text-\[\#5a5248\] {
-    color: #8C8C8C;
+    color: #767676;
   }
   .text-\[\#6b6358\] {
-    color: #8C8C8C;
+    color: #767676;
   }
   .text-\[\#8a7f70\] {
     color: #666666;
@@ -1258,10 +1258,10 @@
     color: #666666;
   }
   .text-\[\#555\] {
-    color: #8C8C8C;
+    color: #767676;
   }
   .text-\[\#666\] {
-    color: #8C8C8C;
+    color: #767676;
   }
   .text-\[\#B69CF7\] {
     color: #4615C2;
@@ -1310,12 +1310,12 @@
   }
   .placeholder-\[\#6b6358\] {
     &::placeholder {
-      color: #8C8C8C;
+      color: #767676;
     }
   }
   .placeholder-\[\#555\] {
     &::placeholder {
-      color: #8C8C8C;
+      color: #767676;
     }
   }
   .accent-\[\#FFBE2E\] {

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
 <noscript></noscript>
 <style>
-  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden}
+  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,Apple SD Gothic Neo,system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden}
   .y{color:#E5484D}.bg-y{background:#FF6B6B;color:#fff}.bd-y{border-color:#FF6B6B}
   ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#FFFFFF}::-webkit-scrollbar-thumb{background:#FF6B6B;border-radius:3px}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -50,7 +50,7 @@
   .ai-hint p{color:#E5484D;font-size:11px;line-height:1.5}
   .ai-textarea{width:100%;background:#FAFAF8;border:1.5px solid rgba(255,107,107,.25);border-radius:12px;padding:14px;color:#1E1E1E;font-size:14px;resize:vertical;min-height:160px;font-family:inherit;line-height:1.7}
   .ai-textarea:focus{outline:none;border-color:#FF6B6B}
-  .ai-textarea::placeholder{color:#8C8C8C}
+  .ai-textarea::placeholder{color:#767676}
   .ai-fill-btn{background:#FF6B6B;color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;float:right;margin-top:8px;font-family:inherit;display:flex;align-items:center;gap:5px}
   .ai-fill-btn:hover{background:#FF6B6B}
   .ai-result{display:none;margin-top:12px;background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.25);border-radius:10px;padding:10px 12px;font-size:11px;color:#E5484D}
@@ -68,7 +68,7 @@
   /* 텍스트 크림/웜 그레이 */
   .text-\[\#9a9080\]{color:#4A4A4A!important}
   .text-\[\#6b6358\]{color:#666666!important}
-  .text-\[\#5a5248\]{color:#8C8C8C!important}
+  .text-\[\#5a5248\]{color:#767676!important}
   /* 라운드 살짝 키워 프리미엄 느낌 */
   .rounded-2xl{border-radius:22px!important}
   .rounded-xl{border-radius:14px!important}
@@ -183,7 +183,7 @@
           🪪 명함 · 사원증 · 재직증명서 중 1개 <span style="color:#666666">(폰으로 찍어서 올려도 돼요)</span><br>
           💾 중간에 나가도 <b style="color:#E5484D">작성 내용은 자동 저장</b>돼요
         </div>
-        <div style="font-size:11.5px;color:#666666;margin-top:8px">재직 서류는 센터장만 확인해요. 탈퇴하거나 요청하시면 바로 삭제해 드려요. 그래서 전원 직장인만 만나요.</div>
+        <div style="font-size:11.5px;color:#666666;margin-top:8px">재직 서류는 센터장만 확인해요. 그래서 전원 직장인만 만나요. 탈퇴하거나 요청하시면 바로 삭제해 드려요.</div>
       </div>
 
       <!-- AI 자동입력 -->
@@ -194,7 +194,7 @@
             <i class="fa-solid fa-wand-magic-sparkles"></i> AI 자동입력
           </button>
         </div>
-        <p style="font-size:11px;color:#8C8C8C">사진은 최대 3장까지 등록할 수 있습니다.</p>
+        <p style="font-size:11px;color:#767676">사진은 최대 3장까지 등록할 수 있습니다.</p>
         <div id="ai-body" class="ai-body">
           <div class="ai-hint">
             <p>한 줄에 하나씩 입력하면 AI가 폼을 자동으로 채워줍니다. 학력·특기 등 폼에 없는 내용은 자기소개에 입력됩니다.</p>
@@ -548,9 +548,9 @@
               <div class="text-[11px] font-bold">연애 커피 유형</div>
               <div class="text-[10px] text-[#6b6358] mt-0.5">테스트 하러가기 →</div>
             </a>
-            <a href="test/index.html" target="_blank" class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 text-center hover:border-[#E8B050] transition block">
-              <div class="text-lg mb-0.5">🍺</div>
-              <div class="text-[11px] font-bold">연애 향과 맛</div>
+            <a href="test/work.html" target="_blank" class="bg-[#0e0c0a] border border-[#E8B050]/30 rounded-xl p-3 text-center hover:border-[#E8B050] transition block">
+              <div class="text-lg mb-0.5">🪪</div>
+              <div class="text-[11px] font-bold">연애 직급 (사원증)</div>
               <div class="text-[10px] text-[#6b6358] mt-0.5">테스트 하러가기 →</div>
             </a>
           </div>
@@ -1166,7 +1166,7 @@ document.querySelectorAll("#keyword-chips .chip").forEach(chip => {
     document.getElementById("keywords-input").value = [...selectedKeywords].join(",");
     const count = selectedKeywords.size;
     document.getElementById("keyword-count").textContent = `${count}개 선택됨`;
-    document.getElementById("keyword-count").style.color = count >= 1 ? "#F25C5C" : "#8C8C8C";
+    document.getElementById("keyword-count").style.color = count >= 1 ? "#E5484D" : "#767676";
   });
 });
 
@@ -1204,7 +1204,7 @@ function restoreDraft(d){
     (d.keywords||[]).forEach(function(v){ selectedKeywords.add(v); });
     document.querySelectorAll("#keyword-chips .chip").forEach(function(c){ if(selectedKeywords.has(c.dataset.kw)) c.classList.add("selected"); });
     var kw=document.getElementById("keywords-input"); if(kw) kw.value=[...selectedKeywords].join(",");
-    var kc=document.getElementById("keyword-count"); if(kc){ kc.textContent=selectedKeywords.size+"개 선택됨"; kc.style.color=selectedKeywords.size>=1?"#F25C5C":"#8C8C8C"; }
+    var kc=document.getElementById("keyword-count"); if(kc){ kc.textContent=selectedKeywords.size+"개 선택됨"; kc.style.color=selectedKeywords.size>=1?"#E5484D":"#767676"; }
     goStep(d.step||1);
     // 임시저장에 유입경로가 비어 있었으면 테스트에서 넘어온 표시를 다시 채운다
     if(typeof applyTestSource==="function") applyTestSource();

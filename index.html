@@ -54,17 +54,18 @@
    · ⚠️ 여기 적는 숫자·후기·기능은 전부 사실이어야 한다 (CLAUDE.md '홈' 참고)
    ============================================================ */
 :root{
-  --bg:#FAFAF8; --card:#FFFFFF; --ink:#1E1E1E; --sub:#666666; --faint:#8A8A8A;
+  --bg:#FAFAF8; --card:#FFFFFF; --ink:#1E1E1E; --sub:#666666; --faint:#767676;
   --line:#EEEBE6; --point:#FF6B6B; --point-deep:#E5484D; --peach:#FFF1EC; --peach-line:#FFD9CF; --star:#F5A623;
   --radius:20px; --shadow:0 4px 24px rgba(0,0,0,.04);
   /* 아래는 푸터·문의봇이 쓰는 옛 이름 → 새 색으로 이어준다 */
-  --cream:var(--ink); --muted:var(--sub); --dim:#8C8C8C; --amber:var(--point-deep); --amber-light:var(--point-deep); --glass-border:var(--line); --surface:var(--card);
+  --cream:var(--ink); --muted:var(--sub); --dim:#767676; --amber:var(--point-deep); --amber-light:var(--point-deep); --glass-border:var(--line); --surface:var(--card);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.6;letter-spacing:-.01em;word-break:keep-all}
+body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,Apple SD Gothic Neo,system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.6;letter-spacing:-.01em;word-break:keep-all}
 a{text-decoration:none;color:inherit}
+button,input,select,textarea{font-family:inherit}
 ::selection{background:var(--point);color:#fff}
-.ac{color:var(--point)}
+.ac{color:var(--point-deep)}
 .hidden{display:none!important}
 
 /* Nav */
