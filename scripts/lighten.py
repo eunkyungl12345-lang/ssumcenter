@@ -105,6 +105,8 @@ def convert(tok, role):
         if role == "shadow":
             return rgba(POINT, a * .6)
         if role in ("bg", "border"):
+            if role == "bg":
+                return out(POINT_SOFT if l > .68 else POINT_TEXT)   # 꽉 찬 버튼 바탕은 진한 코랄 (흰 글자 대비)
             return out(POINT_SOFT if l > .68 else POINT)
         return out(POINT_MID)
 
