@@ -16,6 +16,13 @@
  * 파일 이름이 `_` 로 시작해서 Vercel 함수 개수(12개 한도)에 들어가지 않는다.
  */
 
+// ⏸ 2026-11-12 센터장 요청으로 자동 파기를 멈췄다. (이날 아침 첫 실행에서 50건이 지워진 뒤)
+//    - false 인 동안에는 에어테이블·Cloudinary 어디에서도 아무것도 지우지 않는다.
+//    - 다시 켜려면 true 로 바꾼다. 켜기 전에 신청서·처리방침의 보관 기간 문구와 맞는지 꼭 확인할 것.
+//    - 멈춘 채로 두려면 신청서·FAQ·처리방침의 "14일 뒤 자동 삭제" 문구도 실제 운영에 맞게 바꿔야 한다
+//      (지우지 않으면서 지운다고 적어두면 안 된다).
+const PURGE_ON = false;
+
 const KEEP_DAYS = 14;
 const MAX_PATCH = 5;          // 에어테이블 지우기 호출 하루 최대 횟수 (×10건)
 const DOC_FIELD = "재직증명서";
@@ -100,9 +107,26 @@ async function purgeCloudinary({ now }) {
   return removed;
 }
 
+/** 14일이 지났는데 서류가 남아 있는 기록 수 (지우지 않고 세기만 한다) */
+function countOverdue(sources, now) {
+  let n = 0;
+  for (const { records } of sources || []) {
+    for (const r of records || []) {
+      const v = (r.fields || {})[DOC_FIELD];
+      if (Array.isArray(v) && v.length > 0 && isOld(r.createdTime, now)) n++;
+    }
+  }
+  return n;
+}
+
 /** 브리핑에서 부른다. 지운 게 있을 때만 한 줄을 돌려준다. */
 async function purgeDocs({ TOKEN, BASE_ID, sources }) {
   const now = Date.now();
+  if (!PURGE_ON) {
+    // 멈춰 있는 동안에는 아무것도 지우지 않는다. 잊히지 않게 브리핑에 한 줄만 남긴다.
+    const n = countOverdue(sources, now);
+    return `\n🪪 재직 서류 자동 파기 — ⏸ 멈춤${n ? ` (14일 지난 서류 ${n}건 보관 중)` : ""}`;
+  }
   let a = 0, c = null;
   try { a = await purgeAirtable({ TOKEN, BASE_ID, sources, now }); }
   catch (e) { console.error("[docpurge] 에어테이블:", e.message); }
@@ -112,4 +136,4 @@ async function purgeDocs({ TOKEN, BASE_ID, sources }) {
   return total ? `\n🪪 재직 서류 자동 파기 — ${a}건${c ? ` (원본 파일 ${c}개)` : ""}` : "";
 }
 
-module.exports = { purgeDocs, KEEP_DAYS };
+module.exports = { purgeDocs, KEEP_DAYS, PURGE_ON };
