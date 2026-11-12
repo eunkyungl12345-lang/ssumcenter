@@ -12,9 +12,9 @@
 <link rel="stylesheet" href="/tailwind-light.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden}
-  .y{color:#E5484D}.bg-y{background:#FF6B6B;color:#fff}.bd-y{border-color:#FF6B6B}
-  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#FFFFFF}::-webkit-scrollbar-thumb{background:#FF6B6B;border-radius:3px}
+  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,Apple SD Gothic Neo,system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden}
+  .y{color:#E5484D}.bg-y{background:#E5484D;color:#fff}.bd-y{border-color:#FF6B6B}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#FFFFFF}::-webkit-scrollbar-thumb{background:#E5484D;border-radius:3px}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
   .fade{animation:fadeUp .5s ease both}
   .glow{background:radial-gradient(circle at 50% 0%,rgba(255,107,107,.12),transparent 60%)}
@@ -199,9 +199,9 @@
       </button>
       <button onclick="respond('accept', true)" id="btn-super"
         class="w-full px-6 py-4 rounded-2xl text-base font-extrabold transition"
-        style="background:linear-gradient(135deg,#FF6B6B,#FF6B6B);color:#fff;box-shadow:0 10px 24px -8px rgba(255,107,107,.27)">
-        <span style="display:flex;align-items:center;justify-content:center;gap:8px"><i class="fa-solid fa-crown"></i> 슈퍼매칭으로 수락</span>
-        <span style="display:block;font-size:11px;font-weight:600;opacity:.85;margin-top:2px">상대 비용까지 내가 부담 · 수락률 UP</span>
+        style="background:#1E1E1E;color:#fff;box-shadow:0 10px 24px -10px rgba(0,0,0,.35)">
+        <span style="display:flex;align-items:center;justify-content:center;gap:8px"><i class="fa-solid fa-crown" style="color:#FFC24B"></i> 슈퍼매칭으로 수락</span>
+        <span style="display:block;font-size:11px;font-weight:600;opacity:.85;margin-top:2px">상대 비용까지 내가 부담 · 상대에게 "슈퍼매칭" 표시</span>
       </button>
       <button onclick="respond('reject')" id="btn-reject"
         class="bg-[#161615] border border-[#242422] text-[#9E9E97] font-bold w-full px-6 py-3.5 rounded-2xl text-sm transition hover:border-[#555] hover:text-white flex items-center justify-center gap-2">

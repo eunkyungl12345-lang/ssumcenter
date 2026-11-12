@@ -15,9 +15,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
 <noscript></noscript>
 <style>
-  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden}
-  .y{color:#E5484D}.bg-y{background:#FF6B6B;color:#fff}.bd-y{border-color:#FF6B6B}
-  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#FFFFFF}::-webkit-scrollbar-thumb{background:#FF6B6B;border-radius:3px}
+  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,Apple SD Gothic Neo,system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden}
+  .y{color:#E5484D}.bg-y{background:#E5484D;color:#fff}.bd-y{border-color:#FF6B6B}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#FFFFFF}::-webkit-scrollbar-thumb{background:#E5484D;border-radius:3px}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
   .fade{animation:fadeUp .5s ease both}
   .glow{background:radial-gradient(circle at 50% 0%,rgba(255,107,107,.12),transparent 60%)}
@@ -26,7 +26,7 @@
   /* 키워드 칩 선택 */
   .chip{cursor:pointer;transition:all .2s}
   .chip:hover{border-color:#FF6B6B;color:#E5484D}
-  .chip.selected{background:#FF6B6B !important;color:#fff !important;border-color:#FF6B6B !important;font-weight:700}
+  .chip.selected{background:#E5484D !important;color:#fff !important;border-color:#FF6B6B !important;font-weight:700}
   /* 자기소개 카운터 */
   .counter{transition:color .2s}
   .counter.over{color:#D10505}
@@ -35,14 +35,14 @@
   .radio-card{cursor:pointer;transition:all .2s}
   .radio-card:hover{border-color:#FF6B6B}
   input:checked+.radio-card{background:rgba(255,107,107,.08);border-color:#FF6B6B}
-  input:checked+.radio-card .dot{background:#FF6B6B}
+  input:checked+.radio-card .dot{background:#E5484D}
 
   /* AI 자동입력 */
   .ai-section{background:#FFFFFF;border:1px solid #E6E2DC;border-radius:1rem;padding:1.25rem;margin-bottom:1.5rem}
   .ai-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
   .ai-header h3{font-size:15px;font-weight:900}
-  .ai-toggle{display:flex;align-items:center;gap:5px;background:#FF6B6B;color:#fff;border:none;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
-  .ai-toggle:hover{transform:scale(1.03);background:#FF6B6B}
+  .ai-toggle{display:flex;align-items:center;gap:5px;background:#E5484D;color:#fff;border:none;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+  .ai-toggle:hover{transform:scale(1.03);background:#E5484D}
   .ai-toggle.active{box-shadow:0 0 14px rgba(255,107,107,.24)}
   .ai-body{display:none;margin-top:12px}
   .ai-body.show{display:block}
@@ -50,9 +50,9 @@
   .ai-hint p{color:#E5484D;font-size:11px;line-height:1.5}
   .ai-textarea{width:100%;background:#FAFAF8;border:1.5px solid rgba(255,107,107,.25);border-radius:12px;padding:14px;color:#1E1E1E;font-size:14px;resize:vertical;min-height:160px;font-family:inherit;line-height:1.7}
   .ai-textarea:focus{outline:none;border-color:#FF6B6B}
-  .ai-textarea::placeholder{color:#8C8C8C}
-  .ai-fill-btn{background:#FF6B6B;color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;float:right;margin-top:8px;font-family:inherit;display:flex;align-items:center;gap:5px}
-  .ai-fill-btn:hover{background:#FF6B6B}
+  .ai-textarea::placeholder{color:#767676}
+  .ai-fill-btn{background:#E5484D;color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;float:right;margin-top:8px;font-family:inherit;display:flex;align-items:center;gap:5px}
+  .ai-fill-btn:hover{background:#E5484D}
   .ai-result{display:none;margin-top:12px;background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.25);border-radius:10px;padding:10px 12px;font-size:11px;color:#E5484D}
   .ai-result.show{display:block}
 
@@ -68,7 +68,7 @@
   /* 텍스트 크림/웜 그레이 */
   .text-\[\#9a9080\]{color:#4A4A4A!important}
   .text-\[\#6b6358\]{color:#666666!important}
-  .text-\[\#5a5248\]{color:#8C8C8C!important}
+  .text-\[\#5a5248\]{color:#767676!important}
   /* 라운드 살짝 키워 프리미엄 느낌 */
   .rounded-2xl{border-radius:22px!important}
   .rounded-xl{border-radius:14px!important}
@@ -90,12 +90,12 @@
   /* 스텝 위저드 */
   .fsteps{display:flex;gap:6px;margin-bottom:8px}
   .fchip{flex:1;text-align:center;font-size:11px;font-weight:700;color:#666666;background:#FFFFFF;border:1px solid #E6E2DC;border-radius:100px;padding:7px 4px}
-  .fchip.on{background:#FF6B6B;color:#fff;border-color:transparent}
+  .fchip.on{background:#E5484D;color:#fff;border-color:transparent}
   .fchip b{opacity:.55;margin-right:2px}
   .fstep{display:none;flex-direction:column;gap:1.4rem}
   .fstep.on{display:flex;animation:fadeUp .35s ease both}
   .fnav{display:flex;gap:10px;margin-top:2px}
-  .fnext{flex:1;background:#FF6B6B;color:#fff;border:none;font-weight:800;font-size:15px;padding:15px;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px -8px rgba(255,107,107,.24)}
+  .fnext{flex:1;background:#E5484D;color:#fff;border:none;font-weight:800;font-size:15px;padding:15px;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px -8px rgba(255,107,107,.24)}
   .fprev{background:transparent;border:1px solid #E6E2DC;color:#4A4A4A;font-weight:700;font-size:14px;padding:15px 20px;border-radius:14px;cursor:pointer;font-family:inherit}
 </style>
 <!-- 방문 통계 (Vercel Web Analytics: 대시보드에서 켜야 집계됨) -->
@@ -183,7 +183,7 @@
           🪪 명함 · 사원증 · 재직증명서 중 1개 <span style="color:#666666">(폰으로 찍어서 올려도 돼요)</span><br>
           💾 중간에 나가도 <b style="color:#E5484D">작성 내용은 자동 저장</b>돼요
         </div>
-        <div style="font-size:11.5px;color:#666666;margin-top:8px">재직 서류는 센터장만 확인해요. 탈퇴하거나 요청하시면 바로 삭제해 드려요. 그래서 전원 직장인만 만나요.</div>
+        <div style="font-size:11.5px;color:#666666;margin-top:8px">재직 서류는 센터장만 확인해요. 그래서 전원 직장인만 만나요. 탈퇴하거나 요청하시면 바로 삭제해 드려요.</div>
       </div>
 
       <!-- AI 자동입력 -->
@@ -194,7 +194,7 @@
             <i class="fa-solid fa-wand-magic-sparkles"></i> AI 자동입력
           </button>
         </div>
-        <p style="font-size:11px;color:#8C8C8C">사진은 최대 3장까지 등록할 수 있습니다.</p>
+        <p style="font-size:11px;color:#767676">사진은 최대 3장까지 등록할 수 있습니다.</p>
         <div id="ai-body" class="ai-body">
           <div class="ai-hint">
             <p>한 줄에 하나씩 입력하면 AI가 폼을 자동으로 채워줍니다. 학력·특기 등 폼에 없는 내용은 자기소개에 입력됩니다.</p>
@@ -548,9 +548,9 @@
               <div class="text-[11px] font-bold">연애 커피 유형</div>
               <div class="text-[10px] text-[#6b6358] mt-0.5">테스트 하러가기 →</div>
             </a>
-            <a href="test/index.html" target="_blank" class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 text-center hover:border-[#E8B050] transition block">
-              <div class="text-lg mb-0.5">🍺</div>
-              <div class="text-[11px] font-bold">연애 향과 맛</div>
+            <a href="test/work.html" target="_blank" class="bg-[#0e0c0a] border border-[#E8B050]/30 rounded-xl p-3 text-center hover:border-[#E8B050] transition block">
+              <div class="text-lg mb-0.5">🪪</div>
+              <div class="text-[11px] font-bold">연애 직급 (사원증)</div>
               <div class="text-[10px] text-[#6b6358] mt-0.5">테스트 하러가기 →</div>
             </a>
           </div>
@@ -561,54 +561,13 @@
         </div>
       </div>
 
-      <!-- 매칭 유형 설명 -->
-      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 space-y-4" data-reveal>
-        <div class="flex items-center gap-2 mb-1">
-          <h2 class="font-bold text-sm">매칭 유형 안내</h2>
-        </div>
-
-        <div class="bg-[#E8B050]/8 border border-[#E8B050]/30 rounded-xl px-3.5 py-2.5 flex gap-2 items-start">
-          <span class="text-xs">🎉</span>
-          <p class="text-[11px] text-[#c9bfa8] leading-relaxed"><b class="text-[#E8B050]">지금은 베타 오픈 특별가</b>예요. 정식 오픈 시 가격이 인상될 수 있어요.</p>
-        </div>
-
-        <div class="space-y-3">
-          <!-- 일반 매칭 설명 -->
-          <div class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-5">
-            <div class="flex items-center gap-2 mb-3">
-              <i class="fa-solid fa-handshake y"></i>
-              <span class="font-bold">일반 매칭</span>
-              <span class="ml-auto text-sm y font-bold">19,900원</span>
-            </div>
-            <ul class="space-y-2 text-[13px] text-[#9a9080] leading-relaxed">
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>센터장이 이상형 조건에 맞는 상대를 찾아드려요</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>상대방이 수락하면 매칭 성사!</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>양쪽 모두 각자 19,900원 결제 후 연락처 교환</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-check y text-xs mt-0.5 shrink-0"></i>매칭 불발 시 비용 없음 (무료)</li>
-            </ul>
-          </div>
-
-          <!-- 슈퍼매칭 설명 -->
-          <div class="bg-[#0e0c0a] border border-[#E8B050]/30 rounded-xl p-5 relative">
-            <span class="absolute top-0 right-0 text-[9px] bg-y text-black font-bold px-2.5 py-1 rounded-bl-lg rounded-tr-xl">추천</span>
-            <div class="flex items-center gap-2 mb-3">
-              <i class="fa-solid fa-crown y"></i>
-              <span class="font-bold">슈퍼매칭</span>
-              <span class="ml-auto text-sm y font-bold">39,800원</span>
-            </div>
-            <ul class="space-y-2 text-[13px] text-[#9a9080] leading-relaxed">
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>상대방 비용까지 내가 부담해요</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>상대방에게 <b class="text-white">"슈퍼매칭이 왔어요!"</b> 표시 → 진심 전달</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>상대방은 무료로 연락처를 받아요</li>
-              <li class="flex gap-2.5 items-start"><i class="fa-solid fa-bolt y text-xs mt-0.5 shrink-0"></i>매칭 수락률이 눈에 띄게 올라갑니다!</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 flex gap-2 items-start">
-          <i class="fa-solid fa-circle-info y text-xs mt-0.5 shrink-0"></i>
-          <p class="text-[11px] text-[#6b6358] leading-relaxed">두 유형 모두 매칭이 성사되지 않으면 비용이 발생하지 않아요. 매칭 성사 후 결제 안내를 드립니다.</p>
-        </div>
+      <!-- 💰 결제 안내 — 한 줄로만.
+           예전에는 일반/슈퍼매칭 카드 두 개를 나란히 보여줬는데, 손님 눈에는 '고르는 화면인데 고를 버튼이 없다'로 보였고
+           제출 직전에 큰 가격표가 나와 망설이게 했다. 슈퍼매칭은 소개를 받고 수락할 때(response.html) 고르므로
+           설명도 거기서만 한다. 가격은 숨기지 않는다 (신청서 맨 위 뱃지 + 이 줄). -->
+      <div class="rounded-2xl p-5" style="background:#FFFFFF;border:1px solid rgba(0,0,0,.03);box-shadow:0 4px 24px rgba(0,0,0,.04)" data-reveal>
+        <p class="text-[14px] font-bold leading-relaxed" style="word-break:keep-all">💰 신청은 0원이에요. 매칭이 성사되면 그때 결제 안내를 드려요 <span style="white-space:nowrap">(일반 매칭 19,900원)</span></p>
+        <p class="text-[12px] text-[#9a9080] mt-1.5 leading-relaxed" style="word-break:keep-all">매칭이 안 되면 비용은 없어요. 지금은 베타 오픈 특별가라 정식 오픈 때 가격이 오를 수 있어요.</p>
       </div>
 
       <!-- 매칭 유형 "선택"은 성사(response.html) 단계로 이동. 신청서에는 안내만 유지 -->
@@ -696,7 +655,7 @@
     <div class="mt-4 text-left" style="background:#FFFFFF;border:1px solid rgba(0,0,0,.03);border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.04);padding:18px">
       <p class="text-[13px] text-[#E8B050] font-bold">주변에 소개하고 2,000원 할인받기 🎟️</p>
       <p class="text-[12px] text-[#8a8070] mt-1.5 leading-relaxed" style="word-break:keep-all">내 링크로 친구가 신청하면, 내가 매칭 성사되어 결제할 때 2,000원 할인 쿠폰을 드려요!</p>
-      <a href="/invite" id="success-invite" class="inline-block mt-3 text-[13px] font-bold" style="background:#FF6B6B;color:#fff;border-radius:999px;padding:10px 16px">→ 내 초대 링크 받기</a>
+      <a href="/invite" id="success-invite" class="inline-block mt-3 text-[13px] font-bold" style="background:#E5484D;color:#fff;border-radius:999px;padding:10px 16px">→ 내 초대 링크 받기</a>
     </div>
     <a href="index.html" class="inline-block mt-6 bg-[#16140f] border border-[#1e1c17] text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#E8B050] transition">
       <i class="fa-solid fa-arrow-left mr-1.5"></i>홈으로 돌아가기
@@ -911,7 +870,7 @@ function couponTicket(title, desc){
   const w = document.createElement("div");
   w.style.cssText = "display:flex;margin-top:12px;border-radius:16px;overflow:hidden;background:#FFFFFF;border:1px solid rgba(255,107,107,.45);text-align:left";
   const l = document.createElement("div");
-  l.style.cssText = "flex:none;width:98px;background:linear-gradient(160deg,#FF8E7E,#FF6B6B);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 6px;border-right:2px dashed rgba(250,250,248,.4)";
+  l.style.cssText = "flex:none;width:98px;background:linear-gradient(160deg,#F0645F,#E5484D);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 6px;border-right:2px dashed rgba(250,250,248,.4)";
   l.innerHTML = '<b style="font-size:23px;font-weight:900;line-height:1">2,000<span style="font-size:12px">원</span></b><span style="font-size:11px;font-weight:800;margin-top:5px;letter-spacing:.12em">할인권</span>';
   const r = document.createElement("div");
   r.style.cssText = "flex:1;min-width:0;padding:11px 13px;word-break:keep-all";
@@ -1166,7 +1125,7 @@ document.querySelectorAll("#keyword-chips .chip").forEach(chip => {
     document.getElementById("keywords-input").value = [...selectedKeywords].join(",");
     const count = selectedKeywords.size;
     document.getElementById("keyword-count").textContent = `${count}개 선택됨`;
-    document.getElementById("keyword-count").style.color = count >= 1 ? "#F25C5C" : "#8C8C8C";
+    document.getElementById("keyword-count").style.color = count >= 1 ? "#E5484D" : "#767676";
   });
 });
 
@@ -1204,7 +1163,7 @@ function restoreDraft(d){
     (d.keywords||[]).forEach(function(v){ selectedKeywords.add(v); });
     document.querySelectorAll("#keyword-chips .chip").forEach(function(c){ if(selectedKeywords.has(c.dataset.kw)) c.classList.add("selected"); });
     var kw=document.getElementById("keywords-input"); if(kw) kw.value=[...selectedKeywords].join(",");
-    var kc=document.getElementById("keyword-count"); if(kc){ kc.textContent=selectedKeywords.size+"개 선택됨"; kc.style.color=selectedKeywords.size>=1?"#F25C5C":"#8C8C8C"; }
+    var kc=document.getElementById("keyword-count"); if(kc){ kc.textContent=selectedKeywords.size+"개 선택됨"; kc.style.color=selectedKeywords.size>=1?"#E5484D":"#767676"; }
     goStep(d.step||1);
     // 임시저장에 유입경로가 비어 있었으면 테스트에서 넘어온 표시를 다시 채운다
     if(typeof applyTestSource==="function") applyTestSource();
@@ -1229,7 +1188,7 @@ window.addEventListener("load", function(){
     b.innerHTML='<div style="font-size:13.5px;font-weight:800;color:#E5484D">📝 작성하던 신청서가 있어요</div>'
       +'<div style="font-size:12px;color:#666666;margin-top:3px">이어서 쓸까요? (사진·서류는 다시 첨부해주세요)</div>'
       +'<div style="display:flex;gap:8px;margin-top:10px">'
-      +'<button type="button" id="draft-resume" style="flex:1;background:#FF6B6B;color:#fff;border:none;border-radius:10px;padding:10px;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer">이어서 작성</button>'
+      +'<button type="button" id="draft-resume" style="flex:1;background:#E5484D;color:#fff;border:none;border-radius:10px;padding:10px;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer">이어서 작성</button>'
       +'<button type="button" id="draft-fresh" style="background:transparent;color:#666666;border:1px solid #D9D5CD;border-radius:10px;padding:10px 14px;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer">새로 작성</button>'
       +'</div>';
     f.parentNode.insertBefore(b, f);
@@ -1260,8 +1219,8 @@ document.getElementById("agree").addEventListener("change", function(){
   const box = document.getElementById("agree-box");
   const check = document.getElementById("agree-check");
   if(this.checked){
-    box.style.background = "#FF6B6B";
-    box.style.borderColor = "#FF6B6B";
+    box.style.background = "#E5484D";
+    box.style.borderColor = "#E5484D";
     check.classList.remove("hidden");
   } else {
     box.style.background = "transparent";

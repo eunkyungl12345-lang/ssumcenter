@@ -10,9 +10,9 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
-:root{--bg:#FAFAF8;--surface:#FFFFFF;--amber:#F25C5C;--amber-light:#F25C5C;--cream:#1E1E1E;--muted:#666666;--dim:#8C8C8C;--faint:#ECE9E4;--glass-border:rgba(255,142,126,.08)}
+:root{--bg:#FAFAF8;--surface:#FFFFFF;--amber:#E5484D;--amber-light:#E5484D;--cream:#1E1E1E;--muted:#666666;--dim:#767676;--faint:#767676;--glass-border:rgba(255,142,126,.08)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,Apple SD Gothic Neo,system-ui,sans-serif;background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 a{text-decoration:none;color:inherit}
 ::selection{background:var(--amber);color:#1E1E1E}
 .top-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--glass-border)}
@@ -59,7 +59,7 @@ a{text-decoration:none;color:inherit}
       <div style="font-size:13px;font-weight:700;color:#E5484D;line-height:1.5">📱 <span id="inapp-name">앱</span> 안에서 열렸어요</div>
       <div style="font-size:12px;color:#666666;line-height:1.65;margin-top:4px" id="inapp-how">로그인이 안 되면 기본 브라우저에서 열어주세요.</div>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button id="inapp-open" style="display:none;flex:1;background:#FF6B6B;color:#fff;border:none;font-weight:800;font-size:12.5px;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit">크롬으로 열기</button>
+        <button id="inapp-open" style="display:none;flex:1;background:#E5484D;color:#fff;border:none;font-weight:800;font-size:12.5px;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit">크롬으로 열기</button>
         <button id="inapp-copy" style="flex:1;background:#FFFFFF;border:1px solid #D9D5CD;color:#1E1E1E;font-weight:700;font-size:12.5px;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit">🔗 주소 복사</button>
       </div>
     </div>
@@ -79,8 +79,10 @@ a{text-decoration:none;color:inherit}
 
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
 <script>
-Kakao.init('702b5ffe9fbe4643438cdedc5e4e1a52');
+// 카카오 도구가 안 불러와진 경우(네트워크·광고 차단 등)에도 버튼이 아무 반응 없이 죽지 않게 한다
+try{ if(window.Kakao && !Kakao.isInitialized()) Kakao.init('702b5ffe9fbe4643438cdedc5e4e1a52'); }catch(e){}
 function kakaoLogin(){
+  if(!window.Kakao || !Kakao.Auth){ alert('카카오 로그인을 불러오지 못했어요.\n인터넷 연결을 확인하고 새로고침 해주세요.'); return; }
   const redirect=new URLSearchParams(location.search).get('redirect')||'';
   Kakao.Auth.authorize({
     redirectUri:location.origin+'/auth-callback.html',

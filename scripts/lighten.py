@@ -12,10 +12,10 @@
 """
 import re, sys, colorsys
 
-INK, SUB, FAINT = "#1E1E1E", "#666666", "#8C8C8C"
+INK, SUB, FAINT = "#1E1E1E", "#666666", "#767676"
 BG, CARD = "#FAFAF8", "#FFFFFF"
-POINT, POINT_SOFT, POINT_TEXT, POINT_MID = "#FF6B6B", "#FF8E7E", "#E5484D", "#F25C5C"
-FONT = "Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif"
+POINT, POINT_SOFT, POINT_TEXT, POINT_MID = "#FF6B6B", "#FF8E7E", "#E5484D", "#E5484D"
+FONT = "Pretendard,-apple-system,BlinkMacSystemFont,Apple SD Gothic Neo,system-ui,sans-serif"   # 따옴표를 쓰지 않는다 (style="…" 나 JS 문자열 안에서 깨지지 않게)
 PRETENDARD = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">'
 
 # 그대로 둬야 하는 남의 브랜드 색 (카카오 노랑·네이버 초록 등)
@@ -105,6 +105,8 @@ def convert(tok, role):
         if role == "shadow":
             return rgba(POINT, a * .6)
         if role in ("bg", "border"):
+            if role == "bg":
+                return out(POINT_SOFT if l > .68 else POINT_TEXT)   # 꽉 찬 버튼 바탕은 진한 코랄 (흰 글자 대비)
             return out(POINT_SOFT if l > .68 else POINT)
         return out(POINT_MID)
 
@@ -212,7 +214,9 @@ def fonts(text):
         if re.search(r"monospace|Jua|Font Awesome|inherit", v, re.I):
             return m.group(0)
         return m.group(1) + FONT
-    text = re.sub(r"(font-family\s*:\s*)([^;}\"<]+)", fam, text)
+    # 값 = 쉼표로 이어진 글꼴 이름들 ("…" / '…' / 따옴표 없는 이름). 속성 끝의 따옴표에서 멈춘다.
+    tok = r"""\s*(?:"[^"\n,;{}<>]*"|'[^'\n,;{}<>]*'|[\w\- ]+)\s*"""
+    text = re.sub(r"(font-family\s*:)(" + tok + "(?:," + tok + ")*)", fam, text)
     # 이제 안 쓰는 구글 글꼴(Noto Sans KR · Gmarket Sans · Inter) 불러오기 제거
     text = re.sub(r"[ \t]*<link[^>]+fonts\.googleapis\.com/css2\?[^>]*>\n?", "", text)
     text = re.sub(r"[ \t]*<link rel=\"preconnect\" href=\"https://fonts\.(?:googleapis|gstatic)\.com\"[^>]*>\n?", "", text)

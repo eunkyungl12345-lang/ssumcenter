@@ -866,34 +866,34 @@
     background-color: #F4F2EE;
   }
   .bg-\[\#E8B050\]\/5 {
-    background-color: color-mix(in oklab, #FF6B6B 5%, transparent);
+    background-color: color-mix(in oklab, #E5484D 5%, transparent);
   }
   .bg-\[\#E8B050\]\/10 {
-    background-color: color-mix(in oklab, #FF6B6B 10%, transparent);
+    background-color: color-mix(in oklab, #E5484D 10%, transparent);
   }
   .bg-\[\#E8B050\]\/20 {
-    background-color: color-mix(in oklab, #FF6B6B 20%, transparent);
+    background-color: color-mix(in oklab, #E5484D 20%, transparent);
   }
   .bg-\[\#E8B050\]\/30 {
-    background-color: color-mix(in oklab, #FF6B6B 30%, transparent);
+    background-color: color-mix(in oklab, #E5484D 30%, transparent);
   }
   .bg-\[\#FFBE2E\]\/10 {
-    background-color: color-mix(in oklab, #FF6B6B 10%, transparent);
+    background-color: color-mix(in oklab, #E5484D 10%, transparent);
   }
   .bg-\[\#E8B050\] {
-    background-color: #FF6B6B;
+    background-color: #E5484D;
   }
   .bg-\[\#E8B050\]\/5 {
-    background-color: color-mix(in oklab, #FF6B6B 5%, transparent);
+    background-color: color-mix(in oklab, #E5484D 5%, transparent);
   }
   .bg-\[\#E8B050\]\/10 {
-    background-color: color-mix(in oklab, #FF6B6B 10%, transparent);
+    background-color: color-mix(in oklab, #E5484D 10%, transparent);
   }
   .bg-\[\#E8B050\]\/15 {
-    background-color: color-mix(in oklab, #FF6B6B 15%, transparent);
+    background-color: color-mix(in oklab, #E5484D 15%, transparent);
   }
   .bg-\[\#E8B050\]\/20 {
-    background-color: color-mix(in oklab, #FF6B6B 20%, transparent);
+    background-color: color-mix(in oklab, #E5484D 20%, transparent);
   }
   .bg-black\/60 {
     background-color: color-mix(in srgb, #FAFAF8 60%, transparent);
@@ -973,27 +973,27 @@
     background-image: linear-gradient(var(--tw-gradient-stops));
   }
   .from-\[\#FFBE2E\]\/5 {
-    --tw-gradient-from: color-mix(in oklab, #F25C5C 5%, transparent);
+    --tw-gradient-from: color-mix(in oklab, #E5484D 5%, transparent);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
   .from-\[\#FFBE2E\]\/10 {
-    --tw-gradient-from: color-mix(in oklab, #F25C5C 10%, transparent);
+    --tw-gradient-from: color-mix(in oklab, #E5484D 10%, transparent);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
   .from-\[\#FFBE2E\]\/15 {
-    --tw-gradient-from: color-mix(in oklab, #F25C5C 15%, transparent);
+    --tw-gradient-from: color-mix(in oklab, #E5484D 15%, transparent);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
   .from-\[\#E8B050\]\/5 {
-    --tw-gradient-from: color-mix(in oklab, #F25C5C 5%, transparent);
+    --tw-gradient-from: color-mix(in oklab, #E5484D 5%, transparent);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
   .from-\[\#E8B050\]\/10 {
-    --tw-gradient-from: color-mix(in oklab, #F25C5C 10%, transparent);
+    --tw-gradient-from: color-mix(in oklab, #E5484D 10%, transparent);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
   .from-\[\#E8B050\]\/15 {
-    --tw-gradient-from: color-mix(in oklab, #F25C5C 15%, transparent);
+    --tw-gradient-from: color-mix(in oklab, #E5484D 15%, transparent);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
   .to-transparent {
@@ -1243,10 +1243,10 @@
     letter-spacing: var(--tracking-widest);
   }
   .text-\[\#5a5248\] {
-    color: #8C8C8C;
+    color: #767676;
   }
   .text-\[\#6b6358\] {
-    color: #8C8C8C;
+    color: #767676;
   }
   .text-\[\#8a7f70\] {
     color: #666666;
@@ -1258,10 +1258,10 @@
     color: #666666;
   }
   .text-\[\#555\] {
-    color: #8C8C8C;
+    color: #767676;
   }
   .text-\[\#666\] {
-    color: #8C8C8C;
+    color: #767676;
   }
   .text-\[\#B69CF7\] {
     color: #4615C2;
@@ -1310,19 +1310,19 @@
   }
   .placeholder-\[\#6b6358\] {
     &::placeholder {
-      color: #8C8C8C;
+      color: #767676;
     }
   }
   .placeholder-\[\#555\] {
     &::placeholder {
-      color: #8C8C8C;
+      color: #767676;
     }
   }
   .accent-\[\#FFBE2E\] {
-    accent-color: #FF6B6B;
+    accent-color: #E5484D;
   }
   .accent-\[\#E8B050\] {
-    accent-color: #FF6B6B;
+    accent-color: #E5484D;
   }
   .opacity-0 {
     opacity: 0%;
@@ -1389,26 +1389,26 @@
   }
   .selection\:bg-\[\#E8B050\] {
     & *::selection {
-      background-color: #FF6B6B;
+      background-color: #E5484D;
     }
     &::selection {
-      background-color: #FF6B6B;
+      background-color: #E5484D;
     }
   }
   .selection\:bg-\[\#FFBE2E\] {
     & *::selection {
-      background-color: #FF6B6B;
+      background-color: #E5484D;
     }
     &::selection {
-      background-color: #FF6B6B;
+      background-color: #E5484D;
     }
   }
   .selection\:bg-\[\#E8B050\] {
     & *::selection {
-      background-color: #FF6B6B;
+      background-color: #E5484D;
     }
     &::selection {
-      background-color: #FF6B6B;
+      background-color: #E5484D;
     }
   }
   .selection\:text-black {
@@ -1479,35 +1479,35 @@
   .hover\:bg-\[\#D4952A\] {
     &:hover {
       @media (hover: hover) {
-        background-color: #FF6B6B;
+        background-color: #E5484D;
       }
     }
   }
   .hover\:bg-\[\#E6BE00\] {
     &:hover {
       @media (hover: hover) {
-        background-color: #FF6B6B;
+        background-color: #E5484D;
       }
     }
   }
   .hover\:bg-\[\#FFBE2E\]\/10 {
     &:hover {
       @media (hover: hover) {
-        background-color: color-mix(in oklab, #FF6B6B 10%, transparent);
+        background-color: color-mix(in oklab, #E5484D 10%, transparent);
       }
     }
   }
   .hover\:bg-\[\#E8B050\]\/5 {
     &:hover {
       @media (hover: hover) {
-        background-color: color-mix(in oklab, #FF6B6B 5%, transparent);
+        background-color: color-mix(in oklab, #E5484D 5%, transparent);
       }
     }
   }
   .hover\:bg-\[\#E8B050\]\/10 {
     &:hover {
       @media (hover: hover) {
-        background-color: color-mix(in oklab, #FF6B6B 10%, transparent);
+        background-color: color-mix(in oklab, #E5484D 10%, transparent);
       }
     }
   }

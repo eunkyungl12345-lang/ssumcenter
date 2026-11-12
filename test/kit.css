@@ -1,7 +1,7 @@
 /* 유형 테스트 공용 화면 (연애 취향 영수증 · 연애 사원증)
    - 파스텔 톤. 사이트 본문(검은 배경)과 일부러 다르게 했다: 테스트는 가볍고 귀여워야 끝까지 한다.
    - 두 테스트가 같은 화면 틀을 쓰므로, 여기를 고치면 둘 다 바뀐다. */
-:root{--bg:#FFF7EA;--card:#FFFFFF;--line:#F1E3CD;--y:#FFBE2E;--acc:#D98A00;--txt:#3b2a20;--mut:#8f7a66;--dim:#b3a08c}
+:root{--bg:#FFF7EA;--card:#FFFFFF;--line:#F1E3CD;--y:#FFBE2E;--acc:#A66000;--txt:#3b2a20;--mut:#8f7a66;--dim:#8f7a66}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',system-ui,sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;
   background-image:radial-gradient(circle at 12% 8%,rgba(255,190,46,.16),transparent 38%),radial-gradient(circle at 92% 22%,rgba(255,143,163,.14),transparent 36%),radial-gradient(circle at 30% 96%,rgba(140,198,234,.16),transparent 40%);background-attachment:fixed}
