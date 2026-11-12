@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>결혼 매칭 | 썸류센터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>
-  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--amber-2:#f0c674;--rose:#E88FB0;--ink-on-amber:#171208;}
+  :root{color-scheme:light;--bg:#FAFAF8;--surface:#FFFFFF;--surface-2:#FFFFFF;--ink:#1E1E1E;--muted:#666666;--faint:#8C8C8C;--line:#E6E2DC;--line-strong:#D9D5CD;--amber:#F25C5C;--amber-2:#F25C5C;--rose:#AE285A;--ink-on-amber:#1E1E1E;}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.7;letter-spacing:-.01em}
   .wrap{max-width:640px;margin:0 auto;padding:0 20px 90px}
   .hero{text-align:center;padding:64px 8px 40px}
-  .hero .pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--amber);background:rgba(232,176,80,.1);border:1px solid rgba(232,176,80,.3);padding:6px 15px;border-radius:999px}
+  .hero .pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--amber);background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.3);padding:6px 15px;border-radius:999px}
   .hero .em{font-size:60px;margin:20px 0 6px}
   .hero h1{font-size:clamp(30px,7vw,42px);font-weight:800;letter-spacing:-.03em;line-height:1.2}
   .hero h1 .g{background:linear-gradient(120deg,var(--amber),var(--amber-2));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -33,14 +34,14 @@
   .fs .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--amber);color:var(--ink-on-amber);display:grid;place-items:center;font-weight:900;z-index:1}
   .fs .t{font-size:15.5px;font-weight:800}
   .fs .d{font-size:14px;color:var(--muted);margin-top:2px}
-  .price{text-align:center;background:linear-gradient(135deg,rgba(232,176,80,.14),rgba(232,176,80,.04));border:1px solid rgba(232,176,80,.35)}
+  .price{text-align:center;background:linear-gradient(135deg,rgba(255,107,107,.14),rgba(255,107,107,.04));border:1px solid rgba(255,107,107,.35)}
   .price .big{font-size:38px;font-weight:900;color:var(--amber);margin:6px 0}
   .price .sm{font-size:13.5px;color:var(--muted)}
   .qa{border-top:1px solid var(--line);padding:14px 0}
   .qa:first-of-type{border-top:none}
   .qa .q{font-size:14.5px;font-weight:800}
   .qa .a{font-size:13.5px;color:var(--muted);margin-top:5px}
-  .cta{display:block;text-align:center;background:linear-gradient(135deg,var(--amber),var(--amber-2));color:var(--ink-on-amber);font-weight:900;font-size:16px;padding:18px;border-radius:16px;text-decoration:none;margin-top:22px;box-shadow:0 10px 30px rgba(232,176,80,.25)}
+  .cta{display:block;text-align:center;background:linear-gradient(135deg,var(--amber),var(--amber-2));color:var(--ink-on-amber);font-weight:900;font-size:16px;padding:18px;border-radius:16px;text-decoration:none;margin-top:22px;box-shadow:0 10px 30px rgba(255,107,107,.15)}
   .cta:active{transform:translateY(1px)}
   .foot{text-align:center;font-size:12px;color:var(--faint);margin-top:16px}
   .mform input,.mform select,.mform textarea{width:100%;background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:12px;padding:13px;font-size:14.5px;color:var(--ink);font-family:inherit}
@@ -48,11 +49,11 @@
   .mform input::placeholder,.mform textarea::placeholder{color:var(--faint)}
   .agechip{font-size:13px;font-weight:700;color:var(--muted);background:var(--surface-2);border:1.5px solid var(--line-strong);border-radius:20px;padding:8px 14px;cursor:pointer;user-select:none}
   .agechip.on{background:var(--amber);border-color:var(--amber);color:var(--ink-on-amber)}
-  .upbox{display:flex;align-items:center;justify-content:center;min-width:88px;height:88px;background:var(--surface-2);border:1.5px dashed rgba(232,176,80,.4);border-radius:12px;color:var(--amber);font-size:12px;font-weight:700;cursor:pointer;text-align:center;padding:6px;flex:none}
+  .upbox{display:flex;align-items:center;justify-content:center;min-width:88px;height:88px;background:var(--surface-2);border:1.5px dashed rgba(255,107,107,.4);border-radius:12px;color:var(--amber);font-size:12px;font-weight:700;cursor:pointer;text-align:center;padding:6px;flex:none}
   .upbox:hover{border-color:var(--amber)}
   .upthumb{position:relative;width:88px;height:88px;border-radius:12px;overflow:hidden;flex:none}
   .upthumb img{width:100%;height:100%;object-fit:cover}
-  .upthumb .del{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1}
+  .upthumb .del{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.45);color:#1E1E1E;border:none;font-size:12px;cursor:pointer;line-height:1}
   .updone{height:auto;padding:12px;color:var(--ok);border-color:var(--ok);border-style:solid}
   /* 잠금 게이트 */
   #gate{position:fixed;inset:0;background:var(--bg);z-index:99999;display:grid;place-items:center;padding:24px}
@@ -68,7 +69,7 @@
   <div style="font-size:12.5px;color:var(--muted);margin-bottom:18px">비밀번호를 입력하면 열려요</div>
   <input id="gpw" type="password" placeholder="관리자 비밀번호">
   <button onclick="gUnlock()">열기</button>
-  <div id="gmsg" style="font-size:12.5px;color:#E8828A;margin-top:10px"></div>
+  <div id="gmsg" style="font-size:12.5px;color:#B12530;margin-top:10px"></div>
 </div></div>
 
 <div class="wrap">
@@ -243,17 +244,17 @@
       var name=val("ap-name"), gender=document.getElementById("ap-gender").value, phone=val("ap-phone"), plan=document.getElementById("ap-plan").value;
       var marital=document.getElementById("ap-marital").value, child=document.getElementById("ap-child").value;
       var dual=document.getElementById("ap-dualincome").value, live=document.getElementById("ap-live").value;
-      if(!name){ msg.style.color="#E8828A"; msg.textContent="이름을 입력해주세요."; return; }
-      if(!gender){ msg.style.color="#E8828A"; msg.textContent="성별을 선택해주세요."; return; }
-      if(!phone){ msg.style.color="#E8828A"; msg.textContent="연락처를 입력해주세요."; return; }
-      if(!plan){ msg.style.color="#E8828A"; msg.textContent="결혼 계획 시기를 선택해주세요."; return; }
-      if(!marital){ msg.style.color="#E8828A"; msg.textContent="결혼 상태(초혼/재혼)를 선택해주세요."; return; }
-      if(!child){ msg.style.color="#E8828A"; msg.textContent="자녀 계획을 선택해주세요."; return; }
-      if(!dual){ msg.style.color="#E8828A"; msg.textContent="맞벌이 희망을 선택해주세요."; return; }
-      if(!live){ msg.style.color="#E8828A"; msg.textContent="결혼 후 거주 지역을 선택해주세요."; return; }
-      if(!photoFiles.length){ msg.style.color="#E8828A"; msg.textContent="프로필 사진을 최소 1장 올려주세요."; return; }
-      if(!docFile){ msg.style.color="#E8828A"; msg.textContent="재직증명서 또는 사업자등록증을 첨부해주세요."; return; }
-      if(!document.getElementById("ap-agree").checked){ msg.style.color="#E8828A"; msg.textContent="개인정보 수집·이용에 동의해주세요."; return; }
+      if(!name){ msg.style.color="#B12530"; msg.textContent="이름을 입력해주세요."; return; }
+      if(!gender){ msg.style.color="#B12530"; msg.textContent="성별을 선택해주세요."; return; }
+      if(!phone){ msg.style.color="#B12530"; msg.textContent="연락처를 입력해주세요."; return; }
+      if(!plan){ msg.style.color="#B12530"; msg.textContent="결혼 계획 시기를 선택해주세요."; return; }
+      if(!marital){ msg.style.color="#B12530"; msg.textContent="결혼 상태(초혼/재혼)를 선택해주세요."; return; }
+      if(!child){ msg.style.color="#B12530"; msg.textContent="자녀 계획을 선택해주세요."; return; }
+      if(!dual){ msg.style.color="#B12530"; msg.textContent="맞벌이 희망을 선택해주세요."; return; }
+      if(!live){ msg.style.color="#B12530"; msg.textContent="결혼 후 거주 지역을 선택해주세요."; return; }
+      if(!photoFiles.length){ msg.style.color="#B12530"; msg.textContent="프로필 사진을 최소 1장 올려주세요."; return; }
+      if(!docFile){ msg.style.color="#B12530"; msg.textContent="재직증명서 또는 사업자등록증을 첨부해주세요."; return; }
+      if(!document.getElementById("ap-agree").checked){ msg.style.color="#B12530"; msg.textContent="개인정보 수집·이용에 동의해주세요."; return; }
       var ages=[]; document.querySelectorAll("#ap-agebox input:checked").forEach(function(c){ ages.push(c.value); });
       var intro=val("ap-intro");
       // 결혼관 정보는 자기소개 맨 앞에 묶어서 함께 저장 (1:1 테이블에 별도 필드 없어도 남게)
@@ -272,7 +273,7 @@
           btn.textContent="서류 올리는 중…";
           return upload(docFile,"ssumcenter/docs"); })
         .then(function(docUrl){ if(docUrl) fields["재직증명서"]=[{url:docUrl}]; btn.textContent="보내는 중…"; tryPost(fields,0); })
-        .catch(function(){ btn.disabled=false; btn.textContent=orig; msg.style.color="#E8828A"; msg.textContent="사진/서류 업로드 중 오류가 났어요. 다시 시도해주세요."; });
+        .catch(function(){ btn.disabled=false; btn.textContent=orig; msg.style.color="#B12530"; msg.textContent="사진/서류 업로드 중 오류가 났어요. 다시 시도해주세요."; });
       return; // 아래 즉시 tryPost 호출 방지 (업로드 완료 후 호출)
       function done(){ document.getElementById("apply-sec").innerHTML='<div style="text-align:center;padding:20px 0"><div style="font-size:40px">💍</div><h2 style="margin:10px 0 6px">신청이 접수됐어요!</h2><p style="color:var(--muted);font-size:14px">센터장이 확인 후 연락드릴게요. 감사합니다 💛</p></div>'; }
       // 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)
@@ -283,10 +284,10 @@
               var em=(r.error&&(r.error.message||r.error.type))||"";
               var m=String(em).match(/Unknown field name:\s*"([^"]+)"/);
               if(m && (m[1] in f) && tries<12){ delete f[m[1]]; tryPost(f, tries+1); return; }
-              btn.disabled=false; btn.textContent=orig; msg.style.color="#E8828A"; msg.textContent="신청 실패: "+em; return;
+              btn.disabled=false; btn.textContent=orig; msg.style.color="#B12530"; msg.textContent="신청 실패: "+em; return;
             }
             btn.disabled=false; btn.textContent=orig; done();
-          }).catch(function(){ btn.disabled=false; btn.textContent=orig; msg.style.color="#E8828A"; msg.textContent="오류가 났어요. 다시 시도해주세요."; });
+          }).catch(function(){ btn.disabled=false; btn.textContent=orig; msg.style.color="#B12530"; msg.textContent="오류가 났어요. 다시 시도해주세요."; });
       }
       // 저장은 위 사진/서류 업로드가 끝난 뒤 tryPost로 호출됨
     });

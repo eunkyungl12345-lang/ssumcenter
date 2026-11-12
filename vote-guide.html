@@ -1,26 +1,27 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>🗳️ 오늘 이렇게 진행돼요 · 썸류센터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>
   :root{
-    --bg:#0b0906; --panel:#161009; --panel-2:#1e1610; --ink:#F3E9D6; --muted:#9c8f78; --faint:#6a5c4c;
-    --amber:#E8B050; --amber-2:#E8945A; --line:#2c2114; --line-2:#3a2e1f; --ink-on-amber:#1a1108;
-    --ok:#4ec98a; --rose:#E88FB0;
+    --bg:#FAFAF8; --panel:#FFFFFF; --panel-2:#FFFFFF; --ink:#1E1E1E; --muted:#666666; --faint:#8C8C8C;
+    --amber:#F25C5C; --amber-2:#F25C5C; --line:#E6E2DC; --line-2:#D9D5CD; --ink-on-amber:#1E1E1E;
+    --ok:#35A16A; --rose:#AE285A;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;
+    font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif"Apple SD Gothic Neo",system-ui,sans-serif;
     line-height:1.6;letter-spacing:-.01em;padding:24px 16px 70px}
   .wrap{max-width:480px;margin:0 auto}
   .head{text-align:center;margin-bottom:6px}
   .head .kicker{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--amber);
-    background:rgba(232,176,80,.1);border:1px solid rgba(232,176,80,.28);padding:5px 13px;border-radius:999px}
+    background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.28);padding:5px 13px;border-radius:999px}
   .head h1{font-size:23px;font-weight:900;margin-top:12px;line-height:1.3}
   .intro{font-size:13px;color:var(--muted);text-align:center;margin:8px 0 4px;line-height:1.7}
 
@@ -30,20 +31,20 @@
     font-size:15px;font-weight:900;display:grid;place-items:center;flex:none}
   .step-h .tt{font-size:16px;font-weight:800}
   .step-h .tt small{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-top:1px}
-  .phone{max-width:290px;margin:0 auto;background:#000;border:6px solid #241b12;border-radius:30px;
-    padding:16px 15px 20px;box-shadow:0 12px 34px rgba(0,0,0,.5)}
+  .phone{max-width:290px;margin:0 auto;background:#FAFAF8;border:6px solid #E6E2DC;border-radius:30px;
+    padding:16px 15px 20px;box-shadow:0 12px 34px rgba(0,0,0,.08)}
   .p-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
   .p-brand{font-size:12px;font-weight:800;display:flex;align-items:center;gap:5px}
-  .p-badge{font-size:9.5px;font-weight:800;color:var(--amber);background:rgba(232,176,80,.12);
-    border:1px solid rgba(232,176,80,.3);padding:3px 8px;border-radius:999px}
+  .p-badge{font-size:9.5px;font-weight:800;color:var(--amber);background:rgba(255,107,107,.12);
+    border:1px solid rgba(255,107,107,.3);padding:3px 8px;border-radius:999px}
   .p-title{font-size:16px;font-weight:900;text-align:center}
   .p-sub{font-size:10.5px;color:var(--muted);text-align:center;margin-top:2px}
   .field{margin-top:10px;background:var(--panel-2);border:1.5px solid var(--line-2);border-radius:11px;padding:11px 12px;font-size:12.5px;color:var(--faint)}
   .cta{margin-top:9px;background:var(--amber);color:var(--ink-on-amber);text-align:center;font-weight:800;font-size:13px;padding:11px;border-radius:11px}
   .tiny{font-size:9.5px;color:var(--faint);text-align:center;margin-top:8px;line-height:1.5}
   .cand{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:8px 10px;margin-top:7px}
-  .cand.sel{border-color:var(--amber);background:rgba(232,176,80,.09)}
-  .cand .av{width:30px;height:30px;border-radius:8px;background:linear-gradient(150deg,#E8B050,#E8945A);display:grid;place-items:center;font-size:15px;flex:none}
+  .cand.sel{border-color:var(--amber);background:rgba(255,107,107,.09)}
+  .cand .av{width:30px;height:30px;border-radius:8px;background:linear-gradient(150deg,#FF6B6B,#FF6B6B);display:grid;place-items:center;font-size:15px;flex:none}
   .cand .nm{flex:1;min-width:0}
   .cand .nm b{font-size:12.5px;font-weight:800}
   .cand .nm small{display:block;font-size:10px;color:var(--muted)}
@@ -51,8 +52,8 @@
   .cand.sel .ht{background:var(--amber);color:#7a1030}
   .cnt-row{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin:12px 2px 2px}
   .cnt-row b{color:var(--amber)}
-  .done-ic{width:52px;height:52px;border-radius:50%;background:#1f3b28;display:grid;place-items:center;font-size:26px;margin:8px auto 10px}
-  .reveal-pill{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:800;color:var(--amber);background:rgba(232,176,80,.1);border:1px solid rgba(232,176,80,.28);border-radius:999px;padding:7px 10px;margin:10px auto 0;width:fit-content}
+  .done-ic{width:52px;height:52px;border-radius:50%;background:#ECE9E4;display:grid;place-items:center;font-size:26px;margin:8px auto 10px}
+  .reveal-pill{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:800;color:var(--amber);background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.28);border-radius:999px;padding:7px 10px;margin:10px auto 0;width:fit-content}
   .note-box{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:10.5px;color:var(--muted);margin-top:11px;line-height:1.7}
   .ghost{margin-top:8px;border:1.5px solid var(--line-2);border-radius:10px;text-align:center;font-size:11.5px;font-weight:700;color:var(--muted);padding:9px}
   .match-head{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;margin-bottom:3px}
@@ -64,7 +65,7 @@
   .cap{font-size:12.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.65}
   .cap b{color:var(--ink)}
 
-  .outro{margin-top:30px;background:linear-gradient(135deg,rgba(232,143,176,.1),rgba(232,176,80,.05));
+  .outro{margin-top:30px;background:linear-gradient(135deg,rgba(232,143,176,.1),rgba(255,107,107,.05));
     border:1px solid rgba(232,143,176,.28);border-radius:16px;padding:18px 18px;text-align:center}
   .outro .big{font-size:15px;font-weight:900;line-height:1.5}
   .outro .big .hl{color:var(--rose)}
@@ -108,7 +109,7 @@
       <div class="cta" style="margin-top:11px">투표 제출하기</div>
       <div class="tiny">제출 후에도 수정 가능 · 내 선택은 아무도 몰라요</div>
     </div>
-    <div class="cap">고른 분 하트가 <b>노랗게</b> 켜져요. 내가 누굴 뽑았는지는 <b>아무도 몰라요.</b> 마음 편히 골라요 😌</div>
+    <div class="cap">고른 분 하트가 <b>빨갛게</b> 켜져요. 내가 누굴 뽑았는지는 <b>아무도 몰라요.</b> 마음 편히 골라요 😌</div>
   </div>
 
   <div class="step">

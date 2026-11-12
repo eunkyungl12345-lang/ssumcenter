@@ -133,6 +133,15 @@ body.docked .wrap{padding-bottom:150px}
 .cta h3{font-size:21px;line-height:1.4}
 .cta p{font-size:13.5px;color:#5d4a3c;margin:8px 0 16px}
 .cta .fine{font-size:12px;color:var(--mut);margin:10px 0 0}
+/* 🎟 친구 할인권 — 화면에만 보인다 (공유 이미지에는 없음) */
+.cpn{display:flex;margin:16px 0 0;border-radius:18px;overflow:hidden;background:#fff;border:2px solid #FFD98A;text-align:left;box-shadow:0 4px 0 #FFE9BC}
+.cpn-l{flex:none;width:92px;background:linear-gradient(160deg,#FFD05A,#FFB21E);color:#3b2a20;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 4px;border-right:2px dashed rgba(59,42,32,.35)}
+.cpn-l b{font-size:23px;font-weight:900;line-height:1}
+.cpn-l b small{font-size:12px}
+.cpn-l span{font-size:11px;font-weight:800;margin-top:5px;letter-spacing:.12em}
+.cpn-r{flex:1;min-width:0;padding:11px 13px}
+.cpn-r b{display:block;font-size:13.5px;color:#8a5a00}
+.cpn-r span{display:block;font-size:12.5px;color:#5d4a3c;line-height:1.5;margin-top:3px}
 /* 💡 친구 할인 안내 — 화면에만 보인다 (공유 이미지에는 없음) */
 .tip{font-size:13px;font-weight:700;line-height:1.5;color:#8a5a00;background:#FFF0CC;border-radius:14px;padding:10px 12px;margin:14px 0 0;text-align:center}
 .cta .tip{font-size:13px;color:#8a5a00;margin:16px 0 0}

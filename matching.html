@@ -1,104 +1,102 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>1:1 온라인 매칭 신청 | 썸류센터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="stylesheet" href="/tailwind.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/tailwind-light.css">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"></noscript>
+<noscript></noscript>
 <style>
-  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0e0c0a;color:#F5F5F3;overflow-x:hidden}
-  .y{color:#E8B050}.bg-y{background:#E8B050}.bd-y{border-color:#E8B050}
-  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#16140f}::-webkit-scrollbar-thumb{background:#E8B050;border-radius:3px}
+  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden}
+  .y{color:#E5484D}.bg-y{background:#FF6B6B;color:#fff}.bd-y{border-color:#FF6B6B}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#FFFFFF}::-webkit-scrollbar-thumb{background:#FF6B6B;border-radius:3px}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
   .fade{animation:fadeUp .5s ease both}
-  .glow{background:radial-gradient(circle at 50% 0%,rgba(232,176,80,.12),transparent 60%)}
+  .glow{background:radial-gradient(circle at 50% 0%,rgba(255,107,107,.12),transparent 60%)}
   [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
   [data-reveal].in{opacity:1;transform:none}
   /* 키워드 칩 선택 */
   .chip{cursor:pointer;transition:all .2s}
-  .chip:hover{border-color:#E8B050;color:#E8B050}
-  .chip.selected{background:#E8B050 !important;color:#0e0c0a !important;border-color:#E8B050 !important;font-weight:700}
+  .chip:hover{border-color:#FF6B6B;color:#E5484D}
+  .chip.selected{background:#FF6B6B !important;color:#fff !important;border-color:#FF6B6B !important;font-weight:700}
   /* 자기소개 카운터 */
   .counter{transition:color .2s}
-  .counter.over{color:#FF4A4A}
+  .counter.over{color:#D10505}
   /* 라디오/체크 커스텀 */
   input[type="radio"],input[type="checkbox"]{display:none}
   .radio-card{cursor:pointer;transition:all .2s}
-  .radio-card:hover{border-color:#E8B050}
-  input:checked+.radio-card{background:rgba(232,176,80,.08);border-color:#E8B050}
-  input:checked+.radio-card .dot{background:#E8B050}
+  .radio-card:hover{border-color:#FF6B6B}
+  input:checked+.radio-card{background:rgba(255,107,107,.08);border-color:#FF6B6B}
+  input:checked+.radio-card .dot{background:#FF6B6B}
 
   /* AI 자동입력 */
-  .ai-section{background:#16140f;border:1px solid #1e1c17;border-radius:1rem;padding:1.25rem;margin-bottom:1.5rem}
+  .ai-section{background:#FFFFFF;border:1px solid #E6E2DC;border-radius:1rem;padding:1.25rem;margin-bottom:1.5rem}
   .ai-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
   .ai-header h3{font-size:15px;font-weight:900}
-  .ai-toggle{display:flex;align-items:center;gap:5px;background:#E8B050;color:#0e0c0a;border:none;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
-  .ai-toggle:hover{transform:scale(1.03);background:#D4952A}
-  .ai-toggle.active{box-shadow:0 0 14px rgba(232,176,80,.4)}
+  .ai-toggle{display:flex;align-items:center;gap:5px;background:#FF6B6B;color:#fff;border:none;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+  .ai-toggle:hover{transform:scale(1.03);background:#FF6B6B}
+  .ai-toggle.active{box-shadow:0 0 14px rgba(255,107,107,.24)}
   .ai-body{display:none;margin-top:12px}
   .ai-body.show{display:block}
-  .ai-hint{background:rgba(232,176,80,.06);border:1.5px solid rgba(232,176,80,.25);border-radius:12px;padding:12px;margin-bottom:10px}
-  .ai-hint p{color:#E8B050;font-size:11px;line-height:1.5}
-  .ai-textarea{width:100%;background:#0e0c0a;border:1.5px solid rgba(232,176,80,.25);border-radius:12px;padding:14px;color:#F5F5F3;font-size:14px;resize:vertical;min-height:160px;font-family:inherit;line-height:1.7}
-  .ai-textarea:focus{outline:none;border-color:#E8B050}
-  .ai-textarea::placeholder{color:#6b6358}
-  .ai-fill-btn{background:#E8B050;color:#0e0c0a;border:none;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;float:right;margin-top:8px;font-family:inherit;display:flex;align-items:center;gap:5px}
-  .ai-fill-btn:hover{background:#D4952A}
-  .ai-result{display:none;margin-top:12px;background:rgba(232,176,80,.06);border:1px solid rgba(232,176,80,.25);border-radius:10px;padding:10px 12px;font-size:11px;color:#E8B050}
+  .ai-hint{background:rgba(255,107,107,.06);border:1.5px solid rgba(255,107,107,.25);border-radius:12px;padding:12px;margin-bottom:10px}
+  .ai-hint p{color:#E5484D;font-size:11px;line-height:1.5}
+  .ai-textarea{width:100%;background:#FAFAF8;border:1.5px solid rgba(255,107,107,.25);border-radius:12px;padding:14px;color:#1E1E1E;font-size:14px;resize:vertical;min-height:160px;font-family:inherit;line-height:1.7}
+  .ai-textarea:focus{outline:none;border-color:#FF6B6B}
+  .ai-textarea::placeholder{color:#8C8C8C}
+  .ai-fill-btn{background:#FF6B6B;color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;float:right;margin-top:8px;font-family:inherit;display:flex;align-items:center;gap:5px}
+  .ai-fill-btn:hover{background:#FF6B6B}
+  .ai-result{display:none;margin-top:12px;background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.25);border-radius:10px;padding:10px 12px;font-size:11px;color:#E5484D}
   .ai-result.show{display:block}
 
   /* ===== 데모 디자인 시스템 재스킨 (마크업/기능은 그대로, 겉모습만) ===== */
-  body{background:#0b0906;color:#EDE0CC}
-  .glow{background:radial-gradient(ellipse at 50% -10%,rgba(232,176,80,.14),transparent 60%)}
+  body{background:#FAFAF8;color:#1E1E1E}
+  .glow{background:radial-gradient(ellipse at 50% -10%,rgba(255,107,107,.14),transparent 60%)}
   /* 섹션 카드: 더 따뜻하고 부드럽게 + 은은한 그림자 */
-  .bg-\[\#16140f\]{background:#17120b!important;border-color:#2e2214!important;box-shadow:0 1px 2px rgba(0,0,0,.4),0 20px 40px -24px rgba(0,0,0,.7)}
+  .bg-\[\#16140f\]{background:#FFFFFF!important;border-color:#E6E2DC!important;box-shadow:0 1px 2px rgba(0,0,0,.064),0 20px 40px -24px rgba(0,0,0,.112)}
   /* 입력/서브 배경 */
-  .bg-\[\#0e0c0a\]{background:#120d07!important}
+  .bg-\[\#0e0c0a\]{background:#FAFAF8!important}
   /* 테두리 톤 */
-  .border-\[\#1e1c17\]{border-color:#2e2214!important}
+  .border-\[\#1e1c17\]{border-color:#E6E2DC!important}
   /* 텍스트 크림/웜 그레이 */
-  .text-\[\#9a9080\]{color:#CBB994!important}
-  .text-\[\#6b6358\]{color:#9c8f78!important}
-  .text-\[\#5a5248\]{color:#7d715c!important}
+  .text-\[\#9a9080\]{color:#4A4A4A!important}
+  .text-\[\#6b6358\]{color:#666666!important}
+  .text-\[\#5a5248\]{color:#8C8C8C!important}
   /* 라운드 살짝 키워 프리미엄 느낌 */
   .rounded-2xl{border-radius:22px!important}
   .rounded-xl{border-radius:14px!important}
   /* 입력 포커스 부드러운 글로우 */
-  input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(232,176,80,.13)}
+  input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(255,107,107,.078)}
   /* 칩·라디오 살짝 더 부드럽게 */
   .chip,.radio-card{border-radius:12px}
   #keyword-chips .chip{border-radius:100px}
   /* 섹션 헤더 아이콘칩 그라데이션 */
-  .bg-\[\#E8B050\]\/10{background:linear-gradient(135deg,rgba(232,176,80,.16),rgba(212,149,42,.06))!important}
+  .bg-\[\#E8B050\]\/10{background:linear-gradient(135deg,rgba(255,107,107,.16),rgba(255,107,107,.06))!important}
   /* 제출 버튼 그림자 */
-  .bg-y{box-shadow:0 10px 26px -8px rgba(232,176,80,.4)}
+  .bg-y{box-shadow:0 10px 26px -8px rgba(255,107,107,.24)}
   /* 스크롤바 */
-  ::-webkit-scrollbar-thumb{background:#3a2c18}
+  ::-webkit-scrollbar-thumb{background:#ECE9E4}
   /* 데모 폰 목업 프레임 (넓은 화면에서만, 모바일은 풀폭) */
-  .mkphone{max-width:434px;margin:22px auto 32px;background:#000;border-radius:46px;padding:12px;border:1px solid #2e2214;box-shadow:0 3px 8px rgba(0,0,0,.5),0 44px 90px -34px rgba(0,0,0,.92)}
-  .mkscreen{background:#0b0906;border-radius:36px;overflow:hidden}
+  .mkphone{max-width:434px;margin:22px auto 32px;background:#FAFAF8;border-radius:46px;padding:12px;border:1px solid #E6E2DC;box-shadow:0 3px 8px rgba(0,0,0,.08),0 44px 90px -34px rgba(0,0,0,.147)}
+  .mkscreen{background:#FAFAF8;border-radius:36px;overflow:hidden}
   @media(max-width:640px){.mkphone{max-width:none;margin:0;background:transparent;border:none;border-radius:0;padding:0;box-shadow:none}.mkscreen{border-radius:0}}
   /* 스텝 위저드 */
   .fsteps{display:flex;gap:6px;margin-bottom:8px}
-  .fchip{flex:1;text-align:center;font-size:11px;font-weight:700;color:#9c8f78;background:#17120b;border:1px solid #2e2214;border-radius:100px;padding:7px 4px}
-  .fchip.on{background:#E8B050;color:#0b0906;border-color:transparent}
+  .fchip{flex:1;text-align:center;font-size:11px;font-weight:700;color:#666666;background:#FFFFFF;border:1px solid #E6E2DC;border-radius:100px;padding:7px 4px}
+  .fchip.on{background:#FF6B6B;color:#fff;border-color:transparent}
   .fchip b{opacity:.55;margin-right:2px}
   .fstep{display:none;flex-direction:column;gap:1.4rem}
   .fstep.on{display:flex;animation:fadeUp .35s ease both}
   .fnav{display:flex;gap:10px;margin-top:2px}
-  .fnext{flex:1;background:#E8B050;color:#0b0906;border:none;font-weight:800;font-size:15px;padding:15px;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px -8px rgba(232,176,80,.4)}
-  .fprev{background:transparent;border:1px solid #2e2214;color:#CBB994;font-weight:700;font-size:14px;padding:15px 20px;border-radius:14px;cursor:pointer;font-family:inherit}
+  .fnext{flex:1;background:#FF6B6B;color:#fff;border:none;font-weight:800;font-size:15px;padding:15px;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px -8px rgba(255,107,107,.24)}
+  .fprev{background:transparent;border:1px solid #E6E2DC;color:#4A4A4A;font-weight:700;font-size:14px;padding:15px 20px;border-radius:14px;cursor:pointer;font-family:inherit}
 </style>
 <!-- 방문 통계 (Vercel Web Analytics: 대시보드에서 켜야 집계됨) -->
 <script defer src="/_vercel/insights/script.js"></script>
@@ -109,7 +107,7 @@
 <nav class="sticky top-0 z-50 bg-[#0e0c0a]/95 backdrop-blur-md border-b border-[#1e1c17] px-4 py-3">
   <div class="max-w-6xl mx-auto flex justify-between items-center">
     <a href="index.html" class="flex items-center gap-2">
-      <img src="logo.png" alt="썸류센터" class="h-8">
+      <img src="logo-dark.png" alt="썸류센터" class="h-8">
     </a>
     <a href="index.html" class="text-sm font-semibold text-[#9a9080] hover:text-white transition">
       <i class="fa-solid fa-arrow-left mr-1"></i>홈으로
@@ -139,16 +137,18 @@
       </span>
       <!-- 🏷️ BETA 오픈 특별가 — 4단계(결제 안내)에만 있어서 처음엔 안 보였다.
            지금 신청할 명분이 되는 문구라 가격 바로 옆으로 올린다. -->
-      <span class="inline-flex items-center gap-2 bg-white/90 text-black rounded-full px-4 py-1.5 text-xs font-black">
+      <!-- 색은 직접 적는다. 미리 만들어둔 tailwind.css 에 없는 색 이름(bg-white/90)을 써서
+           배경이 안 깔리고 검은 글자만 남아 안 보였다. -->
+      <span class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-black" style="background:#F5F0E6;color:#1E1E1E">
 🏷️ BETA 오픈 특별가
       </span>
     </div>
-    <div style="margin-top:16px;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;text-align:left;">
+    <div style="margin-top:16px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;text-align:left;">
       <span style="font-size:17px;flex-shrink:0">💛</span>
-      <span style="font-size:12.5px;color:#d8c8a8;font-weight:650;line-height:1.45">매칭이 <b style="color:#E8B050">성사될 때만</b> 결제해요.<br>매칭 안 되면 <b style="color:#E8B050">0원</b>이에요.</span>
+      <span style="font-size:12.5px;color:#1E1E1E;font-weight:650;line-height:1.45">매칭이 <b style="color:#E5484D">성사될 때만</b> 결제해요.<br>매칭 안 되면 <b style="color:#E5484D">0원</b>이에요.</span>
     </div>
-    <div style="margin-top:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:11px 14px;text-align:left;">
-      <span style="font-size:12px;color:#9a8b73;font-weight:600;line-height:1.5">📌 <b style="color:#d8c8a8">이미 신청하셨나요?</b> 다시 신청 안 하셔도 돼요! 내용 수정은 <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#E8B050;font-weight:700">카카오톡 채널</a>로 말씀해 주세요 ✏️</span>
+    <div style="margin-top:10px;background:rgba(0,0,0,.024);border:1px solid rgba(0,0,0,.064);border-radius:14px;padding:11px 14px;text-align:left;">
+      <span style="font-size:12px;color:#666666;font-weight:600;line-height:1.5">📌 <b style="color:#1E1E1E">이미 신청하셨나요?</b> 다시 신청 안 하셔도 돼요! 내용 수정은 <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#E5484D;font-weight:700">카카오톡 채널</a>로 말씀해 주세요 ✏️</span>
     </div>
     <!-- 테스트 결과 배지 (URL 파라미터로 넘어온 경우) -->
     <div id="test-result-badge" class="hidden bg-[#16140f] border border-[#E8B050]/40 rounded-xl p-3 mt-5 text-sm">
@@ -159,7 +159,7 @@
       </div>
     </div>
       <!-- 🤝 테스트 링크를 보내준 친구가 있는 경우 (주소의 friend 값) -->
-    <div id="test-friend-badge" class="hidden" style="margin-top:8px;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:12px;padding:10px 12px;font-size:12.5px;line-height:1.55;color:#E8B050;text-align:center"></div>
+    <div id="test-friend-badge" class="hidden" style="margin-top:8px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:12px;padding:10px 12px;font-size:12.5px;line-height:1.55;color:#E5484D;text-align:center"></div>
 </div>
 </header>
 
@@ -176,14 +176,14 @@
       <div class="fstep on" data-step="1">
 
       <!-- 준비물 안내: 시작 전에 미리 알면 중간 이탈이 줄어요 -->
-      <div style="background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:16px;padding:14px 16px;margin-bottom:18px">
-        <div style="font-size:13.5px;font-weight:800;color:#E8B050">📋 시작 전에 준비해 주세요 · 약 5분</div>
-        <div style="font-size:12.5px;color:#cfc6b8;line-height:1.7;margin-top:6px">
+      <div style="background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:16px;padding:14px 16px;margin-bottom:18px">
+        <div style="font-size:13.5px;font-weight:800;color:#E5484D">📋 시작 전에 준비해 주세요 · 약 5분</div>
+        <div style="font-size:12.5px;color:#1E1E1E;line-height:1.7;margin-top:6px">
           📸 내 사진 1~3장<br>
-          🪪 명함 · 사원증 · 재직증명서 중 1개 <span style="color:#8a8070">(폰으로 찍어서 올려도 돼요)</span><br>
-          💾 중간에 나가도 <b style="color:#E8B050">작성 내용은 자동 저장</b>돼요
+          🪪 명함 · 사원증 · 재직증명서 중 1개 <span style="color:#666666">(폰으로 찍어서 올려도 돼요)</span><br>
+          💾 중간에 나가도 <b style="color:#E5484D">작성 내용은 자동 저장</b>돼요
         </div>
-        <div style="font-size:11.5px;color:#8a8070;margin-top:8px">재직 인증은 센터장만 확인하고 2주 안에 자동 삭제돼요. 그래서 전원 직장인만 만나요.</div>
+        <div style="font-size:11.5px;color:#666666;margin-top:8px">재직 서류는 센터장만 확인해요. 탈퇴하거나 요청하시면 바로 삭제해 드려요. 그래서 전원 직장인만 만나요.</div>
       </div>
 
       <!-- AI 자동입력 -->
@@ -194,7 +194,7 @@
             <i class="fa-solid fa-wand-magic-sparkles"></i> AI 자동입력
           </button>
         </div>
-        <p style="font-size:11px;color:#6b6358">사진은 최대 3장까지 등록할 수 있습니다.</p>
+        <p style="font-size:11px;color:#8C8C8C">사진은 최대 3장까지 등록할 수 있습니다.</p>
         <div id="ai-body" class="ai-body">
           <div class="ai-hint">
             <p>한 줄에 하나씩 입력하면 AI가 폼을 자동으로 채워줍니다. 학력·특기 등 폼에 없는 내용은 자기소개에 입력됩니다.</p>
@@ -418,7 +418,7 @@
 
         <div class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl p-3 flex gap-2 items-start">
           <i class="fa-solid fa-lock y text-xs mt-0.5 shrink-0"></i>
-          <p class="text-[11px] text-[#6b6358] leading-relaxed">제출하신 서류는 재직 확인 목적으로만 사용되며, 신청 14일 뒤 자동으로 삭제돼요.</p>
+          <p class="text-[11px] text-[#6b6358] leading-relaxed">제출하신 서류는 재직 확인 목적으로만 사용돼요. 탈퇴하거나 삭제를 요청하시면 바로 삭제해 드려요.</p>
         </div>
       </div>
 
@@ -633,10 +633,10 @@
       </div>
       <!-- 제출 -->
       <div data-reveal>
-        <div style="background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:14px;padding:15px 16px;margin-bottom:14px;display:flex;gap:11px;align-items:flex-start">
+        <div style="background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:14px;padding:15px 16px;margin-bottom:14px;display:flex;gap:11px;align-items:flex-start">
           <i class="fa-solid fa-circle-info y" style="font-size:15px;margin-top:2px;flex-shrink:0"></i>
-          <p style="font-size:13.5px;line-height:1.7;color:#e0d7c9">
-            <b style="color:#FFD37A;font-size:14.5px">신청한다고 해서 100% 매칭되는 건 아니에요.</b><br>
+          <p style="font-size:13.5px;line-height:1.7;color:#1E1E1E">
+            <b style="color:#E5484D;font-size:14.5px">신청한다고 해서 100% 매칭되는 건 아니에요.</b><br>
             센터에서 프로필과 조건을 검토한 뒤, 잘 맞는 상대가 있을 때 소개해 드려요. 매칭 상대가 없을 수도 있는 점 양해 부탁드려요 🙏
           </p>
         </div>
@@ -688,6 +688,8 @@
       <a href="/rotation-0917" class="inline-block mt-2.5 text-[12px] font-bold text-[#E8B050]">→ 9/17 로테이션 신청하기</a>
     </div>
     -->
+    <!-- 🎟 초대·테스트 친구로 온 경우: 등록된 할인권 -->
+    <div id="success-coupon" class="hidden mt-4"></div>
     <!-- 💌 친구 소개 — 손님 기분이 제일 좋은 순간이라 여기에 둔다.
          ⚠️ 할인 금액은 적지 않는다. 아직 정해진 보상이 없는데 숫자를 쓰면 약속이 되어버린다. -->
     <div class="bg-[#16140f] border border-[#E8B050]/25 rounded-2xl p-4 mt-4 text-left">
@@ -704,9 +706,9 @@
 
 <!-- 푸터 -->
 <footer class="border-t border-[#1e1c17] px-5 py-8 text-center text-xs text-[#8a7f70]">
-  <img src="logo.png" alt="썸류센터" class="h-6 mx-auto mb-2">
+  <img src="logo-dark.png" alt="썸류센터" class="h-6 mx-auto mb-2">
   <p>1:1 온라인 매칭 서비스</p>
-  <p class="mt-2">문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#FFBE2E;text-decoration:none">카카오톡 채널 →</a></p>
+  <p class="mt-2">문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#E5484D;text-decoration:none">카카오톡 채널 →</a></p>
 </footer>
 
 <script>
@@ -901,6 +903,23 @@ function aiFillForm(){
   for(var h=150;h<=195;h++){ var o=document.createElement("option"); o.value=String(h); o.textContent=h+"cm"; sel.appendChild(o); }
 })();
 
+// 🎟 할인권 모양 — 손님에게 "쿠폰을 받았다"는 게 눈에 보이게 한다.
+//    왼쪽: 2,000원 할인권 / 오른쪽: 누구 초대인지, 언제 쓰는지
+//    글자는 textContent 로만 넣는다 (주소로 넘어온 이름이 섞이기 때문)
+function couponTicket(title, desc){
+  const w = document.createElement("div");
+  w.style.cssText = "display:flex;margin-top:12px;border-radius:16px;overflow:hidden;background:#FFFFFF;border:1px solid rgba(255,107,107,.45);text-align:left";
+  const l = document.createElement("div");
+  l.style.cssText = "flex:none;width:98px;background:linear-gradient(160deg,#FF8E7E,#FF6B6B);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 6px;border-right:2px dashed rgba(250,250,248,.4)";
+  l.innerHTML = '<b style="font-size:23px;font-weight:900;line-height:1">2,000<span style="font-size:12px">원</span></b><span style="font-size:11px;font-weight:800;margin-top:5px;letter-spacing:.12em">할인권</span>';
+  const r = document.createElement("div");
+  r.style.cssText = "flex:1;min-width:0;padding:11px 13px;word-break:keep-all";
+  const t = document.createElement("b"); t.style.cssText = "display:block;font-size:13.5px;color:#E5484D"; t.textContent = title;
+  const d = document.createElement("span"); d.style.cssText = "display:block;font-size:12px;color:#4A4A4A;line-height:1.5;margin-top:3px"; d.textContent = desc;
+  r.appendChild(t); r.appendChild(d); w.appendChild(l); w.appendChild(r);
+  return w;
+}
+
 // 🏆 '지인소개'를 고르면 "누가 소개해주셨어요?" 칸을 보여준다
 (function referrerToggle(){
   const sel = document.querySelector('select[name="inflow"]');
@@ -926,9 +945,7 @@ function aiFillForm(){
   sync();
   const input = box.querySelector('input[name="referralName"]');
   if(input) input.value = ref;
-  const b = document.createElement("div");
-  b.style.cssText = "margin-top:12px;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:12px;padding:12px 14px;font-size:13px;color:#E8B050;line-height:1.6";
-  b.textContent = "💌 " + ref + "님이 초대해주셨어요! 매칭 성사 시 첫 만남 2,000원 할인이 적용돼요.";
+  const b = couponTicket("💌 " + ref + "님 초대 할인권", "매칭이 성사되면 첫 만남 결제에서 2,000원을 빼드려요. 신청하면 자동으로 등록돼요.");
   box.parentNode.insertBefore(b, box);
 })();
 
@@ -997,7 +1014,9 @@ function testFriendName(){
 (function showTestFriend(){
   const name = testFriendName(); if(!name) return;
   const b = document.getElementById("test-friend-badge"); if(!b) return;
-  b.textContent = "🤝 " + name + "님과 같이 테스트했네요! 둘 다 매칭이 성사되면 첫 만남 결제 때 2,000원씩 할인해드려요.";
+  b.style.cssText = "margin-top:8px"; b.textContent = "";
+  b.appendChild(couponTicket("🤝 " + name + "님과 친구 할인권", "둘 다 매칭이 성사되면 첫 만남 결제에서 2,000원씩 빼드려요. 신청하면 자동으로 등록돼요."));
+  b.firstChild.style.marginTop = "0";
   b.classList.remove("hidden");
 })();
 
@@ -1140,7 +1159,7 @@ document.querySelectorAll("#keyword-chips .chip").forEach(chip => {
     document.getElementById("keywords-input").value = [...selectedKeywords].join(",");
     const count = selectedKeywords.size;
     document.getElementById("keyword-count").textContent = `${count}개 선택됨`;
-    document.getElementById("keyword-count").style.color = count >= 1 ? "#E8B050" : "#6b6358";
+    document.getElementById("keyword-count").style.color = count >= 1 ? "#F25C5C" : "#8C8C8C";
   });
 });
 
@@ -1178,7 +1197,7 @@ function restoreDraft(d){
     (d.keywords||[]).forEach(function(v){ selectedKeywords.add(v); });
     document.querySelectorAll("#keyword-chips .chip").forEach(function(c){ if(selectedKeywords.has(c.dataset.kw)) c.classList.add("selected"); });
     var kw=document.getElementById("keywords-input"); if(kw) kw.value=[...selectedKeywords].join(",");
-    var kc=document.getElementById("keyword-count"); if(kc){ kc.textContent=selectedKeywords.size+"개 선택됨"; kc.style.color=selectedKeywords.size>=1?"#E8B050":"#6b6358"; }
+    var kc=document.getElementById("keyword-count"); if(kc){ kc.textContent=selectedKeywords.size+"개 선택됨"; kc.style.color=selectedKeywords.size>=1?"#F25C5C":"#8C8C8C"; }
     goStep(d.step||1);
     // 임시저장에 유입경로가 비어 있었으면 테스트에서 넘어온 표시를 다시 채운다
     if(typeof applyTestSource==="function") applyTestSource();
@@ -1199,12 +1218,12 @@ window.addEventListener("load", function(){
     var d=JSON.parse(raw); if(!draftHasContent(d)) return;
     var f=_form(); if(!f) return;
     var b=document.createElement("div");
-    b.style.cssText="margin:0 16px 14px;background:rgba(232,176,80,.12);border:1px solid rgba(232,176,80,.4);border-radius:14px;padding:13px 15px";
-    b.innerHTML='<div style="font-size:13.5px;font-weight:800;color:#E8B050">📝 작성하던 신청서가 있어요</div>'
-      +'<div style="font-size:12px;color:#9a9080;margin-top:3px">이어서 쓸까요? (사진·서류는 다시 첨부해주세요)</div>'
+    b.style.cssText="margin:0 16px 14px;background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.4);border-radius:14px;padding:13px 15px";
+    b.innerHTML='<div style="font-size:13.5px;font-weight:800;color:#E5484D">📝 작성하던 신청서가 있어요</div>'
+      +'<div style="font-size:12px;color:#666666;margin-top:3px">이어서 쓸까요? (사진·서류는 다시 첨부해주세요)</div>'
       +'<div style="display:flex;gap:8px;margin-top:10px">'
-      +'<button type="button" id="draft-resume" style="flex:1;background:#E8B050;color:#171208;border:none;border-radius:10px;padding:10px;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer">이어서 작성</button>'
-      +'<button type="button" id="draft-fresh" style="background:transparent;color:#9a9080;border:1px solid #3a2e1f;border-radius:10px;padding:10px 14px;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer">새로 작성</button>'
+      +'<button type="button" id="draft-resume" style="flex:1;background:#FF6B6B;color:#fff;border:none;border-radius:10px;padding:10px;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer">이어서 작성</button>'
+      +'<button type="button" id="draft-fresh" style="background:transparent;color:#666666;border:1px solid #D9D5CD;border-radius:10px;padding:10px 14px;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer">새로 작성</button>'
       +'</div>';
     f.parentNode.insertBefore(b, f);
     document.getElementById("draft-resume").addEventListener("click", function(){ restoreDraft(d); b.remove(); });
@@ -1234,12 +1253,12 @@ document.getElementById("agree").addEventListener("change", function(){
   const box = document.getElementById("agree-box");
   const check = document.getElementById("agree-check");
   if(this.checked){
-    box.style.background = "#E8B050";
-    box.style.borderColor = "#E8B050";
+    box.style.background = "#FF6B6B";
+    box.style.borderColor = "#FF6B6B";
     check.classList.remove("hidden");
   } else {
     box.style.background = "transparent";
-    box.style.borderColor = "#6b6358";
+    box.style.borderColor = "#CFCAC2";
     check.classList.add("hidden");
   }
 });
@@ -1363,6 +1382,8 @@ async function handleSubmit(e){
     // 🤝 테스트 친구 — 유입경로가 '유형테스트'일 때만 (지인소개 추천인과 섞이지 않게)
     else if(payload.inflow === "유형테스트" && testFriendName()){
       fields["추천인이름"] = testFriendName();
+      // 🎟 테스트 친구 할인권 — 둘 다 성사됐는지는 센터장이 입금 안내 때 확인한다
+      fields["할인쿠폰"] = "테스트 친구 2,000원 할인 (둘 다 성사 시)";
     }
 
     // Airtable에 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)
@@ -1396,6 +1417,13 @@ async function handleSubmit(e){
       var infoSec = document.querySelector("section.px-5.pb-16"); if(infoSec) infoSec.classList.add("hidden");
       var success = document.getElementById("success-screen"); if(success) success.classList.remove("hidden");
       // 방금 쓴 이름을 초대 페이지로 넘겨서 또 입력하지 않게 한다
+      // 🎟 할인권이 실제로 저장됐을 때만 보여준다 (에어테이블에 칸이 없어서 빠졌으면 약속하지 않는다)
+      var sc = document.getElementById("success-coupon");
+      if(sc && attempt["할인쿠폰"]){
+        sc.textContent = "";
+        sc.appendChild(couponTicket("🎟 할인권이 등록됐어요", (attempt["추천인이름"] ? attempt["추천인이름"] + "님 초대 · " : "") + (/둘 다/.test(attempt["할인쿠폰"]) ? "둘 다 매칭이 성사되면" : "매칭이 성사되면") + " 입금 안내 때 2,000원을 빼고 알려드려요."));
+        sc.classList.remove("hidden");
+      }
       var inv = document.getElementById("success-invite");
       if(inv && fields["이름"]) inv.href = "/invite?name=" + encodeURIComponent(fields["이름"]);
       window.scrollTo({top: 0, behavior: "smooth"});

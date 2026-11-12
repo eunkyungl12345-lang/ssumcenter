@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>내 프로필 | 썸류센터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>
-  :root{--bg:#0e0c0a;--surface:#161310;--surface-2:#1e1811;--ink:#F0E4D0;--muted:#9a8b73;--faint:#6a5c4c;--line:#2a2117;--line-2:#3a2e1f;--amber:#E8B050;--gold:#FFD37A;--ok:#6FBE97;--ink-on:#171208;--female:#E88FB0;--male:#7EA6E0;}
+  :root{--bg:#FAFAF8;--surface:#FFFFFF;--surface-2:#FFFFFF;--ink:#1E1E1E;--muted:#666666;--faint:#8C8C8C;--line:#E6E2DC;--line-2:#D9D5CD;--amber:#F25C5C;--gold:#F25C5C;--ok:#45926C;--ink-on:#1E1E1E;--female:#AE285A;--male:#2D60A9;}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.6;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.6;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
   .wrap{max-width:520px;margin:0 auto;padding:18px 15px 50px}
   .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
   .top .h{font-size:19px;font-weight:900;display:flex;align-items:center;gap:7px}
   .top a{font-size:12px;color:var(--muted);text-decoration:none;font-weight:700}
-  .hello{background:linear-gradient(135deg,rgba(232,176,80,.1),transparent);border:1px solid var(--line-2);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+  .hello{background:linear-gradient(135deg,rgba(255,107,107,.1),transparent);border:1px solid var(--line-2);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
   .hello img{width:46px;height:46px;border-radius:50%;object-fit:cover;background:var(--surface-2)}
   .hello .nm{font-weight:800;font-size:16px}
   .hello .sub{font-size:12px;color:var(--muted)}
@@ -107,7 +108,7 @@
     var myNm = "";
     list.forEach(function(it){ var n=(it.rec.fields||{})["이름"]; if(!myNm && n) myNm=n; });
     html+='<div class="card"><div class="empty" style="text-align:left">'
-      +'<b style="color:#E8B050">💌 좋았다면 친구에게도 이어주세요</b><br>'
+      +'<b style="color:#E5484D">💌 좋았다면 친구에게도 이어주세요</b><br>'
       +'내 이름이 담긴 링크로 신청하면, 소개해주신 걸 센터장이 알 수 있어요.'
       +'<div><a href="/invite'+(myNm?('?name='+encodeURIComponent(myNm)):'')+'">💌 내 초대 링크 받기</a></div></div></div>';
     c.innerHTML=html;
@@ -130,6 +131,16 @@
       if(label==="성별"&&val) val='<span class="gd '+gd(val)+'">'+gl(val)+'</span>';
       if(val) ro+='<div class="k">'+label+'</div><div class="v">'+ (label==="성별"?val:esc(val)) +'</div>';
     });
+    // 🎟 내 할인권 (초대·테스트 친구로 신청한 경우 신청서에 등록돼 있다)
+    var cp=String(f["할인쿠폰"]||"").trim(), cpHtml="";
+    if(cp){
+      var used=/^사용함/.test(cp);
+      cpHtml='<div style="display:flex;margin:12px 0 4px;border-radius:16px;overflow:hidden;background:#FFFFFF;border:1px solid '+(used?'#F4F2EE':'rgba(242,92,92,.45)')+';text-align:left;'+(used?'opacity:.55':'')+'">'
+        +'<div style="flex:none;width:98px;background:'+(used?'#ECE9E4':'linear-gradient(160deg,#F25C5C,#F25C5C)')+';color:'+(used?'#666666':'#FFFFFF')+';display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 6px;border-right:2px dashed rgba(250,250,248,.4)">'
+        +'<b style="font-size:23px;font-weight:900;line-height:1">2,000<span style="font-size:12px">원</span></b><span style="font-size:11px;font-weight:800;margin-top:5px;letter-spacing:.12em">'+(used?'사용 완료':'할인권')+'</span></div>'
+        +'<div style="flex:1;min-width:0;padding:11px 13px;word-break:keep-all"><b style="display:block;font-size:13.5px;color:#E5484D">🎟 내 할인권</b>'
+        +'<span style="display:block;font-size:12px;color:#4A4A4A;line-height:1.5;margin-top:3px">'+(used?esc(cp):(/둘 다/.test(cp)?'친구와 둘 다 매칭이 성사되면':'매칭이 성사되면')+' 입금 안내 때 2,000원을 빼고 알려드려요.')+'</span></div></div>';
+    }
     var ph=photosOf(f);
     var phHtml=ph.length?ph.map(function(u){return '<img src="'+esc(u)+'">';}).join(""):'<div class="none">🙂</div>';
     var edits="";
@@ -139,6 +150,7 @@
     return '<div class="card">'
       + '<div class="ch">'+t.label+'</div>'
       + '<div class="ro">'+ro+'</div>'
+      + cpHtml
       + '<div class="lock">🔒 이름·연락처·나이는 수정할 수 없어요 (센터 확인용)</div>'
       + '<div class="fld" style="margin-top:14px"><label>프로필 사진</label>'
       +   '<div class="photos" id="ph-'+idx+'">'+phHtml+'</div>'
