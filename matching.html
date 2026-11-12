@@ -691,11 +691,12 @@
     <!-- 🎟 초대·테스트 친구로 온 경우: 등록된 할인권 -->
     <div id="success-coupon" class="hidden mt-4"></div>
     <!-- 💌 친구 소개 — 손님 기분이 제일 좋은 순간이라 여기에 둔다.
-         초대 혜택 = 둘 다 매칭 성사 시 2,000원씩 동반 할인 (2026-11 확정). 예전 '커피 한 잔'은 없앴다. -->
+         초대 혜택 (2026-11 확정): 친구가 내 링크로 신청하면 → 소개한 사람 본인이 매칭 성사되어 결제할 때 2,000원 할인.
+         친구(초대받은 사람)에게는 할인이 없다. "둘 다 할인"이라고 쓰지 말 것. 예전 '커피 한 잔'도 없앴다. -->
     <div class="mt-4 text-left" style="background:#FFFFFF;border:1px solid rgba(0,0,0,.03);border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.04);padding:18px">
-      <p class="text-[13px] text-[#E8B050] font-bold">💌 주변에 소개해주고 싶은 분이 있나요?</p>
-      <p class="text-[12px] text-[#8a8070] mt-1.5 leading-relaxed" style="word-break:keep-all"><b class="text-[#E8B050]">내 초대 링크로 친구가 신청하면, 둘 다 매칭 성사 시 첫 만남 결제할 때 2,000원씩 동반 할인해 드려요! 🎟️</b></p>
-      <a href="/invite" id="success-invite" class="inline-block mt-3 text-[13px] font-bold" style="background:#FF6B6B;color:#fff;border-radius:999px;padding:10px 16px">→ 친구랑 같이 2,000원 할인받기</a>
+      <p class="text-[13px] text-[#E8B050] font-bold">주변에 소개하고 2,000원 할인받기 🎟️</p>
+      <p class="text-[12px] text-[#8a8070] mt-1.5 leading-relaxed" style="word-break:keep-all">내 링크로 친구가 신청하면, 내가 매칭 성사되어 결제할 때 2,000원 할인 쿠폰을 드려요!</p>
+      <a href="/invite" id="success-invite" class="inline-block mt-3 text-[13px] font-bold" style="background:#FF6B6B;color:#fff;border-radius:999px;padding:10px 16px">→ 내 초대 링크 받기</a>
     </div>
     <a href="index.html" class="inline-block mt-6 bg-[#16140f] border border-[#1e1c17] text-white font-bold px-6 py-3 rounded-xl text-sm hover:border-[#E8B050] transition">
       <i class="fa-solid fa-arrow-left mr-1.5"></i>홈으로 돌아가기
@@ -945,7 +946,13 @@ function couponTicket(title, desc){
   sync();
   const input = box.querySelector('input[name="referralName"]');
   if(input) input.value = ref;
-  const b = couponTicket("💌 " + ref + "님 초대 할인권", "둘 다 매칭이 성사되면 첫 만남 결제에서 2,000원씩 빼드려요. 신청하면 자동으로 등록돼요.");
+  // 초대받아 온 친구에게는 할인이 없다 (할인은 소개한 사람 몫). 그래서 쿠폰 모양이 아니라 안내 한 줄만 보여준다.
+  const b = document.createElement("div");
+  b.style.cssText = "background:#FFFFFF;border:1px solid rgba(0,0,0,.03);border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.04);padding:14px 16px;margin-bottom:12px;font-size:13px;line-height:1.6;color:#1E1E1E;word-break:keep-all";
+  const t1 = document.createElement("b"); t1.textContent = "💌 " + ref + "님이 초대해주셨어요";
+  const t2 = document.createElement("div"); t2.style.cssText = "font-size:12px;color:#666666;margin-top:2px";
+  t2.textContent = "소개해주신 분 이름은 자동으로 들어가요. 따로 적지 않으셔도 돼요.";
+  b.appendChild(t1); b.appendChild(t2);
   box.parentNode.insertBefore(b, box);
 })();
 
@@ -1375,9 +1382,8 @@ async function handleSubmit(e){
     // 한 번씩 헛돌고 재시도하게 된다 (아래 재시도 로직이 받아주긴 하지만 느려진다).
     if(payload.inflow === "지인소개" && String(payload.referralName || "").trim()){
       fields["추천인이름"] = String(payload.referralName).trim();
-      // 💌 지인 초대 링크(?ref=이름)로 온 신청 — 초대한 사람과 둘 다 매칭이 성사되면 첫 만남 결제에서 2,000원씩 할인.
-      //    자동 적용은 아니고, 센터장이 이 칸을 보고 결제 단계에서 깎아준다.
-      fields["할인쿠폰"] = "지인추천 2,000원 할인 (둘 다 성사 시)";
+      // 💌 초대받아 온 친구에게는 할인쿠폰을 주지 않는다 (2026-11 확정). 할인은 '소개한 사람'이 받는다 —
+      //    1:1 매칭 관리가 이 추천인이름을 보고 소개한 분 카드에 "친구 초대 2,000원 할인"을 띄운다 (couponOf).
     }
     // 🤝 테스트 친구 — 유입경로가 '유형테스트'일 때만 (지인소개 추천인과 섞이지 않게)
     else if(payload.inflow === "유형테스트" && testFriendName()){
