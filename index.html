@@ -234,8 +234,8 @@ a{text-decoration:none;color:inherit}
 </section>
 
 <!-- 2. 재직 인증 직장 롤링 — 목록은 맨 아래 스크립트의 WORKPLACES 에서 고친다.
-     ⚠️ 실제로 재직 인증을 마친 회원이 있는 곳만 적을 것. 없는 회사를 적으면 거짓 광고가 된다. -->
-<section class="mq-sec" aria-label="재직 인증을 마친 분들의 직장">
+     ⚠️ 회사 이름(삼성전자·네이버 등)은 적지 않고 업종으로만 적는다 (2026-11-12 센터장 결정). -->
+<section class="mq-sec" aria-label="재직 인증을 마친 분들이 일하는 업종">
   <p class="mq-cap">재직 인증을 마친 분들이 일하는 곳</p>
   <div class="mq"><div class="mq-track" id="mq-track"></div></div>
 </section>
@@ -374,8 +374,8 @@ a{text-decoration:none;color:inherit}
 </footer>
 
 <script>
-/* 재직 인증 직장 롤링 — ⚠️ 실제로 재직 인증을 마친 회원이 있는 곳만 적는다. 고치려면 이 목록만 바꾸면 된다. */
-var WORKPLACES = ["삼성전자","네이버","카카오","토스","현대자동차","대학병원 의료인","공기업","외국계","스타트업","금융권"];
+/* 재직 인증 직장 롤링 — 회사 이름이 아니라 업종으로만 적는다. 고치려면 이 목록만 바꾸면 된다. */
+var WORKPLACES = ["대기업","IT·테크","금융권","공기업","대학병원 의료인","외국계","스타트업"];
 (function(){
   var box = document.getElementById("mq-track"); if(!box) return;
   // 끊김 없이 돌게 같은 줄을 두 번 깐다 (두 번째 줄은 화면 읽기 프로그램이 읽지 않게)
