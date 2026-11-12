@@ -521,6 +521,25 @@
         </div>
       </div>
 
+      <!-- 🔒 지인·직장 차단 — 홈에서 "지인 차단"을 약속하는 근거가 되는 칸이다.
+           적어준 연락처는 이 기기에서 암호처럼 바꿔서(해시) 보낸다. 남의 전화번호를 그대로 보관하지 않으려는 것.
+           1:1 매칭 관리에서 이 값과 맞는 사람은 매칭 자체가 막힌다. -->
+      <div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-5 mt-4">
+        <div class="flex items-center gap-2 mb-1">
+          <h2 class="font-bold text-sm">🔒 만나고 싶지 않은 사람이 있나요?</h2>
+          <span class="text-[10px] bg-[#1e1c17] text-[#9a9080] px-2 py-0.5 rounded-full font-bold ml-auto">선택</span>
+        </div>
+        <p class="text-[12px] text-[#9a9080] leading-relaxed mb-3" style="word-break:keep-all">전 연인, 회사 동료처럼 마주치기 싫은 분이 있다면 적어주세요. <b style="color:#E8B050">적어주신 연락처와는 매칭이 되지 않아요.</b> 상대에게는 알려지지 않아요.</p>
+        <label class="block text-xs font-bold text-[#9a9080] mb-2">피하고 싶은 연락처</label>
+        <textarea name="blockPhones" rows="2" placeholder="예: 010-1234-5678, 010-2222-3333"
+          class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#E8B050] focus:outline-none transition" style="resize:vertical"></textarea>
+        <p class="text-[11px] text-[#6b6358] mt-1.5 mb-3">여러 개면 쉼표나 줄바꿈으로 나눠주세요. 번호는 알아볼 수 없게 바꿔서 대조용으로만 보관해요.</p>
+        <label class="block text-xs font-bold text-[#9a9080] mb-2">피하고 싶은 회사</label>
+        <input type="text" name="blockCompany" placeholder="예: 지금 다니는 회사, 전 직장"
+          class="w-full bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-4 py-3 text-sm text-white focus:border-[#E8B050] focus:outline-none transition">
+        <p class="text-[11px] text-[#6b6358] mt-1.5">같은 회사 분은 센터장이 한 번 더 걸러요.</p>
+      </div>
+
       <div class="fnav">
         <button type="button" class="fprev" onclick="goStep(2)"><i class="fa-solid fa-arrow-left mr-1"></i>이전</button>
         <button type="button" class="fnext" onclick="nextStep(3)">다음 <i class="fa-solid fa-arrow-right ml-1"></i></button>
@@ -904,6 +923,27 @@ function aiFillForm(){
   var sel=document.getElementById("height-sel"); if(!sel) return;
   for(var h=150;h<=195;h++){ var o=document.createElement("option"); o.value=String(h); o.textContent=h+"cm"; sel.appendChild(o); }
 })();
+
+// 🔒 지인 차단 — 피하고 싶은 연락처를 알아볼 수 없는 값으로 바꾼다 (남의 전화번호를 그대로 보관하지 않는다).
+//    1on1-admin.html 의 phoneHash 와 똑같은 방식이어야 서로 맞춰볼 수 있다.
+//    번호는 뒤 8자리만 쓴다 (010-1234-5678 / +82 10 1234 5678 / 01012345678 을 같은 번호로 보기 위해).
+function blockPhoneKeys(text){
+  const out = [];
+  String(text || "").split(/[,\n;\/]+/).forEach(function(part){
+    const d = part.replace(/\D/g, "");
+    if(d.length >= 9 && d.length <= 13){ const k = d.slice(-8); if(out.indexOf(k) < 0) out.push(k); }
+  });
+  return out;
+}
+async function phoneHash(last8){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("ssum-block:" + last8));
+  return Array.from(new Uint8Array(buf)).slice(0, 8).map(function(b){ return b.toString(16).padStart(2, "0"); }).join("");
+}
+async function blockPhoneHashes(text){
+  const keys = blockPhoneKeys(text), out = [];
+  for(const k of keys) out.push(await phoneHash(k));
+  return out;
+}
 
 // 🎟 할인권 모양 — 손님에게 "쿠폰을 받았다"는 게 눈에 보이게 한다.
 //    왼쪽: 2,000원 할인권 / 오른쪽: 누구 초대인지, 언제 쓰는지
@@ -1387,6 +1427,13 @@ async function handleSubmit(e){
       // 🎟 테스트 친구 할인권 — 둘 다 성사됐는지는 센터장이 입금 안내 때 확인한다
       fields["할인쿠폰"] = "테스트 친구 2,000원 할인 (둘 다 성사 시)";
     }
+
+    // 🔒 지인·직장 차단 (적었을 때만 보낸다)
+    try {
+      const hashes = await blockPhoneHashes(payload.blockPhones);
+      if(hashes.length) fields["차단연락처"] = hashes.join(",");
+    } catch(e){ console.error("차단 연락처 처리 실패", e); }
+    if(String(payload.blockCompany || "").trim()) fields["차단회사"] = String(payload.blockCompany).trim().slice(0, 100);
 
     // Airtable에 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)
     let attempt = { ...fields };

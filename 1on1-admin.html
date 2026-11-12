@@ -1005,6 +1005,44 @@ function toggleExpand(id){
   }
 }
 
+// 🔒 지인·직장 차단 — 손님이 신청서에 "피하고 싶은 연락처·회사"를 적은 경우
+//    홈에서 "지인 차단"을 약속하고 있으므로, 여기서 걸리면 매칭 자체를 못 만들게 막는다 (예외 없음).
+//    - 연락처: 신청서가 번호를 알아볼 수 없는 값으로 바꿔서 보낸다. 같은 방식으로 신청자들의 번호를 바꿔 맞춰본다.
+//      (matching.html 의 phoneHash 와 똑같아야 한다)
+//    - 회사: 적어준 회사 이름이 상대의 직업 칸에 들어 있으면 막는다. 표기가 다르면 못 잡을 수 있어
+//      "100%"는 연락처에만 쓰고, 회사는 센터장이 한 번 더 본다.
+const phoneHashOf = {};   // 신청자 id → 번호를 바꾼 값
+async function phoneHash(last8){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("ssum-block:" + last8));
+  return Array.from(new Uint8Array(buf)).slice(0, 8).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+async function buildPhoneHashes(){
+  if(!(window.crypto && crypto.subtle)) return;
+  // 차단 연락처를 적은 사람이 한 명도 없으면 계산할 필요가 없다
+  if(!(applicants || []).some(r => (r.fields || {})["차단연락처"])) return;
+  for(const r of applicants){
+    if(phoneHashOf[r.id]) continue;
+    const d = String((r.fields || {})["연락처"] || "").replace(/\D/g, "");
+    if(d.length >= 9) phoneHashOf[r.id] = await phoneHash(d.slice(-8));
+  }
+}
+function blockTerms(v){ return String(v || "").split(/[,\/\n·]+/).map(x => x.replace(/\s+/g, "").toLowerCase()).filter(x => x.length >= 2); }
+function jobText(f){ return [f["직업"], f["직업_직장명"], f["직장명"]].filter(Boolean).join(" ").replace(/\s+/g, "").toLowerCase(); }
+// 두 사람이 서로 차단 대상이면 그 이유를, 아니면 "" 를 돌려준다
+function blockReason(a, b){
+  if(!a || !b) return "";
+  const fa = a.fields || {}, fb = b.fields || {};
+  const one = (x, fx, y, fy) => {
+    const hy = phoneHashOf[y.id];
+    if(hy && String(fx["차단연락처"] || "").split(",").map(v => v.trim()).includes(hy)) return (fx["이름"] || "한 분") + "님이 피하고 싶다고 적은 연락처예요";
+    const jy = jobText(fy);
+    const hit = jy ? blockTerms(fx["차단회사"]).find(t => jy.indexOf(t) >= 0) : null;
+    if(hit) return (fx["이름"] || "한 분") + "님이 피하고 싶다고 적은 회사예요 (" + hit + ")";
+    return "";
+  };
+  return one(a, fa, b, fb) || one(b, fb, a, fa);
+}
+
 // 🛡️ 과거 매칭·거절 이력 확인 (이미 만났거나 거절했던 사람 자동 제외)
 function hasPastMatchHistory(idA, idB){
   if(!idA || !idB) return false;
@@ -1060,6 +1098,7 @@ async function loadApplicants(){
       return;
     }
     applicants = pg.records;
+    try { await buildPhoneHashes(); } catch(e){ console.error("차단 연락처 준비 실패", e); }
     updateStats();
     applyMatchSort(); // 정렬 기준·방향 적용 + 하이라이트 동기화 후 렌더
     // 백그라운드에서 매칭·응답 기록도 미리 로드 (추천 시 과거 거절자 제외용)
@@ -1622,6 +1661,7 @@ function coffeeMatchesFor(rec){
     const of = o.fields || {};
     if(myGender && of["성별"] && of["성별"] === myGender) return false; // 이성만
     if(hasPastMatchHistory(rec.id, o.id)) return false; // 과거 이력자 제외
+    if(blockReason(rec, o)) return false;               // 지인·직장 차단
     return testPairFits(f["테스트결과"], of["테스트결과"]);
   });
 }
@@ -1804,6 +1844,7 @@ function renderList(){
             <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">종교</span><br><b>${f["종교"] || "-"}</b></div>
             <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">취미</span><br><b>${f["취미"] || "-"}</b></div>
             <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
+            ${(f["차단연락처"] || f["차단회사"]) ? `<div style="grid-column:1/-1;background:#0e0c0a;border:1px solid #2a2217;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">🔒 지인·직장 차단</span><br><b>${f["차단연락처"] ? "피하고 싶은 연락처 " + String(f["차단연락처"]).split(",").filter(Boolean).length + "개" : ""}${f["차단연락처"] && f["차단회사"] ? " · " : ""}${f["차단회사"] ? "회사: " + escHtml(f["차단회사"]) : ""}</b><div style="font-size:12px;color:#9a9080;margin-top:3px;font-weight:500">해당하는 분은 목록에 '🔒 매칭 불가'로 표시되고 매칭이 막혀요. 연락처는 알아볼 수 없는 값으로만 저장돼요.</div></div>` : ""}
             ${cpn ? `<div style="grid-column:1/-1;background:#0e0c0a;border:1px ${cpn.used ? "solid #2a2217" : "dashed rgba(232,176,80,.6)"};border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">🎟 할인권</span><br><b style="color:${cpn.used ? "#8a8070" : "#E8B050"}">${cpn.used ? escHtml(cpn.text) : "2,000원 할인 — 매칭 성사 후 입금 안내 때 적용"}</b>${cpn.used ? "" : `<div style="font-size:12px;color:#c9bfa8;margin-top:3px;font-weight:500">${escHtml(cpn.why)}</div>`}</div>` : ""}
             ${f["테스트결과"] ? `<div style="grid-column:1/-1;background:#0e0c0a;border:1px solid rgba(232,176,80,.3);border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">☕🪪 유형 테스트 결과 (영수증 · 사원증)</span><br><b style="color:#E8B050">${escHtml(f["테스트결과"])}</b>${testHintHtml(f["테스트결과"])}</div>` : ""}
           </div>
@@ -1873,7 +1914,8 @@ function renderList(){
     const scoreOf = fitScorer(pick);
     arr.forEach(r => {
       const st = r.fields["매칭상태"] || "대기";
-      if(hasPastMatchHistory(pick.id, r.id)) fitInfo[r.id] = { score: -2, why: "🚫 이미 소개했던 사이" };
+      if(blockReason(pick, r)) fitInfo[r.id] = { score: -3, why: "🔒 지인·직장 차단 — 매칭 불가" };
+      else if(hasPastMatchHistory(pick.id, r.id)) fitInfo[r.id] = { score: -2, why: "🚫 이미 소개했던 사이" };
       else if(st === "소개중") fitInfo[r.id] = { score: -1, why: "⏳ 다른 분과 소개 중" };
       else if(st !== "승인") fitInfo[r.id] = { score: 0, why: "· " + st };
       else fitInfo[r.id] = { score: scoreOf(r), why: "" };
@@ -2123,6 +2165,7 @@ function updateSmartRecommendations(){
     if(st === "소개중" || st === "거절" || st === "휴지통" || st === "제외") return false;
     // 🛡️ 과거 매칭·거절 이력 확인 (이미 만났거나 거절했던 사람 배제)
     if(hasPastMatchHistory(p.id, r.id)) return false;
+    if(blockReason(p, r)) return false;   // 🔒 지인·직장 차단
     return true;
   });
   if(!candidates.length){ box.innerHTML = ""; box.classList.add("hidden"); return; }
@@ -2238,6 +2281,13 @@ async function generateMatch(){
   // 🛡️ 같은 성별 차단 (실수로 남-남 / 여-여 매칭 방지)
   if(a["성별"] && b["성별"] && a["성별"] === b["성별"]){
     alert(`⚠️ ${a["이름"]||"선택1"}님과 ${b["이름"]||"선택2"}님은 둘 다 ${a["성별"]}이에요.\n이성끼리만 매칭할 수 있어요. 다시 골라주세요.`);
+    return;
+  }
+
+  // 🔒 지인·직장 차단 — 손님이 피하고 싶다고 적은 사람과는 매칭을 만들 수 없다 (홈에서 약속한 것)
+  const blocked = blockReason(selected[0], selected[1]);
+  if(blocked){
+    alert("🔒 이 두 분은 매칭할 수 없어요.\n\n" + blocked + ".\n\n손님이 신청서에 직접 적은 차단이라 예외 없이 막아요. 다른 분을 골라주세요.");
     return;
   }
 
