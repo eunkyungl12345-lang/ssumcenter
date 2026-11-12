@@ -1371,20 +1371,46 @@ async function sendReminderSms(id, link, btn){
 }
 
 // 💰 성사 커플 입금안내 문자 일괄 발송
+//    🎟 할인권이 있는 분은 보내기 전에 "2,000원 빼고 안내할까요?"를 묻는다.
+//       ("친구와 둘 다 성사"처럼 조건이 붙은 할인이 있어서, 적용 여부는 센터장이 정한다)
+//       적용해서 보냈으면 '할인쿠폰' 칸에 "사용함"을 적어 다음에 또 깎지 않게 한다.
 async function sendDepositSmsForPair(idA, idB, btn){
   const a = applicants.find(x => x.id === idA);
   const b = applicants.find(x => x.id === idB);
   if(!a && !b){ toast("신청자 정보를 찾을 수 없어요"); return; }
   const names = [a ? a.fields["이름"] : "", b ? b.fields["이름"] : ""].filter(Boolean).join(" · ");
   if(!confirm("성사된 커플(" + names + ")에게 입금 안내 문자를 보낼까요?")) return;
+  // 사람마다 할인 여부를 정한다
+  const plan = [a, b].filter(x => x && (x.fields||{})["연락처"]).map(x => {
+    const c = couponOf(x); let off = 0;
+    if(c && !c.used){
+      const nm = x.fields["이름"] || "회원";
+      if(confirm("🎟 " + nm + "님은 할인권이 있어요.\n(" + c.why + ")\n\n2,000원을 빼고 " + won(MATCH_PRICE - COUPON_OFF) + "원으로 안내할까요?\n\n[확인] " + won(MATCH_PRICE - COUPON_OFF) + "원으로 안내\n[취소] 정가 " + won(MATCH_PRICE) + "원으로 안내")) off = COUPON_OFF;
+    }
+    return { rec: x, off: off, coupon: c };
+  });
   const orig = btn ? btn.innerHTML : "";
   if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>발송 중...'; }
-  const depositText = (name) => "[썸류센터] 💌 매칭 성사를 축하드려요!\n\n" + name + "님, 서로의 프로필을 모두 수락하셔서 매칭이 성사되었습니다 🎉\n\n아래 계좌로 매칭비 입금 확인 후 서로의 연락처를 전달해 드릴게요 💛\n\n▸ 매칭비 19,900원\n▸ 카카오뱅크 장민 3333-34-1009531\n\n※ 입금자명과 신청서 이름이 일치해야 확인됩니다.";
-  let sent = 0;
+  const depositText = (name, off) => "[썸류센터] 💌 매칭 성사를 축하드려요!\n\n" + name + "님, 서로의 프로필을 모두 수락하셔서 매칭이 성사되었습니다 🎉\n\n아래 계좌로 매칭비 입금 확인 후 서로의 연락처를 전달해 드릴게요 💛\n\n"
+    + (off ? "▸ 매칭비 " + won(MATCH_PRICE) + "원\n▸ 🎟 할인권 -" + won(off) + "원\n▸ 입금하실 금액 " + won(MATCH_PRICE - off) + "원\n" : "▸ 매칭비 " + won(MATCH_PRICE) + "원\n")
+    + "▸ 카카오뱅크 장민 3333-34-1009531\n\n※ 입금자명과 신청서 이름이 일치해야 확인됩니다.";
+  let sent = 0, discounted = 0;
   try {
-    if(a && (a.fields||{})["연락처"]){ await sendSMS(a.fields["연락처"], depositText(a.fields["이름"]||"회원")); sent++; }
-    if(b && (b.fields||{})["연락처"]){ await sendSMS(b.fields["연락처"], depositText(b.fields["이름"]||"회원")); sent++; }
-    toast("💰 입금 안내 문자를 발송했어요 (" + sent + "명)");
+    for(const it of plan){
+      await sendSMS(it.rec.fields["연락처"], depositText(it.rec.fields["이름"]||"회원", it.off)); sent++;
+      if(it.off){
+        discounted++;
+        // 쓴 할인권 표시 (실패해도 문자는 이미 나갔으므로 알려만 준다)
+        const mark = "사용함 (" + new Date().toLocaleDateString("ko-KR") + ") · " + it.coupon.text;
+        try {
+          const r = await fetch("/api/airtable?table=1:1 매칭 신청&recordId=" + it.rec.id, { method: "PATCH", headers: apiHeaders(), body: JSON.stringify({ fields: { "할인쿠폰": mark } }) });
+          if(r.ok) it.rec.fields["할인쿠폰"] = mark;
+          else alert("⚠️ " + (it.rec.fields["이름"]||"") + "님 할인권을 '사용함'으로 표시하지 못했어요.\n에어테이블 '할인쿠폰' 칸에 직접 '사용함'이라고 적어주세요. (관리자 홈 🔧 버튼으로 칸을 만들 수 있어요)");
+        } catch(e){ alert("⚠️ 할인권 사용 표시 중 오류: " + e.message); }
+      }
+    }
+    toast("💰 입금 안내 문자를 발송했어요 (" + sent + "명" + (discounted ? " · 할인 적용 " + discounted + "명" : "") + ")");
+    if(discounted && typeof renderList === "function") renderList();
   } catch(e){ alert("발송 오류: " + e.message); }
   finally { if(btn){ btn.disabled = false; btn.innerHTML = orig; } }
 }
@@ -1600,6 +1626,26 @@ function coffeeMatchesFor(rec){
   });
 }
 
+// 🎟 할인권 — 누구에게 2,000원 할인이 걸려 있는지
+//    ① 초대받아 온 사람: 신청서가 '할인쿠폰' 칸에 적어둔다 (초대 링크 ?ref=, 테스트 친구 링크)
+//    ② 친구를 데려온 사람: 다른 신청자의 '추천인이름'이 이 사람 이름과 같으면 대상
+//       (초대 링크는 실명으로 만들어져서 잘 맞는다. 테스트 링크는 별명일 수 있어 안 맞을 수 있다 → 그땐 손님 말로 확인)
+//    쓰고 나면 '할인쿠폰' 칸에 "사용함 (날짜)" 를 적어 두 번 깎지 않게 한다.
+const COUPON_OFF = 2000, MATCH_PRICE = 19900;
+function nameKey(v){ return String(v || "").replace(/\s+/g, "").toLowerCase(); }
+function couponOf(rec){
+  const f = (rec && rec.fields) || {};
+  const raw = String(f["할인쿠폰"] || "").trim();
+  if(/^사용함/.test(raw)) return { used: true, text: raw, why: raw };
+  if(raw) return { used: false, text: raw, why: raw + (f["추천인이름"] ? " · 데려온 분: " + f["추천인이름"] : "") };
+  const me = nameKey(f["이름"]);
+  if(!me) return null;
+  const friends = (applicants || []).filter(o => o.id !== rec.id && nameKey((o.fields || {})["추천인이름"]) === me).map(o => (o.fields || {})["이름"] || "?");
+  if(friends.length) return { used: false, inviter: true, text: "친구 초대 2,000원 할인", why: "친구를 데려옴 → " + friends.join(", ") };
+  return null;
+}
+function won(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
 // 🔢 이 사람에게 소개가 몇 번 나갔는지 ('매칭' 표에 이름이 올라간 횟수)
 function introCount(id){
   if(!cachedMatches || !cachedMatches.length) return 0;
@@ -1710,6 +1756,12 @@ function renderList(){
     if(f["직업"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">💼 ${f["직업"]}</span>`);
     if(f["키"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">📏 ${f["키"]}cm</span>`);
     if(myCoffee) chips.push(`<span style="font-size:11px;color:#E8B050;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.2);padding:2px 7px;border-radius:6px">${myCoffee}</span>`);
+    // 📣 어디서 왔는지 (+ 누가 데려왔는지) — 예전엔 이 카드에 안 보였다
+    if(f["유입경로"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">📣 ${escHtml(f["유입경로"])}${f["추천인이름"] ? " (" + escHtml(f["추천인이름"]) + ")" : ""}</span>`);
+    const cpn = couponOf(r);
+    if(cpn) chips.push(cpn.used
+      ? `<span style="font-size:11px;color:#8a8070;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">🎟 할인권 사용함</span>`
+      : `<span style="font-size:11px;font-weight:800;color:#171208;background:#E8B050;padding:2px 8px;border-radius:6px">🎟 2,000원 할인권</span>`);
     const chipsHtml = chips.join(" ");
 
     return `<div class="appcard ${isSelected ? 'sel' : ''} ${shareMode && shareSel[r.id] ? 'share-on' : ''}">
@@ -1752,6 +1804,7 @@ function renderList(){
             <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">종교</span><br><b>${f["종교"] || "-"}</b></div>
             <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">취미</span><br><b>${f["취미"] || "-"}</b></div>
             <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
+            ${cpn ? `<div style="grid-column:1/-1;background:#0e0c0a;border:1px ${cpn.used ? "solid #2a2217" : "dashed rgba(232,176,80,.6)"};border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">🎟 할인권</span><br><b style="color:${cpn.used ? "#8a8070" : "#E8B050"}">${cpn.used ? escHtml(cpn.text) : "2,000원 할인 — 매칭 성사 후 입금 안내 때 적용"}</b>${cpn.used ? "" : `<div style="font-size:12px;color:#c9bfa8;margin-top:3px;font-weight:500">${escHtml(cpn.why)}</div>`}</div>` : ""}
             ${f["테스트결과"] ? `<div style="grid-column:1/-1;background:#0e0c0a;border:1px solid rgba(232,176,80,.3);border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">☕🪪 유형 테스트 결과 (영수증 · 사원증)</span><br><b style="color:#E8B050">${escHtml(f["테스트결과"])}</b>${testHintHtml(f["테스트결과"])}</div>` : ""}
           </div>
           ${matchHistoryFor(r.id)}

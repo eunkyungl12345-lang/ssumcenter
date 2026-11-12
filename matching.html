@@ -139,7 +139,9 @@
       </span>
       <!-- 🏷️ BETA 오픈 특별가 — 4단계(결제 안내)에만 있어서 처음엔 안 보였다.
            지금 신청할 명분이 되는 문구라 가격 바로 옆으로 올린다. -->
-      <span class="inline-flex items-center gap-2 bg-white/90 text-black rounded-full px-4 py-1.5 text-xs font-black">
+      <!-- 색은 직접 적는다. 미리 만들어둔 tailwind.css 에 없는 색 이름(bg-white/90)을 써서
+           배경이 안 깔리고 검은 글자만 남아 안 보였다. -->
+      <span class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-black" style="background:#F5F0E6;color:#171208">
 🏷️ BETA 오픈 특별가
       </span>
     </div>
@@ -688,6 +690,8 @@
       <a href="/rotation-0917" class="inline-block mt-2.5 text-[12px] font-bold text-[#E8B050]">→ 9/17 로테이션 신청하기</a>
     </div>
     -->
+    <!-- 🎟 초대·테스트 친구로 온 경우: 등록된 할인권 -->
+    <div id="success-coupon" class="hidden mt-4"></div>
     <!-- 💌 친구 소개 — 손님 기분이 제일 좋은 순간이라 여기에 둔다.
          ⚠️ 할인 금액은 적지 않는다. 아직 정해진 보상이 없는데 숫자를 쓰면 약속이 되어버린다. -->
     <div class="bg-[#16140f] border border-[#E8B050]/25 rounded-2xl p-4 mt-4 text-left">
@@ -901,6 +905,23 @@ function aiFillForm(){
   for(var h=150;h<=195;h++){ var o=document.createElement("option"); o.value=String(h); o.textContent=h+"cm"; sel.appendChild(o); }
 })();
 
+// 🎟 할인권 모양 — 손님에게 "쿠폰을 받았다"는 게 눈에 보이게 한다.
+//    왼쪽: 2,000원 할인권 / 오른쪽: 누구 초대인지, 언제 쓰는지
+//    글자는 textContent 로만 넣는다 (주소로 넘어온 이름이 섞이기 때문)
+function couponTicket(title, desc){
+  const w = document.createElement("div");
+  w.style.cssText = "display:flex;margin-top:12px;border-radius:16px;overflow:hidden;background:#1d170d;border:1px solid rgba(232,176,80,.45);text-align:left";
+  const l = document.createElement("div");
+  l.style.cssText = "flex:none;width:98px;background:linear-gradient(160deg,#F2C46B,#D4952A);color:#1a1206;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 6px;border-right:2px dashed rgba(26,18,6,.4)";
+  l.innerHTML = '<b style="font-size:23px;font-weight:900;line-height:1">2,000<span style="font-size:12px">원</span></b><span style="font-size:11px;font-weight:800;margin-top:5px;letter-spacing:.12em">할인권</span>';
+  const r = document.createElement("div");
+  r.style.cssText = "flex:1;min-width:0;padding:11px 13px;word-break:keep-all";
+  const t = document.createElement("b"); t.style.cssText = "display:block;font-size:13.5px;color:#E8B050"; t.textContent = title;
+  const d = document.createElement("span"); d.style.cssText = "display:block;font-size:12px;color:#c9bfa8;line-height:1.5;margin-top:3px"; d.textContent = desc;
+  r.appendChild(t); r.appendChild(d); w.appendChild(l); w.appendChild(r);
+  return w;
+}
+
 // 🏆 '지인소개'를 고르면 "누가 소개해주셨어요?" 칸을 보여준다
 (function referrerToggle(){
   const sel = document.querySelector('select[name="inflow"]');
@@ -926,9 +947,7 @@ function aiFillForm(){
   sync();
   const input = box.querySelector('input[name="referralName"]');
   if(input) input.value = ref;
-  const b = document.createElement("div");
-  b.style.cssText = "margin-top:12px;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.3);border-radius:12px;padding:12px 14px;font-size:13px;color:#E8B050;line-height:1.6";
-  b.textContent = "💌 " + ref + "님이 초대해주셨어요! 매칭 성사 시 첫 만남 2,000원 할인이 적용돼요.";
+  const b = couponTicket("💌 " + ref + "님 초대 할인권", "매칭이 성사되면 첫 만남 결제에서 2,000원을 빼드려요. 신청하면 자동으로 등록돼요.");
   box.parentNode.insertBefore(b, box);
 })();
 
@@ -997,7 +1016,9 @@ function testFriendName(){
 (function showTestFriend(){
   const name = testFriendName(); if(!name) return;
   const b = document.getElementById("test-friend-badge"); if(!b) return;
-  b.textContent = "🤝 " + name + "님과 같이 테스트했네요! 둘 다 매칭이 성사되면 첫 만남 결제 때 2,000원씩 할인해드려요.";
+  b.style.cssText = "margin-top:8px"; b.textContent = "";
+  b.appendChild(couponTicket("🤝 " + name + "님과 친구 할인권", "둘 다 매칭이 성사되면 첫 만남 결제에서 2,000원씩 빼드려요. 신청하면 자동으로 등록돼요."));
+  b.firstChild.style.marginTop = "0";
   b.classList.remove("hidden");
 })();
 
@@ -1363,6 +1384,8 @@ async function handleSubmit(e){
     // 🤝 테스트 친구 — 유입경로가 '유형테스트'일 때만 (지인소개 추천인과 섞이지 않게)
     else if(payload.inflow === "유형테스트" && testFriendName()){
       fields["추천인이름"] = testFriendName();
+      // 🎟 테스트 친구 할인권 — 둘 다 성사됐는지는 센터장이 입금 안내 때 확인한다
+      fields["할인쿠폰"] = "테스트 친구 2,000원 할인 (둘 다 성사 시)";
     }
 
     // Airtable에 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)
@@ -1396,6 +1419,13 @@ async function handleSubmit(e){
       var infoSec = document.querySelector("section.px-5.pb-16"); if(infoSec) infoSec.classList.add("hidden");
       var success = document.getElementById("success-screen"); if(success) success.classList.remove("hidden");
       // 방금 쓴 이름을 초대 페이지로 넘겨서 또 입력하지 않게 한다
+      // 🎟 할인권이 실제로 저장됐을 때만 보여준다 (에어테이블에 칸이 없어서 빠졌으면 약속하지 않는다)
+      var sc = document.getElementById("success-coupon");
+      if(sc && attempt["할인쿠폰"]){
+        sc.textContent = "";
+        sc.appendChild(couponTicket("🎟 할인권이 등록됐어요", (attempt["추천인이름"] ? attempt["추천인이름"] + "님 초대 · " : "") + (/둘 다/.test(attempt["할인쿠폰"]) ? "둘 다 매칭이 성사되면" : "매칭이 성사되면") + " 입금 안내 때 2,000원을 빼고 알려드려요."));
+        sc.classList.remove("hidden");
+      }
       var inv = document.getElementById("success-invite");
       if(inv && fields["이름"]) inv.href = "/invite?name=" + encodeURIComponent(fields["이름"]);
       window.scrollTo({top: 0, behavior: "smooth"});
