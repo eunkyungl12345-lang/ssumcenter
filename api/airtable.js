@@ -494,7 +494,7 @@ module.exports = async function handler(req, res) {
         memberLine = `\n⚠️ 회원명부 적립 실패: ${e.message}`;
       }
 
-      // 🪪 재직 서류 자동 파기 — 처리방침에 적은 "신청 14일 뒤 삭제"를 실제로 지킨다 (api/_docpurge.js)
+      // 🪪 재직 서류 자동 파기 — 지금은 꺼져 있어 아무 일도 하지 않는다 (api/_docpurge.js 의 PURGE_ON)
       let docLine = "";
       try {
         docLine = await purgeDocs({ TOKEN, BASE_ID, sources: [
