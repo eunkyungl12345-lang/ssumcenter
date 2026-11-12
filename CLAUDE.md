@@ -27,7 +27,7 @@
 - `apply.html` — 재테크 미팅 신청 폼 (→ Airtable 재테크 커피팅)
 - `matching.html` — 1:1 매칭 신청 폼 (→ Airtable 1:1 매칭 신청)
 - `oneone.html` — 1:1 매칭 소개 페이지
-- `admin.html` — 관리자 홈 (`/admin`, 메뉴 + 로그아웃)
+- `admin.html` — 관리자 홈 (`/admin`). 2026-11 리뉴얼: 밝은 테마, 맨 위 1순위 = 1:1 매칭 관리 · 회원 명부 · 에어테이블 상태(상태 확인 + 🔧 칸 만들기). 로테이션·투표·자리표 등 지난 오프라인 행사 메뉴 12개는 맨 아래 `<details class="past">` 접기 안에 있다 (로테이션을 다시 열면 위로 올릴 것). 버튼 id(`statusBtn`·`setupBtn`·`logoutBtn`)는 스크립트가 쓰니 바꾸지 말 것.
 - `rotation-admin.html` — 로테이션 신청 승인 · 입금확인 · 문자 발송
 - `lineup.html` / `attendance.html` / `vote-admin.html` / `participants.html` — 라인업 · 출석부 · 투표 · 참가자 마스터
 - `1on1-admin.html` — 1:1 매칭 관리 (신청 승인 · 상대 매칭 · 응답 관리)

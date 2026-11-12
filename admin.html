@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,140 +9,170 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <style>
-  :root{color-scheme:dark;--bg:#0c0a08;--surface:#161310;--surface-2:#1e1811;--ink:#EDE0CC;--muted:#998870;--faint:#6a5c4c;--line:#2a2117;--line-strong:#3a2e1f;--amber:#E8B050;--rose:#E88FB0;--male:#7EA6E0;}
+  /* 관리자 홈 (2026-11 리뉴얼) — 1:1 매칭 중심.
+     맨 위 1순위: 1:1 매칭 관리 · 회원 명부 · 에어테이블 상태
+     지난 오프라인 행사(로테이션·투표·자리표…) 메뉴는 맨 아래 접기 안에 둔다. 다시 열면 그때 위로 올린다. */
+  :root{color-scheme:light;--bg:#FAFAF8;--card:#FFFFFF;--ink:#1E1E1E;--sub:#666666;--faint:#767676;--line:#EEEBE6;--line2:#E0DCD5;
+        --coral:#E5484D;--coral-soft:#FF6B6B;--peach:#FFF1EC;--peach-line:#FFD9CF;--ok:#1F9D5B;--bad:#D23B40;
+        --radius:20px;--shadow:0 4px 24px rgba(0,0,0,.04)}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em}
+  body{background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,Apple SD Gothic Neo,system-ui,sans-serif;line-height:1.5;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;word-break:keep-all}
   a{text-decoration:none;color:inherit}
-  .wrap{max-width:600px;margin:0 auto;padding:32px 18px 70px}
-  .top{text-align:center;margin-bottom:28px}
-  .top .badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--amber);background:rgba(232,176,80,.1);border:1px solid rgba(232,176,80,.3);padding:5px 14px;border-radius:999px}
-  .top h1{font-size:25px;font-weight:900;margin-top:14px}
-  .top p{font-size:13px;color:var(--muted);margin-top:6px}
-  .group{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px}
-  .group .gh{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:900;margin-bottom:4px}
-  .group .gd{font-size:12px;color:var(--muted);margin-bottom:15px}
-  .rot .gh{color:var(--amber)} .one .gh{color:var(--rose)}
-  .links{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-  .links.solo{grid-template-columns:1fr}
-  .lk{display:flex;align-items:center;gap:9px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:13px;padding:14px 15px;font-size:14px;font-weight:750;transition:border-color .15s,transform .1s}
-  .lk:hover{border-color:var(--amber)} .lk:active{transform:scale(.98)}
-  .lk .ico{font-size:19px}
-  .lk .ar{margin-left:auto;color:var(--faint);font-size:13px}
-  /* 설명이 붙은 메뉴: 제목과 화살표는 윗줄, 설명은 아랫줄로 내린다.
-     (한 줄에 다 넣으면 폰에서 제목이 '자/리/표'처럼 한 글자씩 세로로 깨졌다) */
-  .lk{flex-wrap:wrap;word-break:keep-all}
-  .lk .ar{order:2}
-  .lk > span[style*="font-size:11px"]{order:3;flex:1 1 100%;padding-left:28px;margin-top:-5px;line-height:1.45}
-  .lk.main{background:linear-gradient(135deg,rgba(232,176,80,.16),rgba(232,176,80,.05));border-color:rgba(232,176,80,.35);color:var(--amber);font-weight:800;grid-column:1/-1}
-  .lk.mainone{background:linear-gradient(135deg,rgba(232,143,176,.16),rgba(232,143,176,.05));border-color:rgba(232,143,176,.35);color:var(--rose)}
-  .foot{text-align:center;font-size:11.5px;color:var(--faint);margin-top:22px;line-height:1.7}
-  .foot a{color:var(--muted)}
-  .logout{display:block;width:100%;margin-top:4px;background:transparent;border:1px solid var(--line-strong);color:var(--muted);
-          border-radius:13px;padding:12px;font-size:13px;font-weight:750;cursor:pointer;font-family:inherit}
-  .logout:hover{border-color:var(--rose);color:var(--rose)}
-  .logout:active{transform:scale(.98)}
-  .statusbtn{display:block;width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--ink);
-             border-radius:13px;padding:12px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit}
-  .statusbtn:hover{border-color:var(--amber);color:var(--amber)}
-  .statusbtn:active{transform:scale(.98)}
-  .statusout{display:none;margin-top:11px;font-size:12.5px;line-height:1.9}
+  button{font-family:inherit}
+  .wrap{max-width:640px;margin:0 auto;padding:28px 18px 64px}
+
+  .top{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .top img{height:30px;display:block}
+  .top h1{font-size:20px;font-weight:800;letter-spacing:-.03em}
+  .top p{font-size:12.5px;color:var(--sub);margin-top:1px}
+  .top .home{margin-left:auto;font-size:12.5px;color:var(--sub);padding:8px 4px}
+
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.03)}
+  .label{font-size:12.5px;font-weight:700;color:var(--faint);margin:26px 4px 10px}
+
+  /* 1순위 큰 카드 */
+  .hero{display:flex;align-items:center;gap:16px;padding:24px 22px;background:linear-gradient(135deg,#FFF1EC,#FFFFFF 70%);border:1px solid var(--peach-line);transition:transform .15s,box-shadow .15s}
+  .hero:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(229,72,77,.10)}
+  .hero .ico{flex:none;width:56px;height:56px;border-radius:18px;background:var(--coral);display:grid;place-items:center;font-size:28px;box-shadow:0 8px 20px rgba(229,72,77,.25)}
+  .hero h2{font-size:21px;font-weight:800;letter-spacing:-.03em}
+  .hero p{font-size:13px;color:var(--sub);margin-top:3px;line-height:1.5}
+  .hero .ar{margin-left:auto;font-size:20px;color:var(--coral);font-weight:700}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  .big{display:flex;flex-direction:column;gap:10px;padding:20px;transition:transform .15s,box-shadow .15s}
+  a.big:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.07)}
+  .big .ico{width:44px;height:44px;border-radius:14px;background:var(--peach);display:grid;place-items:center;font-size:22px}
+  .big h3{font-size:17px;font-weight:800;letter-spacing:-.02em}
+  .big p{font-size:12.5px;color:var(--sub);line-height:1.5}
+  @media(max-width:520px){.two{grid-template-columns:1fr}.hero{padding:22px 18px}.hero h2{font-size:19px}}
+
+  /* 에어테이블 상태 */
+  .btn{display:block;width:100%;border-radius:999px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;border:1px solid var(--line2);background:#fff;color:var(--ink);transition:border-color .15s,background .15s}
+  .btn:hover{border-color:var(--coral);color:var(--coral)}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.55;cursor:default}
+  .btn.primary{background:var(--coral);border-color:var(--coral);color:#fff}
+  .btn.primary:hover{background:#D63D43;color:#fff}
+  .statusout{display:none;margin-top:4px;font-size:13px;line-height:1.8;background:var(--bg);border-radius:14px;padding:4px 14px 10px}
   .statusout.on{display:block}
-  .statusout .row{display:flex;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+  .statusout .row{display:flex;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
   .statusout .row:first-child{border-top:none}
-  .statusout .k{color:var(--muted);flex:1}
+  .statusout .k{color:var(--sub);flex:1}
   .statusout .v{font-weight:800}
-  .statusout .bad{color:var(--rose);white-space:pre-wrap;word-break:break-all}
-  .statusout .note{color:var(--faint);font-size:11.5px;margin-top:8px}
+  .statusout .bad{color:var(--bad);white-space:pre-wrap;word-break:break-all}
+  .statusout .note{color:var(--faint);font-size:12px;margin-top:6px}
+  #setupOut{display:none;margin-top:10px;background:var(--bg);border-radius:14px;padding:12px 14px;font-size:12.5px;line-height:1.85;color:#444;white-space:pre-wrap;word-break:break-all}
+  .hint{font-size:12px;color:var(--faint);line-height:1.6;margin-top:10px}
+
+  /* 작은 메뉴 */
+  .list{overflow:hidden}
+  .item{display:flex;align-items:center;gap:12px;padding:15px 18px;border-top:1px solid var(--line);transition:background .15s}
+  .item:first-child{border-top:none}
+  .item:hover{background:#FCFBF9}
+  .item .ico{flex:none;width:36px;height:36px;border-radius:12px;background:var(--bg);display:grid;place-items:center;font-size:18px}
+  .item b{display:block;font-size:14.5px;font-weight:700}
+  .item small{display:block;font-size:12px;color:var(--faint);margin-top:1px}
+  .item .ar{margin-left:auto;color:#B5B0A8;font-size:14px}
+
+  /* 지난 오프라인 행사 — 기본 접힘 */
+  details.past{margin-top:26px}
+  details.past summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:16px 18px;font-size:14.5px;font-weight:700;color:var(--sub);user-select:none}
+  details.past summary::-webkit-details-marker{display:none}
+  details.past summary .tw{margin-left:auto;font-size:12px;color:var(--faint);transition:transform .2s}
+  details.past[open] summary .tw{transform:rotate(180deg)}
+  details.past[open] summary{border-bottom:1px solid var(--line)}
+  details.past .grid{display:grid;grid-template-columns:1fr 1fr}
+  details.past .grid .item{border-top:1px solid var(--line)}
+  details.past .grid .item:nth-child(odd){border-right:1px solid var(--line)}
+  details.past .grid .item:nth-child(-n+2){border-top:none}
+  details.past .note{font-size:12px;color:var(--faint);padding:12px 18px 16px;border-top:1px solid var(--line);line-height:1.6}
+  details.past .note a{color:var(--sub);text-decoration:underline}
+  @media(max-width:520px){details.past .grid{grid-template-columns:1fr}details.past .grid .item:nth-child(odd){border-right:none}details.past .grid .item:nth-child(2){border-top:1px solid var(--line)}}
+
+  .foot{text-align:center;font-size:12px;color:var(--faint);margin-top:26px;line-height:1.9}
+  .foot a{color:var(--sub)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <span class="badge">SSUMLYU · ADMIN</span>
-    <h1>썸류센터 관리자</h1>
-    <p>관리할 걸 골라주세요</p>
+    <img src="/logo-dark.png" alt="썸류센터">
+    <div><h1>관리자 홈</h1><p>1:1 매칭 운영</p></div>
+    <a class="home" href="/" target="_blank" rel="noopener">사이트 보기 ↗</a>
   </div>
 
-  <!-- 📊 상태판 — 지금 잘 돌아가는지 한눈에 -->
-  <div class="group">
-    <div class="gh" style="font-size:15px">📊 지금 상태</div>
-    <div class="gd">1:1 매칭 기준이에요. 눌렀을 때만 확인해요. (자동으로 계속 조회하면 에어테이블 한도를 써버려서요)</div>
-    <button class="statusbtn" id="statusBtn">🔄 상태 확인하기</button>
-    <div id="statusOut" class="statusout"></div>
-  </div>
-
-  <!-- 로테이션 그룹 -->
-  <div class="group rot">
-    <div class="gh">🎡 로테이션 (썸배달)</div>
-    <div class="gd">신청 승인 → 입금 → 확정 → 라인업 · 출석까지</div>
-    <div class="links">
-      <a class="lk main" href="/rotation-admin"><span class="ico">📋</span> 신청 승인 · 문자 <span class="ar">→</span></a>
-      <a class="lk" href="/lineup"><span class="ico">🎬</span> 라인업 <span class="ar">→</span></a>
-      <a class="lk" href="/attendance"><span class="ico">✅</span> 출석부 <span class="ar">→</span></a>
-      <a class="lk" href="/seatmap"><span class="ico">🪑</span> 자리표 <span style="font-size:11px;color:var(--faint);font-weight:600">— 좌석 지도·빈자리</span> <span class="ar">→</span></a>
-      <a class="lk" href="/vote-admin"><span class="ico">🗳️</span> 투표 <span class="ar">→</span></a>
-      <a class="lk" href="/vote-demo" target="_blank"><span class="ico">🎬</span> 투표 데모 <span style="font-size:11px;color:var(--faint);font-weight:600">— 친구들에게 보여주기</span> <span class="ar">→</span></a>
-      <a class="lk" href="/vote-test"><span class="ico">🧪</span> 투표 테스트 <span style="font-size:11px;color:var(--faint);font-weight:600">— 친구들과 실제 투표 연습</span> <span class="ar">→</span></a>
-      <a class="lk" href="/vote-ops"><span class="ico">⭐</span> 투표 운영 매뉴얼 <span style="font-size:11px;color:var(--faint);font-weight:600">— 센터장·스태프용</span> <span class="ar">→</span></a>
-      <a class="lk" href="/vote-guide" target="_blank"><span class="ico">🙋</span> 손님 안내 <span style="font-size:11px;color:var(--faint);font-weight:600">— 손님에게 공유하는 링크</span> <span class="ar">→</span></a>
-      <a class="lk" href="/prints"><span class="ico">🖨️</span> 출력물 <span style="font-size:11px;color:var(--faint);font-weight:600">— 프로필 카드(설문지) 인쇄</span> <span class="ar">→</span></a>
-      <a class="lk" href="/participants" style="grid-column:1/-1"><span class="ico">🎯</span> 참가자 마스터 <span style="font-size:11px;color:var(--faint);font-weight:600">— 누가 겹치게 왔는지 · 단골</span> <span class="ar">→</span></a>
-      <a class="lk" href="/guide" style="grid-column:1/-1"><span class="ico">🎤</span> 진행 가이드 · 대본 <span style="font-size:11px;color:var(--faint);font-weight:600">— 오프닝·엔딩 멘트 · 프로세스</span> <span class="ar">→</span></a>
+  <!-- ① 1순위 -->
+  <a class="card hero" href="/1on1-admin">
+    <span class="ico">💑</span>
+    <div><h2>1:1 매칭 관리</h2><p>신청 승인 · 상대 매칭 · 응답/성사 · 입금 안내</p></div>
+    <span class="ar">→</span>
+  </a>
+  <div class="two">
+    <a class="card big" href="/members">
+      <span class="ico">👥</span>
+      <h3>회원 명부</h3>
+      <p>카카오 가입자 + 신청자 통합 · 유입경로별 · 검색</p>
+    </a>
+    <div class="card big">
+      <span class="ico">📊</span>
+      <h3>에어테이블 상태</h3>
+      <p>오늘 신청·응답 수와 에어테이블·문자 발송이 잘 되는지 확인해요.</p>
+      <button class="btn primary" id="statusBtn">🔄 상태 확인하기</button>
+      <div id="statusOut" class="statusout"></div>
     </div>
   </div>
+  <div class="card" style="padding:18px 20px;margin-top:12px">
+    <h3 style="font-size:15px;font-weight:800">🔧 필요한 칸 한 번에 만들기</h3>
+    <p class="hint" style="margin-top:4px">슬랙에 <b style="color:var(--ink)">⚠️ "○○ 칸이 없어요"</b> 알림이 오면 눌러주세요. 이미 있는 칸은 건드리지 않아서 여러 번 눌러도 괜찮아요.</p>
+    <button class="btn" id="setupBtn" style="margin-top:12px">🔧 칸 만들기</button>
+    <div id="setupOut"></div>
+    <p class="hint">상태 확인은 눌렀을 때만 해요. 자동으로 계속 조회하면 에어테이블 월 한도를 써버려서요.</p>
+  </div>
 
-  <!-- 1:1 매칭 그룹 -->
-  <div class="group one">
-    <div class="gh">💘 1:1 매칭</div>
-    <div class="gd">신청 승인 · 상대 매칭 · 응답/성사 관리</div>
-    <div class="links">
-      <a class="lk mainone" href="/1on1-admin" style="grid-column:1/-1"><span class="ico">💑</span> 1:1 매칭 관리 <span class="ar">→</span></a>
-      <a class="lk" href="/1on1" style="grid-column:1/-1"><span class="ico">📊</span> 1:1 대시보드 <span style="font-size:11px;color:var(--faint);font-weight:600">— 오늘 처리·매칭 일지 한눈에</span> <span class="ar">→</span></a>
-      <a class="lk" href="/guide-1on1" style="grid-column:1/-1"><span class="ico">💘</span> 1:1 매칭 프로세스 <span style="font-size:11px;color:var(--faint);font-weight:600">— 신청→승인→매칭→성사 흐름</span> <span class="ar">→</span></a>
+  <!-- ② 1:1 매칭 도구 -->
+  <div class="label">1:1 매칭 도구</div>
+  <div class="card list">
+    <a class="item" href="/1on1"><span class="ico">📈</span><div><b>1:1 대시보드</b><small>오늘 처리할 일 · 매칭 일지 한눈에</small></div><span class="ar">›</span></a>
+    <a class="item" href="/guide-1on1"><span class="ico">🧭</span><div><b>1:1 매칭 프로세스</b><small>신청 → 승인 → 매칭 → 성사 흐름</small></div><span class="ar">›</span></a>
+  </div>
+
+  <!-- ③ 마케팅 -->
+  <div class="label">마케팅</div>
+  <div class="card list">
+    <a class="item" href="/keywords"><span class="ico">🔎</span><div><b>검색량 보기</b><small>썸류센터 인지도 · 뜨는 키워드</small></div><span class="ar">›</span></a>
+    <a class="item" href="/vip"><span class="ico">🏆</span><div><b>진짜 유저 찾기</b><small>또 오신 분 · 친구 데려오신 분</small></div><span class="ar">›</span></a>
+  </div>
+
+  <!-- ④ 지난 오프라인 행사 — 지금은 1:1 매칭만 운영해서 기본으로 접어 둔다 -->
+  <details class="card past">
+    <summary>📁 지난 오프라인 행사 관리 (접기/펼치기) <span class="tw">▼</span></summary>
+    <div class="grid">
+      <a class="item" href="/rotation-admin"><span class="ico">📋</span><div><b>신청 승인 · 문자</b><small>로테이션 (썸배달)</small></div><span class="ar">›</span></a>
+      <a class="item" href="/lineup"><span class="ico">🎬</span><div><b>라인업</b><small>참가자 구성</small></div><span class="ar">›</span></a>
+      <a class="item" href="/attendance"><span class="ico">✅</span><div><b>출석부</b><small>당일 체크인</small></div><span class="ar">›</span></a>
+      <a class="item" href="/seatmap"><span class="ico">🪑</span><div><b>자리표</b><small>좌석 지도 · 빈자리</small></div><span class="ar">›</span></a>
+      <a class="item" href="/vote-admin"><span class="ico">🗳️</span><div><b>투표</b><small>투표 관리 · 결과</small></div><span class="ar">›</span></a>
+      <a class="item" href="/vote-demo" target="_blank"><span class="ico">🎞️</span><div><b>투표 데모</b><small>친구들에게 보여주기</small></div><span class="ar">›</span></a>
+      <a class="item" href="/vote-test"><span class="ico">🧪</span><div><b>투표 테스트</b><small>친구들과 실제 투표 연습</small></div><span class="ar">›</span></a>
+      <a class="item" href="/vote-ops"><span class="ico">⭐</span><div><b>투표 운영 매뉴얼</b><small>센터장 · 스태프용</small></div><span class="ar">›</span></a>
+      <a class="item" href="/vote-guide" target="_blank"><span class="ico">🙋</span><div><b>손님 안내</b><small>손님에게 공유하는 링크</small></div><span class="ar">›</span></a>
+      <a class="item" href="/prints"><span class="ico">🖨️</span><div><b>출력물</b><small>프로필 카드(설문지) 인쇄</small></div><span class="ar">›</span></a>
+      <a class="item" href="/participants"><span class="ico">🎯</span><div><b>참가자 마스터</b><small>누가 겹치게 왔는지 · 단골</small></div><span class="ar">›</span></a>
+      <a class="item" href="/guide"><span class="ico">🎤</span><div><b>진행 가이드 · 대본</b><small>오프닝·엔딩 멘트 · 프로세스</small></div><span class="ar">›</span></a>
     </div>
-  </div>
+    <div class="note">지난 회차 명단·투표는 각 관리 페이지의 회차 탭에서 볼 수 있어요 · <a href="/rotation-0827">8/27 신청폼 보기</a></div>
+  </details>
 
-  <!-- 마케팅 -->
-  <div class="group">
-    <div class="gh" style="font-size:16px">📈 마케팅</div>
-    <div class="gd">사람들이 뭘 검색하는지 · 콘텐츠 소재 찾기</div>
-    <div class="links">
-      <a class="lk" href="/keywords" style="grid-column:1/-1"><span class="ico">🔎</span> 검색량 보기 <span style="font-size:11px;color:var(--faint);font-weight:600">— 썸류센터 인지도 · 뜨는 키워드</span> <span class="ar">→</span></a>
-      <a class="lk" href="/vip" style="grid-column:1/-1"><span class="ico">🏆</span> 진짜 유저 찾기 <span style="font-size:11px;color:var(--faint);font-weight:600">— 또 오신 분 · 친구 데려오신 분</span> <span class="ar">→</span></a>
-    </div>
-  </div>
-
-  <!-- 회원 명부 -->
-  <div class="group">
-    <div class="gh" style="font-size:16px;color:var(--kakao,#F5D400)">👥 회원 명부</div>
-    <div class="gd">카카오 가입자 + 신청자 통합 명부</div>
-    <div class="links solo">
-      <a class="lk" href="/members"><span class="ico">👥</span> 회원 명부 <span style="font-size:11px;color:var(--faint);font-weight:600">— 유입경로별 · 검색</span> <span class="ar">→</span></a>
-    </div>
-  </div>
-
-  <!-- 🔧 에어테이블 준비 — 새 기능에 필요한 칸·표를 버튼 하나로 만든다 -->
-  <div class="group">
-    <div class="gh" style="font-size:15px">🔧 에어테이블 준비</div>
-    <div class="gd">신청서·매칭 응답이 저장하는 칸과 검색량 표를 한 번에 만들어요.<br>
-      슬랙에 <b>⚠️ "○○ 칸이 없어요"</b> 알림이 오면 이 버튼을 눌러주세요.<br>
-      이미 있는 건 건드리지 않아서, 여러 번 눌러도 괜찮아요.</div>
-    <button class="logout" id="setupBtn" style="border-color:#E8B050;color:#E8B050">🔧 필요한 칸 한 번에 만들기</button>
-    <div id="setupOut" style="display:none;margin-top:10px;background:#0e0c0a;border:1px solid var(--line,#2a261e);border-radius:11px;padding:12px 14px;font-size:12.5px;line-height:1.85;color:#c9bfa8;white-space:pre-wrap"></div>
-  </div>
-
-  <!-- 로그아웃 -->
-  <div class="group">
-    <div class="gh" style="font-size:15px">🔒 로그인</div>
-    <div class="gd">비밀번호는 이 기기에 저장돼요. 한 번 로그인하면 위 페이지 전부 열립니다.<br>
-      남의 폰이나 공용 컴퓨터에서 봤다면 꼭 로그아웃해주세요.</div>
-    <button class="logout" id="logoutBtn">🚪 로그아웃 (저장된 비밀번호 지우기)</button>
+  <!-- ⑤ 로그아웃 -->
+  <div class="card" style="padding:18px 20px;margin-top:26px">
+    <h3 style="font-size:15px;font-weight:800">🔒 이 기기 로그아웃</h3>
+    <p class="hint" style="margin-top:4px">비밀번호는 이 기기에 저장돼요. 남의 폰이나 공용 컴퓨터에서 봤다면 꼭 로그아웃해주세요.</p>
+    <button class="btn" id="logoutBtn" style="margin-top:12px">🚪 로그아웃 (저장된 비밀번호 지우기)</button>
   </div>
 
   <div class="foot">
-    <a href="/links">🔖 링크 모음 (북마크용)</a> · <a href="/patch-notes">🛠 패치 내역</a> · <a href="/dev">🧪 개발 페이지</a><br>
-    <span style="color:var(--faint)">지난 회차 8/27 명단·투표는 각 관리 페이지의 회차 탭에서 볼 수 있어요 · <a href="/rotation-0827" style="color:var(--muted)">8/27 신청폼 보기</a></span><br>
+    <a href="/links">🔖 링크 모음</a> · <a href="/patch-notes">🛠 패치 내역</a> · <a href="/dev">🧪 개발 페이지</a><br>
     문의: <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener">카카오톡 채널</a>
   </div>
 </div>
