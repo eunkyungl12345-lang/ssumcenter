@@ -1,95 +1,95 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html data-theme="light" lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>센터장 매칭 관리 | 썸류센터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="stylesheet" href="/tailwind.css">
+<link rel="stylesheet" href="/tailwind-light.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
-  body{font-family:'Noto Sans KR','Inter',sans-serif;background:#0e0c0a;color:#F5F5F3;overflow-x:hidden}
-  .y{color:#E8B050}.bg-y{background:#E8B050}
-  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#16140f}::-webkit-scrollbar-thumb{background:#E8B050;border-radius:3px}
+  body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,Apple SD Gothic Neo,system-ui,sans-serif;background:#FAFAF8;color:#1E1E1E;overflow-x:hidden}
+  .y{color:#E5484D}.bg-y{background:#E5484D}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#FFFFFF}::-webkit-scrollbar-thumb{background:#E5484D;border-radius:3px}
   .card{transition:all .2s}
-  .card:hover{border-color:#E8B050}
-  .card.selected{background:rgba(255,212,0,.08);border-color:#E8B050}
+  .card:hover{border-color:#FF6B6B}
+  .card.selected{background:rgba(229,72,77,.08);border-color:#FF6B6B}
   .pipe-step{cursor:pointer;transition:all .15s;border-radius:12px;padding:4px 2px}
-  .pipe-step:hover{background:rgba(255,212,0,.08)}
+  .pipe-step:hover{background:rgba(229,72,77,.08)}
   .pipe-step:active{transform:scale(.95)}
 
   /* 등록 모달 */
-  .reg-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.85);overflow-y:auto;display:none}
+  .reg-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);overflow-y:auto;display:none}
   .reg-overlay.show{display:flex;justify-content:center;padding:20px 10px}
-  .reg-modal{background:#16140f;border:1px solid #1e1c17;border-radius:20px;max-width:560px;width:100%;margin:auto;position:relative}
-  .reg-header{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 0;position:sticky;top:0;background:#16140f;border-radius:20px 20px 0 0;z-index:1}
+  .reg-modal{background:#FFFFFF;border:1px solid #E6E2DC;border-radius:20px;max-width:560px;width:100%;margin:auto;position:relative}
+  .reg-header{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 0;position:sticky;top:0;background:#FFFFFF;border-radius:20px 20px 0 0;z-index:1}
   .reg-body{padding:16px 20px 24px}
-  .reg-close{width:36px;height:36px;border-radius:10px;background:#1e1c17;border:none;color:#9a9080;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
-  .reg-close:hover{color:#fff}
-  .ai-toggle{display:flex;align-items:center;gap:6px;background:#E8B050;color:#000;border:none;padding:8px 16px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
-  .ai-toggle.active{box-shadow:0 0 16px rgba(255,212,0,.4)}
-  .ai-toggle:hover{transform:scale(1.03);background:#D4952A}
-  .ai-box{background:rgba(255,212,0,.06);border:1.5px solid rgba(255,212,0,.3);border-radius:16px;padding:16px;margin-bottom:16px;display:none}
+  .reg-close{width:36px;height:36px;border-radius:10px;background:#F4F2EE;border:none;color:#666666;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+  .reg-close:hover{color:#1E1E1E}
+  .ai-toggle{display:flex;align-items:center;gap:6px;background:#E5484D;color:#fff;border:none;padding:8px 16px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+  .ai-toggle.active{box-shadow:0 0 16px rgba(255,107,107,.24)}
+  .ai-toggle:hover{transform:scale(1.03);background:#E5484D}
+  .ai-box{background:rgba(229,72,77,.06);border:1.5px solid rgba(255,107,107,.3);border-radius:16px;padding:16px;margin-bottom:16px;display:none}
   .ai-box.show{display:block}
-  .ai-box p{color:#E8B050;font-size:11px;margin-bottom:10px}
-  .ai-box textarea{width:100%;background:#0e0c0a;border:1.5px solid rgba(255,212,0,.25);border-radius:12px;padding:12px;color:#F5F5F3;font-size:13px;resize:vertical;min-height:100px;font-family:inherit}
-  .ai-box textarea:focus{outline:none;border-color:#E8B050}
-  .ai-fill-btn{background:#E8B050;color:#000;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;float:right;margin-top:8px}
-  .ai-fill-btn:hover{background:#D4952A}
+  .ai-box p{color:#E5484D;font-size:11px;margin-bottom:10px}
+  .ai-box textarea{width:100%;background:#FAFAF8;border:1.5px solid rgba(255,107,107,.25);border-radius:12px;padding:12px;color:#1E1E1E;font-size:13px;resize:vertical;min-height:100px;font-family:inherit}
+  .ai-box textarea:focus{outline:none;border-color:#FF6B6B}
+  .ai-fill-btn{background:#E5484D;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;float:right;margin-top:8px}
+  .ai-fill-btn:hover{background:#E5484D}
   .reg-field{margin-bottom:12px}
-  .reg-field label{display:block;font-size:11px;color:#9a9080;font-weight:700;margin-bottom:5px}
-  .reg-field label .req{color:#E8B050}
-  .reg-field input,.reg-field select,.reg-field textarea{width:100%;background:#0e0c0a;border:1px solid #1e1c17;border-radius:12px;padding:10px 14px;color:#F5F5F3;font-size:13px;font-family:inherit}
-  .reg-field input:focus,.reg-field select:focus,.reg-field textarea:focus{outline:none;border-color:#E8B050}
+  .reg-field label{display:block;font-size:11px;color:#666666;font-weight:700;margin-bottom:5px}
+  .reg-field label .req{color:#E5484D}
+  .reg-field input,.reg-field select,.reg-field textarea{width:100%;background:#FAFAF8;border:1px solid #E6E2DC;border-radius:12px;padding:10px 14px;color:#1E1E1E;font-size:13px;font-family:inherit}
+  .reg-field input:focus,.reg-field select:focus,.reg-field textarea:focus{outline:none;border-color:#FF6B6B}
   .reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .reg-gender{display:flex;gap:8px}
-  .reg-gender button{flex:1;padding:10px;border-radius:12px;border:1px solid #1e1c17;background:#0e0c0a;color:#9a9080;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
-  .reg-gender button.active{background:#E8B050;border-color:#E8B050;color:#000}
-  .photo-upload-area{border:2px dashed #333;border-radius:16px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:12px}
-  .photo-upload-area:hover{border-color:#E8B050}
-  .photo-upload-area i{font-size:28px;color:#E8B050;margin-bottom:6px}
+  .reg-gender button{flex:1;padding:10px;border-radius:12px;border:1px solid #E6E2DC;background:#FAFAF8;color:#666666;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+  .reg-gender button.active{background:#E5484D;border-color:#FF6B6B;color:#fff}
+  .photo-upload-area{border:2px dashed #D9D5CD;border-radius:16px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:12px}
+  .photo-upload-area:hover{border-color:#FF6B6B}
+  .photo-upload-area i{font-size:28px;color:#E5484D;margin-bottom:6px}
   .photo-preview-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-  .photo-preview-item{position:relative;width:80px;height:80px;border-radius:12px;overflow:hidden;border:2px solid #1e1c17}
+  .photo-preview-item{position:relative;width:80px;height:80px;border-radius:12px;overflow:hidden;border:2px solid #E6E2DC}
   .photo-preview-item img{width:100%;height:100%;object-fit:cover}
-  .photo-preview-item .photo-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(255,0,0,.8);color:#fff;border:none;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-  .photo-preview-item .photo-drag{position:absolute;top:4px;left:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;cursor:grab}
-  .reg-submit{width:100%;padding:14px;border-radius:14px;border:none;background:#E8B050;color:#000;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;margin-top:8px}
-  .reg-submit:hover{background:#D4952A}
+  .photo-preview-item .photo-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(255,0,0,.8);color:#1E1E1E;border:none;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .photo-preview-item .photo-drag{position:absolute;top:4px;left:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.45);color:#1E1E1E;font-size:8px;display:flex;align-items:center;justify-content:center;cursor:grab}
+  .reg-submit{width:100%;padding:14px;border-radius:14px;border:none;background:#E5484D;color:#fff;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;margin-top:8px}
+  .reg-submit:hover{background:#E5484D}
   .reg-submit:disabled{opacity:.4;cursor:not-allowed}
   .reg-type-tabs{display:flex;gap:6px;margin-bottom:16px}
-  .reg-type-tab{flex:1;padding:10px;border-radius:12px;border:1px solid #1e1c17;background:#0e0c0a;color:#9a9080;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
-  .reg-type-tab.active{background:#E8B050;border-color:#E8B050;color:#000}
-  .sort-select{background:#16140f;border:1px solid #1e1c17;color:#9a9080;font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer}
-  .sort-select:focus{outline:none;border-color:#E8B050}
+  .reg-type-tab{flex:1;padding:10px;border-radius:12px;border:1px solid #E6E2DC;background:#FAFAF8;color:#666666;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+  .reg-type-tab.active{background:#E5484D;border-color:#FF6B6B;color:#fff}
+  .sort-select{background:#FFFFFF;border:1px solid #E6E2DC;color:#666666;font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer}
+  .sort-select:focus{outline:none;border-color:#FF6B6B}
 
   /* 소트 탭 */
-  .sort-tab{background:#16140f;border:1px solid #1e1c17;color:#9a9080;cursor:pointer}
-  .sort-tab:hover{border-color:#E8B050;color:#E8B050}
-  .sort-tab.active{background:#E8B050;border-color:#E8B050;color:#000}
-  .appcard.share-on{outline:2px solid #E8B050;outline-offset:-2px;border-radius:12px}
-  .share-check{width:22px;height:22px;border-radius:7px;border:2px solid #3a3a38;display:grid;place-items:center;color:transparent;font-weight:900;font-size:12px;flex:none;margin-right:2px}
-  .share-check.on{background:#E8B050;border-color:#E8B050;color:#000}
+  .sort-tab{background:#FFFFFF;border:1px solid #E6E2DC;color:#666666;cursor:pointer}
+  .sort-tab:hover{border-color:#FF6B6B;color:#E5484D}
+  .sort-tab.active{background:#E5484D;border-color:#FF6B6B;color:#fff}
+  .appcard.share-on{outline:2px solid #FF6B6B;outline-offset:-2px;border-radius:12px}
+  .share-check{width:22px;height:22px;border-radius:7px;border:2px solid #D9D5CD;display:grid;place-items:center;color:transparent;font-weight:900;font-size:12px;flex:none;margin-right:2px}
+  .share-check.on{background:#E5484D;border-color:#FF6B6B;color:#fff}
   #applicant-list.vm-compact .pool-thumb{width:40px !important;height:40px !important}
   #applicant-list.vm-compact .pool-detail{display:none}
   #applicant-list.vm-compact .pool-status{font-size:11px}
 
   /* 소개 풀 카드 */
-  .appcard{background:#16140f;border:1px solid #1e1c17;border-radius:16px;padding:12px 14px;margin-bottom:10px;transition:all .15s}
-  .appcard.sel{border-color:#E8B050;background:rgba(232,176,80,.04);box-shadow:0 0 12px rgba(232,176,80,.15)}
+  .appcard{background:#FFFFFF;border:1px solid #E6E2DC;border-radius:16px;padding:12px 14px;margin-bottom:10px;transition:all .15s}
+  .appcard.sel{border-color:#FF6B6B;background:rgba(229,72,77,.04);box-shadow:0 0 12px rgba(255,107,107,.09)}
   .pool-row{display:flex;align-items:flex-start;gap:12px;cursor:pointer}
   .pool-row:hover{background:transparent}
   .pool-row.selected{background:transparent}
   .pool-info{flex:1;min-width:0}
-  .pool-thumb{width:56px;height:56px;border-radius:12px;overflow:hidden;flex-shrink:0;background:#1e1c17;display:flex;align-items:center;justify-content:center}
+  .pool-thumb{width:56px;height:56px;border-radius:12px;overflow:hidden;flex-shrink:0;background:#F4F2EE;display:flex;align-items:center;justify-content:center}
   .pool-thumb img{width:100%;height:100%;object-fit:cover}
-  .pool-thumb i{color:#555;font-size:18px}
+  .pool-thumb i{color:#767676;font-size:18px}
 
   /* 아코디언 상세 */
-  .pool-expand{display:none;padding-top:12px;border-top:1px solid #1e1c17;margin-top:10px}
+  .pool-expand{display:none;padding-top:12px;border-top:1px solid #E6E2DC;margin-top:10px}
   .pool-expand.open{display:block}
 </style>
 </head>
@@ -152,7 +152,7 @@
   <div id="section-matching">
 
   <!-- 서브탭: 신청자 / 매칭하기 / 현황 (스크롤해도 상단 고정) -->
-  <div class="grid grid-cols-3 gap-2 mb-6" style="position:sticky;top:0;z-index:30;background:#0e0c0a;padding-top:8px;padding-bottom:8px">
+  <div class="grid grid-cols-3 gap-2 mb-6" style="position:sticky;top:0;z-index:30;background:#FAFAF8;padding-top:8px;padding-bottom:8px">
     <button type="button" onclick="showMatchTab('pool')" id="mtab-pool" class="bg-y text-black text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition">👥 신청자 <span id="mtab-pool-cnt" class="opacity-70"></span></button>
     <button type="button" onclick="showMatchTab('make')" id="mtab-make" class="bg-[#16140f] border border-[#1e1c17] text-[#9a9080] text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition hover:border-[#E8B050]">💘 매칭하기</button>
     <button type="button" onclick="showMatchTab('status')" id="mtab-status" class="bg-[#16140f] border border-[#1e1c17] text-[#9a9080] text-[13px] font-extrabold px-2 py-2.5 rounded-xl transition hover:border-[#E8B050]">📊 현황</button>
@@ -240,17 +240,17 @@
     <button onclick="toggleShareMode()" id="share-toggle" class="sort-tab text-[11px] font-bold px-3 py-1.5 rounded-lg" style="margin-left:auto">📤 공유 선택</button>
   </div>
   <!-- 공유 선택 바 -->
-  <div id="share-bar" class="hidden" style="position:sticky;top:54px;z-index:41;background:#141310;border:1px solid #3a2f14;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.45);margin-bottom:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-    <span style="font-size:12.5px;font-weight:800;color:#E8B050">📤 <span id="share-count">0</span>명 선택됨</span>
-    <button onclick="copyShare()" style="margin-left:auto;background:#E8B050;border:none;color:#000;font-size:12px;font-weight:800;padding:8px 16px;border-radius:9px;cursor:pointer">📋 명단 복사</button>
-    <button onclick="clearShare()" style="background:#16140f;border:1px solid #6b6358;color:#9a9080;font-size:11px;font-weight:700;padding:8px 12px;border-radius:9px;cursor:pointer">선택 해제</button>
+  <div id="share-bar" class="hidden" style="position:sticky;top:54px;z-index:41;background:#FFFFFF;border:1px solid #D9D5CD;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.072);margin-bottom:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span style="font-size:12.5px;font-weight:800;color:#E5484D">📤 <span id="share-count">0</span>명 선택됨</span>
+    <button onclick="copyShare()" style="margin-left:auto;background:#E5484D;border:none;color:#fff;font-size:12px;font-weight:800;padding:8px 16px;border-radius:9px;cursor:pointer">📋 명단 복사</button>
+    <button onclick="clearShare()" style="background:#FFFFFF;border:1px solid #CFCAC2;color:#666666;font-size:11px;font-weight:700;padding:8px 12px;border-radius:9px;cursor:pointer">선택 해제</button>
   </div>
 
   <!-- 💘 선택한 사람 (스크롤해도 목록 위에 고정) -->
-  <div id="match-tray" class="hidden" style="position:sticky;top:54px;z-index:40;background:#141310;border:1px solid #3a2f14;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.45);margin-bottom:12px;padding:12px 14px">
+  <div id="match-tray" class="hidden" style="position:sticky;top:54px;z-index:40;background:#FFFFFF;border:1px solid #D9D5CD;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.072);margin-bottom:12px;padding:12px 14px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <span style="font-size:11.5px;font-weight:800;color:#E8B050">🔒 선택한 사람 (여기 계속 고정돼요)</span>
-      <button onclick="clearSelection()" style="background:#16140f;border:1px solid #6b6358;color:#9a9080;font-size:10.5px;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer">전체 해제</button>
+      <span style="font-size:11.5px;font-weight:800;color:#E5484D">🔒 선택한 사람 (여기 계속 고정돼요)</span>
+      <button onclick="clearSelection()" style="background:#FFFFFF;border:1px solid #CFCAC2;color:#666666;font-size:10.5px;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer">전체 해제</button>
     </div>
     <div class="grid grid-cols-2 gap-2 mb-2">
       <div class="bg-[#0e0c0a] border border-[#1e1c17] rounded-xl px-3 py-2 min-h-[44px]">
@@ -617,7 +617,7 @@
       </div>
     </div>
     <div class="reg-body">
-      <p style="font-size:12px;color:#9a9080;margin-bottom:16px">사진은 최대 4장까지 등록할 수 있습니다.</p>
+      <p style="font-size:12px;color:#666666;margin-bottom:16px">사진은 최대 4장까지 등록할 수 있습니다.</p>
 
       <!-- 타입 선택 -->
       <div class="reg-type-tabs">
@@ -645,16 +645,16 @@
       <!-- 사진 업로드 -->
       <div id="photo-upload-area" class="photo-upload-area" onclick="document.getElementById('reg-photo-input').click()">
         <i class="fa-solid fa-camera-retro"></i>
-        <div style="font-size:13px;font-weight:700;color:#9a9080;margin-top:4px">사진 업로드 <span style="color:#FF4D6D">*</span></div>
-        <div id="photo-count" style="font-size:11px;color:#555;margin-top:2px">0/4</div>
-        <div style="font-size:10px;color:#555;margin-top:4px">클릭·드래그 또는 붙여넣기(Ctrl/⌘+V)</div>
+        <div style="font-size:13px;font-weight:700;color:#666666;margin-top:4px">사진 업로드 <span style="color:#D1052A">*</span></div>
+        <div id="photo-count" style="font-size:11px;color:#767676;margin-top:2px">0/4</div>
+        <div style="font-size:10px;color:#767676;margin-top:4px">클릭·드래그 또는 붙여넣기(Ctrl/⌘+V)</div>
       </div>
       <input type="file" id="reg-photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(event)">
       <div id="photo-preview-grid" class="photo-preview-grid"></div>
 
       <!-- 공통 필드: 주요 정보 -->
-      <fieldset style="border:1px solid #1e1c17;border-radius:16px;padding:16px;margin-bottom:16px">
-        <legend style="font-size:12px;font-weight:700;color:#E8B050;padding:0 8px">주요 정보</legend>
+      <fieldset style="border:1px solid #E6E2DC;border-radius:16px;padding:16px;margin-bottom:16px">
+        <legend style="font-size:12px;font-weight:700;color:#E5484D;padding:0 8px">주요 정보</legend>
 
         <div class="reg-field">
           <label>성별 <span class="req">*</span></label>
@@ -696,8 +696,8 @@
 
       <!-- 1:1 매칭 전용 필드 -->
       <div id="reg-matching-fields">
-        <fieldset style="border:1px solid #1e1c17;border-radius:16px;padding:16px;margin-bottom:16px">
-          <legend style="font-size:12px;font-weight:700;color:#E8B050;padding:0 8px">매칭 정보</legend>
+        <fieldset style="border:1px solid #E6E2DC;border-radius:16px;padding:16px;margin-bottom:16px">
+          <legend style="font-size:12px;font-weight:700;color:#E5484D;padding:0 8px">매칭 정보</legend>
 
           <div class="reg-field">
             <label>직업 <span class="req">*</span></label>
@@ -748,8 +748,8 @@
 
       <!-- 재테크 커피팅 전용 필드 -->
       <div id="reg-coffee-fields" style="display:none">
-        <fieldset style="border:1px solid #1e1c17;border-radius:16px;padding:16px;margin-bottom:16px">
-          <legend style="font-size:12px;font-weight:700;color:#E8B050;padding:0 8px">커피팅 정보</legend>
+        <fieldset style="border:1px solid #E6E2DC;border-radius:16px;padding:16px;margin-bottom:16px">
+          <legend style="font-size:12px;font-weight:700;color:#E5484D;padding:0 8px">커피팅 정보</legend>
 
           <div class="reg-grid">
             <div class="reg-field">
@@ -822,7 +822,7 @@
 </div>
 
 <!-- 사진 크게보기 -->
-<div id="photo-modal" onclick="this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.9);cursor:pointer;justify-content:center;align-items:center">
+<div id="photo-modal" onclick="this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.45);cursor:pointer;justify-content:center;align-items:center">
   <img id="photo-modal-img" style="max-width:90%;max-height:90%;border-radius:12px;object-fit:contain">
 </div>
 
@@ -1146,11 +1146,11 @@ function checkMatchLink(){
   const box = document.getElementById("linkcheck-result");
   const raw = (document.getElementById("linkcheck-input").value || "").trim();
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const OK = "#22c55e", BAD = "#ef4444", WARN = "#f59e0b", INFO = "#3b82f6";
+  const OK = "#15803D", BAD = "#C11515", WARN = "#E5484D", INFO = "#0E55C8";
   const line = (icon, color, html) =>
     `<div style="display:flex;gap:7px;align-items:flex-start;padding:8px 10px;border-radius:10px;`
     + `background:${color}1a;border:1px solid ${color}55;margin-bottom:6px">`
-    + `<span style="flex:none">${icon}</span><span style="color:#F5F5F3">${html}</span></div>`;
+    + `<span style="flex:none">${icon}</span><span style="color:#1E1E1E">${html}</span></div>`;
 
   if(!raw){ box.innerHTML = line("✍️", INFO, "점검할 링크를 붙여넣어 주세요."); return; }
 
@@ -1230,45 +1230,45 @@ async function loadMatches(){
     const cnt = s => recs.filter(r=>(r.fields||{})["상태"]===s).length;
     const stW = document.getElementById("stat-waiting"); if(stW) stW.textContent = cnt("성사") + "쌍";
     const stM = document.getElementById("stat-matched"); if(stM) stM.textContent = cnt("소개중") + "쌍";
-    const badge = s => s==="성사" ? 'background:#22c55e;color:#000' : s==="소개중" ? 'background:#3b82f6;color:#fff' : s==="결별" ? 'background:#7f1d1d;color:#fca5a5' : 'background:#3a3a37;color:#9a9080';
+    const badge = s => s==="성사" ? 'background:#15803D;color:#fff' : s==="소개중" ? 'background:#3b82f6;color:#fff' : s==="결별" ? 'background:#7f1d1d;color:#CA0C0C' : 'background:#ECE9E4;color:#666666';
     let html = '<div class="bg-[#16140f] border border-[#1e1c17] rounded-2xl p-4">';
     html += '<div class="font-black text-sm mb-3">💑 매칭 현황 <span class="text-[11px] text-[#9a9080] font-normal">(소개중 '+cnt("소개중")+' · 성사 '+cnt("성사")+' · 💔결별 '+cnt("결별")+' · 불발 '+cnt("불발")+')</span></div>';
     html += recs.map(r=>{ const f=r.fields||{}; const s=f["상태"]||"소개중";
       const links = (s==="소개중" && (f["남자링크"]||f["여자링크"]))
         ? '<div style="width:100%;display:flex;gap:6px;margin-top:5px">'
-          + (f["남자링크"] ? '<button onclick="copyLink(\''+f["남자링크"]+'\',\''+(f["남자"]||"").replace(/[\'"\\]/g,"")+'\')" style="flex:1;background:#0e0c0a;border:1px solid #3b82f6;color:#60a5fa;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">💬 '+(f["남자"]||"남")+'에게 (카톡용)</button>' : '')
-          + (f["여자링크"] ? '<button onclick="copyLink(\''+f["여자링크"]+'\',\''+(f["여자"]||"").replace(/[\'"\\]/g,"")+'\')" style="flex:1;background:#0e0c0a;border:1px solid #f472b6;color:#f472b6;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">💬 '+(f["여자"]||"여")+'에게 (카톡용)</button>' : '')
+          + (f["남자링크"] ? '<button onclick="copyLink(\''+f["남자링크"]+'\',\''+(f["남자"]||"").replace(/[\'"\\]/g,"")+'\')" style="flex:1;background:#FAFAF8;border:1px solid #3b82f6;color:#0C61CB;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">💬 '+(f["남자"]||"남")+'에게 (카톡용)</button>' : '')
+          + (f["여자링크"] ? '<button onclick="copyLink(\''+f["여자링크"]+'\',\''+(f["여자"]||"").replace(/[\'"\\]/g,"")+'\')" style="flex:1;background:#FAFAF8;border:1px solid #f472b6;color:#C2146F;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer">💬 '+(f["여자"]||"여")+'에게 (카톡용)</button>' : '')
           + '</div>'
         : '';
       // 💔 성사된 커플에만: 만나봤는데 잘 안 됐을 때 '결별'로 기록
       const breakup = (s==="성사")
-        ? '<div style="width:100%;margin-top:5px"><button onclick="markBrokenUp(\''+r.id+'\',\''+(f["남자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["여자"]||"").replace(/[\'"\\]/g,"")+'\')" style="width:100%;background:#0e0c0a;border:1px solid #7f1d1d;color:#fca5a5;font-size:11px;font-weight:700;padding:6px;border-radius:8px;cursor:pointer">💔 만나봤는데 잘 안 됐어요 (결별)</button></div>'
+        ? '<div style="width:100%;margin-top:5px"><button onclick="markBrokenUp(\''+r.id+'\',\''+(f["남자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["여자"]||"").replace(/[\'"\\]/g,"")+'\')" style="width:100%;background:#FAFAF8;border:1px solid #7f1d1d;color:#CA0C0C;font-size:11px;font-weight:700;padding:6px;border-radius:8px;cursor:pointer">💔 만나봤는데 잘 안 됐어요 (결별)</button></div>'
         : '';
       // ✖ 소개중인데 진행 안 됨 → '불발'로 처리 (양쪽 다시 매칭 가능해짐)
       const cancel = (s==="소개중")
-        ? '<div style="width:100%;margin-top:5px"><button onclick="markUnmatched(\''+r.id+'\',\''+(f["남자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["여자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["남자ID"]||"")+'\',\''+(f["여자ID"]||"")+'\')" style="width:100%;background:#0e0c0a;border:1px solid #6b6358;color:#c8b8a0;font-size:11px;font-weight:700;padding:6px;border-radius:8px;cursor:pointer">✖ 이 매칭 불발 처리 (취소)</button></div>'
+        ? '<div style="width:100%;margin-top:5px"><button onclick="markUnmatched(\''+r.id+'\',\''+(f["남자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["여자"]||"").replace(/[\'"\\]/g,"")+'\',\''+(f["남자ID"]||"")+'\',\''+(f["여자ID"]||"")+'\')" style="width:100%;background:#FAFAF8;border:1px solid #CFCAC2;color:#4A4A4A;font-size:11px;font-weight:700;padding:6px;border-radius:8px;cursor:pointer">✖ 이 매칭 불발 처리 (취소)</button></div>'
         : '';
       // ⏰ 미응답자 리마인드 문자 슝 버튼
       const reminders = (s==="소개중")
         ? '<div style="width:100%;display:flex;gap:6px;margin-top:5px">'
-          + (f["남자ID"] && f["남자링크"] ? '<button onclick="sendReminderSms(\''+f["남자ID"]+'\',\''+f["남자링크"]+'\',this)" style="flex:1;background:#1e1811;border:1px solid rgba(232,176,80,.4);color:#E8B050;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer"><i class="fa-solid fa-clock mr-1"></i>'+(f["남자"]||"남")+' 리마인드 슝</button>' : '')
-          + (f["여자ID"] && f["여자링크"] ? '<button onclick="sendReminderSms(\''+f["여자ID"]+'\',\''+f["여자링크"]+'\',this)" style="flex:1;background:#1e1811;border:1px solid rgba(232,176,80,.4);color:#E8B050;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer"><i class="fa-solid fa-clock mr-1"></i>'+(f["여자"]||"여")+' 리마인드 슝</button>' : '')
+          + (f["남자ID"] && f["남자링크"] ? '<button onclick="sendReminderSms(\''+f["남자ID"]+'\',\''+f["남자링크"]+'\',this)" style="flex:1;background:#FFFFFF;border:1px solid rgba(255,107,107,.4);color:#E5484D;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer"><i class="fa-solid fa-clock mr-1"></i>'+(f["남자"]||"남")+' 리마인드 슝</button>' : '')
+          + (f["여자ID"] && f["여자링크"] ? '<button onclick="sendReminderSms(\''+f["여자ID"]+'\',\''+f["여자링크"]+'\',this)" style="flex:1;background:#FFFFFF;border:1px solid rgba(255,107,107,.4);color:#E5484D;font-size:11px;font-weight:700;padding:5px;border-radius:8px;cursor:pointer"><i class="fa-solid fa-clock mr-1"></i>'+(f["여자"]||"여")+' 리마인드 슝</button>' : '')
           + '</div>'
         : '';
       // 🎉 성사 커플 원스톱 파이프라인
       const couplePipeline = (s==="성사")
         ? '<div style="width:100%;margin-top:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:8px 10px">'
-          + '<div style="font-size:11px;font-weight:800;color:#22c55e;margin-bottom:6px">🎉 성사 파이프라인</div>'
+          + '<div style="font-size:11px;font-weight:800;color:#15803D;margin-bottom:6px">🎉 성사 파이프라인</div>'
           + '<div style="display:flex;gap:6px">'
-          + '<button onclick="sendDepositSmsForPair(\''+(f["남자ID"]||"")+'\',\''+(f["여자ID"]||"")+'\',this)" style="flex:1;background:#16140f;border:1px solid #E8B050;color:#E8B050;font-size:11px;font-weight:700;padding:6px;border-radius:8px;cursor:pointer">💰 입금안내 문자</button>'
-          + '<button onclick="sendContacts(\''+(f["남자ID"]||"")+'\',\''+(f["여자ID"]||"")+'\',this)" style="flex:1;background:#22c55e;border:none;color:#000;font-size:11px;font-weight:800;padding:6px;border-radius:8px;cursor:pointer">💌 연락처 전달하기</button>'
+          + '<button onclick="sendDepositSmsForPair(\''+(f["남자ID"]||"")+'\',\''+(f["여자ID"]||"")+'\',this)" style="flex:1;background:#FFFFFF;border:1px solid #FF6B6B;color:#E5484D;font-size:11px;font-weight:700;padding:6px;border-radius:8px;cursor:pointer">💰 입금안내 문자</button>'
+          + '<button onclick="sendContacts(\''+(f["남자ID"]||"")+'\',\''+(f["여자ID"]||"")+'\',this)" style="flex:1;background:#15803D;border:none;color:#fff;font-size:11px;font-weight:800;padding:6px;border-radius:8px;cursor:pointer">💌 연락처 전달하기</button>'
           + '</div>'
           + '</div>'
         : '';
-      return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #1e1c17;font-size:13px;flex-wrap:wrap">'
+      return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #E6E2DC;font-size:13px;flex-wrap:wrap">'
         +'<span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;'+badge(s)+'">'+s+'</span>'
-        +'<b style="color:#60a5fa">'+(f["남자"]||"?")+'</b> <span style="color:#f472b6">❤</span> <b style="color:#f472b6">'+(f["여자"]||"?")+'</b>'
-        +(f["결과"] ? '<span style="color:#8a8070;font-size:11px;margin-left:auto">'+f["결과"]+'</span>' : '')
+        +'<b style="color:#0C61CB">'+(f["남자"]||"?")+'</b> <span style="color:#C2146F">❤</span> <b style="color:#C2146F">'+(f["여자"]||"?")+'</b>'
+        +(f["결과"] ? '<span style="color:#666666;font-size:11px;margin-left:auto">'+f["결과"]+'</span>' : '')
         +links
         +reminders
         +couplePipeline
@@ -1290,16 +1290,16 @@ const 결별사유 = ["연락이 끊김", "만났는데 안 맞음", "한쪽만 
 function askBreakupReason(){
   return new Promise(function(resolve){
     const bg = document.createElement("div");
-    bg.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center";
-    const btn = (label, val, extra) => `<button data-v="${val}" style="width:100%;text-align:left;background:#16140f;border:1px solid #2a261e;color:#f5f0ea;font-size:14px;font-weight:700;padding:13px 14px;border-radius:12px;cursor:pointer;margin-top:7px;${extra||""}">${label}</button>`;
-    bg.innerHTML = `<div style="width:100%;max-width:440px;background:#0e0c0a;border:1px solid #2a261e;border-radius:18px 18px 0 0;padding:18px 16px 22px">
+    bg.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center";
+    const btn = (label, val, extra) => `<button data-v="${val}" style="width:100%;text-align:left;background:#FFFFFF;border:1px solid #E6E2DC;color:#1E1E1E;font-size:14px;font-weight:700;padding:13px 14px;border-radius:12px;cursor:pointer;margin-top:7px;${extra||""}">${label}</button>`;
+    bg.innerHTML = `<div style="width:100%;max-width:440px;background:#FAFAF8;border:1px solid #E6E2DC;border-radius:18px 18px 0 0;padding:18px 16px 22px">
         <div style="font-size:15px;font-weight:800">왜 안 됐는지 아시나요?</div>
-        <div style="font-size:12px;color:#9a9080;margin-top:4px">쌓이면 아침 브리핑에서 가장 많은 이유를 알려드려요.</div>
+        <div style="font-size:12px;color:#666666;margin-top:4px">쌓이면 아침 브리핑에서 가장 많은 이유를 알려드려요.</div>
         ${결별사유.map(r => btn(r, r)).join("")}
-        <input id="br-custom" placeholder="직접 적기 (선택)" style="width:100%;box-sizing:border-box;background:#16140f;border:1px solid #2a261e;border-radius:12px;color:#fff;font-size:14px;padding:12px 14px;margin-top:7px;outline:none">
+        <input id="br-custom" placeholder="직접 적기 (선택)" style="width:100%;box-sizing:border-box;background:#FFFFFF;border:1px solid #E6E2DC;border-radius:12px;color:#1E1E1E;font-size:14px;padding:12px 14px;margin-top:7px;outline:none">
         <div style="display:flex;gap:7px;margin-top:10px">
-          <button data-v="__cancel" style="flex:1;background:none;border:1px solid #2a261e;color:#9a9080;font-size:13px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">취소</button>
-          <button data-v="__custom" style="flex:2;background:#E8B050;border:none;color:#000;font-size:13px;font-weight:800;padding:12px;border-radius:12px;cursor:pointer">모름 / 적은 대로 기록</button>
+          <button data-v="__cancel" style="flex:1;background:none;border:1px solid #E6E2DC;color:#666666;font-size:13px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">취소</button>
+          <button data-v="__custom" style="flex:2;background:#E5484D;border:none;color:#fff;font-size:13px;font-weight:800;padding:12px;border-radius:12px;cursor:pointer">모름 / 적은 대로 기록</button>
         </div>
       </div>`;
     const done = (v) => { bg.remove(); resolve(v); };
@@ -1430,20 +1430,20 @@ function matchHistoryFor(id){
   if(!matchResponses || !matchResponses.length) return "";
   const nm = (rid) => { const a = applicants.find(x=>x.id===rid); return a ? (a.fields["이름"]||"?") : "(명단밖)"; };
   const rowHtml = (txt, ans, sup) => {
-    const c = ans==="수락" ? "#22c55e" : "#ef4444";
-    return '<div style="font-size:12.5px;padding:3px 0">'+txt+' <span style="color:'+c+';font-weight:800">'+ans+'</span>'+(sup?' <span style="color:#E8B050;font-size:10px">⚡슈퍼</span>':'')+'</div>';
+    const c = ans==="수락" ? "#15803D" : "#C11515";
+    return '<div style="font-size:12.5px;padding:3px 0">'+txt+' <span style="color:'+c+';font-weight:800">'+ans+'</span>'+(sup?' <span style="color:#E5484D;font-size:10px">⚡슈퍼</span>':'')+'</div>';
   };
   let mine="", toMe="";
   matchResponses.forEach(r=>{
     const f=r.fields||{};
-    if(f["응답자ID"]===id && f["매칭ID"]) mine += rowHtml('내가 <b style="color:#fff">'+nm(f["매칭ID"])+'</b> →', f["응답"], f["매칭유형"]==="슈퍼매칭");
-    if(f["매칭ID"]===id && f["응답자ID"]) toMe += rowHtml('<b style="color:#fff">'+nm(f["응답자ID"])+'</b>가 나를 →', f["응답"], f["매칭유형"]==="슈퍼매칭");
+    if(f["응답자ID"]===id && f["매칭ID"]) mine += rowHtml('내가 <b style="color:#1E1E1E">'+nm(f["매칭ID"])+'</b> →', f["응답"], f["매칭유형"]==="슈퍼매칭");
+    if(f["매칭ID"]===id && f["응답자ID"]) toMe += rowHtml('<b style="color:#1E1E1E">'+nm(f["응답자ID"])+'</b>가 나를 →', f["응답"], f["매칭유형"]==="슈퍼매칭");
   });
   if(!mine && !toMe) return "";
-  return '<div style="background:#0e0c0a;border:1px solid #3b82f6;border-radius:11px;padding:10px 12px">'
-    + '<div style="color:#60a5fa;font-size:11px;font-weight:800;margin-bottom:4px">💘 매칭 이력</div>'
-    + (mine? '<div style="color:#8a8070;font-size:10px;margin-top:2px">내가 한 응답</div>'+mine : '')
-    + (toMe? '<div style="color:#8a8070;font-size:10px;margin-top:4px">받은 응답</div>'+toMe : '')
+  return '<div style="background:#FAFAF8;border:1px solid #3b82f6;border-radius:11px;padding:10px 12px">'
+    + '<div style="color:#0C61CB;font-size:11px;font-weight:800;margin-bottom:4px">💘 매칭 이력</div>'
+    + (mine? '<div style="color:#666666;font-size:10px;margin-top:2px">내가 한 응답</div>'+mine : '')
+    + (toMe? '<div style="color:#666666;font-size:10px;margin-top:4px">받은 응답</div>'+toMe : '')
     + '</div>';
 }
 function renderResponses(responses){
@@ -1463,18 +1463,18 @@ function renderResponses(responses){
   // 성사된 쌍은 항상 눈에 띄게 (바로 처리해야 하니까)
   matched.forEach(pair => {
     const [a, b] = pair.split("|");
-    html += '<div class="bg-[#22c55e]/10 border border-[#22c55e]/40 rounded-xl p-3 mb-2 text-sm">🎉 <b class="text-[#22c55e]">성사!</b> ' + nameOf(a) + ' ❤️ ' + nameOf(b)
+    html += '<div class="rounded-xl p-3 mb-2 text-sm" style="background:#EAF7EF;border:1px solid #A7DDBA">🎉 <b style="color:#15803D">성사!</b> ' + nameOf(a) + ' ❤️ ' + nameOf(b)
       + '<div class="text-[11px] text-[#9a9080] mt-1">입금 확인되면 아래 버튼으로 양쪽에 연락처를 보내세요</div>'
-      + '<button onclick="sendContacts(\'' + a + '\',\'' + b + '\',this)" class="w-full mt-2 bg-[#22c55e] text-black text-xs font-extrabold px-3 py-2 rounded-lg transition hover:bg-[#1ea952]">💌 연락처 전달 (양쪽 문자)</button>'
+      + '<button onclick="sendContacts(\'' + a + '\',\'' + b + '\',this)" class="w-full mt-2 text-xs font-extrabold px-3 py-2 rounded-lg transition" style="background:#15803D;color:#fff">💌 연락처 전달 (양쪽 문자)</button>'
       + '</div>';
   });
   if(!matched.size) html += '<div class="text-[12px] text-[#9a9080] mb-1">아직 성사된 매칭이 없어요.</div>';
   // 상세 응답 기록은 접어두기 (필요할 때만 펼침)
-  html += '<details class="mt-1"><summary style="cursor:pointer;font-size:12px;color:#9a9080;padding:6px 0;list-style:none">▸ 응답 기록 전체 보기 (' + responses.length + '건)</summary><div class="mt-1">';
+  html += '<details class="mt-1"><summary style="cursor:pointer;font-size:12px;color:#666666;padding:6px 0;list-style:none">▸ 응답 기록 전체 보기 (' + responses.length + '건)</summary><div class="mt-1">';
   responses.forEach(r => {
     const f = r.fields, ans = f["응답"] || "?", sup = f["매칭유형"] === "슈퍼매칭";
-    const c = ans === "수락" ? "#22c55e" : "#ef4444";
-    html += '<div class="flex items-center gap-2 text-[12.5px] py-2 border-t border-[#1e1c17]"><span style="color:' + c + ';font-weight:800">' + ans + '</span> <span class="text-white font-bold">' + nameOf(f["응답자ID"]) + '</span><span class="text-[#9a9080]">→ ' + nameOf(f["매칭ID"]) + '</span>' + (sup ? ' <span style="color:#E8B050;font-size:10px">⚡슈퍼</span>' : '') + '<span class="text-[10px] text-[#555] ml-auto">' + (f["응답일시"] || "") + '</span></div>';
+    const c = ans === "수락" ? "#15803D" : "#C11515";
+    html += '<div class="flex items-center gap-2 text-[12.5px] py-2 border-t border-[#1e1c17]"><span style="color:' + c + ';font-weight:800">' + ans + '</span> <span class="text-white font-bold">' + nameOf(f["응답자ID"]) + '</span><span class="text-[#9a9080]">→ ' + nameOf(f["매칭ID"]) + '</span>' + (sup ? ' <span style="color:#E5484D;font-size:10px">⚡슈퍼</span>' : '') + '<span class="text-[10px] text-[#555] ml-auto">' + (f["응답일시"] || "") + '</span></div>';
   });
   html += '</div></details></div>';
   box.innerHTML = html;
@@ -1533,7 +1533,7 @@ function renderDbSummary(){
   const isThisMonth = s => { const m = String(s||"").match(/(\d{4})\.\s*(\d{1,2})\./); return m && (m[1]+"."+parseInt(m[2])) === ym; };
   const newThis = applicants.filter(r => isThisMonth((r.fields||{})["신청일시"])).length;
   const tile = (v, k) => '<div class="bg-[#0e0c0a] rounded-xl py-2.5"><div class="text-xl font-black text-[#E8B050]">'+v+'</div><div class="text-[10px] text-[#9a9080] mt-0.5">'+k+'</div></div>';
-  grid.innerHTML = tile(all, "전체 회원") + tile(newThis, "이번달 신규") + tile('<span style="color:#60a5fa">'+male+'</span>/<span style="color:#f472b6">'+female+'</span>', "남 / 여") + tile(applicants.filter(r=>(r.fields||{})["유입경로"]==="결혼매칭").length, "💍 결혼매칭");
+  grid.innerHTML = tile(all, "전체 회원") + tile(newThis, "이번달 신규") + tile('<span style="color:#0C61CB">'+male+'</span>/<span style="color:#C2146F">'+female+'</span>', "남 / 여") + tile(applicants.filter(r=>(r.fields||{})["유입경로"]==="결혼매칭").length, "💍 결혼매칭");
 }
 
 // ⬇ 전체 회원(휴지통 포함) CSV 내보내기
@@ -1600,7 +1600,7 @@ function testLabel(s){
 // 한 줄 설명들 (신청자 상세에 표시)
 function testHintHtml(s){
   return [coffeeType(s), workType(s)].filter(Boolean)
-    .map(k => `<div style="font-size:12px;color:#c9bfa8;margin-top:3px;font-weight:500">· <b style="color:#E8B050">${k}</b> — ${TEST_HINT[k] || ""}</div>`).join("");
+    .map(k => `<div style="font-size:12px;color:#4A4A4A;margin-top:3px;font-weight:500">· <b style="color:#E5484D">${k}</b> — ${TEST_HINT[k] || ""}</div>`).join("");
 }
 // 두 사람의 테스트 유형이 '찰떡'인지 (커피끼리 또는 사원증끼리, 어느 한쪽 입장에서라도)
 function testPairFits(a, b){
@@ -1738,30 +1738,30 @@ function renderList(){
     const age = birth ? (2026 - birth + 1) : "";
     const ageText = age ? ` (${age}세)` : "";
     const genderBadge = f["성별"] === "여성"
-      ? `<span style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.3);color:#f472b6;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px">👧 ${f["출생연도"]||"?"}년생${ageText}</span>`
-      : `<span style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#60a5fa;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px">👦 ${f["출생연도"]||"?"}년생${ageText}</span>`;
+      ? `<span style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.3);color:#C2146F;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px">👧 ${f["출생연도"]||"?"}년생${ageText}</span>`
+      : `<span style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#0C61CB;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px">👦 ${f["출생연도"]||"?"}년생${ageText}</span>`;
 
     let pickBadge = "";
-    if(selected[0]?.id === r.id) pickBadge = `<span style="background:#E8B050;color:#000;font-size:10px;font-weight:900;padding:2px 7px;border-radius:6px">선택 1 ✓</span>`;
-    else if(selected[1]?.id === r.id) pickBadge = `<span style="background:#E8B050;color:#000;font-size:10px;font-weight:900;padding:2px 7px;border-radius:6px">선택 2 ✓</span>`;
+    if(selected[0]?.id === r.id) pickBadge = `<span style="background:#E5484D;color:#fff;font-size:10px;font-weight:900;padding:2px 7px;border-radius:6px">선택 1 ✓</span>`;
+    else if(selected[1]?.id === r.id) pickBadge = `<span style="background:#E5484D;color:#fff;font-size:10px;font-weight:900;padding:2px 7px;border-radius:6px">선택 2 ✓</span>`;
 
-    const statusBg = status === "승인" ? "background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3)"
-      : status === "소개중" ? "background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)"
-      : status === "대기" ? "background:rgba(232,176,80,.15);color:#E8B050;border:1px solid rgba(232,176,80,.3)"
-      : "background:#2a2217;color:#9a9080;border:1px solid #3a3224";
+    const statusBg = status === "승인" ? "background:rgba(34,197,94,.15);color:#15803D;border:1px solid rgba(34,197,94,.3)"
+      : status === "소개중" ? "background:rgba(59,130,246,.15);color:#0C61CB;border:1px solid rgba(59,130,246,.3)"
+      : status === "대기" ? "background:rgba(229,72,77,.15);color:#E5484D;border:1px solid rgba(255,107,107,.3)"
+      : "background:#F4F2EE;color:#666666;border:1px solid #D9D5CD";
     const statusBadge = `<span style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:20px;${statusBg}">${status}${f["매칭유형"] === "슈퍼매칭" ? ' · ⚡슈퍼' : ""}</span>`;
 
     const chips = [];
-    if(f["사는곳"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">📍 ${f["사는곳"]}</span>`);
-    if(f["직업"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">💼 ${f["직업"]}</span>`);
-    if(f["키"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">📏 ${f["키"]}cm</span>`);
-    if(myCoffee) chips.push(`<span style="font-size:11px;color:#E8B050;background:rgba(232,176,80,.08);border:1px solid rgba(232,176,80,.2);padding:2px 7px;border-radius:6px">${myCoffee}</span>`);
+    if(f["사는곳"]) chips.push(`<span style="font-size:11px;color:#4A4A4A;background:#FAFAF8;border:1px solid #E6E2DC;padding:2px 7px;border-radius:6px">📍 ${f["사는곳"]}</span>`);
+    if(f["직업"]) chips.push(`<span style="font-size:11px;color:#4A4A4A;background:#FAFAF8;border:1px solid #E6E2DC;padding:2px 7px;border-radius:6px">💼 ${f["직업"]}</span>`);
+    if(f["키"]) chips.push(`<span style="font-size:11px;color:#4A4A4A;background:#FAFAF8;border:1px solid #E6E2DC;padding:2px 7px;border-radius:6px">📏 ${f["키"]}cm</span>`);
+    if(myCoffee) chips.push(`<span style="font-size:11px;color:#E5484D;background:rgba(229,72,77,.08);border:1px solid rgba(255,107,107,.2);padding:2px 7px;border-radius:6px">${myCoffee}</span>`);
     // 📣 어디서 왔는지 (+ 누가 데려왔는지) — 예전엔 이 카드에 안 보였다
-    if(f["유입경로"]) chips.push(`<span style="font-size:11px;color:#c8b8a0;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">📣 ${escHtml(f["유입경로"])}${f["추천인이름"] ? " (" + escHtml(f["추천인이름"]) + ")" : ""}</span>`);
+    if(f["유입경로"]) chips.push(`<span style="font-size:11px;color:#4A4A4A;background:#FAFAF8;border:1px solid #E6E2DC;padding:2px 7px;border-radius:6px">📣 ${escHtml(f["유입경로"])}${f["추천인이름"] ? " (" + escHtml(f["추천인이름"]) + ")" : ""}</span>`);
     const cpn = couponOf(r);
     if(cpn) chips.push(cpn.used
-      ? `<span style="font-size:11px;color:#8a8070;background:#0e0c0a;border:1px solid #2a2217;padding:2px 7px;border-radius:6px">🎟 할인권 사용함</span>`
-      : `<span style="font-size:11px;font-weight:800;color:#171208;background:#E8B050;padding:2px 8px;border-radius:6px">🎟 2,000원 할인권</span>`);
+      ? `<span style="font-size:11px;color:#666666;background:#FAFAF8;border:1px solid #E6E2DC;padding:2px 7px;border-radius:6px">🎟 할인권 사용함</span>`
+      : `<span style="font-size:11px;font-weight:800;color:#fff;background:#E5484D;padding:2px 8px;border-radius:6px">🎟 2,000원 할인권</span>`);
     const chipsHtml = chips.join(" ");
 
     return `<div class="appcard ${isSelected ? 'sel' : ''} ${shareMode && shareSel[r.id] ? 'share-on' : ''}">
@@ -1772,21 +1772,21 @@ function renderList(){
         </div>
         <div class="pool-info">
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            ${memberNoMap[r.id] ? `<span style="font-size:10px;font-weight:700;color:#6b6358">#${memberNoMap[r.id]}</span>` : ""}
+            ${memberNoMap[r.id] ? `<span style="font-size:10px;font-weight:700;color:#767676">#${memberNoMap[r.id]}</span>` : ""}
             ${genderBadge}
-            <b style="font-size:15px;color:#fff">${f["이름"] || ""}</b>
-            ${(f["유입경로"]==="결혼매칭"||f["매칭유형"]==="결혼매칭") ? '<span style="font-size:10px;font-weight:800;color:#171208;background:#E8B050;padding:1px 6px;border-radius:4px">💍 결혼</span>' : ''}
+            <b style="font-size:15px;color:#1E1E1E">${f["이름"] || ""}</b>
+            ${(f["유입경로"]==="결혼매칭"||f["매칭유형"]==="결혼매칭") ? '<span style="font-size:10px;font-weight:800;color:#fff;background:#E5484D;padding:1px 6px;border-radius:4px">💍 결혼</span>' : ''}
             <div style="margin-left:auto;display:flex;align-items:center;gap:5px">
               ${statusBadge}
               ${pickBadge}
             </div>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
-            ${chipsHtml || '<span style="font-size:11px;color:#666">-</span>'}
+            ${chipsHtml || '<span style="font-size:11px;color:#767676">-</span>'}
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:7px">
-            <span style="font-size:10.5px;color:#7a7060"><i class="fa-regular fa-clock" style="font-size:9.5px;margin-right:2px"></i>${formatDateText(f["신청일시"] || r.createdTime)}</span>
-            <button type="button" onclick="event.stopPropagation();toggleExpand('${r.id}')" style="background:transparent;border:none;color:#9a9080;font-size:11px;font-weight:700;cursor:pointer;padding:2px 4px">
+            <span style="font-size:10.5px;color:#767676"><i class="fa-regular fa-clock" style="font-size:9.5px;margin-right:2px"></i>${formatDateText(f["신청일시"] || r.createdTime)}</span>
+            <button type="button" onclick="event.stopPropagation();toggleExpand('${r.id}')" style="background:transparent;border:none;color:#666666;font-size:11px;font-weight:700;cursor:pointer;padding:2px 4px">
               <span id="exp-text-${r.id}">상세보기 <i class="fa-solid fa-chevron-down ml-0.5"></i></span>
             </button>
           </div>
@@ -1797,59 +1797,59 @@ function renderList(){
           ${photos.length > 1 ? `<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">${photos.map(p => `<img src="${p.url}" onclick="openPhoto('${p.url}')" style="width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;flex-shrink:0">`).join("")}</div>` : ""}
           <div style="display:flex;gap:6px">
             <button onclick="event.stopPropagation();shareProfile('${r.id}')" style="flex:2;background:#FEE500;color:#3C1E1E;border:none;font-size:12.5px;font-weight:800;padding:10px;border-radius:10px;cursor:pointer">📤 카톡으로 공유 (사진+정보)</button>
-            <button onclick="event.stopPropagation();copyProfile('${r.id}')" style="flex:1;background:#16140f;border:1px solid #6b6358;color:#9a9080;font-size:12px;font-weight:700;padding:10px;border-radius:10px;cursor:pointer">📋 정보 복사</button>
+            <button onclick="event.stopPropagation();copyProfile('${r.id}')" style="flex:1;background:#FFFFFF;border:1px solid #CFCAC2;color:#666666;font-size:12px;font-weight:700;padding:10px;border-radius:10px;cursor:pointer">📋 정보 복사</button>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-            <div onclick="copyPhone('${f["연락처"] || ""}', event)" style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px;cursor:pointer" title="탭하면 복사돼요"><span style="color:#8a8070;font-size:11px">연락처 <i class="fa-solid fa-copy" style="font-size:10px"></i></span><br><b>${f["연락처"] || "-"}</b></div>
-            <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">종교</span><br><b>${f["종교"] || "-"}</b></div>
-            <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">취미</span><br><b>${f["취미"] || "-"}</b></div>
-            <div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
-            ${cpn ? `<div style="grid-column:1/-1;background:#0e0c0a;border:1px ${cpn.used ? "solid #2a2217" : "dashed rgba(232,176,80,.6)"};border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">🎟 할인권</span><br><b style="color:${cpn.used ? "#8a8070" : "#E8B050"}">${cpn.used ? escHtml(cpn.text) : "2,000원 할인 — 매칭 성사 후 입금 안내 때 적용"}</b>${cpn.used ? "" : `<div style="font-size:12px;color:#c9bfa8;margin-top:3px;font-weight:500">${escHtml(cpn.why)}</div>`}</div>` : ""}
-            ${f["테스트결과"] ? `<div style="grid-column:1/-1;background:#0e0c0a;border:1px solid rgba(232,176,80,.3);border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">☕🪪 유형 테스트 결과 (영수증 · 사원증)</span><br><b style="color:#E8B050">${escHtml(f["테스트결과"])}</b>${testHintHtml(f["테스트결과"])}</div>` : ""}
+            <div onclick="copyPhone('${f["연락처"] || ""}', event)" style="background:#FAFAF8;border-radius:11px;padding:10px 12px;font-size:13px;cursor:pointer" title="탭하면 복사돼요"><span style="color:#666666;font-size:11px">연락처 <i class="fa-solid fa-copy" style="font-size:10px"></i></span><br><b>${f["연락처"] || "-"}</b></div>
+            <div style="background:#FAFAF8;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#666666;font-size:11px">종교</span><br><b>${f["종교"] || "-"}</b></div>
+            <div style="background:#FAFAF8;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#666666;font-size:11px">취미</span><br><b>${f["취미"] || "-"}</b></div>
+            <div style="background:#FAFAF8;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#666666;font-size:11px">유형</span><br><b>${f["매칭유형"] || "일반매칭"}</b></div>
+            ${cpn ? `<div style="grid-column:1/-1;background:#FAFAF8;border:1px ${cpn.used ? "solid #F4F2EE" : "dashed rgba(229,72,77,.6)"};border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#666666;font-size:11px">🎟 할인권</span><br><b style="color:${cpn.used ? "#666666" : "#E5484D"}">${cpn.used ? escHtml(cpn.text) : "2,000원 할인 — 매칭 성사 후 입금 안내 때 적용"}</b>${cpn.used ? "" : `<div style="font-size:12px;color:#4A4A4A;margin-top:3px;font-weight:500">${escHtml(cpn.why)}</div>`}</div>` : ""}
+            ${f["테스트결과"] ? `<div style="grid-column:1/-1;background:#FAFAF8;border:1px solid rgba(255,107,107,.3);border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#666666;font-size:11px">☕🪪 유형 테스트 결과 (영수증 · 사원증)</span><br><b style="color:#E5484D">${escHtml(f["테스트결과"])}</b>${testHintHtml(f["테스트결과"])}</div>` : ""}
           </div>
           ${matchHistoryFor(r.id)}
-          ${myCoffee ? `<div style="background:#0e0c0a;border:1px solid rgba(232,176,80,.35);border-radius:11px;padding:10px 12px">
-            <div style="color:#E8B050;font-size:11px;font-weight:800;margin-bottom:2px">☕🪪 테스트 궁합이 잘 맞는 이성 ${coffeeBuddies.length ? '('+coffeeBuddies.length+'명)' : ''}</div>
-            ${coffeeBuddies.length ? coffeeBuddies.map(o=>{const of=o.fields||{};return `<div style="font-size:12.5px;padding:4px 0;border-top:1px solid #1e1c17;cursor:pointer" onclick="event.stopPropagation();toggleSelect('${o.id}')"><b style="color:#fff">${of["이름"]||"?"}</b> <span style="color:#9a9080">${of["출생연도"]||"?"}년생 · ${of["성별"]||""} · ${testLabel(of["테스트결과"])}</span></div>`;}).join("") : '<div style="font-size:12px;color:#9a9080;padding-top:4px">아직 궁합 맞는 이성 신청자가 없어요</div>'}
+          ${myCoffee ? `<div style="background:#FAFAF8;border:1px solid rgba(255,107,107,.35);border-radius:11px;padding:10px 12px">
+            <div style="color:#E5484D;font-size:11px;font-weight:800;margin-bottom:2px">☕🪪 테스트 궁합이 잘 맞는 이성 ${coffeeBuddies.length ? '('+coffeeBuddies.length+'명)' : ''}</div>
+            ${coffeeBuddies.length ? coffeeBuddies.map(o=>{const of=o.fields||{};return `<div style="font-size:12.5px;padding:4px 0;border-top:1px solid #E6E2DC;cursor:pointer" onclick="event.stopPropagation();toggleSelect('${o.id}')"><b style="color:#1E1E1E">${of["이름"]||"?"}</b> <span style="color:#666666">${of["출생연도"]||"?"}년생 · ${of["성별"]||""} · ${testLabel(of["테스트결과"])}</span></div>`;}).join("") : '<div style="font-size:12px;color:#666666;padding-top:4px">아직 궁합 맞는 이성 신청자가 없어요</div>'}
           </div>` : ""}
           ${(f["재직증명서"] && f["재직증명서"][0] && f["재직증명서"][0].url)
-            ? `<a href="${f["재직증명서"][0].url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:8px;background:#0e0c0a;border:1px solid #22c55e;border-radius:11px;padding:10px 12px;font-size:13px;color:#22c55e;font-weight:700;text-decoration:none"><i class="fa-solid fa-file-shield"></i> 재직증명서·사업자등록증 보기</a>`
+            ? `<a href="${f["재직증명서"][0].url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:8px;background:#FAFAF8;border:1px solid #15803D;border-radius:11px;padding:10px 12px;font-size:13px;color:#15803D;font-weight:700;text-decoration:none"><i class="fa-solid fa-file-shield"></i> 재직증명서·사업자등록증 보기</a>`
             : (new Date(r.createdTime).getTime() < new Date("2026-10-30T00:00:00+09:00").getTime()
-              ? `<div style="background:#0e0c0a;border:1px solid #2c281f;border-radius:11px;padding:10px 12px;font-size:12px;color:#9a9080">🪪 재직 서류 없음 — 2026-11-12 자동 파기 때 지워졌을 수 있어요 (지금은 자동 파기를 하지 않아요)</div>`
-              : `<div style="background:#0e0c0a;border:1px solid #ef4444;border-radius:11px;padding:10px 12px;font-size:12px;color:#ef4444">⚠️ 제출된 재직증명서 없음</div>`)}
-          ${f["자기소개"] ? `<div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">자기소개</span><p style="color:#9a9080;margin-top:4px;line-height:1.5">${f["자기소개"]}</p></div>` : ""}
-          ${f["성격키워드"] ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${f["성격키워드"].split(",").map(kw => kw.trim()).filter(Boolean).map(kw => `<span style="font-size:10px;background:rgba(255,212,0,.1);color:#E8B050;padding:3px 8px;border-radius:20px">${kw}</span>`).join("")}</div>` : ""}
-          <div style="font-size:11.5px;color:#8a8070;margin-top:2px">💛 선호 나이대: ${f["선호나이대"] || "-"}</div>
-          ${f["이상형"] ? `<div style="background:#0e0c0a;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#8a8070;font-size:11px">원하는 이상형</span><p style="color:#9a9080;margin-top:4px;line-height:1.5">${f["이상형"]}</p></div>` : ""}
-          <button onclick="event.stopPropagation();sendIntakeSMS('${r.id}')" style="background:#16140f;border:1px solid #E8B050;color:#E8B050;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;margin-top:6px;width:100%">📨 접수 안내 문자 보내기</button>
-          <div onclick="event.stopPropagation()" style="margin-top:6px;background:#0e0c0a;border:1px solid #1e1c17;border-radius:11px;padding:10px 12px">
-            <div style="color:#8a8070;font-size:11px;font-weight:700;margin-bottom:6px">✏️ 직접 문자 쓰기 → ${f["연락처"] || "연락처 없음"}</div>
-            <textarea id="sms-${r.id}" placeholder="여기에 보낼 문자 내용을 직접 쓰세요" style="width:100%;box-sizing:border-box;background:#16140f;border:1px solid #1e1c17;border-radius:9px;color:#fff;font-size:13px;font-family:inherit;padding:9px 10px;resize:vertical;min-height:64px;outline:none" oninput="const c=document.getElementById('smsc-${r.id}');if(c)c.textContent=this.value.length"></textarea>
+              ? `<div style="background:#FAFAF8;border:1px solid #E6E2DC;border-radius:11px;padding:10px 12px;font-size:12px;color:#666666">🪪 재직 서류 없음 — 2026-11-12 자동 파기 때 지워졌을 수 있어요 (지금은 자동 파기를 하지 않아요)</div>`
+              : `<div style="background:#FAFAF8;border:1px solid #ef4444;border-radius:11px;padding:10px 12px;font-size:12px;color:#C11515">⚠️ 제출된 재직증명서 없음</div>`)}
+          ${f["자기소개"] ? `<div style="background:#FAFAF8;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#666666;font-size:11px">자기소개</span><p style="color:#666666;margin-top:4px;line-height:1.5">${f["자기소개"]}</p></div>` : ""}
+          ${f["성격키워드"] ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${f["성격키워드"].split(",").map(kw => kw.trim()).filter(Boolean).map(kw => `<span style="font-size:10px;background:rgba(229,72,77,.1);color:#E5484D;padding:3px 8px;border-radius:20px">${kw}</span>`).join("")}</div>` : ""}
+          <div style="font-size:11.5px;color:#666666;margin-top:2px">💛 선호 나이대: ${f["선호나이대"] || "-"}</div>
+          ${f["이상형"] ? `<div style="background:#FAFAF8;border-radius:11px;padding:10px 12px;font-size:13px"><span style="color:#666666;font-size:11px">원하는 이상형</span><p style="color:#666666;margin-top:4px;line-height:1.5">${f["이상형"]}</p></div>` : ""}
+          <button onclick="event.stopPropagation();sendIntakeSMS('${r.id}')" style="background:#FFFFFF;border:1px solid #FF6B6B;color:#E5484D;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;margin-top:6px;width:100%">📨 접수 안내 문자 보내기</button>
+          <div onclick="event.stopPropagation()" style="margin-top:6px;background:#FAFAF8;border:1px solid #E6E2DC;border-radius:11px;padding:10px 12px">
+            <div style="color:#666666;font-size:11px;font-weight:700;margin-bottom:6px">✏️ 직접 문자 쓰기 → ${f["연락처"] || "연락처 없음"}</div>
+            <textarea id="sms-${r.id}" placeholder="여기에 보낼 문자 내용을 직접 쓰세요" style="width:100%;box-sizing:border-box;background:#FFFFFF;border:1px solid #E6E2DC;border-radius:9px;color:#1E1E1E;font-size:13px;font-family:inherit;padding:9px 10px;resize:vertical;min-height:64px;outline:none" oninput="const c=document.getElementById('smsc-${r.id}');if(c)c.textContent=this.value.length"></textarea>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
-              <span style="color:#8a8070;font-size:10.5px"><span id="smsc-${r.id}">0</span>자</span>
-              <button onclick="event.stopPropagation();sendCustomSMSTo('${r.id}')" style="background:#E8B050;border:none;color:#000;font-size:12px;font-weight:800;padding:8px 16px;border-radius:9px;cursor:pointer">✉️ 이 내용으로 보내기</button>
+              <span style="color:#666666;font-size:10.5px"><span id="smsc-${r.id}">0</span>자</span>
+              <button onclick="event.stopPropagation();sendCustomSMSTo('${r.id}')" style="background:#E5484D;border:none;color:#fff;font-size:12px;font-weight:800;padding:8px 16px;border-radius:9px;cursor:pointer">✉️ 이 내용으로 보내기</button>
             </div>
           </div>
           ${status === "대기" ? `
           <div style="display:flex;gap:6px;margin-top:8px">
-            <button onclick="event.stopPropagation();approveApplicant('${r.id}', event)" style="flex:1;background:#22c55e;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">✅ 승인</button>
+            <button onclick="event.stopPropagation();approveApplicant('${r.id}', event)" style="flex:1;background:#15803D;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">✅ 승인</button>
             <button onclick="event.stopPropagation();rejectApplicant('${r.id}', event)" style="flex:1;background:#ef4444;color:#fff;font-size:12px;font-weight:700;padding:8px;border-radius:10px;border:none;cursor:pointer">❌ 거절</button>
           </div>
-          <button onclick="event.stopPropagation();deleteToTrash('${r.id}', event)" style="margin-top:6px;width:100%;background:#16140f;border:1px solid #6b6358;color:#9a9080;font-size:11px;font-weight:700;padding:7px;border-radius:10px;cursor:pointer">🗑️ 삭제 (휴지통으로)</button>` :
+          <button onclick="event.stopPropagation();deleteToTrash('${r.id}', event)" style="margin-top:6px;width:100%;background:#FFFFFF;border:1px solid #CFCAC2;color:#666666;font-size:11px;font-weight:700;padding:7px;border-radius:10px;cursor:pointer">🗑️ 삭제 (휴지통으로)</button>` :
           status === "휴지통" ? `
           <div style="display:flex;gap:6px;margin-top:8px">
-            <button onclick="event.stopPropagation();restoreApplicant('${r.id}', event)" style="flex:1;background:#16140f;border:1px solid #22c55e;color:#22c55e;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">↩️ 복원</button>
+            <button onclick="event.stopPropagation();restoreApplicant('${r.id}', event)" style="flex:1;background:#FFFFFF;border:1px solid #15803D;color:#15803D;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">↩️ 복원</button>
             <button onclick="event.stopPropagation();deleteForever('${r.id}', event)" style="flex:1;background:#7f1d1d;border:none;color:#fff;font-size:11px;font-weight:800;padding:8px;border-radius:10px;cursor:pointer">❌ 완전 삭제</button>
           </div>
-          <div style="font-size:10.5px;color:#8a8070;margin-top:5px;text-align:center">완전 삭제는 되돌릴 수 없어요</div>` :
+          <div style="font-size:10.5px;color:#666666;margin-top:5px;text-align:center">완전 삭제는 되돌릴 수 없어요</div>` :
           status === "제외" ? `
           <div style="display:flex;gap:6px;margin-top:8px">
-            <button onclick="event.stopPropagation();restoreApplicant('${r.id}', event)" style="flex:1;background:#16140f;border:1px solid #22c55e;color:#22c55e;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">↩️ 복원</button>
-            <button onclick="event.stopPropagation();deleteToTrash('${r.id}', event)" style="flex:1;background:#16140f;border:1px solid #6b6358;color:#9a9080;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">🗑️ 삭제</button>
+            <button onclick="event.stopPropagation();restoreApplicant('${r.id}', event)" style="flex:1;background:#FFFFFF;border:1px solid #15803D;color:#15803D;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">↩️ 복원</button>
+            <button onclick="event.stopPropagation();deleteToTrash('${r.id}', event)" style="flex:1;background:#FFFFFF;border:1px solid #CFCAC2;color:#666666;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">🗑️ 삭제</button>
           </div>` : `
           <div style="display:flex;gap:6px;margin-top:8px">
-            <button onclick="event.stopPropagation();excludeApplicant('${r.id}', event)" style="flex:1;background:#16140f;border:1px solid #ef4444;color:#ef4444;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">🚫 제외(숨김)</button>
-            <button onclick="event.stopPropagation();deleteToTrash('${r.id}', event)" style="flex:1;background:#16140f;border:1px solid #6b6358;color:#9a9080;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">🗑️ 삭제</button>
+            <button onclick="event.stopPropagation();excludeApplicant('${r.id}', event)" style="flex:1;background:#FFFFFF;border:1px solid #ef4444;color:#C11515;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">🚫 제외(숨김)</button>
+            <button onclick="event.stopPropagation();deleteToTrash('${r.id}', event)" style="flex:1;background:#FFFFFF;border:1px solid #CFCAC2;color:#666666;font-size:11px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">🗑️ 삭제</button>
           </div>`}
         </div>
       </div>
@@ -1886,26 +1886,26 @@ function renderList(){
   const fitLabel = (r) => {
     const fi = fitInfo[r.id]; if(!fi) return "";
     return fi.why
-      ? `<div style="font-size:10.5px;color:#8a8070;padding:0 4px 3px">${fi.why}</div>`
-      : `<div style="font-size:10.5px;font-weight:800;color:#E8B050;padding:0 4px 3px">✨ 어울림 ${fi.score}점</div>`;
+      ? `<div style="font-size:10.5px;color:#666666;padding:0 4px 3px">${fi.why}</div>`
+      : `<div style="font-size:10.5px;font-weight:800;color:#E5484D;padding:0 4px 3px">✨ 어울림 ${fi.score}점</div>`;
   };
   // 📱 좁은 화면에선 남/여가 위아래로 쌓여 스크롤이 두 배가 된다 → 한쪽만 볼 수 있게.
   //    한 명을 고르면 자동으로 반대쪽을 보여준다 (남성을 누르면 여성 목록이 바로 보이게).
   const narrow = window.innerWidth < 700;
   const side = !narrow ? "both" : (boardSideManual ? boardSide : (sortedSide || boardSide));
   const sideBtn = (v, label) =>
-    `<button onclick="setBoardSide('${v}')" style="flex:1;font-size:12px;font-weight:800;padding:8px;border-radius:10px;cursor:pointer;border:1px solid ${side===v?"#E8B050":"#1e1c17"};background:${side===v?"#E8B050":"#16140f"};color:${side===v?"#000":"#9a9080"}">${label}</button>`;
+    `<button onclick="setBoardSide('${v}')" style="flex:1;font-size:12px;font-weight:800;padding:8px;border-radius:10px;cursor:pointer;border:1px solid ${side===v?"#E5484D":"#F4F2EE"};background:${side===v?"#E5484D":"#FFFFFF"};color:${side===v?"#FAFAF8":"#666666"}">${label}</button>`;
   const sideBar = narrow
     ? `<div style="display:flex;gap:6px;margin-bottom:8px">${sideBtn("both","둘 다")}${sideBtn("남성","👦 남성 "+males.length)}${sideBtn("여성","👧 여성 "+females.length)}</div>`
-      + (sortedSide ? `<div style="font-size:11px;color:#E8B050;margin:-2px 2px 8px">✨ ${pick.fields["이름"]||""}님과 어울리는 순으로 ${sortedSide} 목록을 보여드려요</div>` : "")
+      + (sortedSide ? `<div style="font-size:11px;color:#E5484D;margin:-2px 2px 8px">✨ ${pick.fields["이름"]||""}님과 어울리는 순으로 ${sortedSide} 목록을 보여드려요</div>` : "")
     : "";
   const column = (emoji, title, arr, color) =>
     `<div style="flex:1 1 320px">
-       <div style="position:sticky;top:0;z-index:2;font-weight:900;font-size:13px;color:${color};background:#0e0c0a;padding:8px 11px;border-radius:10px;margin-bottom:8px;border:1px solid #1e1c17">${emoji} ${title} <span style="color:#8a8070;font-weight:600;font-size:12px">${arr.length}명</span></div>
-       ${arr.length ? arr.map(r => fitLabel(r) + cardHtml(r)).join("") : '<div style="color:#555;font-size:12px;text-align:center;padding:24px 0">없음</div>'}
+       <div style="position:sticky;top:0;z-index:2;font-weight:900;font-size:13px;color:${color};background:#FAFAF8;padding:8px 11px;border-radius:10px;margin-bottom:8px;border:1px solid #E6E2DC">${emoji} ${title} <span style="color:#666666;font-weight:600;font-size:12px">${arr.length}명</span></div>
+       ${arr.length ? arr.map(r => fitLabel(r) + cardHtml(r)).join("") : '<div style="color:#767676;font-size:12px;text-align:center;padding:24px 0">없음</div>'}
      </div>`;
-  const colM = (side === "여성") ? "" : column("👦", "남성" + (sortedSide === "남성" ? " · 어울리는 순" : ""), malesV, "#60a5fa");
-  const colF = (side === "남성") ? "" : column("👧", "여성" + (sortedSide === "여성" ? " · 어울리는 순" : ""), femalesV, "#f472b6");
+  const colM = (side === "여성") ? "" : column("👦", "남성" + (sortedSide === "남성" ? " · 어울리는 순" : ""), malesV, "#0C61CB");
+  const colF = (side === "남성") ? "" : column("👧", "여성" + (sortedSide === "여성" ? " · 어울리는 순" : ""), femalesV, "#C2146F");
   list.innerHTML = sideBar +
     `<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start">${colM}${colF}</div>`
     + (etc.length ? `<div style="margin-top:12px">${etc.map(cardHtml).join("")}</div>` : "");
@@ -2133,23 +2133,23 @@ function updateSmartRecommendations(){
   scored.sort((a,b) => b.score - a.score);
   const top3 = scored.slice(0, 3);
 
-  let html = '<div style="background:#1a1712;border:1px solid rgba(232,176,80,.25);border-radius:12px;padding:10px 12px;margin-bottom:8px">';
+  let html = '<div style="background:#FFFFFF;border:1px solid rgba(255,107,107,.25);border-radius:12px;padding:10px 12px;margin-bottom:8px">';
   html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
-  html += '<span style="font-size:11.5px;font-weight:800;color:#E8B050">✨ <b>' + (pf["이름"]||"선택1") + '</b>님 찰떡 상대 추천 TOP 3</span>';
-  html += '<span style="font-size:10px;color:#9a9080">탭하면 바로 선택2에 담겨요</span>';
+  html += '<span style="font-size:11.5px;font-weight:800;color:#E5484D">✨ <b>' + (pf["이름"]||"선택1") + '</b>님 찰떡 상대 추천 TOP 3</span>';
+  html += '<span style="font-size:10px;color:#666666">탭하면 바로 선택2에 담겨요</span>';
   html += '</div><div style="display:flex;flex-direction:column;gap:6px">';
 
   top3.forEach(item => {
     const r = item.record, f = r.fields || {};
     const photo = (f["프로필사진"] && f["프로필사진"][0] && f["프로필사진"][0].url) || "";
     const locJob = [f["사는곳"], f["직업"]].filter(Boolean).join(" · ");
-    html += '<div onclick="toggleSelect(\'' + r.id + '\')" style="display:flex;align-items:center;gap:8px;background:#0e0c0a;border:1px solid #2a2217;border-radius:10px;padding:7px 10px;cursor:pointer;transition:border-color .15s">';
+    html += '<div onclick="toggleSelect(\'' + r.id + '\')" style="display:flex;align-items:center;gap:8px;background:#FAFAF8;border:1px solid #E6E2DC;border-radius:10px;padding:7px 10px;cursor:pointer;transition:border-color .15s">';
     if(photo) html += '<img src="' + photo + '" style="width:34px;height:34px;border-radius:8px;object-fit:cover;flex:none">';
     html += '<div style="flex:1;min-width:0">';
-    html += '<div style="font-size:12.5px;font-weight:700;color:#fff">' + (f["이름"]||"") + ' <span style="font-size:11px;color:#9a9080;font-weight:400">' + (f["출생연도"]||"") + '년생</span></div>';
-    html += '<div style="font-size:11px;color:#7a7060;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (locJob || "-") + '</div>';
+    html += '<div style="font-size:12.5px;font-weight:700;color:#1E1E1E">' + (f["이름"]||"") + ' <span style="font-size:11px;color:#666666;font-weight:400">' + (f["출생연도"]||"") + '년생</span></div>';
+    html += '<div style="font-size:11px;color:#767676;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (locJob || "-") + '</div>';
     html += '</div>';
-    html += '<span style="font-size:10.5px;font-weight:800;color:#E8B050;background:rgba(232,176,80,.1);padding:3px 8px;border-radius:20px;border:1px solid rgba(232,176,80,.25)">' + item.score + '% 추천</span>';
+    html += '<span style="font-size:10.5px;font-weight:800;color:#E5484D;background:rgba(229,72,77,.1);padding:3px 8px;border-radius:20px;border:1px solid rgba(255,107,107,.25)">' + item.score + '% 추천</span>';
     html += '</div>';
   });
 
@@ -3362,11 +3362,11 @@ function dropPhoto(e, idx){
 
 // 드래그 앤 드롭 (파일)
 const uploadArea = document.getElementById("photo-upload-area");
-uploadArea.addEventListener("dragover", e => { e.preventDefault(); uploadArea.style.borderColor = "#E8B050"; });
-uploadArea.addEventListener("dragleave", () => { uploadArea.style.borderColor = "#333"; });
+uploadArea.addEventListener("dragover", e => { e.preventDefault(); uploadArea.style.borderColor = "#FF6B6B"; });
+uploadArea.addEventListener("dragleave", () => { uploadArea.style.borderColor = "#D9D5CD"; });
 uploadArea.addEventListener("drop", e => {
   e.preventDefault();
-  uploadArea.style.borderColor = "#333";
+  uploadArea.style.borderColor = "#D9D5CD";
   const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
   if(files.length > 0) addPhotos(files);
 });
