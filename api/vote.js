@@ -101,9 +101,17 @@ module.exports = async function handler(req, res) {
 
     // ============ 이성 참가자 목록 (전화번호 미포함) ============
     if (action === "list") {
-      const people = await getAll("투표참가자", body.event ? `{행사}='${body.event}'` : null);
+      // 🔒 예전에는 누구나 행사 이름 없이 부르면 모든 행사 참가자의 사진·닉네임·나이가 나왔다.
+      //    이제 명단에 있는 본인(닉네임+비번)만, 자기 행사의 이성만 볼 수 있다.
+      const all = await getAll("투표참가자");
+      const meL = findMe(all, { nick: body.nick, phone: body.phone, event: body.event });
+      if (!meL) return res.status(401).json({ error: "명단 확인이 필요해요" });
+      const pinL = nm(meL.fields["비번"]);
+      if (!pinL || nm(body.pin) !== pinL) return res.status(401).json({ error: "비밀번호를 확인해주세요" });
+      const evL = meL.fields["행사"] || "", gL = meL.fields["성별"] || "";
+      const people = all.filter(p => (p.fields["행사"] || "") === evL);
       const list = people
-        .filter(p => !body.gender || p.fields["성별"] !== body.gender) // 이성만
+        .filter(p => !gL || p.fields["성별"] !== gL) // 이성만
         .map(p => ({
           순번: p.fields["순번"] || 0,
           닉네임: p.fields["닉네임"] || "",
