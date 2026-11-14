@@ -177,9 +177,8 @@
       <span style="font-size:17px;flex-shrink:0">💛</span>
       <span style="font-size:12.5px;color:#1E1E1E;font-weight:650;line-height:1.45">매칭이 <b style="color:#E5484D">성사될 때만</b> 결제해요.<br>매칭 안 되면 <b style="color:#E5484D">0원</b>이에요.</span>
     </div>
-    <div style="margin-top:10px;background:rgba(0,0,0,.024);border:1px solid rgba(0,0,0,.064);border-radius:14px;padding:11px 14px;text-align:left;">
-      <span style="font-size:12px;color:#666666;font-weight:600;line-height:1.5">📌 <b style="color:#1E1E1E">이미 신청하셨나요?</b> 다시 신청 안 하셔도 돼요! 내용 수정은 <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#E5484D;font-weight:700">카카오톡 채널</a>로 말씀해 주세요 ✏️</span>
-    </div>
+    <!-- 📌 '이미 신청하셨나요?' 안내는 로그인 벽 안쪽(신청서 위)으로 옴겼다 (2026-11-14).
+         로그인 전 첫 화면에서는 '10초 고르기' 카드가 최대한 위에 보여야 해서다. -->
     <!-- 테스트 결과 배지 (URL 파라미터로 넘어온 경우) -->
     <div id="test-result-badge" class="hidden bg-[#16140f] border border-[#E8B050]/40 rounded-xl p-3 mt-5 text-sm">
       <div class="flex items-center justify-center gap-2">
@@ -320,6 +319,10 @@
   <div class="max-w-lg mx-auto">
     <!-- 10초 선택을 마치고 로그인해서 돌아온 손님에게: 무엇이 채워졌는지 -->
     <div id="quick-filled" style="display:none;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:14px;padding:13px 15px;margin-bottom:14px;font-size:13px;line-height:1.6;font-weight:700;color:#1E1E1E;word-break:keep-all"></div>
+    <!-- 📌 이미 신청한 분이 또 신청하는 걸 막는 안내 ('이미 신청하셨나요?') — 로그인 벽 안쪽으로 옴김 -->
+    <div style="margin-bottom:14px;background:rgba(0,0,0,.024);border:1px solid rgba(0,0,0,.064);border-radius:14px;padding:11px 14px;text-align:left;">
+      <span style="font-size:12px;color:#666666;font-weight:600;line-height:1.5">📌 <b style="color:#1E1E1E">이미 신청하셨나요?</b> 다시 신청 안 하셔도 돼요! 내용 수정은 <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#E5484D;font-weight:700">카카오톡 채널</a>로 말씀해 주세요 ✏️</span>
+    </div>
     <form id="matching-form" class="space-y-6" novalidate onsubmit="return handleSubmit(event)">
       <div class="fsteps" id="fsteps">
         <div class="fchip on" data-s="1"><b>1</b> 기본정보</div>
