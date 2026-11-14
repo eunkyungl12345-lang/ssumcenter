@@ -1,3 +1,5 @@
+const { watchAdminKey } = require("./_guard.js");
+const { verify: verifyUser } = require("./_session.js");
 // 회원 통합 명부 (마스터 DB)
 //  - upsertMember: 전화번호 기준으로 회원 찾아서 있으면 업데이트, 없으면 생성 (중복방지)
 //    → api/airtable.js 에서 신청서 제출 성공 시 자동 호출됨
@@ -194,6 +196,7 @@ async function syncMembers({ TOKEN, BASE_ID, sources }) {
 
 // 관리자 셋업 엔드포인트: 테이블/필드 생성 (Metadata API, 함수 개수 절약 위해 여기 통합)
 module.exports = async function handler(req, res) {
+  await watchAdminKey(req, "member");   // 🚨 틀린 관리자 비밀번호 → 슬랙 알림 (api/_guard.js)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-key");
@@ -207,6 +210,10 @@ module.exports = async function handler(req, res) {
 
   // "그때 그 사람 찾기" 쪽지 기능 (고객용, 카카오 로그인 필요) → api/_reconnect.js
   if (req.method === "POST" && typeof body.action === "string" && (body.action.indexOf("rc_") === 0 || body.action.indexOf("bd_") === 0)) {
+    // 🔐 카카오ID만 보고 믿지 않는다 (예전에는 남의 카카오ID로 남의 쪽지함을 열고 대신 답할 수 있었다)
+    if (body.kakaoId && !verifyUser(body.kakaoId, req.headers["x-user-token"] || body.kt)) {
+      return res.status(401).json({ error: "로그인이 만료됐어요. 다시 로그인해주세요.", relogin: true });
+    }
     try {
       const reconnect = body.action.indexOf("bd_") === 0 ? require("./_board.js") : require("./_reconnect.js");
       let sendSms = null, notify = null;

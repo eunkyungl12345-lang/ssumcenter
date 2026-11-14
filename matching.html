@@ -281,7 +281,7 @@
         <div style="text-align:center">
           <div style="font-size:28px;line-height:1">✅</div>
           <h2 class="qtitle" style="margin-top:8px">조건 저장 완료!</h2>
-          <p class="qdesc">매칭 후보를 받으실 카카오만 3초 연결하면 끝나요.</p>
+          <p class="qdesc">카카오로 3초 연결하면, 고른 조건이 채워진 신청서로 이어서 쓸 수 있어요.</p>
         </div>
         <div id="quick-summary" style="background:#FAFAF8;border:1px solid #E6E2DC;border-radius:16px;padding:12px 14px;margin-top:14px"></div>
         <a id="quick-login" href="login.html?redirect=matching.html" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;background:#FEE500;color:#191919;border-radius:14px;padding:16px;font-size:15.5px;font-weight:800;text-decoration:none;font-family:inherit">
@@ -297,7 +297,8 @@
     <div style="margin-top:12px;background:#FFFFFF;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:14px 16px">
       <div style="font-size:12.5px;line-height:1.85;color:#1E1E1E;word-break:keep-all">
         <div>💰 <b>만남 성사 전까지 0원</b> — 신청만으로는 결제되지 않아요</div>
-        <div>🛡️ <b>재직인증은 매칭될 때만</b> — 서류는 센터장만 보고, 상대에게는 안 보여요</div>
+        <!-- ⚠️ 재직서류는 신청서 2단계에서 받는다. "매칭될 때만"이라고 쓰면 사실과 다르다 -->
+        <div>🛡️ <b>재직서류는 센터장만 봐요</b> — 상대에게는 보이지 않아요</div>
         <div>☕ <b>센터장 3명이 직접</b> 신청서를 읽고 한 사람을 이어드려요</div>
       </div>
     </div>
@@ -306,8 +307,8 @@
       <div style="font-size:12.5px;font-weight:800;color:#E5484D;margin-bottom:6px">이렇게 진행돼요</div>
       <div style="font-size:12px;color:#1E1E1E;line-height:1.85;word-break:keep-all">
         1️⃣ 지금 고른 조건 저장<br>
-        2️⃣ 카카오 3초 연결 <span style="color:#666666">(매칭 후보를 받으실 통로예요)</span><br>
-        3️⃣ 신청서에 조건이 자동으로 채워져요 — 이름·연락처·직업, 사진과 재직서류만 마저 넣으면 끝!
+        2️⃣ 카카오 3초 연결 <span style="color:#666666">(내 신청서를 저장하고 진행 상황을 볼 수 있어요)</span><br>
+        3️⃣ 고른 조건은 신청서에 자동으로 채워져요 — 나머지(사진·재직서류 포함)를 채우면 끝! <span style="white-space:nowrap">약 5분</span>
       </div>
       <div style="font-size:11.5px;color:#767676;margin-top:9px;line-height:1.65;word-break:keep-all">로그인이 계속 안 되면 <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#E5484D;font-weight:700">카카오톡 채널</a>로 "신청" 한 마디만 남겨주세요.</div>
     </div>
@@ -1136,8 +1137,8 @@ function loadTestResult(){
 loadTestResult();
 
 // 🤝 테스트 링크를 보내준 친구 이름 (/matching?from=test&friend=이름)
-//    "친구와 둘 다 매칭 성사 시 첫 만남 결제 2,000원씩 할인"을 센터장이 확인하려면
-//    누구와 같이 했는지가 신청 기록에 남아 있어야 한다. → '추천인이름' 칸에 저장한다.
+//    할인은 '링크를 보낸 사람'이 받는다 (2026-11 확정, 초대 링크와 같은 규칙). 신청한 친구에게는 할인이 없다.
+//    누가 보냈는지 센터장이 알 수 있게 '추천인이름' 칸에 저장한다.
 function testFriendName(){
   try{
     const p = new URLSearchParams(location.search);
@@ -1148,9 +1149,12 @@ function testFriendName(){
 (function showTestFriend(){
   const name = testFriendName(); if(!name) return;
   const b = document.getElementById("test-friend-badge"); if(!b) return;
-  b.style.cssText = "margin-top:8px"; b.textContent = "";
-  b.appendChild(couponTicket("🤝 " + name + "님과 친구 할인권", "둘 다 매칭이 성사되면 첫 만남 결제에서 2,000원씩 빼드려요. 신청하면 자동으로 등록돼요."));
-  b.firstChild.style.marginTop = "0";
+  // 받은 친구에게는 할인이 없으므로 쿠폰 모양이 아니라 안내 한 줄만 보여준다
+  b.style.cssText = "margin-top:8px;background:#FFFFFF;border:1px solid rgba(0,0,0,.03);border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.04);padding:12px 14px;font-size:13px;line-height:1.6;color:#1E1E1E;text-align:left;word-break:keep-all";
+  b.textContent = "";
+  const t1 = document.createElement("b"); t1.textContent = "🤝 " + name + "님이 보내준 테스트로 오셨네요";
+  const t2 = document.createElement("div"); t2.style.cssText = "font-size:12px;color:#666666;margin-top:2px"; t2.textContent = "보내주신 분 이름은 자동으로 기록돼요.";
+  b.appendChild(t1); b.appendChild(t2);
   b.classList.remove("hidden");
 })();
 
@@ -1518,8 +1522,7 @@ async function handleSubmit(e){
     // 🤝 테스트 친구 — 유입경로가 '유형테스트'일 때만 (지인소개 추천인과 섞이지 않게)
     else if(payload.inflow === "유형테스트" && testFriendName()){
       fields["추천인이름"] = testFriendName();
-      // 🎟 테스트 친구 할인권 — 둘 다 성사됐는지는 센터장이 입금 안내 때 확인한다
-      fields["할인쿠폰"] = "테스트 친구 2,000원 할인 (둘 다 성사 시)";
+      // 🎟 할인은 링크를 보낸 사람 몫 → 신청한 친구 기록에는 할인쿠폰을 붙이지 않는다 (couponOf 가 보낸 사람 카드에 띄운다)
     }
 
     // Airtable에 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)

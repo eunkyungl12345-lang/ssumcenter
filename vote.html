@@ -222,7 +222,7 @@
   // ---- 투표 목록 ----
   function loadList(){
     show("s-load");
-    return post("list",{event:state.me.행사,gender:state.me.성별}).then(function(r){
+    return post("list",{event:state.me.행사,gender:state.me.성별,nick:state.nick,pin:state.pin}).then(function(r){
       state.list=r.list||[]; state.picks=[];
       var vl=document.getElementById("vlist"); vl.innerHTML="";
       document.getElementById("vote-count-label").textContent="참가자 "+state.list.length+"명";

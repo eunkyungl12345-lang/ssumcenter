@@ -1,8 +1,10 @@
+const { watchAdminKey } = require("./_guard.js");
 // 콘텐츠봇 — 썸류센터 릴스/스레드 소재를 AI로 생성
 // 관리자 전용. ANTHROPIC_API_KEY 환경변수 필요.
 const Anthropic = require("@anthropic-ai/sdk");
 
 module.exports = async function handler(req, res) {
+  await watchAdminKey(req, "content");   // 🚨 틀린 관리자 비밀번호 → 슬랙 알림 (api/_guard.js)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-key");

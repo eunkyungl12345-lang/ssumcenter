@@ -13,6 +13,10 @@
  *       아무 웹사이트나 방문자의 브라우저로 비밀번호를 계속 찔러볼 수 있었다. 이제 열어주지 않는다.
  */
 const { clientIp, check, fail, clear, safeEqual } = require("./_ratelimit.js");
+const { reportBadAdmin } = require("./_guard.js");   // 🚨 틀린 비밀번호 → 슬랙 알림
+// 슬랙 알림은 응답을 늦추지 않게 뒤에서 보낸다 (Vercel 이 응답 뒤에도 끝까지 보내게 waitUntil 로 맡긴다)
+let later = (p) => { if (p && p.catch) p.catch(() => {}); };
+try { const vf = require("@vercel/functions"); if (vf && vf.waitUntil) later = (p) => vf.waitUntil(p.catch(() => {})); } catch (e) {}
 
 const LIMIT = { max: 10, windowMs: 10 * 60 * 1000, lockMs: 5 * 60 * 1000 };
 const NAME = "admin-auth";
@@ -49,6 +53,8 @@ module.exports = function handler(req, res) {
   }
 
   const after = fail(NAME, ip, LIMIT);
+  // 🚨 틀린 비밀번호 → 슬랙 알림 (넣어본 비밀번호는 적지 않는다). 잠금에 걸리면 그것도 알린다.
+  if (password) later(reportBadAdmin(req, "admin-auth", after.blocked ? "🔒 10번 틀려서 이 접속 주소는 5분 동안 잠겼어요." : ""));
   if (after.blocked) return fail429(res, after.retryAfter);
   return res.status(401).json({ ok: false, error: "비밀번호가 틀렸습니다" });
 };

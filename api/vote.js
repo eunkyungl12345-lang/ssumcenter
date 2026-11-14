@@ -1,9 +1,11 @@
+const { watchAdminKey } = require("./_guard.js");
 // 투표 전용 API — 개인정보(전화번호) 노출을 막기 위해 범용 airtable 프록시 대신 별도 구성
 // 테이블 3개 사용:
 //   투표참가자: 행사, 순번, 닉네임, 성별, 년생, 한줄소개, 전화번호, 사진(첨부), 공개상태(체크박스), 결제상태
 //   투표:       행사, 투표자전화, 투표자닉네임, 뽑은1, 뽑은2, 일시
 //   투표설정:   행사, 공개(체크박스)
 module.exports = async function handler(req, res) {
+  await watchAdminKey(req, "vote");   // 🚨 틀린 관리자 비밀번호 → 슬랙 알림 (api/_guard.js)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-key");
@@ -101,9 +103,17 @@ module.exports = async function handler(req, res) {
 
     // ============ 이성 참가자 목록 (전화번호 미포함) ============
     if (action === "list") {
-      const people = await getAll("투표참가자", body.event ? `{행사}='${body.event}'` : null);
+      // 🔒 예전에는 누구나 행사 이름 없이 부르면 모든 행사 참가자의 사진·닉네임·나이가 나왔다.
+      //    이제 명단에 있는 본인(닉네임+비번)만, 자기 행사의 이성만 볼 수 있다.
+      const all = await getAll("투표참가자");
+      const meL = findMe(all, { nick: body.nick, phone: body.phone, event: body.event });
+      if (!meL) return res.status(401).json({ error: "명단 확인이 필요해요" });
+      const pinL = nm(meL.fields["비번"]);
+      if (!pinL || nm(body.pin) !== pinL) return res.status(401).json({ error: "비밀번호를 확인해주세요" });
+      const evL = meL.fields["행사"] || "", gL = meL.fields["성별"] || "";
+      const people = all.filter(p => (p.fields["행사"] || "") === evL);
       const list = people
-        .filter(p => !body.gender || p.fields["성별"] !== body.gender) // 이성만
+        .filter(p => !gL || p.fields["성별"] !== gL) // 이성만
         .map(p => ({
           순번: p.fields["순번"] || 0,
           닉네임: p.fields["닉네임"] || "",

@@ -137,14 +137,18 @@
 <script>
   var user=null;
   try{ user=JSON.parse(localStorage.getItem("ssumUser")||"null"); }catch(e){}
+  // 🔐 서버가 서명한 확인표(t)가 없는 예전 로그인은 로그인 안 한 것으로 본다 (다시 로그인하면 생긴다)
+  if(user&&user.id&&!user.t){ try{ localStorage.removeItem("ssumUser"); }catch(e){} user=null; }
   var KID=user&&user.id?user.id:"";
   var tab="board", posts=[], target=null, mode="board";
   var $=function(id){ return document.getElementById(id); };
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
   function api(action,extra){
     var b=Object.assign({action:action,kakaoId:KID},extra||{});
-    return fetch("/api/member",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})
-      .then(function(r){ return r.json().then(function(d){ d._status=r.status; return d; }); });
+    return fetch("/api/member",{method:"POST",headers:{"Content-Type":"application/json","x-user-token":(user&&user.t)||""},body:JSON.stringify(b)})
+      .then(function(r){ return r.json().then(function(d){ d._status=r.status;
+        if(d.relogin){ try{ localStorage.removeItem("ssumUser"); }catch(e){} needLogin(); }
+        return d; }); });
   }
   var CHO=["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
   function chosung(t){ return String(t||"").split("").map(function(c){ var k=c.charCodeAt(0); return (k>=0xAC00&&k<=0xD7A3)?CHO[Math.floor((k-0xAC00)/588)]:c; }).join(""); }
