@@ -5,6 +5,7 @@ const { checkPair, isRecId } = require("./_match.js");
 const { inflowLine } = require("./_inflow.js");
 const testCount = require("./_testcount.js");
 const { purgeDocs } = require("./_docpurge.js");
+const { verify: verifyUser } = require("./_session.js");
 
 // 📈 네이버 검색량 — 에어테이블 '검색키워드' 표를 읽어 네이버에서 월간 검색량을 받아온다.
 //    하루에 한 번만 저장한다 (에어테이블 월 1,000건 한도를 아끼기 위해).
@@ -586,6 +587,10 @@ module.exports = async function handler(req, res) {
 
   // ---- 고객: 전화번호로 기존(로그인 전) 신청을 내 계정에 연결 (카카오ID 없는 것만) ----
   if (req.method === "POST" && req.query.claim === "1") {
+    // 🔒 2026-11 막음: 전화번호만 알면 남의 예전 신청을 내 계정에 붙여서 사진·연락처·재직서류까지 볼 수 있었다.
+    //    (번호 주인인지 확인할 방법이 없다). 이제는 카카오톡 채널로 요청받아 센터장이 직접 연결한다.
+    return res.status(410).json({ error: "카카오톡 채널로 요청해주시면 센터장이 직접 연결해드려요." });
+    // eslint-disable-next-line no-unreachable
     const claimKakao = req.query.kakaoId;
     const rawPhone = (req.body && req.body.phone) || "";
     const np = String(rawPhone).replace(/[^0-9]/g, "");
@@ -611,6 +616,10 @@ module.exports = async function handler(req, res) {
   // ---- 재참여자: 전화번호로 이전 로테이션 신청 불러오기 (폼 자동채우기) ----
   // 개인정보 보호: 전화번호는 body로만, 폼 재작성에 필요한 필드만 반환(사진·서류·카카오ID 등 제외)
   if (req.method === "POST" && req.query.prefill === "1") {
+    // 🔒 2026-11 막음: 전화번호만 넣으면 그 번호 주인의 이름·나이·키·직업이 나왔다.
+    //    로테이션을 다시 열 때, 본인 확인 방법(문자 인증 등)을 정한 뒤 되살릴 것.
+    return res.status(200).json({ found: false });
+    // eslint-disable-next-line no-unreachable
     const np = String((req.body && req.body.phone) || "").replace(/[^0-9]/g, "");
     if (np.length < 9) return res.status(400).json({ error: "전화번호를 정확히 입력해주세요" });
     const H = { Authorization: `Bearer ${TOKEN}` };
@@ -648,6 +657,10 @@ module.exports = async function handler(req, res) {
     "로테이션 신청": ["프로필사진", "어필포인트"]
   };
   const isCustomer = !isAdmin && !!kakaoId && CUST_TABLES.includes(table);
+  // 🔐 카카오ID만 보고 믿지 않는다. 로그인 때 서버가 내준 확인표(kt)가 맞아야 한다 (api/_session.js)
+  if (isCustomer && !verifyUser(kakaoId, req.headers["x-user-token"] || req.query.kt)) {
+    return res.status(401).json({ error: "로그인이 만료됐어요. 다시 로그인해주세요.", relogin: true });
+  }
   let custFilter = null;
 
   if (!isAdmin) {

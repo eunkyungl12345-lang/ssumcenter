@@ -1,3 +1,4 @@
+const { sign } = require("./_session.js");
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -73,6 +74,7 @@ module.exports = async function handler(req, res) {
       ok: true,
       user: {
         id: "kakao_" + kakaoId,
+        t: sign("kakao_" + kakaoId),   // 🔐 서버가 서명한 로그인 확인표 (api/_session.js)
         name: nickname,
         profileImage,
         provider: "kakao"
