@@ -1,4 +1,6 @@
-module.exports = function handler(req, res) {
+const { reportBadAdmin } = require("./_guard.js");
+
+module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -12,6 +14,8 @@ module.exports = function handler(req, res) {
   if (password === ADMIN_PW) {
     return res.status(200).json({ ok: true });
   } else {
+    // 🚨 틀린 비밀번호 → 슬랙 알림 (넣어본 비밀번호는 적지 않는다)
+    if (password) await reportBadAdmin(req, "admin-auth");
     return res.status(401).json({ ok: false });
   }
 }

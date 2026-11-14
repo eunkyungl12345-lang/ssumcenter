@@ -1,3 +1,4 @@
+const { watchAdminKey } = require("./_guard.js");
 const { verify: verifyUser } = require("./_session.js");
 // 회원 통합 명부 (마스터 DB)
 //  - upsertMember: 전화번호 기준으로 회원 찾아서 있으면 업데이트, 없으면 생성 (중복방지)
@@ -195,6 +196,7 @@ async function syncMembers({ TOKEN, BASE_ID, sources }) {
 
 // 관리자 셋업 엔드포인트: 테이블/필드 생성 (Metadata API, 함수 개수 절약 위해 여기 통합)
 module.exports = async function handler(req, res) {
+  await watchAdminKey(req, "member");   // 🚨 틀린 관리자 비밀번호 → 슬랙 알림 (api/_guard.js)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-key");

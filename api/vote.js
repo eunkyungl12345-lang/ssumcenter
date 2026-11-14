@@ -1,9 +1,11 @@
+const { watchAdminKey } = require("./_guard.js");
 // 투표 전용 API — 개인정보(전화번호) 노출을 막기 위해 범용 airtable 프록시 대신 별도 구성
 // 테이블 3개 사용:
 //   투표참가자: 행사, 순번, 닉네임, 성별, 년생, 한줄소개, 전화번호, 사진(첨부), 공개상태(체크박스), 결제상태
 //   투표:       행사, 투표자전화, 투표자닉네임, 뽑은1, 뽑은2, 일시
 //   투표설정:   행사, 공개(체크박스)
 module.exports = async function handler(req, res) {
+  await watchAdminKey(req, "vote");   // 🚨 틀린 관리자 비밀번호 → 슬랙 알림 (api/_guard.js)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-key");

@@ -1,3 +1,4 @@
+const { watchAdminKey } = require("./_guard.js");
 const { syncMembers } = require("./member.js");
 const { sendSms, isValidPhone, checkSmsConfig } = require("./_sms.js");
 const { searchVolume, checkNaverConfig } = require("./_naver.js");
@@ -163,6 +164,7 @@ async function notifySlack(text, imageUrl) {
 }
 
 module.exports = async function handler(req, res) {
+  await watchAdminKey(req, "airtable");   // 🚨 틀린 관리자 비밀번호 → 슬랙 알림 (api/_guard.js)
   // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");

@@ -1,3 +1,4 @@
+const { watchAdminKey } = require("./_guard.js");
 const { sendSms, checkSmsConfig } = require("./_sms.js");
 
 async function slack(text) {
@@ -7,6 +8,7 @@ async function slack(text) {
 }
 
 module.exports = async function handler(req, res) {
+  await watchAdminKey(req, "send-sms");   // 🚨 틀린 관리자 비밀번호 → 슬랙 알림 (api/_guard.js)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-key");

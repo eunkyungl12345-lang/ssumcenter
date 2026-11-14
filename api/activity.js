@@ -1,7 +1,9 @@
+const { watchAdminKey } = require("./_guard.js");
 // 실시간 활동 로그 — /office 대시보드용
 //  - 에어테이블의 실제 신청·출석 기록을 끌어와 "누가 무엇을 했는지" 피드로 반환
 //  - 관리자 전용. 그래도 화면을 같이 볼 수 있으니 이름은 마스킹(홍길동 → 홍○○)한다
 module.exports = async function handler(req, res) {
+  await watchAdminKey(req, "activity");   // 🚨 틀린 관리자 비밀번호 → 슬랙 알림 (api/_guard.js)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-key");
