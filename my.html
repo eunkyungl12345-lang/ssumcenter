@@ -59,8 +59,11 @@
   var CN="ddvmmvcei", CP="ml_default";
   var user=null;
   try{ user=JSON.parse(localStorage.getItem("ssumUser")||"null"); }catch(e){}
-  if(!user||!user.id){ location.replace("login.html?redirect=my.html"); }
+  // 🔐 서버가 서명한 로그인 확인표(t)가 없는 예전 로그인은 다시 로그인하게 한다 (api/_session.js)
+  function relogin(){ try{ localStorage.removeItem("ssumUser"); }catch(e){} location.replace("login.html?redirect=my.html"); }
+  if(!user||!user.id||!user.t){ user=null; relogin(); }
   var KID=user?user.id:"";
+  var AUTH={"x-user-token": user ? user.t : ""};
 
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
   function gd(g){ return g==="남성"?"m":g==="여성"?"f":""; }
@@ -82,8 +85,9 @@
     var got=[];
     var done=0;
     TYPES.forEach(function(t){
-      fetch("/api/airtable?table="+encodeURIComponent(t.table)+"&kakaoId="+encodeURIComponent(KID))
+      fetch("/api/airtable?table="+encodeURIComponent(t.table)+"&kakaoId="+encodeURIComponent(KID),{headers:AUTH})
         .then(function(r){return r.json();}).then(function(r){
+          if(r && r.relogin){ relogin(); return; }
           (r.records||[]).forEach(function(rec){ got.push({t:t, rec:rec}); });
         }).catch(function(){}).then(function(){
           done++; if(done===TYPES.length) render(got);
@@ -211,7 +215,7 @@
         fields["프로필사진"]=urls;
       }
       var res=await fetch("/api/airtable?table="+encodeURIComponent(table)+"&kakaoId="+encodeURIComponent(KID),{
-        method:"PATCH",headers:{"Content-Type":"application/json"},
+        method:"PATCH",headers:{"Content-Type":"application/json","x-user-token":AUTH["x-user-token"]},
         body:JSON.stringify({records:[{id:rid,fields:fields}]})
       });
       var d=await res.json();
@@ -222,28 +226,16 @@
   };
 
   function claimCardHtml(prominent){
+    // 🔒 예전에는 전화번호만 넣으면 그 번호로 낸 신청을 내 계정에 붙였다 → 남의 번호로도 되는 구멍이라 막았다.
+    //    이제는 카카오톡 채널로 요청받아 센터장이 본인 확인 후 연결한다.
     return '<div class="card">'
       + '<div style="font-weight:800;font-size:14px;margin-bottom:4px">📞 예전에 (로그인 없이) 신청하셨나요?</div>'
-      + '<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">신청할 때 쓴 <b>전화번호</b>를 넣으면 그 신청서를 내 계정으로 불러와요.</div>'
-      + '<input id="claimPhone" type="tel" placeholder="010-1234-5678" style="width:100%;background:var(--surface-2);border:1.5px solid var(--line-2);border-radius:11px;padding:12px;font-size:14px;color:var(--ink);font-family:inherit;margin-bottom:9px">'
-      + '<button class="save" id="claimBtn" style="background:var(--surface-2);color:var(--gold);border:1px solid var(--line-2)">기존 신청 불러오기</button>'
-      + '<div class="msg" id="claimMsg"></div>'
+      + '<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">카카오톡 채널로 <b>신청할 때 쓴 이름과 전화번호</b>를 보내주시면, 센터장이 확인하고 내 계정으로 연결해드려요.</div>'
+      + '<a class="save" href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="display:block;text-align:center;background:var(--surface-2);color:var(--gold);border:1px solid var(--line-2);text-decoration:none">💬 카카오톡 채널로 연결 요청하기</a>'
       + '</div>';
   }
-  function bindClaim(){ var b=document.getElementById("claimBtn"); if(b) b.addEventListener("click", claimByPhone); }
-  async function claimByPhone(){
-    var inp=document.getElementById("claimPhone"), msg=document.getElementById("claimMsg"), btn=document.getElementById("claimBtn");
-    var phone=(inp.value||"").trim();
-    if(phone.replace(/[^0-9]/g,"").length<9){ msg.style.color="var(--female)"; msg.textContent="전화번호를 정확히 입력해주세요"; return; }
-    btn.disabled=true; btn.textContent="찾는 중..."; msg.textContent="";
-    try{
-      var res=await fetch("/api/airtable?claim=1&kakaoId="+encodeURIComponent(KID),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:phone})});
-      var d=await res.json();
-      if(res.ok&&d.ok&&d.linked>0){ msg.style.color="var(--ok)"; msg.textContent="✅ "+d.linked+"건 연결됐어요! 불러오는 중..."; setTimeout(function(){ document.getElementById("content").innerHTML='<div class="spin"></div>'; load(); },900); }
-      else if(res.ok&&d.ok){ msg.style.color="var(--female)"; msg.textContent="그 번호로 낸 기존 신청을 못 찾았어요 (이미 연결됐거나 번호가 다를 수 있어요)."; btn.disabled=false; btn.textContent="기존 신청 불러오기"; }
-      else { msg.style.color="var(--female)"; msg.textContent="❌ "+(d.error||"오류"); btn.disabled=false; btn.textContent="기존 신청 불러오기"; }
-    }catch(e){ msg.style.color="var(--female)"; msg.textContent="❌ 오류가 났어요."; btn.disabled=false; btn.textContent="기존 신청 불러오기"; }
-  }
+  function bindClaim(){ /* 연결 요청은 카카오톡 채널로 받는다 */ }
+
 
   document.getElementById("logoutLink").addEventListener("click",function(){
     if(confirm("로그아웃할까요?")){ localStorage.removeItem("ssumUser"); location.href="index.html"; }
