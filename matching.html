@@ -106,9 +106,30 @@
   .fnav{display:flex;gap:10px;margin-top:2px}
   .fnext{flex:1;background:#E5484D;color:#fff;border:none;font-weight:800;font-size:15px;padding:15px;border-radius:14px;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px -8px rgba(255,107,107,.24)}
   .fprev{background:transparent;border:1px solid #E6E2DC;color:#4A4A4A;font-weight:700;font-size:14px;padding:15px 20px;border-radius:14px;cursor:pointer;font-family:inherit}
+
+  /* 🚪 로그인 전 '10초 이상형 고르기' — 로그인한 손님에게는 신청서를 그대로 보여준다 */
+  #apply-section.quickoff{display:none}
+  #quick .qstep{display:none}
+  #quick .qstep.on{display:block;animation:fadeUp .28s ease both}
+  #quick .qnum{font-size:11px;font-weight:800;color:#E5484D;letter-spacing:.08em;margin-bottom:6px}
+  #quick .qtitle{font-size:19px;font-weight:900;line-height:1.35;word-break:keep-all;color:#1E1E1E}
+  #quick .qdesc{font-size:12.5px;color:#666666;margin-top:6px;line-height:1.6;word-break:keep-all}
+  #quick .qp{border:1.5px solid #E6E2DC;background:#FFFFFF;border-radius:14px;padding:14px 10px;font-size:14.5px;font-weight:700;color:#1E1E1E;font-family:inherit;cursor:pointer;transition:all .15s;text-align:center;line-height:1.35}
+  #quick .qp:hover{border-color:#FF6B6B;color:#E5484D}
+  #quick .qp.on{background:#E5484D;border-color:#E5484D;color:#fff;font-weight:800}
+  #quick .qp.small{padding:11px 8px;font-size:13px;border-radius:100px}
+  #quick .qpbar{display:flex;gap:8px;margin-top:16px}
+  #quick .qpnext{flex:1;background:#E5484D;color:#fff;border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer}
+  #quick .qpnext:disabled{background:#ECE9E4;color:#767676;cursor:default}
+  #quick .qpback{background:transparent;border:1px solid #E6E2DC;color:#666666;border-radius:14px;padding:14px 18px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
+  #quick .qdots{display:flex;gap:5px;margin-bottom:16px}
+  #quick .qdots i{flex:1;height:4px;border-radius:99px;background:#ECE9E4}
+  #quick .qdots i.on{background:#E5484D}
 </style>
 <!-- 방문 통계 (Vercel Web Analytics: 대시보드에서 켜야 집계됨) -->
 <script defer src="/_vercel/insights/script.js"></script>
+<!-- 자바스크립트가 꺼져 있으면 '10초 선택'은 돌아가지 않는다. 그럴 땐 예전처럼 신청서를 그대로 보여준다. -->
+<noscript><style>#apply-section{display:block!important}#quick{display:none!important}</style></noscript>
 </head>
 <body class="min-h-screen selection:bg-[#E8B050] selection:text-black">
 
@@ -172,9 +193,133 @@
 </div>
 </header>
 
-<!-- 신청 폼 -->
-<section class="px-5 pb-16">
+<!-- 🚪 로그인 없이 10초 — 이상형·조건 4개만 먼저 고르기
+     광고·릴스로 처음 온 손님에게 로그인·재직서류부터 요구하면 그냥 나간다.
+     고른 값은 이 기기에 저장했다가, 카카오 로그인 후 신청서에 자동으로 채운다.
+     ⚠️ '대기 중 N명' 같은 지어낸 숫자는 넣지 않는다 (표시광고법·신뢰). -->
+<section id="quick" class="px-5 pb-12" style="display:none">
   <div class="max-w-lg mx-auto">
+    <div style="text-align:center;margin-bottom:12px">
+      <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:999px;padding:7px 14px;font-size:12px;font-weight:800;color:#E5484D">⏱️ 약 10초 · 4개만 고르면 끝</span>
+    </div>
+
+    <div style="background:#FFFFFF;border:1px solid #E6E2DC;border-radius:22px;box-shadow:0 4px 24px rgba(0,0,0,.04);padding:20px 18px">
+      <div class="qdots" id="quick-dots"><i class="on"></i><i></i><i></i><i></i></div>
+
+      <!-- 1. 내 성별 -->
+      <div class="qstep on" data-q="1">
+        <p class="qnum">1 / 4</p>
+        <h2 class="qtitle">성별이 어떻게 되세요?</h2>
+        <p class="qdesc">매칭 가능한 상대를 가르는 첫 조건이에요.</p>
+        <div class="grid grid-cols-2 gap-2" style="margin-top:14px">
+          <button type="button" class="qp" data-field="gender" data-val="남성">남성</button>
+          <button type="button" class="qp" data-field="gender" data-val="여성">여성</button>
+        </div>
+      </div>
+
+      <!-- 2. 선호 나이대 -->
+      <div class="qstep" data-q="2">
+        <p class="qnum">2 / 4</p>
+        <h2 class="qtitle">어느 또래분을 만나고 싶으세요?</h2>
+        <p class="qdesc">복수로 골라도 돼요.</p>
+        <div class="grid grid-cols-2 gap-2" style="margin-top:14px">
+          <button type="button" class="qp" data-field="ages" data-val="00~06년생">00~06년생</button>
+          <button type="button" class="qp" data-field="ages" data-val="96~99년생">96~99년생</button>
+          <button type="button" class="qp" data-field="ages" data-val="92~95년생">92~95년생</button>
+          <button type="button" class="qp" data-field="ages" data-val="87~91년생">87~91년생</button>
+        </div>
+        <div class="qpbar">
+          <button type="button" class="qpback" data-go="1">이전</button>
+          <button type="button" class="qpnext" data-go="3" data-need="ages" disabled>다음</button>
+        </div>
+      </div>
+
+      <!-- 3. 이상형 분위기 -->
+      <div class="qstep" data-q="3">
+        <p class="qnum">3 / 4</p>
+        <h2 class="qtitle">어떤 분위기가 끌리세요?</h2>
+        <p class="qdesc">1~3개 골라주세요.</p>
+        <div class="flex flex-wrap gap-2" style="margin-top:14px">
+          <button type="button" class="qp small" data-field="keywords" data-val="유머러스">유머러스</button>
+          <button type="button" class="qp small" data-field="keywords" data-val="다정한">다정한</button>
+          <button type="button" class="qp small" data-field="keywords" data-val="지적인">지적인</button>
+          <button type="button" class="qp small" data-field="keywords" data-val="활발한">활발한</button>
+          <button type="button" class="qp small" data-field="keywords" data-val="차분한">차분한</button>
+          <button type="button" class="qp small" data-field="keywords" data-val="솔직한">솔직한</button>
+          <button type="button" class="qp small" data-field="keywords" data-val="배려심">배려심</button>
+          <button type="button" class="qp small" data-field="keywords" data-val="성실한">성실한</button>
+        </div>
+        <p id="quick-kw-count" style="font-size:11.5px;color:#767676;margin-top:8px">0개 선택됨</p>
+        <div class="qpbar">
+          <button type="button" class="qpback" data-go="2">이전</button>
+          <button type="button" class="qpnext" data-go="4" data-need="keywords" disabled>다음</button>
+        </div>
+      </div>
+
+      <!-- 4. 사는 곳(생활권) -->
+      <div class="qstep" data-q="4">
+        <p class="qnum">4 / 4</p>
+        <h2 class="qtitle">어디 사세요?</h2>
+        <p class="qdesc">가까운 곳에 사는 분이 실제로 만나기 쉬워요.</p>
+        <div class="grid grid-cols-2 gap-2" style="margin-top:14px">
+          <button type="button" class="qp small" data-field="location" data-val="서울 강남·서초">서울 강남·서초</button>
+          <button type="button" class="qp small" data-field="location" data-val="서울 마포·용산·성동">서울 마포·용산·성동</button>
+          <button type="button" class="qp small" data-field="location" data-val="서울 그 외">서울 그 외</button>
+          <button type="button" class="qp small" data-field="location" data-val="경기 남부 (판교·수원·분당)">경기 남부 (판교·수원·분당)</button>
+          <button type="button" class="qp small" data-field="location" data-val="경기 북부 (일산·의정부)">경기 북부 (일산·의정부)</button>
+          <button type="button" class="qp small" data-field="location" data-val="인천">인천</button>
+          <button type="button" class="qp small" data-field="location" data-val="부산·대구·울산">부산·대구·울산</button>
+          <button type="button" class="qp small" data-field="location" data-val="그 외 지방">그 외 지방</button>
+        </div>
+        <div class="qpbar">
+          <button type="button" class="qpback" data-go="3">이전</button>
+        </div>
+        <p style="font-size:11.5px;color:#767676;margin-top:10px;line-height:1.6">고른 뒤에도 신청서에서 직접 고쳐 쓰실 수 있어요.</p>
+      </div>
+
+      <!-- 마지막: 조건 저장 완료 + 카카오 연결 -->
+      <div class="qstep" data-q="done">
+        <div style="text-align:center">
+          <div style="font-size:28px;line-height:1">✅</div>
+          <h2 class="qtitle" style="margin-top:8px">조건 저장 완료!</h2>
+          <p class="qdesc">매칭 후보를 받으실 카카오만 3초 연결하면 끝나요.</p>
+        </div>
+        <div id="quick-summary" style="background:#FAFAF8;border:1px solid #E6E2DC;border-radius:16px;padding:12px 14px;margin-top:14px"></div>
+        <a id="quick-login" href="login.html?redirect=matching.html" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;background:#FEE500;color:#191919;border-radius:14px;padding:16px;font-size:15.5px;font-weight:800;text-decoration:none;font-family:inherit">
+          <svg width="20" height="20" viewBox="0 0 18 18"><path fill="#191919" d="M9 1C4.58 1 1 3.8 1 7.2c0 2.18 1.45 4.1 3.63 5.2-.16.56-.57 2.03-.66 2.35-.1.39.14.39.3.28.12-.08 1.94-1.32 2.72-1.85.64.09 1.3.14 1.97.14 4.42 0 8-2.8 8-6.2C17 3.8 13.42 1 9 1"/></svg>
+          카카오로 3초 연결하고 이어쓰기
+        </a>
+        <p style="font-size:11.5px;color:#767676;text-align:center;margin-top:8px;line-height:1.6;word-break:keep-all">지금 연결해도 결제는 없어요 · 매칭이 성사되면 그때 안내드려요</p>
+        <button type="button" id="quick-again" class="qpback" style="width:100%;margin-top:10px">조건 다시 고르기</button>
+      </div>
+    </div>
+
+    <!-- 안심 안내 (숫자 대신) -->
+    <div style="margin-top:12px;background:#FFFFFF;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:14px 16px">
+      <div style="font-size:12.5px;line-height:1.85;color:#1E1E1E;word-break:keep-all">
+        <div>💰 <b>만남 성사 전까지 0원</b> — 신청만으로는 결제되지 않아요</div>
+        <div>🛡️ <b>재직인증은 매칭될 때만</b> — 서류는 센터장만 보고, 상대에게는 안 보여요</div>
+        <div>☕ <b>센터장 3명이 직접</b> 신청서를 읽고 한 사람을 이어드려요</div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.24);border-radius:18px;padding:14px 16px">
+      <div style="font-size:12.5px;font-weight:800;color:#E5484D;margin-bottom:6px">이렇게 진행돼요</div>
+      <div style="font-size:12px;color:#1E1E1E;line-height:1.85;word-break:keep-all">
+        1️⃣ 지금 고른 조건 저장<br>
+        2️⃣ 카카오 3초 연결 <span style="color:#666666">(매칭 후보를 받으실 통로예요)</span><br>
+        3️⃣ 신청서에 조건이 자동으로 채워져요 — 이름·연락처·직업, 사진과 재직서류만 마저 넣으면 끝!
+      </div>
+      <div style="font-size:11.5px;color:#767676;margin-top:9px;line-height:1.65;word-break:keep-all">로그인이 계속 안 되면 <a href="https://pf.kakao.com/_AxfxcVX" target="_blank" rel="noopener" style="color:#E5484D;font-weight:700">카카오톡 채널</a>로 "신청" 한 마디만 남겨주세요.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 신청 폼 (로그인 후 이어서 작성) -->
+<section id="apply-section" class="px-5 pb-16 quickoff">
+  <div class="max-w-lg mx-auto">
+    <!-- 10초 선택을 마치고 로그인해서 돌아온 손님에게: 무엇이 채워졌는지 -->
+    <div id="quick-filled" style="display:none;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:14px;padding:13px 15px;margin-bottom:14px;font-size:13px;line-height:1.6;font-weight:700;color:#1E1E1E;word-break:keep-all"></div>
     <form id="matching-form" class="space-y-6" novalidate onsubmit="return handleSubmit(event)">
       <div class="fsteps" id="fsteps">
         <div class="fchip on" data-s="1"><b>1</b> 기본정보</div>
@@ -620,6 +765,20 @@
   </div>
 </section>
 
+<script>
+// 첫 화면을 로그인 여부로 바로 고른다 (깜빡임 없이)
+//  · 로그인 전: '10초 이상형 고르기' 카드
+//  · 로그인 후: 신청서
+(function(){
+  var on = false;
+  try{ on = !!localStorage.getItem("ssumUser"); }catch(e){ on = false; }   // 저장소가 막혔으면 안전하게 신청서 쪽
+  var q = document.getElementById("quick");
+  var a = document.getElementById("apply-section");
+  if(q) q.style.display = on ? "none" : "block";
+  if(a) a.classList.toggle("quickoff", !on);
+})();
+</script>
+
 <!-- 제출 완료 화면 -->
 <section id="success-screen" class="hidden px-5 py-20">
   <div class="max-w-lg mx-auto text-center fade">
@@ -854,17 +1013,14 @@ function aiFillForm(){
   }
 }
 
-// 로그인 체크 — 1:1 신청은 카카오 로그인 필수
-(function(){
-  try{
-    if(!localStorage.getItem('ssumUser')){
-      // ⚠️ 주소 뒤의 정보(?ref=소개해준 사람, ?result=테스트 결과 등)를 같이 들고 간다.
-      //    예전에는 'matching.html' 로만 돌아와서, 초대 링크로 온 친구가 로그인하는 사이에
-      //    "누가 소개했는지"가 사라졌다 (초대받은 분은 대부분 로그인 전이다).
-      location.replace('login.html?redirect=' + encodeURIComponent('matching.html' + location.search));
-    }
-  }catch(e){}
-})();
+// 로그인은 이제 '벽'이 아니라 '마지막 연결'이다 (2026-11-14 개편)
+//    예전에는 여기서 비로그인 손님을 곷장 login.html 로 튕겼다.
+//    릴스·광고로 처음 온 사람은 로그인 화면만 보고 나가서, 이제는
+//    ① 이상형·조건 4개를 먼저 고르게 하고(#quick)
+//    ② 마지막 카드에서 카카오 3초 연결을 권하고
+//    ③ 로그인해서 돌아오면 고른 조건이 신청서에 자동으로 들어간다.
+//    주소의 ?ref=·?from=test 같은 정보는 페이지를 벋어나지 않으니 그대로 살아 있고,
+//    로그인 버튼도 현재 주소를 통째로 들고 간다(login.html?redirect=matching.html?ref=…).
 
 // 키 드롭다운 옵션 채우기 (150~195cm)
 (function fillHeight(){
@@ -1189,6 +1345,9 @@ function restoreDraft(d){
 })();
 window.addEventListener("load", function(){
   try{
+    // 방금 '10초 선택'으로 신청서를 채운 손님에게는 옛 임시저장을 다시 권하지 않는다
+    // (방금 고른 조건이 오히려 덮어쓰여서 첫 인상이 뒤집힌다)
+    if(window.__quickFilled) return;
     var raw=localStorage.getItem(draftKey()); if(!raw) return;
     var d=JSON.parse(raw); if(!draftHasContent(d)) return;
     var f=_form(); if(!f) return;
@@ -1419,6 +1578,175 @@ const io = new IntersectionObserver(es => es.forEach(e => {
   if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
 }), {threshold: .15});
 document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
+
+// ===== 🚪 무로그인 10초 이상형 먼저 고르기 =====
+//  비로그인 손님: #quick 카드에서 4개 고름 → 이 기기에 저장 → 카카오 연결(login.html)
+//  로그인해서 돌아오면: 저장한 선택을 신청서에 자동으로 채우고 무엇이 채워졌는지 알려줌
+//  ⚠️ "대기 중 N명" 같은 지어낸 숫자는 쓰지 않는다 (표시광고법·신뢰).
+var QUICK_KEY = "ssum_quick_pref_v1";
+var QUICK_TTL = 7 * 86400000;   // 일주일 지난 선택은 쓰지 않는다
+
+function quickLoad(){
+  try{
+    var d = JSON.parse(localStorage.getItem(QUICK_KEY) || "null");
+    if(!d || !d.t || Date.now() - d.t > QUICK_TTL) return null;
+    return {
+      gender: typeof d.gender === "string" ? d.gender : "",
+      ages: Array.isArray(d.ages) ? d.ages : [],
+      keywords: Array.isArray(d.keywords) ? d.keywords : [],
+      location: typeof d.location === "string" ? d.location : "",
+      t: d.t
+    };
+  }catch(e){ return null; }
+}
+function quickStore(s){
+  try{
+    localStorage.setItem(QUICK_KEY, JSON.stringify({ gender:s.gender, ages:s.ages, keywords:s.keywords, location:s.location, t:Date.now() }));
+  }catch(e){}
+}
+function quickComplete(s){ return !!(s && s.gender && s.ages.length && s.keywords.length && s.location); }
+
+(function quickFlow(){
+  var box = document.getElementById("quick");
+  if(!box) return;
+  var st = quickLoad() || { gender:"", ages:[], keywords:[], location:"" };
+  var MAX_KW = 3;
+
+  function chips(field){ return box.querySelectorAll('[data-field="' + field + '"]'); }
+
+  function paintSummary(){
+    var sum = document.getElementById("quick-summary"); if(!sum) return;
+    var rows = [["성별", st.gender], ["선호 나이대", st.ages.join(", ")], ["이상형 분위기", st.keywords.join(", ")], ["사는 곳", st.location]];
+    sum.textContent = "";
+    rows.forEach(function(r){
+      if(!r[1]) return;
+      var line = document.createElement("div");
+      line.style.cssText = "display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.05)";
+      var k = document.createElement("span"); k.style.cssText = "color:#666666;flex:none"; k.textContent = r[0];
+      var v = document.createElement("span"); v.style.cssText = "font-weight:700;color:#1E1E1E;text-align:right;word-break:keep-all"; v.textContent = r[1];
+      line.appendChild(k); line.appendChild(v);
+      sum.appendChild(line);
+    });
+  }
+
+  function paint(){
+    chips("gender").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-val") === st.gender); });
+    chips("ages").forEach(function(b){ b.classList.toggle("on", st.ages.indexOf(b.getAttribute("data-val")) >= 0); });
+    chips("keywords").forEach(function(b){ b.classList.toggle("on", st.keywords.indexOf(b.getAttribute("data-val")) >= 0); });
+    chips("location").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-val") === st.location); });
+    var cnt = document.getElementById("quick-kw-count");
+    if(cnt) cnt.textContent = st.keywords.length + "개 선택됨 (최대 " + MAX_KW + "개)";
+    box.querySelectorAll(".qpnext").forEach(function(b){
+      var need = b.getAttribute("data-need");
+      if(!need) return;
+      b.disabled = Array.isArray(st[need]) ? st[need].length === 0 : !st[need];
+    });
+  }
+
+  function show(step){
+    box.querySelectorAll(".qstep").forEach(function(el){ el.classList.toggle("on", el.getAttribute("data-q") === String(step)); });
+    var idx = step === "done" ? 3 : Math.max(0, (+step) - 1);
+    box.querySelectorAll("#quick-dots i").forEach(function(d, i){ d.classList.toggle("on", i <= idx); });
+    if(step === "done") paintSummary();
+  }
+
+  box.addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    var field = b.getAttribute("data-field");
+    if(field){
+      var v = b.getAttribute("data-val");
+      if(field === "ages" || field === "keywords"){
+        var arr = st[field], i = arr.indexOf(v);
+        if(i >= 0) arr.splice(i, 1);
+        else if(field === "keywords" && arr.length >= MAX_KW){
+          var cnt = document.getElementById("quick-kw-count");
+          if(cnt){ cnt.textContent = "분위기는 " + MAX_KW + "개까지만 고를 수 있어요"; cnt.style.color = "#E5484D"; }
+          return;
+        }
+        else arr.push(v);
+        var cnt2 = document.getElementById("quick-kw-count"); if(cnt2) cnt2.style.color = "#767676";
+        quickStore(st); paint();
+        return;
+      }
+      st[field] = v;
+      quickStore(st); paint();
+      setTimeout(function(){
+        if(field === "gender") show(2);
+        else if(field === "location") show("done");
+      }, 180);
+      return;
+    }
+    var go = b.getAttribute("data-go");
+    if(go){ show(go); return; }
+    if(b.id === "quick-again"){
+      st = { gender:"", ages:[], keywords:[], location:"" };
+      try{ localStorage.removeItem(QUICK_KEY); }catch(e){}
+      paint(); show(1);
+    }
+  });
+
+  // 로그인 버튼은 지금 주소(?ref=·?from=test·?result=)를 통째로 들고 간다.
+  var loginA = document.getElementById("quick-login");
+  if(loginA) loginA.href = "login.html?redirect=" + encodeURIComponent("matching.html" + location.search);
+
+  paint();
+  if(quickComplete(st)) show("done");
+  else if(!st.gender) show(1);
+  else if(!st.ages.length) show(2);
+  else if(!st.keywords.length) show(3);
+  else show(4);
+})();
+
+// 로그인해서 돌아온 손님: 저장해둔 선택을 신청서에 자동으로 채운다.
+//   네 가지를 다 고르지 않았어도, 고른 것은 채워준다.
+function fillFormFromQuick(pref){
+  var s = pref || quickLoad();
+  if(!s) return false;
+  var ages = Array.isArray(s.ages) ? s.ages : [];
+  var kws = Array.isArray(s.keywords) ? s.keywords : [];
+  if(!s.gender && !ages.length && !kws.length && !s.location) return false;
+  var filled = [];
+
+  if(s.gender){
+    var r = document.querySelector('input[name="gender"][value="' + s.gender + '"]');
+    if(r){ r.checked = true; r.dispatchEvent(new Event("change", {bubbles:true})); filled.push("성별"); }
+  }
+  if(ages.length){
+    ages.forEach(function(v){ selectedAges.add(v); });
+    document.querySelectorAll("#age-chips .chip").forEach(function(c){ if(selectedAges.has(c.dataset.val)) c.classList.add("selected"); });
+    var pa = document.getElementById("pref-age-input"); if(pa) pa.value = [...selectedAges].join(",");
+    filled.push("선호 나이대");
+  }
+  if(kws.length){
+    kws.forEach(function(v){ selectedKeywords.add(v); });
+    document.querySelectorAll("#keyword-chips .chip").forEach(function(c){ if(selectedKeywords.has(c.dataset.kw)) c.classList.add("selected"); });
+    var kw = document.getElementById("keywords-input"); if(kw) kw.value = [...selectedKeywords].join(",");
+    var kc = document.getElementById("keyword-count"); if(kc){ kc.textContent = selectedKeywords.size + "개 선택됨"; kc.style.color = "#E5484D"; }
+    filled.push("이상형 분위기");
+  }
+  if(s.location){
+    var loc = document.querySelector('[name="location"]');
+    if(loc){ loc.value = s.location; filled.push("사는 곳"); }
+  }
+
+  if(!filled.length) return false;
+  try{ localStorage.removeItem(QUICK_KEY); }catch(e){}
+
+  if(typeof saveDraft === "function") saveDraft();   // 임시저장에도 남겨서 새로고침해도 안 날아가게
+  var bar = document.getElementById("quick-filled");
+  if(bar){
+    bar.textContent = "💛 고르신 조건(" + filled.join(" · ") + ")을 신청서에 채워넣었어요. 나머지만 마저 넣어주세요!";
+    bar.style.display = "block";
+  }
+  return true;
+}
+
+(function initQuickFill(){
+  try{
+    if(!localStorage.getItem("ssumUser")) return;   // 로그인 전이면 채울 신청서가 없다
+    if(fillFormFromQuick()) window.__quickFilled = true;
+  }catch(e){}
+})();
 </script>
 </body>
 </html>

@@ -137,7 +137,15 @@ function safeNext(rd){
   var rd=new URLSearchParams(location.search).get('redirect')||'';
   if(rd.indexOf('matching')>=0){
     var c=document.getElementById('ctx');
-    if(c){ c.textContent='💛 1:1 매칭 신청은 카카오 로그인이 필요해요'; c.classList.remove('hidden'); }
+    if(c){
+      // 로그인 전에 고른 이상형·조건이 이 기기에 남아 있으면 그걸 먼저 알려준다
+      var saved=false;
+      try{ saved=!!JSON.parse(localStorage.getItem('ssum_quick_pref_v1')||'null'); }catch(e){}
+      c.textContent = saved
+        ? '💛 고르신 조건은 그대로 저장돼 있어요. 로그인하면 신청서에 자동으로 채워넣을게요'
+        : '💛 1:1 매칭 신청은 카카오 로그인이 필요해요 — 3초면 끝나요';
+      c.classList.remove('hidden');
+    }
   }
 })();
 </script>
