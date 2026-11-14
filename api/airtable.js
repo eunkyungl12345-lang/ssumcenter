@@ -6,6 +6,7 @@ const { inflowLine } = require("./_inflow.js");
 const testCount = require("./_testcount.js");
 const { purgeDocs } = require("./_docpurge.js");
 const { verify: verifyUser } = require("./_session.js");
+const { safeEqual } = require("./_ratelimit.js");
 
 // 📈 네이버 검색량 — 에어테이블 '검색키워드' 표를 읽어 네이버에서 월간 검색량을 받아온다.
 //    하루에 한 번만 저장한다 (에어테이블 월 1,000건 한도를 아끼기 위해).
@@ -148,6 +149,41 @@ function 매칭입금문자(name, amount, kind) {
     "입금자명과 신청서에 쓰신 이름이 일치해야 확인돼요.",
     "입금 확인 후 바로 연락처를 전달해 드릴게요 💛",
   ].join("\n");
+}
+
+// 슈퍼매칭을 받은 사람(무료)에게 보내는 안내 — "입금하실 게 없어요"를 분명히 해준다
+function 무료안내문자(name) {
+  return [
+    "🩷 썸류센터 1:1 매칭 성사 안내 🩷",
+    (name ? name + "님, " : "") + "축하드려요! 상대방도 수락하셨어요 🎉",
+    "상대방이 슈퍼매칭으로 비용을 모두 냈어요.",
+    (name ? name + "님은 " : "") + "입금하실 금액이 없어요 💛",
+    "",
+    "센터장이 상대방 입금을 확인한 뒤 연락처를 문자로 보내드려요.",
+    "조금만 기다려주세요!",
+  ].join("\n");
+}
+
+// 성사된 두 사람에게 '누구에게 얼마를 입금 안내할지' 정한다 (문자 보내기 전 판단만 하는 함수).
+//   people: [{ id, name, type }] — type 은 각자 '수락할 때 고른 유형'(매칭 응답.매칭유형)
+//   결혼매칭은 예전 그대로 '먼저 수락한 한 분께 100,000원' 하나만.
+//   일반/슈퍼매칭은 응답 화면(response.html 의 applyMatchPricing)과 같은 금액이 나와야 한다:
+//     · 둘 다 일반 / 둘 다 슈퍼 → 각자 19,900원
+//     · 한쪽만 슈퍼           → 슈퍼를 고른 사람 39,800원 · 상대 0원(무료)
+function 성사안내계획(people, isMarriage, firstId) {
+  const list = Array.isArray(people) ? people.filter(Boolean) : [];
+  if (isMarriage) {
+    const first = list.find((p) => String(p.id) === String(firstId)) || list[0];
+    return first ? [{ id: first.id, name: first.name, app: first.app, amount: "100,000원", free: false, kind: "결혼" }] : [];
+  }
+  const supers = list.filter((p) => String(p.type || "").indexOf("슈퍼") >= 0);
+  return list.map((p) => {
+    const isSuper = String(p.type || "").indexOf("슈퍼") >= 0;
+    if (supers.length === 1) {
+      return { id: p.id, name: p.name, app: p.app, amount: isSuper ? "39,800원" : "", free: !isSuper, kind: "" };
+    }
+    return { id: p.id, name: p.name, app: p.app, amount: "19,900원", free: false, kind: "" };
+  });
 }
 
 // 슬랙 팀 알림 (실패해도 무시). imageUrl 있으면 사진 썸네일도 함께 표시
@@ -395,6 +431,24 @@ module.exports = async function handler(req, res) {
 
   // ☀️ 아침 브리핑 — Vercel cron이 매일 호출 → 슬랙에 현황 요약 (데이터 변경 없음, 슬랙 발송만)
   if (req.query.summary === "1") {
+    // 🔒 2026-11 잠금: 이 주소는 아무나 부를 수 있었다. 링크만 알면 하루에도 몇 번씩
+    //    손님께 '7일째 대기 안내 문자'를 보내고 슬랙 브리핑을 찍어낼 수 있었다 (문자 요금도 나간다).
+    //    이제 둘 중 하나가 있어야 돈다:
+    //      ① 관리자가 부를 때 → x-admin-key (다른 관리자 기능과 같은 열쇠)
+    //      ② Vercel cron이 부를 때 → Authorization: Bearer ${CRON_SECRET} (Vercel이 자동으로 붙여준다)
+    const summaryBearer = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "").trim();
+    const cronSecret = process.env.CRON_SECRET;
+    const summaryByCron = !!cronSecret && !!summaryBearer && safeEqual(summaryBearer, cronSecret);
+    const summaryByAdmin = !!ADMIN_PW && req.headers["x-admin-key"] === ADMIN_PW;
+    if (!summaryByCron && !summaryByAdmin) {
+      // ⚠️ CRON_SECRET 을 아직 Vercel에 넣지 않은 배포에서는 cron이 막혀 아침 브리핑이 통째로 끊긴다.
+      //    그래서 열쇠가 '하나도 설정되지 않은' 동안만 Vercel cron이 스스로 붙이는 표식을 받아준다.
+      //    (표식은 흉내낼 수 있다 — CRON_SECRET 을 넣는 순간 이 예외는 저절로 사라진다)
+      const ua = String(req.headers["user-agent"] || "").toLowerCase();
+      const cronMark = !cronSecret && (ua.indexOf("vercel-cron") === 0 || !!req.headers["x-vercel-cron"]);
+      if (!cronMark) return res.status(401).json({ error: "인증이 필요합니다" });
+      console.warn("[airtable] summary=1 이 열쇠 없이 불렸어요 — CRON_SECRET 을 설정하면 이 예외가 사라집니다");
+    }
     try {
       const H = { Authorization: `Bearer ${TOKEN}` };
       async function all(t) {
@@ -1010,24 +1064,74 @@ module.exports = async function handler(req, res) {
             }
           } catch (e) { console.error("[airtable] 응답 슬랙 알림 실패:", e.message); }
 
-          // 🎉 성사(양쪽 수락)된 순간 → 먼저 수락한 사람(이번 응답자의 상대)에게 입금 안내 문자
+          // 🎉 성사(양쪽 수락)된 순간 → 입금 안내 문자
+          // 🔧 2026-11 고침: 예전에는 신청서의 '매칭유형' 칸을 보고 판단했는데,
+          //    그 칸은 신청할 때 늘 "일반매칭"으로 들어간다 (슈퍼매칭은 '수락할 때' 고르는 것).
+          //    그래서 ① 슈퍼매칭을 고른 본인에게도 19,900원 안내가 가고,
+          //         ② 슈퍼를 받은 상대(무료)와 나중에 수락한 사람에게는 안내가 아예 안 갔다.
+          //    이제는 두 사람이 '수락할 때 고른 유형'(매칭 응답.매칭유형)을 각각 확인해서 안내한다.
+          //      · 일반 + 일반   → 두 사람 각각 19,900원
+          //      · 한쪽만 슈퍼   → 슈퍼를 고른 본인만 39,800원(상대 몫까지) · 상대는 0원(무료 안내)
+          //      · 양쪽 다 슈퍼  → 응답 화면(response.html)과 같게 각 19,900원
+          //      · 결혼매칭      → 예전 그대로 먼저 수락한 분께 100,000원
           if (upd["상태"] === "성사") {
             try {
-              const firstId = responderIsMan ? mf["여자ID"] : mf["남자ID"];
-              const firstName = responderIsMan ? (mf["여자"] || "") : (mf["남자"] || "");
-              if (firstId && String(firstId).startsWith("rec")) {
-                const pr = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}/${firstId}`, { headers: AUTH });
-                const pd = await pr.json();
-                const pf = (pd && pd.fields) || {};
-                const to = pf["연락처"] || "";
-                const mtype = String(pf["매칭유형"] || "");
-                const isMarriage = mtype.indexOf("결혼") >= 0 || String(pf["유입경로"] || "").indexOf("결혼") >= 0;
-                const amount = isMarriage ? "100,000원" : (mtype.indexOf("슈퍼") >= 0 ? "39,800원" : "19,900원");
-                if (isValidPhone(to)) {
-                  await sendSms({ to, text: 매칭입금문자(firstName, amount, isMarriage ? "결혼" : ""), subject: "썸류센터 입금 안내" });
+              const manId = String(mf["남자ID"] || ""), womanId = String(mf["여자ID"] || "");
+              const isRec = (x) => x.startsWith("rec");
+              const people = [
+                { id: manId, other: womanId, name: mf["남자"] || "" },
+                { id: womanId, other: manId, name: mf["여자"] || "" },
+              ].filter((p) => isRec(p.id) && isRec(p.other));
+
+              const appOf = {};
+              const loadApp = async (id) => {
+                if (appOf[id]) return appOf[id];
+                const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("1:1 매칭 신청")}/${id}`, { headers: AUTH });
+                const d = await r.json().catch(() => ({}));
+                appOf[id] = (d && d.fields) || {};
+                return appOf[id];
+              };
+              // 이 사람이 '이 매칭'에서 수락하며 고른 유형 (마지막 수락 기록 기준).
+              // 방금 응답한 사람은 요청 본문의 값이 가장 최신이라 그걸 먼저 쓴다.
+              const typeOf = async (p) => {
+                if (p.id === String(responder) && f["매칭유형"]) return String(f["매칭유형"]);
+                try {
+                  const formula = `AND({응답자ID}="${p.id}",{매칭ID}="${p.other}")`;
+                  const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("매칭 응답")}?pageSize=100&filterByFormula=${encodeURIComponent(formula)}`, { headers: AUTH });
+                  const d = await r.json().catch(() => ({}));
+                  const ok = (d.records || []).filter((x) => (x.fields || {})["응답"] === "수락");
+                  ok.sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0));
+                  const last = ok[ok.length - 1];
+                  return String((last && last.fields && last.fields["매칭유형"]) || "");
+                } catch (e) { return ""; }
+              };
+
+              for (const p of people) {
+                p.type = await typeOf(p);
+                p.app = await loadApp(p.id);
+              }
+              const isMarriage = people.some((p) =>
+                String(p.app["유입경로"] || "").indexOf("결혼") >= 0 || String(p.app["매칭유형"] || "").indexOf("결혼") >= 0);
+
+              const lines = [];
+              const plan = 성사안내계획(people, isMarriage, responderIsMan ? womanId : manId);
+              for (const p of plan) {
+                const to = String((p.app || {})["연락처"] || "");
+                try {
+                  if (!isValidPhone(to)) { lines.push(`⚠️ ${p.name || "?"}님 연락처가 없어 안내를 못 보냈어요`); continue; }
+                  if (p.free) {
+                    await sendSms({ to, text: 무료안내문자(p.name), subject: "썸류센터 매칭 성사 안내" });
+                    lines.push(`→ ${p.name || "?"}님은 무료(상대가 슈퍼매칭) — 무료 안내 발송`);
+                  } else {
+                    await sendSms({ to, text: 매칭입금문자(p.name, p.amount, p.kind), subject: "썸류센터 입금 안내" });
+                    lines.push(`→ ${p.name || "?"}님께 ${p.amount}${p.kind === "결혼" ? "(결혼)" : ""} 입금 안내`);
+                  }
+                } catch (e) {
+                  console.error("[airtable] 성사 안내 문자 실패:", e.message);
+                  lines.push(`⚠️ ${p.name || "?"}님 안내 문자 실패: ${e.message}`);
                 }
               }
-              await notifySlack(`🎉 1:1 매칭 성사!\n${mf["여자"] || ""} ♥ ${mf["남자"] || ""}\n→ 먼저 수락한 ${firstName || ""}님께 입금 안내 문자 발송했어요`);
+              await notifySlack(`🎉 1:1 매칭 성사!\n${mf["여자"] || ""} ♥ ${mf["남자"] || ""}\n${lines.join("\n")}`);
             } catch (e) { console.error("[airtable] 성사 입금문자 실패:", e.message); }
           }
         }
@@ -1039,3 +1143,4 @@ module.exports = async function handler(req, res) {
   }
 }
 module.exports.notifySlack = notifySlack;
+module.exports.성사안내계획 = 성사안내계획;   // 검사(scripts/test-urgent-fixes.js)에서 쓴다

@@ -9,7 +9,8 @@
   "scripts": {
     "check": "node scripts/check-pages.js",
     "test": "node scripts/check-pages.js",
-    "test:apply": "node scripts/test-apply.js"
+    "test:apply": "node scripts/test-apply.js",
+    "test:urgent": "node scripts/test-urgent-fixes.js"
   },
   "repository": {
     "type": "git",
