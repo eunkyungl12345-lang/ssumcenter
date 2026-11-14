@@ -977,8 +977,8 @@ function loadTestResult(){
 loadTestResult();
 
 // 🤝 테스트 링크를 보내준 친구 이름 (/matching?from=test&friend=이름)
-//    "친구와 둘 다 매칭 성사 시 첫 만남 결제 2,000원씩 할인"을 센터장이 확인하려면
-//    누구와 같이 했는지가 신청 기록에 남아 있어야 한다. → '추천인이름' 칸에 저장한다.
+//    할인은 '링크를 보낸 사람'이 받는다 (2026-11 확정, 초대 링크와 같은 규칙). 신청한 친구에게는 할인이 없다.
+//    누가 보냈는지 센터장이 알 수 있게 '추천인이름' 칸에 저장한다.
 function testFriendName(){
   try{
     const p = new URLSearchParams(location.search);
@@ -989,9 +989,12 @@ function testFriendName(){
 (function showTestFriend(){
   const name = testFriendName(); if(!name) return;
   const b = document.getElementById("test-friend-badge"); if(!b) return;
-  b.style.cssText = "margin-top:8px"; b.textContent = "";
-  b.appendChild(couponTicket("🤝 " + name + "님과 친구 할인권", "둘 다 매칭이 성사되면 첫 만남 결제에서 2,000원씩 빼드려요. 신청하면 자동으로 등록돼요."));
-  b.firstChild.style.marginTop = "0";
+  // 받은 친구에게는 할인이 없으므로 쿠폰 모양이 아니라 안내 한 줄만 보여준다
+  b.style.cssText = "margin-top:8px;background:#FFFFFF;border:1px solid rgba(0,0,0,.03);border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.04);padding:12px 14px;font-size:13px;line-height:1.6;color:#1E1E1E;text-align:left;word-break:keep-all";
+  b.textContent = "";
+  const t1 = document.createElement("b"); t1.textContent = "🤝 " + name + "님이 보내준 테스트로 오셨네요";
+  const t2 = document.createElement("div"); t2.style.cssText = "font-size:12px;color:#666666;margin-top:2px"; t2.textContent = "보내주신 분 이름은 자동으로 기록돼요.";
+  b.appendChild(t1); b.appendChild(t2);
   b.classList.remove("hidden");
 })();
 
@@ -1356,8 +1359,7 @@ async function handleSubmit(e){
     // 🤝 테스트 친구 — 유입경로가 '유형테스트'일 때만 (지인소개 추천인과 섞이지 않게)
     else if(payload.inflow === "유형테스트" && testFriendName()){
       fields["추천인이름"] = testFriendName();
-      // 🎟 테스트 친구 할인권 — 둘 다 성사됐는지는 센터장이 입금 안내 때 확인한다
-      fields["할인쿠폰"] = "테스트 친구 2,000원 할인 (둘 다 성사 시)";
+      // 🎟 할인은 링크를 보낸 사람 몫 → 신청한 친구 기록에는 할인쿠폰을 붙이지 않는다 (couponOf 가 보낸 사람 카드에 띄운다)
     }
 
     // Airtable에 없는 필드가 있으면 그 필드만 빼고 자동 재시도 (신청이 통째로 실패하지 않게)
